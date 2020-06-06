@@ -22,6 +22,8 @@ class L10n {
       'deleting': 'Удаление',
       'deleteGroup': 'Удалить группу',
       'fio': 'ФИО',
+      'addingOfGroup': 'Добавление группы',
+      'groupName': 'Наименование группы',
     },
     'en': {
       'title': 'Timesheet',
@@ -34,6 +36,8 @@ class L10n {
       'deleting': 'Deleting',
       'deleteGroup': 'Delete group',
       'fio': 'Family Name',
+      'addingOfGroup': 'Adding of group',
+      'groupName': 'Group name',
     },
   };
 
@@ -47,6 +51,8 @@ class L10n {
   get deleting => _l10n[locale.languageCode]['deleting'];
   get deleteGroup => _l10n[locale.languageCode]['deleteGroup'];
   get fio => _l10n[locale.languageCode]['fio'];
+  get addingOfGroup => _l10n[locale.languageCode]['addingOfGroup'];
+  get groupName => _l10n[locale.languageCode]['groupName'];
 }
 
 class L10nDelegate extends LocalizationsDelegate<L10n> {

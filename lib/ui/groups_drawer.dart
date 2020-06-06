@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:timesheets/core/l10n.dart';
 import 'package:timesheets/core/bloc.dart';
 import 'package:provider/provider.dart';
-//import 'package:timesheets/widgets/add_group_dialog.dart';
+import 'package:timesheets/ui/add_group_dialog.dart';
 
 class GroupsDrawer extends StatelessWidget {
   @override
@@ -44,8 +44,7 @@ class GroupsDrawer extends StatelessWidget {
                 child: Icon(Icons.add),
                 tooltip: L10n.of(context).addGroup,
                 onPressed: () {
-                  /*showDialog(
-                      context: context, builder: (_) => AddGroupDialog());*/
+                  showDialog(context: context, builder: (_) => AddGroupDialog());
                 },
               ),
             ),
