@@ -12,13 +12,13 @@ class L10n {
 
   static const Map<String, Map<String, String>> _l10n = {
     'ru': {
-      'title': 'Табели посещаемости',
+      'title': 'Табели',
       'ok': 'OK',
       'cancel': 'ОТМЕНА',
       'groups': 'Группы',
       'addGroup': 'Добавить группу',
-      'personsAmount': 'человек',
-      'personsAmount234': 'человека',
+      'personCount': 'человек',
+      'personCount234': 'человека',
       'deleting': 'Удаление',
       'deleteGroup': 'Удалить группу',
       'fio': 'ФИО',
@@ -29,8 +29,8 @@ class L10n {
       'cancel': 'CANCEL',
       'groups': 'Groups',
       'addGroup': 'Add group',
-      'personsAmount': 'persons',
-      'personsAmount234': 'persons',
+      'personCount': 'persons',
+      'personCount234': 'persons',
       'deleting': 'Deleting',
       'deleteGroup': 'Delete group',
       'fio': 'Family Name',
@@ -42,8 +42,8 @@ class L10n {
   get cancel => _l10n[locale.languageCode]['cancel'];
   get groups => _l10n[locale.languageCode]['groups'];
   get addGroup => _l10n[locale.languageCode]['addGroup'];
-  get personsAmount => _l10n[locale.languageCode]['personsAmount'];
-  get personsAmount234 => _l10n[locale.languageCode]['personsAmount234'];
+  get personCount => _l10n[locale.languageCode]['personCount'];
+  get personCount234 => _l10n[locale.languageCode]['personCount234'];
   get deleting => _l10n[locale.languageCode]['deleting'];
   get deleteGroup => _l10n[locale.languageCode]['deleteGroup'];
   get fio => _l10n[locale.languageCode]['fio'];

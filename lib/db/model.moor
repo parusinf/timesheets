@@ -40,14 +40,12 @@ CREATE TABLE persons (
   -- Имя
   name               TEXT NOT NULL,
   -- Отчество
-  middleName         TEXT,
-  -- Дата рождения
-  birthday           DATE
+  middleName         TEXT
 );
-CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName, birthday);
+CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName);
 
 -- Связи персон с группами
-CREATE TABLE person_group_links (
+CREATE TABLE pg_links (
   -- Идентификатор связи персоны с группой
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор персоны
@@ -55,20 +53,20 @@ CREATE TABLE person_group_links (
   -- Идентификатор группы
   groupId            INT NOT NULL REFERENCES "groups" (id)
 );
-CREATE UNIQUE INDEX person_group_links_index ON person_group_links (personId, groupId);
+CREATE UNIQUE INDEX pg_links_index ON pg_links (personId, groupId);
 
 -- Посещаемость персон в группах
 CREATE TABLE timesheets (
   -- Идентификатор посещаемости
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор связи персоны с группой
-  personGroupLinkId  INT NOT NULL REFERENCES person_group_links (id),
+  pgLinkId           INT NOT NULL REFERENCES pg_links (id) ON DELETE CASCADE,
   -- Дата посещения
-  attendanceDate      DATE NOT NULL,
+  attendanceDate     DATE NOT NULL,
   -- Количество часов
   hoursNumber        REAL NOT NULL
 );
-CREATE UNIQUE INDEX timesheets_index ON timesheets (personGroupLinkId, attendanceDate);
+CREATE UNIQUE INDEX timesheets_index ON timesheets (pgLinkId, attendanceDate);
 
 -- Настройки
 CREATE TABLE settings (
@@ -91,31 +89,38 @@ SELECT *
   FROM schedule_days
  WHERE scheduleId = :scheduleId;
 
+-- Предыдущая группа (в алфавитном порядке) перед заданной по наименованию
+_previousGroup:
+SELECT *
+  FROM "groups"
+ WHERE name =
+       (
+         SELECT MAX(name)
+           FROM "groups"
+          WHERE name < :name
+       );
+
 -- Список групп с графиками и количеством персон
-_groupsExtras:
+_groupsView:
 SELECT G.id,
        G.name,
        G.scheduleId,
        S.code AS scheduleCode,
-       COUNT(*) AS personsAmount
+       CAST((SELECT COUNT(*) FROM pg_links WHERE groupId = G.id) AS INT) AS personCount
   FROM "groups" G
  INNER JOIN schedules S ON S.id = G.scheduleId
- INNER JOIN person_group_links L ON L.groupId = G.id
- GROUP BY
-       G.id,
+ ORDER BY
        G.name,
-       G.scheduleId,
        S.code;
 
 -- Список персон в группе
 _personsInGroup:
-SELECT L.id AS personGroupLinkId,
+SELECT L.id AS pgLinkId,
        L.personId,
        P.family,
        P.name,
-       P.middleName,
-       P.birthday
-  FROM person_group_links L
+       P.middleName
+  FROM pg_links L
  INNER JOIN persons P ON P.id = L.personId
  WHERE L.groupId = :groupId
  ORDER BY
@@ -124,10 +129,10 @@ SELECT L.id AS personGroupLinkId,
        P.middleName;
 
 -- Посещаемость персоны в группе за период
-_timesheetsOfPersonInGroupForPeriod:
+_timesheetsView:
 SELECT *
   FROM timesheets
- WHERE personGroupLinkId = :personGroupLinkId
+ WHERE pgLinkId = :pgLinkId
    AND attendanceDate BETWEEN date(:period, 'start of month') AND :period;
 
 -- Активная группа
@@ -140,3 +145,13 @@ SELECT G.*
 -- Установка активной группы
 _setActiveGroup:
 UPDATE settings SET intValue = :groupId WHERE name = 'activeGroup';
+
+-- Активный период
+_activePeriod:
+SELECT S.dateValue
+  FROM settings S
+ WHERE S.name = 'activePeriod';
+
+-- Установка активного периода
+_setActivePeriod:
+UPDATE settings SET dateValue = :activePeriod WHERE name = 'activePeriod';

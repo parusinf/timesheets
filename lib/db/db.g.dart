@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'database.dart';
+part of 'db.dart';
 
 // **************************************************************************
 // MoorGenerator
@@ -680,19 +680,16 @@ class Person extends DataClass implements Insertable<Person> {
   final String family;
   final String name;
   final String middleName;
-  final DateTime birthday;
   Person(
       {@required this.id,
       @required this.family,
       @required this.name,
-      this.middleName,
-      this.birthday});
+      this.middleName});
   factory Person.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
-    final dateTimeType = db.typeSystem.forDartType<DateTime>();
     return Person(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       family:
@@ -700,8 +697,6 @@ class Person extends DataClass implements Insertable<Person> {
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       middleName: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}middleName']),
-      birthday: dateTimeType
-          .mapFromDatabaseResponse(data['${effectivePrefix}birthday']),
     );
   }
   @override
@@ -719,9 +714,6 @@ class Person extends DataClass implements Insertable<Person> {
     if (!nullToAbsent || middleName != null) {
       map['middleName'] = Variable<String>(middleName);
     }
-    if (!nullToAbsent || birthday != null) {
-      map['birthday'] = Variable<DateTime>(birthday);
-    }
     return map;
   }
 
@@ -734,9 +726,6 @@ class Person extends DataClass implements Insertable<Person> {
       middleName: middleName == null && nullToAbsent
           ? const Value.absent()
           : Value(middleName),
-      birthday: birthday == null && nullToAbsent
-          ? const Value.absent()
-          : Value(birthday),
     );
   }
 
@@ -748,7 +737,6 @@ class Person extends DataClass implements Insertable<Person> {
       family: serializer.fromJson<String>(json['family']),
       name: serializer.fromJson<String>(json['name']),
       middleName: serializer.fromJson<String>(json['middleName']),
-      birthday: serializer.fromJson<DateTime>(json['birthday']),
     );
   }
   @override
@@ -759,22 +747,15 @@ class Person extends DataClass implements Insertable<Person> {
       'family': serializer.toJson<String>(family),
       'name': serializer.toJson<String>(name),
       'middleName': serializer.toJson<String>(middleName),
-      'birthday': serializer.toJson<DateTime>(birthday),
     };
   }
 
-  Person copyWith(
-          {int id,
-          String family,
-          String name,
-          String middleName,
-          DateTime birthday}) =>
+  Person copyWith({int id, String family, String name, String middleName}) =>
       Person(
         id: id ?? this.id,
         family: family ?? this.family,
         name: name ?? this.name,
         middleName: middleName ?? this.middleName,
-        birthday: birthday ?? this.birthday,
       );
   @override
   String toString() {
@@ -782,19 +763,14 @@ class Person extends DataClass implements Insertable<Person> {
           ..write('id: $id, ')
           ..write('family: $family, ')
           ..write('name: $name, ')
-          ..write('middleName: $middleName, ')
-          ..write('birthday: $birthday')
+          ..write('middleName: $middleName')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(
-      id.hashCode,
-      $mrjc(
-          family.hashCode,
-          $mrjc(
-              name.hashCode, $mrjc(middleName.hashCode, birthday.hashCode)))));
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(family.hashCode, $mrjc(name.hashCode, middleName.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -802,8 +778,7 @@ class Person extends DataClass implements Insertable<Person> {
           other.id == this.id &&
           other.family == this.family &&
           other.name == this.name &&
-          other.middleName == this.middleName &&
-          other.birthday == this.birthday);
+          other.middleName == this.middleName);
 }
 
 class PersonsCompanion extends UpdateCompanion<Person> {
@@ -811,20 +786,17 @@ class PersonsCompanion extends UpdateCompanion<Person> {
   final Value<String> family;
   final Value<String> name;
   final Value<String> middleName;
-  final Value<DateTime> birthday;
   const PersonsCompanion({
     this.id = const Value.absent(),
     this.family = const Value.absent(),
     this.name = const Value.absent(),
     this.middleName = const Value.absent(),
-    this.birthday = const Value.absent(),
   });
   PersonsCompanion.insert({
     this.id = const Value.absent(),
     @required String family,
     @required String name,
     this.middleName = const Value.absent(),
-    this.birthday = const Value.absent(),
   })  : family = Value(family),
         name = Value(name);
   static Insertable<Person> custom({
@@ -832,14 +804,12 @@ class PersonsCompanion extends UpdateCompanion<Person> {
     Expression<String> family,
     Expression<String> name,
     Expression<String> middleName,
-    Expression<DateTime> birthday,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (family != null) 'family': family,
       if (name != null) 'name': name,
       if (middleName != null) 'middleName': middleName,
-      if (birthday != null) 'birthday': birthday,
     });
   }
 
@@ -847,14 +817,12 @@ class PersonsCompanion extends UpdateCompanion<Person> {
       {Value<int> id,
       Value<String> family,
       Value<String> name,
-      Value<String> middleName,
-      Value<DateTime> birthday}) {
+      Value<String> middleName}) {
     return PersonsCompanion(
       id: id ?? this.id,
       family: family ?? this.family,
       name: name ?? this.name,
       middleName: middleName ?? this.middleName,
-      birthday: birthday ?? this.birthday,
     );
   }
 
@@ -872,9 +840,6 @@ class PersonsCompanion extends UpdateCompanion<Person> {
     }
     if (middleName.present) {
       map['middleName'] = Variable<String>(middleName.value);
-    }
-    if (birthday.present) {
-      map['birthday'] = Variable<DateTime>(birthday.value);
     }
     return map;
   }
@@ -918,17 +883,8 @@ class Persons extends Table with TableInfo<Persons, Person> {
         $customConstraints: '');
   }
 
-  final VerificationMeta _birthdayMeta = const VerificationMeta('birthday');
-  GeneratedDateTimeColumn _birthday;
-  GeneratedDateTimeColumn get birthday => _birthday ??= _constructBirthday();
-  GeneratedDateTimeColumn _constructBirthday() {
-    return GeneratedDateTimeColumn('birthday', $tableName, true,
-        $customConstraints: '');
-  }
-
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, family, name, middleName, birthday];
+  List<GeneratedColumn> get $columns => [id, family, name, middleName];
   @override
   Persons get asDslTable => this;
   @override
@@ -961,10 +917,6 @@ class Persons extends Table with TableInfo<Persons, Person> {
           middleName.isAcceptableOrUnknown(
               data['middleName'], _middleNameMeta));
     }
-    if (data.containsKey('birthday')) {
-      context.handle(_birthdayMeta,
-          birthday.isAcceptableOrUnknown(data['birthday'], _birthdayMeta));
-    }
     return context;
   }
 
@@ -985,18 +937,16 @@ class Persons extends Table with TableInfo<Persons, Person> {
   bool get dontWriteConstraints => true;
 }
 
-class PersonGroupLink extends DataClass implements Insertable<PersonGroupLink> {
+class PgLink extends DataClass implements Insertable<PgLink> {
   final int id;
   final int personId;
   final int groupId;
-  PersonGroupLink(
-      {@required this.id, @required this.personId, @required this.groupId});
-  factory PersonGroupLink.fromData(
-      Map<String, dynamic> data, GeneratedDatabase db,
+  PgLink({@required this.id, @required this.personId, @required this.groupId});
+  factory PgLink.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
-    return PersonGroupLink(
+    return PgLink(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       personId:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}personId']),
@@ -1019,8 +969,8 @@ class PersonGroupLink extends DataClass implements Insertable<PersonGroupLink> {
     return map;
   }
 
-  PersonGroupLinksCompanion toCompanion(bool nullToAbsent) {
-    return PersonGroupLinksCompanion(
+  PgLinksCompanion toCompanion(bool nullToAbsent) {
+    return PgLinksCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       personId: personId == null && nullToAbsent
           ? const Value.absent()
@@ -1031,10 +981,10 @@ class PersonGroupLink extends DataClass implements Insertable<PersonGroupLink> {
     );
   }
 
-  factory PersonGroupLink.fromJson(Map<String, dynamic> json,
+  factory PgLink.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
-    return PersonGroupLink(
+    return PgLink(
       id: serializer.fromJson<int>(json['id']),
       personId: serializer.fromJson<int>(json['personId']),
       groupId: serializer.fromJson<int>(json['groupId']),
@@ -1050,15 +1000,14 @@ class PersonGroupLink extends DataClass implements Insertable<PersonGroupLink> {
     };
   }
 
-  PersonGroupLink copyWith({int id, int personId, int groupId}) =>
-      PersonGroupLink(
+  PgLink copyWith({int id, int personId, int groupId}) => PgLink(
         id: id ?? this.id,
         personId: personId ?? this.personId,
         groupId: groupId ?? this.groupId,
       );
   @override
   String toString() {
-    return (StringBuffer('PersonGroupLink(')
+    return (StringBuffer('PgLink(')
           ..write('id: $id, ')
           ..write('personId: $personId, ')
           ..write('groupId: $groupId')
@@ -1072,28 +1021,28 @@ class PersonGroupLink extends DataClass implements Insertable<PersonGroupLink> {
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
-      (other is PersonGroupLink &&
+      (other is PgLink &&
           other.id == this.id &&
           other.personId == this.personId &&
           other.groupId == this.groupId);
 }
 
-class PersonGroupLinksCompanion extends UpdateCompanion<PersonGroupLink> {
+class PgLinksCompanion extends UpdateCompanion<PgLink> {
   final Value<int> id;
   final Value<int> personId;
   final Value<int> groupId;
-  const PersonGroupLinksCompanion({
+  const PgLinksCompanion({
     this.id = const Value.absent(),
     this.personId = const Value.absent(),
     this.groupId = const Value.absent(),
   });
-  PersonGroupLinksCompanion.insert({
+  PgLinksCompanion.insert({
     this.id = const Value.absent(),
     @required int personId,
     @required int groupId,
   })  : personId = Value(personId),
         groupId = Value(groupId);
-  static Insertable<PersonGroupLink> custom({
+  static Insertable<PgLink> custom({
     Expression<int> id,
     Expression<int> personId,
     Expression<int> groupId,
@@ -1105,9 +1054,9 @@ class PersonGroupLinksCompanion extends UpdateCompanion<PersonGroupLink> {
     });
   }
 
-  PersonGroupLinksCompanion copyWith(
+  PgLinksCompanion copyWith(
       {Value<int> id, Value<int> personId, Value<int> groupId}) {
-    return PersonGroupLinksCompanion(
+    return PgLinksCompanion(
       id: id ?? this.id,
       personId: personId ?? this.personId,
       groupId: groupId ?? this.groupId,
@@ -1130,11 +1079,10 @@ class PersonGroupLinksCompanion extends UpdateCompanion<PersonGroupLink> {
   }
 }
 
-class PersonGroupLinks extends Table
-    with TableInfo<PersonGroupLinks, PersonGroupLink> {
+class PgLinks extends Table with TableInfo<PgLinks, PgLink> {
   final GeneratedDatabase _db;
   final String _alias;
-  PersonGroupLinks(this._db, [this._alias]);
+  PgLinks(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedIntColumn _id;
   GeneratedIntColumn get id => _id ??= _constructId();
@@ -1164,13 +1112,13 @@ class PersonGroupLinks extends Table
   @override
   List<GeneratedColumn> get $columns => [id, personId, groupId];
   @override
-  PersonGroupLinks get asDslTable => this;
+  PgLinks get asDslTable => this;
   @override
-  String get $tableName => _alias ?? 'person_group_links';
+  String get $tableName => _alias ?? 'pg_links';
   @override
-  final String actualTableName = 'person_group_links';
+  final String actualTableName = 'pg_links';
   @override
-  VerificationContext validateIntegrity(Insertable<PersonGroupLink> instance,
+  VerificationContext validateIntegrity(Insertable<PgLink> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1195,14 +1143,14 @@ class PersonGroupLinks extends Table
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  PersonGroupLink map(Map<String, dynamic> data, {String tablePrefix}) {
+  PgLink map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return PersonGroupLink.fromData(data, _db, prefix: effectivePrefix);
+    return PgLink.fromData(data, _db, prefix: effectivePrefix);
   }
 
   @override
-  PersonGroupLinks createAlias(String alias) {
-    return PersonGroupLinks(_db, alias);
+  PgLinks createAlias(String alias) {
+    return PgLinks(_db, alias);
   }
 
   @override
@@ -1211,12 +1159,12 @@ class PersonGroupLinks extends Table
 
 class Timesheet extends DataClass implements Insertable<Timesheet> {
   final int id;
-  final int personGroupLinkId;
+  final int pgLinkId;
   final DateTime attendanceDate;
   final double hoursNumber;
   Timesheet(
       {@required this.id,
-      @required this.personGroupLinkId,
+      @required this.pgLinkId,
       @required this.attendanceDate,
       @required this.hoursNumber});
   factory Timesheet.fromData(Map<String, dynamic> data, GeneratedDatabase db,
@@ -1227,8 +1175,8 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
     final doubleType = db.typeSystem.forDartType<double>();
     return Timesheet(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      personGroupLinkId: intType
-          .mapFromDatabaseResponse(data['${effectivePrefix}personGroupLinkId']),
+      pgLinkId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}pgLinkId']),
       attendanceDate: dateTimeType
           .mapFromDatabaseResponse(data['${effectivePrefix}attendanceDate']),
       hoursNumber: doubleType
@@ -1241,8 +1189,8 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<int>(id);
     }
-    if (!nullToAbsent || personGroupLinkId != null) {
-      map['personGroupLinkId'] = Variable<int>(personGroupLinkId);
+    if (!nullToAbsent || pgLinkId != null) {
+      map['pgLinkId'] = Variable<int>(pgLinkId);
     }
     if (!nullToAbsent || attendanceDate != null) {
       map['attendanceDate'] = Variable<DateTime>(attendanceDate);
@@ -1256,9 +1204,9 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
   TimesheetsCompanion toCompanion(bool nullToAbsent) {
     return TimesheetsCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
-      personGroupLinkId: personGroupLinkId == null && nullToAbsent
+      pgLinkId: pgLinkId == null && nullToAbsent
           ? const Value.absent()
-          : Value(personGroupLinkId),
+          : Value(pgLinkId),
       attendanceDate: attendanceDate == null && nullToAbsent
           ? const Value.absent()
           : Value(attendanceDate),
@@ -1273,7 +1221,7 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Timesheet(
       id: serializer.fromJson<int>(json['id']),
-      personGroupLinkId: serializer.fromJson<int>(json['personGroupLinkId']),
+      pgLinkId: serializer.fromJson<int>(json['pgLinkId']),
       attendanceDate: serializer.fromJson<DateTime>(json['attendanceDate']),
       hoursNumber: serializer.fromJson<double>(json['hoursNumber']),
     );
@@ -1283,7 +1231,7 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'personGroupLinkId': serializer.toJson<int>(personGroupLinkId),
+      'pgLinkId': serializer.toJson<int>(pgLinkId),
       'attendanceDate': serializer.toJson<DateTime>(attendanceDate),
       'hoursNumber': serializer.toJson<double>(hoursNumber),
     };
@@ -1291,12 +1239,12 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
 
   Timesheet copyWith(
           {int id,
-          int personGroupLinkId,
+          int pgLinkId,
           DateTime attendanceDate,
           double hoursNumber}) =>
       Timesheet(
         id: id ?? this.id,
-        personGroupLinkId: personGroupLinkId ?? this.personGroupLinkId,
+        pgLinkId: pgLinkId ?? this.pgLinkId,
         attendanceDate: attendanceDate ?? this.attendanceDate,
         hoursNumber: hoursNumber ?? this.hoursNumber,
       );
@@ -1304,7 +1252,7 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
   String toString() {
     return (StringBuffer('Timesheet(')
           ..write('id: $id, ')
-          ..write('personGroupLinkId: $personGroupLinkId, ')
+          ..write('pgLinkId: $pgLinkId, ')
           ..write('attendanceDate: $attendanceDate, ')
           ..write('hoursNumber: $hoursNumber')
           ..write(')'))
@@ -1314,46 +1262,46 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
   @override
   int get hashCode => $mrjf($mrjc(
       id.hashCode,
-      $mrjc(personGroupLinkId.hashCode,
+      $mrjc(pgLinkId.hashCode,
           $mrjc(attendanceDate.hashCode, hoursNumber.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Timesheet &&
           other.id == this.id &&
-          other.personGroupLinkId == this.personGroupLinkId &&
+          other.pgLinkId == this.pgLinkId &&
           other.attendanceDate == this.attendanceDate &&
           other.hoursNumber == this.hoursNumber);
 }
 
 class TimesheetsCompanion extends UpdateCompanion<Timesheet> {
   final Value<int> id;
-  final Value<int> personGroupLinkId;
+  final Value<int> pgLinkId;
   final Value<DateTime> attendanceDate;
   final Value<double> hoursNumber;
   const TimesheetsCompanion({
     this.id = const Value.absent(),
-    this.personGroupLinkId = const Value.absent(),
+    this.pgLinkId = const Value.absent(),
     this.attendanceDate = const Value.absent(),
     this.hoursNumber = const Value.absent(),
   });
   TimesheetsCompanion.insert({
     this.id = const Value.absent(),
-    @required int personGroupLinkId,
+    @required int pgLinkId,
     @required DateTime attendanceDate,
     @required double hoursNumber,
-  })  : personGroupLinkId = Value(personGroupLinkId),
+  })  : pgLinkId = Value(pgLinkId),
         attendanceDate = Value(attendanceDate),
         hoursNumber = Value(hoursNumber);
   static Insertable<Timesheet> custom({
     Expression<int> id,
-    Expression<int> personGroupLinkId,
+    Expression<int> pgLinkId,
     Expression<DateTime> attendanceDate,
     Expression<double> hoursNumber,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (personGroupLinkId != null) 'personGroupLinkId': personGroupLinkId,
+      if (pgLinkId != null) 'pgLinkId': pgLinkId,
       if (attendanceDate != null) 'attendanceDate': attendanceDate,
       if (hoursNumber != null) 'hoursNumber': hoursNumber,
     });
@@ -1361,12 +1309,12 @@ class TimesheetsCompanion extends UpdateCompanion<Timesheet> {
 
   TimesheetsCompanion copyWith(
       {Value<int> id,
-      Value<int> personGroupLinkId,
+      Value<int> pgLinkId,
       Value<DateTime> attendanceDate,
       Value<double> hoursNumber}) {
     return TimesheetsCompanion(
       id: id ?? this.id,
-      personGroupLinkId: personGroupLinkId ?? this.personGroupLinkId,
+      pgLinkId: pgLinkId ?? this.pgLinkId,
       attendanceDate: attendanceDate ?? this.attendanceDate,
       hoursNumber: hoursNumber ?? this.hoursNumber,
     );
@@ -1378,8 +1326,8 @@ class TimesheetsCompanion extends UpdateCompanion<Timesheet> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (personGroupLinkId.present) {
-      map['personGroupLinkId'] = Variable<int>(personGroupLinkId.value);
+    if (pgLinkId.present) {
+      map['pgLinkId'] = Variable<int>(pgLinkId.value);
     }
     if (attendanceDate.present) {
       map['attendanceDate'] = Variable<DateTime>(attendanceDate.value);
@@ -1405,14 +1353,13 @@ class Timesheets extends Table with TableInfo<Timesheets, Timesheet> {
         $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   }
 
-  final VerificationMeta _personGroupLinkIdMeta =
-      const VerificationMeta('personGroupLinkId');
-  GeneratedIntColumn _personGroupLinkId;
-  GeneratedIntColumn get personGroupLinkId =>
-      _personGroupLinkId ??= _constructPersonGroupLinkId();
-  GeneratedIntColumn _constructPersonGroupLinkId() {
-    return GeneratedIntColumn('personGroupLinkId', $tableName, false,
-        $customConstraints: 'NOT NULL REFERENCES person_group_links (id)');
+  final VerificationMeta _pgLinkIdMeta = const VerificationMeta('pgLinkId');
+  GeneratedIntColumn _pgLinkId;
+  GeneratedIntColumn get pgLinkId => _pgLinkId ??= _constructPgLinkId();
+  GeneratedIntColumn _constructPgLinkId() {
+    return GeneratedIntColumn('pgLinkId', $tableName, false,
+        $customConstraints:
+            'NOT NULL REFERENCES pg_links (id) ON DELETE CASCADE');
   }
 
   final VerificationMeta _attendanceDateMeta =
@@ -1437,7 +1384,7 @@ class Timesheets extends Table with TableInfo<Timesheets, Timesheet> {
 
   @override
   List<GeneratedColumn> get $columns =>
-      [id, personGroupLinkId, attendanceDate, hoursNumber];
+      [id, pgLinkId, attendanceDate, hoursNumber];
   @override
   Timesheets get asDslTable => this;
   @override
@@ -1452,13 +1399,11 @@ class Timesheets extends Table with TableInfo<Timesheets, Timesheet> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
     }
-    if (data.containsKey('personGroupLinkId')) {
-      context.handle(
-          _personGroupLinkIdMeta,
-          personGroupLinkId.isAcceptableOrUnknown(
-              data['personGroupLinkId'], _personGroupLinkIdMeta));
+    if (data.containsKey('pgLinkId')) {
+      context.handle(_pgLinkIdMeta,
+          pgLinkId.isAcceptableOrUnknown(data['pgLinkId'], _pgLinkIdMeta));
     } else if (isInserting) {
-      context.missing(_personGroupLinkIdMeta);
+      context.missing(_pgLinkIdMeta);
     }
     if (data.containsKey('attendanceDate')) {
       context.handle(
@@ -1802,9 +1747,8 @@ class Settings extends Table with TableInfo<Settings, Setting> {
   bool get dontWriteConstraints => true;
 }
 
-abstract class _$Database extends GeneratedDatabase {
-  _$Database(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
-  _$Database.connect(DatabaseConnection c) : super.connect(c);
+abstract class _$Db extends GeneratedDatabase {
+  _$Db(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   Schedules _schedules;
   Schedules get schedules => _schedules ??= Schedules(this);
   Index _schedulesIndex;
@@ -1825,24 +1769,38 @@ abstract class _$Database extends GeneratedDatabase {
   Persons get persons => _persons ??= Persons(this);
   Index _personsIndex;
   Index get personsIndex => _personsIndex ??= Index('persons_index',
-      'CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName, birthday);');
-  PersonGroupLinks _personGroupLinks;
-  PersonGroupLinks get personGroupLinks =>
-      _personGroupLinks ??= PersonGroupLinks(this);
-  Index _personGroupLinksIndex;
-  Index get personGroupLinksIndex => _personGroupLinksIndex ??= Index(
-      'person_group_links_index',
-      'CREATE UNIQUE INDEX person_group_links_index ON person_group_links (personId, groupId);');
+      'CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName);');
+  PgLinks _pgLinks;
+  PgLinks get pgLinks => _pgLinks ??= PgLinks(this);
+  Index _pgLinksIndex;
+  Index get pgLinksIndex => _pgLinksIndex ??= Index('pg_links_index',
+      'CREATE UNIQUE INDEX pg_links_index ON pg_links (personId, groupId);');
   Timesheets _timesheets;
   Timesheets get timesheets => _timesheets ??= Timesheets(this);
   Index _timesheetsIndex;
   Index get timesheetsIndex => _timesheetsIndex ??= Index('timesheets_index',
-      'CREATE UNIQUE INDEX timesheets_index ON timesheets (personGroupLinkId, attendanceDate);');
+      'CREATE UNIQUE INDEX timesheets_index ON timesheets (pgLinkId, attendanceDate);');
   Settings _settings;
   Settings get settings => _settings ??= Settings(this);
   Index _settingsIndex;
   Index get settingsIndex => _settingsIndex ??= Index('settings_index',
       'CREATE UNIQUE INDEX settings_index ON settings (name);');
+  SchedulesDao _schedulesDao;
+  SchedulesDao get schedulesDao => _schedulesDao ??= SchedulesDao(this as Db);
+  ScheduleDaysDao _scheduleDaysDao;
+  ScheduleDaysDao get scheduleDaysDao =>
+      _scheduleDaysDao ??= ScheduleDaysDao(this as Db);
+  GroupsDao _groupsDao;
+  GroupsDao get groupsDao => _groupsDao ??= GroupsDao(this as Db);
+  PersonsDao _personsDao;
+  PersonsDao get personsDao => _personsDao ??= PersonsDao(this as Db);
+  PgLinksDao _pgLinksDao;
+  PgLinksDao get pgLinksDao => _pgLinksDao ??= PgLinksDao(this as Db);
+  TimesheetsDao _timesheetsDao;
+  TimesheetsDao get timesheetsDao =>
+      _timesheetsDao ??= TimesheetsDao(this as Db);
+  SettingsDao _settingsDao;
+  SettingsDao get settingsDao => _settingsDao ??= SettingsDao(this as Db);
   ScheduleDay _rowToScheduleDay(QueryRow row) {
     return ScheduleDay(
       id: row.readInt('id'),
@@ -1859,73 +1817,69 @@ abstract class _$Database extends GeneratedDatabase {
         readsFrom: {scheduleDays}).map(_rowToScheduleDay);
   }
 
-  GroupsExtrasResult _rowToGroupsExtrasResult(QueryRow row) {
-    return GroupsExtrasResult(
-      id: row.readInt('id'),
-      name: row.readString('name'),
-      scheduleId: row.readInt('scheduleId'),
-      scheduleCode: row.readString('scheduleCode'),
-      personsAmount: row.readInt('personsAmount'),
-    );
-  }
-
-  Selectable<GroupsExtrasResult> _groupsExtras() {
-    return customSelect(
-        'SELECT G.id,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       COUNT(*) AS personsAmount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n INNER JOIN person_group_links L ON L.groupId = G.id\n GROUP BY\n       G.id,\n       G.name,\n       G.scheduleId,\n       S.code',
-        variables: [],
-        readsFrom: {
-          groups,
-          schedules,
-          personGroupLinks
-        }).map(_rowToGroupsExtrasResult);
-  }
-
-  PersonsInGroupResult _rowToPersonsInGroupResult(QueryRow row) {
-    return PersonsInGroupResult(
-      personGroupLinkId: row.readInt('personGroupLinkId'),
-      personId: row.readInt('personId'),
-      family: row.readString('family'),
-      name: row.readString('name'),
-      middleName: row.readString('middleName'),
-      birthday: row.readDateTime('birthday'),
-    );
-  }
-
-  Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {
-    return customSelect(
-        'SELECT L.id AS personGroupLinkId,\n       L.personId,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday\n  FROM person_group_links L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName',
-        variables: [Variable.withInt(groupId)],
-        readsFrom: {personGroupLinks, persons}).map(_rowToPersonsInGroupResult);
-  }
-
-  Timesheet _rowToTimesheet(QueryRow row) {
-    return Timesheet(
-      id: row.readInt('id'),
-      personGroupLinkId: row.readInt('personGroupLinkId'),
-      attendanceDate: row.readDateTime('attendanceDate'),
-      hoursNumber: row.readDouble('hoursNumber'),
-    );
-  }
-
-  Selectable<Timesheet> _timesheetsOfPersonInGroupForPeriod(
-      int personGroupLinkId, String period) {
-    return customSelect(
-        'SELECT *\n  FROM timesheets\n WHERE personGroupLinkId = :personGroupLinkId\n   AND attendanceDate BETWEEN date(:period, \'start of month\') AND :period',
-        variables: [
-          Variable.withInt(personGroupLinkId),
-          Variable.withString(period)
-        ],
-        readsFrom: {
-          timesheets
-        }).map(_rowToTimesheet);
-  }
-
   Group _rowToGroup(QueryRow row) {
     return Group(
       id: row.readInt('id'),
       name: row.readString('name'),
       scheduleId: row.readInt('scheduleId'),
     );
+  }
+
+  Selectable<Group> _previousGroup(String name) {
+    return customSelect(
+        'SELECT *\n  FROM "groups"\n WHERE name =\n       (\n         SELECT MAX(name)\n           FROM "groups"\n          WHERE name < :name\n       )',
+        variables: [Variable.withString(name)],
+        readsFrom: {groups}).map(_rowToGroup);
+  }
+
+  GroupsViewResult _rowToGroupsViewResult(QueryRow row) {
+    return GroupsViewResult(
+      id: row.readInt('id'),
+      name: row.readString('name'),
+      scheduleId: row.readInt('scheduleId'),
+      scheduleCode: row.readString('scheduleCode'),
+      personCount: row.readInt('personCount'),
+    );
+  }
+
+  Selectable<GroupsViewResult> _groupsView() {
+    return customSelect(
+        'SELECT G.id,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       CAST((SELECT COUNT(*) FROM pg_links WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n ORDER BY\n       G.name,\n       S.code',
+        variables: [],
+        readsFrom: {groups, schedules, pgLinks}).map(_rowToGroupsViewResult);
+  }
+
+  PersonsInGroupResult _rowToPersonsInGroupResult(QueryRow row) {
+    return PersonsInGroupResult(
+      pgLinkId: row.readInt('pgLinkId'),
+      personId: row.readInt('personId'),
+      family: row.readString('family'),
+      name: row.readString('name'),
+      middleName: row.readString('middleName'),
+    );
+  }
+
+  Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {
+    return customSelect(
+        'SELECT L.id AS pgLinkId,\n       L.personId,\n       P.family,\n       P.name,\n       P.middleName\n  FROM pg_links L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName',
+        variables: [Variable.withInt(groupId)],
+        readsFrom: {pgLinks, persons}).map(_rowToPersonsInGroupResult);
+  }
+
+  Timesheet _rowToTimesheet(QueryRow row) {
+    return Timesheet(
+      id: row.readInt('id'),
+      pgLinkId: row.readInt('pgLinkId'),
+      attendanceDate: row.readDateTime('attendanceDate'),
+      hoursNumber: row.readDouble('hoursNumber'),
+    );
+  }
+
+  Selectable<Timesheet> _timesheetsView(int pgLinkId, String period) {
+    return customSelect(
+        'SELECT *\n  FROM timesheets\n WHERE pgLinkId = :pgLinkId\n   AND attendanceDate BETWEEN date(:period, \'start of month\') AND :period',
+        variables: [Variable.withInt(pgLinkId), Variable.withString(period)],
+        readsFrom: {timesheets}).map(_rowToTimesheet);
   }
 
   Selectable<Group> _activeGroup() {
@@ -1944,6 +1898,24 @@ abstract class _$Database extends GeneratedDatabase {
     );
   }
 
+  Selectable<DateTime> _activePeriod() {
+    return customSelect(
+        'SELECT S.dateValue\n  FROM settings S\n WHERE S.name = \'activePeriod\'',
+        variables: [],
+        readsFrom: {
+          settings
+        }).map((QueryRow row) => row.readDateTime('dateValue'));
+  }
+
+  Future<int> _setActivePeriod(DateTime activePeriod) {
+    return customUpdate(
+      'UPDATE settings SET dateValue = :activePeriod WHERE name = \'activePeriod\'',
+      variables: [Variable.withDateTime(activePeriod)],
+      updates: {settings},
+      updateKind: UpdateKind.update,
+    );
+  }
+
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
@@ -1956,43 +1928,65 @@ abstract class _$Database extends GeneratedDatabase {
         groupsIndex,
         persons,
         personsIndex,
-        personGroupLinks,
-        personGroupLinksIndex,
+        pgLinks,
+        pgLinksIndex,
         timesheets,
         timesheetsIndex,
         settings,
         settingsIndex
       ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
+        [
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('pg_links',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('timesheets', kind: UpdateKind.delete),
+            ],
+          ),
+        ],
+      );
 }
 
-class GroupsExtrasResult {
+class GroupsViewResult {
   final int id;
   final String name;
   final int scheduleId;
   final String scheduleCode;
-  final int personsAmount;
-  GroupsExtrasResult({
+  final int personCount;
+  GroupsViewResult({
     this.id,
     this.name,
     this.scheduleId,
     this.scheduleCode,
-    this.personsAmount,
+    this.personCount,
   });
 }
 
 class PersonsInGroupResult {
-  final int personGroupLinkId;
+  final int pgLinkId;
   final int personId;
   final String family;
   final String name;
   final String middleName;
-  final DateTime birthday;
   PersonsInGroupResult({
-    this.personGroupLinkId,
+    this.pgLinkId,
     this.personId,
     this.family,
     this.name,
     this.middleName,
-    this.birthday,
   });
 }
+
+// **************************************************************************
+// DaoGenerator
+// **************************************************************************
+
+mixin _$SchedulesDaoMixin on DatabaseAccessor<Db> {}
+mixin _$ScheduleDaysDaoMixin on DatabaseAccessor<Db> {}
+mixin _$GroupsDaoMixin on DatabaseAccessor<Db> {}
+mixin _$PersonsDaoMixin on DatabaseAccessor<Db> {}
+mixin _$PgLinksDaoMixin on DatabaseAccessor<Db> {}
+mixin _$TimesheetsDaoMixin on DatabaseAccessor<Db> {}
+mixin _$SettingsDaoMixin on DatabaseAccessor<Db> {}

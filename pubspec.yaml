@@ -12,7 +12,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   cupertino_icons:
-  injector:
   intl:
   sqflite:
   moor:

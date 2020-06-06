@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:timesheets/bloc.dart';
-import 'package:timesheets/database/database.dart';
+import 'package:timesheets/core/bloc.dart';
+import 'package:timesheets/db/db.dart';
 //import 'package:timesheets/widgets/timesheets_edit_dialog.dart';
 
 /// Карточка, на которой отображается пользователь
 /// и кнопка со значком для удаления этого пользователя из группы
 class TimesheetCard extends StatelessWidget {
   final PersonOfGroup personOfGroup;
-
   TimesheetCard(this.personOfGroup) : super(key: ObjectKey(personOfGroup.id));
 
   @override
@@ -43,10 +42,8 @@ class TimesheetCard extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.delete),
               color: Colors.red,
-              onPressed: () {
-                Provider.of<Bloc>(context).db.deletePersonFromGroup(
-                    personOfGroup: personOfGroup);
-              },
+              onPressed: () => Provider.of<Bloc>(context, listen: false)
+                  .db.pgLinksDao.del(personOfGroup)
             )
           ],
         ),
