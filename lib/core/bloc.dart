@@ -2,44 +2,72 @@ import 'package:timesheets/db/db.dart';
 import 'package:moor/moor.dart';
 import 'package:rxdart/rxdart.dart';
 
-/// Представление группы с признаком активности
-class GroupIsActive {
+/// Организация с признаком активности
+class ActiveOrganization {
+  Organization organization;
+  bool isActive;
+  ActiveOrganization(this.organization, this.isActive);
+}
+
+/// Группа с признаком активности
+class ActiveGroup {
   GroupView groupView;
   bool isActive;
-
-  GroupIsActive(this.groupView, this.isActive);
+  ActiveGroup(this.groupView, this.isActive);
 }
 
 /// Компонент бизнес логики (блок) приложения
 class Bloc {
   // База данных
   final Db db;
-  // Текущий период
-  final BehaviorSubject<DateTime> activePeriodStream = BehaviorSubject();
-  // Группа, которая выбрана в данный момент
+  // Активная организация
+  final BehaviorSubject<Organization> activeOrganizationStream = BehaviorSubject();
+  // Активная группа
   final BehaviorSubject<Group> activeGroupStream = BehaviorSubject();
-  // Список групп
-  final BehaviorSubject<List<GroupIsActive>> groupsStream = BehaviorSubject();
-  // Персоны в группе, которая выбрана в данный момент
-  Stream<List<PersonOfGroup>> personsInActiveGroupStream;
+  // Активный период
+  final BehaviorSubject<DateTime> activePeriodStream = BehaviorSubject();
+  // Группы активной организации
+  Stream<List<GroupView>> groupsStream;
+  // Организации с признаком активности
+  final BehaviorSubject<List<ActiveOrganization>> activeOrganizationsStream = BehaviorSubject();
+  // Группы с признаком активности
+  final BehaviorSubject<List<ActiveGroup>> activeGroupsStream = BehaviorSubject();
+  // Персоны активной группы
+  Stream<List<GroupPerson>> groupPersonsStream;
 
   // Конструктор блока
   Bloc() : db = Db() {
-    // Отслеживание активного периода из настройки
-    Rx.concat([db.settingsDao.watchActivePeriod()]).listen(activePeriodStream.add);
+    // Отслеживание активной организации из настройки
+    Rx.concat([db.settingsDao.watchActiveOrganization()])
+        .listen(activeOrganizationStream.add);
     // Отслеживание активной группы из настройки
-    Rx.concat([db.settingsDao.watchActiveGroup()]).listen(activeGroupStream.add);
-    // Отслеживание изменений в группе и отображение персон в ней
-    personsInActiveGroupStream = activeGroupStream.switchMap(db.pgLinksDao.watch);
-    // Отслеживание групп, чтобы они могли отображаться в дроувере
-    Rx.combineLatest2<List<GroupView>, Group, List<GroupIsActive>>(
-      db.groupsDao.watch(),
-      activeGroupStream,
-      (groups, selected) =>
-        groups.map((group) =>
-          GroupIsActive(group, selected?.id == group?.id)
-        ).toList()
-    ).listen(groupsStream.add);
+    Rx.concat([db.settingsDao.watchActiveGroup()])
+        .listen(activeGroupStream.add);
+    // Отслеживание активного периода из настройки
+    Rx.concat([db.settingsDao.watchActivePeriod()])
+        .listen(activePeriodStream.add);
+    // Отслеживание групп в активной организации
+    groupsStream = activeOrganizationStream.switchMap(db.groupsDao.watch);
+    // Формирование признака активности организаций
+    Rx.combineLatest2<List<Organization>, Organization, List<ActiveOrganization>>(
+        db.organizationsDao.watch(),
+        activeOrganizationStream,
+        (organizations, selected) =>
+            organizations.map((organization) =>
+                ActiveOrganization(organization, organization?.id == selected?.id)
+            ).toList()
+    ).listen(activeOrganizationsStream.add);
+    // Формирование признака активности групп
+    Rx.combineLatest2<List<GroupView>, Group, List<ActiveGroup>>(
+        groupsStream,
+        activeGroupStream,
+        (groups, selected) =>
+            groups.map((group) =>
+                ActiveGroup(group, group?.id == selected?.id)
+            ).toList()
+    ).listen(activeGroupsStream.add);
+    // Отслеживание персон в активной группе
+    groupPersonsStream = activeGroupStream.switchMap(db.pgLinksDao.watch);
   }
 
   // Отображение группы
@@ -65,8 +93,10 @@ class Bloc {
   // Освобождение ресурсов
   void close() {
     db.close();
-    activePeriodStream.close();
+    activeOrganizationStream.close();
     activeGroupStream.close();
-    groupsStream.close();
+    activePeriodStream.close();
+    activeOrganizationsStream.close();
+    activeGroupsStream.close();
   }
 }

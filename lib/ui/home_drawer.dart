@@ -4,7 +4,7 @@ import 'package:timesheets/core/bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/ui/add_group_dialog.dart';
 
-class GroupsDrawer extends StatelessWidget {
+class HomeDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Drawer(
     child: Column(
@@ -21,10 +21,10 @@ class GroupsDrawer extends StatelessWidget {
           decoration: BoxDecoration(color: Colors.lightBlue),
         ),
         Flexible(
-          child: StreamBuilder<List<GroupIsActive>>(
-            stream: Provider.of<Bloc>(context).groupsStream,
+          child: StreamBuilder<List<ActiveGroup>>(
+            stream: Provider.of<Bloc>(context).activeGroupsStream,
             builder: (context, snapshot) {
-              final groups = snapshot.data ?? <GroupIsActive>[];
+              final groups = snapshot.data ?? <ActiveGroup>[];
 
               return ListView.builder(
                 itemBuilder: (context, index) =>
@@ -56,7 +56,7 @@ class GroupsDrawer extends StatelessWidget {
 }
 
 class _GroupDrawerEntry extends StatelessWidget {
-  final GroupIsActive entry;
+  final ActiveGroup entry;
   const _GroupDrawerEntry({Key key, this.entry}) : super(key: key);
 
   @override
@@ -79,7 +79,7 @@ class _GroupDrawerEntry extends StatelessWidget {
     ];
     // Показывать кнопку удаления, если группа может быть удалена
     if (group != null && group.personCount == 0 &&
-        bloc.groupsStream.value.length > 1) {
+        bloc.activeGroupsStream.value.length > 1) {
       rowContent.addAll([
         const Spacer(),
         IconButton(
@@ -109,7 +109,7 @@ class _GroupDrawerEntry extends StatelessWidget {
               )
             );
             if (confirmed == true)
-              bloc.db.groupsDao.del(group);
+              bloc.db.groupsDao.remove(group);
           },
         ),
       ]);

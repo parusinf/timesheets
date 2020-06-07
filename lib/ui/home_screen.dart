@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart' as f show Column;
 import 'package:provider/provider.dart';
 import 'package:timesheets/core/bloc.dart';
 import 'package:timesheets/db/db.dart';
-import 'package:timesheets/ui/groups_drawer.dart';
+import 'package:timesheets/ui/home_drawer.dart';
 import 'package:timesheets/ui/timesheet_card.dart';
 import 'package:timesheets/core/l10n.dart';
 
@@ -29,9 +29,9 @@ class HomeScreenState extends State<HomeScreen> {
           Text(' ')
       )
     ),
-    drawer: GroupsDrawer(),
-    body: StreamBuilder<List<PersonOfGroup>>(
-      stream: bloc.personsInActiveGroupStream,
+    drawer: HomeDrawer(),
+    body: StreamBuilder<List<GroupPerson>>(
+      stream: bloc.groupPersonsStream,
       builder: (context, snapshot)  => snapshot.hasData ?
         ListView.builder(
             itemCount: snapshot.data.length,

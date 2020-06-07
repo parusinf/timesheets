@@ -60,9 +60,11 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
 
   /// Добавление группы
   void _addGroup() {
+    final organization = Organization(id: 1, name: 'Организация 1');
     final schedule = Schedule(id: 1, code: 'пн,вт,ср,чт,пт 12ч');
     if (_controller.text.isNotEmpty) {
       bloc.db.groupsDao.create(
+        organization: organization,
         name: _controller.text,
         schedule: schedule,
       );

@@ -1,3 +1,14 @@
+-- Организации
+CREATE TABLE organizations (
+  -- Идентификатор организации
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Наименование организации
+  name               TEXT NOT NULL,
+  -- ИНН
+  inn                TEXT
+);
+CREATE UNIQUE INDEX organizations_index ON organizations (name);
+
 -- Графики
 CREATE TABLE schedules (
   -- Идентификатор графика
@@ -24,6 +35,8 @@ CREATE UNIQUE INDEX schedule_days_index ON schedule_days (scheduleId, dayNumber)
 CREATE TABLE "groups" (
   -- Идентификатор группы
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Идентификатор организации
+  organizationId     INT NOT NULL REFERENCES organizations (id),
   -- Наименование группы
   name               TEXT NOT NULL,
   -- Идентификатор графика
@@ -40,9 +53,11 @@ CREATE TABLE persons (
   -- Имя
   name               TEXT NOT NULL,
   -- Отчество
-  middleName         TEXT
+  middleName         TEXT,
+  -- Дата рождения
+  birthday           DATE
 );
-CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName);
+CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName, birthday);
 
 -- Связи персон с группами
 CREATE TABLE pg_links (
@@ -83,32 +98,58 @@ CREATE TABLE settings (
 );
 CREATE UNIQUE INDEX settings_index ON settings (name);
 
+-- Предыдущая организация перед заданной
+_previousOrganization:
+SELECT *
+  FROM organizations
+ WHERE name =
+       (
+         SELECT MAX(name)
+           FROM organizations
+          WHERE name < :organizationName
+       );
+
+-- Первая группа организации в алфавитном порядке
+_firstOrganizationGroup:
+SELECT *
+  FROM "groups"
+ WHERE organizationId = :organizationId
+   AND name =
+       (
+         SELECT MIN(name)
+           FROM "groups"
+          WHERE organizationId = :organizationId
+       );
+
 -- Дни графика
 _daysInSchedule:
 SELECT *
   FROM schedule_days
  WHERE scheduleId = :scheduleId;
 
--- Предыдущая группа (в алфавитном порядке) перед заданной по наименованию
+-- Предыдущая группа перед заданной
 _previousGroup:
 SELECT *
   FROM "groups"
- WHERE name =
+ WHERE organizationId = :organizationId
+   AND name =
        (
          SELECT MAX(name)
            FROM "groups"
-          WHERE name < :name
+          WHERE name < :groupName
        );
 
--- Список групп с графиками и количеством персон
+-- Список групп огранизации с графиками и количеством персон
 _groupsView:
 SELECT G.id,
+       G.organizationId,
        G.name,
        G.scheduleId,
        S.code AS scheduleCode,
        CAST((SELECT COUNT(*) FROM pg_links WHERE groupId = G.id) AS INT) AS personCount
   FROM "groups" G
  INNER JOIN schedules S ON S.id = G.scheduleId
+ WHERE organizationId = :organizationId
  ORDER BY
        G.name,
        S.code;
@@ -119,14 +160,16 @@ SELECT L.id AS pgLinkId,
        L.personId,
        P.family,
        P.name,
-       P.middleName
+       P.middleName,
+       P.birthday
   FROM pg_links L
  INNER JOIN persons P ON P.id = L.personId
  WHERE L.groupId = :groupId
  ORDER BY
        P.family,
        P.name,
-       P.middleName;
+       P.middleName,
+       P.birthday;
 
 -- Посещаемость персоны в группе за период
 _timesheetsView:
@@ -134,6 +177,17 @@ SELECT *
   FROM timesheets
  WHERE pgLinkId = :pgLinkId
    AND attendanceDate BETWEEN date(:period, 'start of month') AND :period;
+
+-- Активная огранизации
+_activeOrganization:
+SELECT O.*
+  FROM settings S
+ INNER JOIN organizations O ON O.id = S.intValue
+ WHERE S.name = 'activeOrganization';
+
+-- Установка активной огранизации
+_setActiveOrganization:
+UPDATE settings SET intValue = :id WHERE name = 'activeOrganization';
 
 -- Активная группа
 _activeGroup:
@@ -144,7 +198,7 @@ SELECT G.*
 
 -- Установка активной группы
 _setActiveGroup:
-UPDATE settings SET intValue = :groupId WHERE name = 'activeGroup';
+UPDATE settings SET intValue = :id WHERE name = 'activeGroup';
 
 -- Активный период
 _activePeriod:

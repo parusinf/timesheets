@@ -7,7 +7,7 @@ import 'package:timesheets/db/db.dart';
 /// Карточка, на которой отображается пользователь
 /// и кнопка со значком для удаления этого пользователя из группы
 class TimesheetCard extends StatelessWidget {
-  final PersonOfGroup personOfGroup;
+  final GroupPerson personOfGroup;
   TimesheetCard(this.personOfGroup) : super(key: ObjectKey(personOfGroup.id));
 
   @override
@@ -43,7 +43,7 @@ class TimesheetCard extends StatelessWidget {
               icon: const Icon(Icons.delete),
               color: Colors.red,
               onPressed: () => Provider.of<Bloc>(context, listen: false)
-                  .db.pgLinksDao.del(personOfGroup)
+                  .db.pgLinksDao.remove(personOfGroup)
             )
           ],
         ),
