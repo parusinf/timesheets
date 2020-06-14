@@ -4,16 +4,7 @@ import 'package:timesheets/core/l10n.dart';
 import 'package:timesheets/core/bloc.dart';
 import 'package:timesheets/ui/add_group_dialog.dart';
 
-/// Дроувер домашнего экрана
-class HomeDrawer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Drawer(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        // Список организаций в заголовке дроувера
-        DrawerHeader(
-          child: /*Column(
+/*Column(
             children: <Widget>[
               // ОРГАНИЗАЦИИ    +
               Row(
@@ -33,20 +24,28 @@ class HomeDrawer extends StatelessWidget {
                   )
                 ]
               ),*/
-              // Список организаций
-              StreamBuilder<List<ActiveOrg>>(
-                stream: Provider.of<Bloc>(context).activeOrgsStream,
-                builder: (context, snapshot) {
-                  final orgs = snapshot.data ?? <ActiveOrg>[];
-                  return ListView.builder(
-                    itemBuilder: (context, index) =>
-                        _OrgDrawerEntry(entry: orgs[index]),
-                    itemCount: orgs.length,
-                  );
-                },
-              ),
-            //]
-          //),
+
+
+/// Дроувер домашнего экрана
+class HomeDrawer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Drawer(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        // Список организаций в заголовке дроувера
+        DrawerHeader(
+          child: StreamBuilder<List<ActiveOrg>>(
+            stream: Provider.of<Bloc>(context).activeOrgsStream,
+            builder: (context, snapshot) {
+              final orgs = snapshot.data ?? <ActiveOrg>[];
+              return ListView.builder(
+                itemBuilder: (context, index) =>
+                    _OrgDrawerEntry(entry: orgs[index]),
+                itemCount: orgs.length,
+              );
+            },
+          ),
         ),
         // Список групп активной организации
         Flexible(
@@ -55,9 +54,9 @@ class HomeDrawer extends StatelessWidget {
             builder: (context, snapshot) {
               final groups = snapshot.data ?? <ActiveGroup>[];
               return ListView.builder(
-                itemCount: groups.length,
                 itemBuilder: (context, index) =>
                     _GroupDrawerEntry(entry: groups[index]),
+                itemCount: groups.length,
               );
             },
           ),
@@ -88,23 +87,20 @@ class _OrgDrawerEntry extends StatelessWidget {
   const _OrgDrawerEntry({Key key, this.entry}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8),
-    child: Material(
-      color: entry.isActive
-          ? Colors.lightGreen.withOpacity(0.3) : Colors.transparent,
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: () {
-          Provider.of<Bloc>(context, listen: false).showOrg(entry.org);
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Text(
-            entry.org.name,
-            style: Theme.of(context).textTheme.bodyText2.copyWith(
-                color: entry.isActive ? Colors.black54 : Colors.black26),
-          ),
+  Widget build(BuildContext context) => Material(
+    color: entry.isActive
+        ? Colors.lightGreen.withOpacity(0.3) : Colors.transparent,
+    borderRadius: BorderRadius.circular(8),
+    child: InkWell(
+      onTap: () {
+        Provider.of<Bloc>(context, listen: false).showOrg(entry.org);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          entry.org.name,
+          style: Theme.of(context).textTheme.bodyText2.copyWith(
+              color: entry.isActive ? Colors.black54 : Colors.black26),
         ),
       ),
     ),
@@ -171,7 +167,7 @@ class _GroupDrawerEntry extends StatelessWidget {
       ]);
     }
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Material(
         color: entry.isActive
             ? Colors.lightBlue.withOpacity(0.3) : Colors.transparent,

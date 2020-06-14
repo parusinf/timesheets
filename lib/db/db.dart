@@ -92,7 +92,7 @@ class Db extends _$Db {
               code: 'пн,вт,ср,чт,пт 12ч',
               createDays: true);
           final org1 = await orgsDao.create(
-              name: 'Детсад №1 "Светлячок"',
+              name: 'МБДОУ д/с общеразвивающего типа №1 "Светлячок"',
               inn: '5001030102');
           settingsDao.setActiveOrg(org1);
           final group11 = await groupsDao.create(

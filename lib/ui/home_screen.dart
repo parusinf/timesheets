@@ -35,8 +35,8 @@ class HomeScreenState extends State<HomeScreen> {
       builder: (context, snapshot) {
         final persons = snapshot.data ?? <GroupPerson>[];
         return ListView.builder(
-            itemCount: snapshot.data.length,
             itemBuilder: (context, index) => TimesheetCard(persons[index]),
+            itemCount: persons.length,
         );
       }
     ),
