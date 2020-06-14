@@ -7,17 +7,17 @@ part of 'db.dart';
 // **************************************************************************
 
 // ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
-class Organization extends DataClass implements Insertable<Organization> {
+class Org extends DataClass implements Insertable<Org> {
   final int id;
   final String name;
   final String inn;
-  Organization({@required this.id, @required this.name, this.inn});
-  factory Organization.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+  Org({@required this.id, @required this.name, this.inn});
+  factory Org.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
-    return Organization(
+    return Org(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       inn: stringType.mapFromDatabaseResponse(data['${effectivePrefix}inn']),
@@ -38,18 +38,18 @@ class Organization extends DataClass implements Insertable<Organization> {
     return map;
   }
 
-  OrganizationsCompanion toCompanion(bool nullToAbsent) {
-    return OrganizationsCompanion(
+  OrgsCompanion toCompanion(bool nullToAbsent) {
+    return OrgsCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       inn: inn == null && nullToAbsent ? const Value.absent() : Value(inn),
     );
   }
 
-  factory Organization.fromJson(Map<String, dynamic> json,
+  factory Org.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
-    return Organization(
+    return Org(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       inn: serializer.fromJson<String>(json['inn']),
@@ -65,14 +65,14 @@ class Organization extends DataClass implements Insertable<Organization> {
     };
   }
 
-  Organization copyWith({int id, String name, String inn}) => Organization(
+  Org copyWith({int id, String name, String inn}) => Org(
         id: id ?? this.id,
         name: name ?? this.name,
         inn: inn ?? this.inn,
       );
   @override
   String toString() {
-    return (StringBuffer('Organization(')
+    return (StringBuffer('Org(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('inn: $inn')
@@ -86,27 +86,27 @@ class Organization extends DataClass implements Insertable<Organization> {
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
-      (other is Organization &&
+      (other is Org &&
           other.id == this.id &&
           other.name == this.name &&
           other.inn == this.inn);
 }
 
-class OrganizationsCompanion extends UpdateCompanion<Organization> {
+class OrgsCompanion extends UpdateCompanion<Org> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> inn;
-  const OrganizationsCompanion({
+  const OrgsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.inn = const Value.absent(),
   });
-  OrganizationsCompanion.insert({
+  OrgsCompanion.insert({
     this.id = const Value.absent(),
     @required String name,
     this.inn = const Value.absent(),
   }) : name = Value(name);
-  static Insertable<Organization> custom({
+  static Insertable<Org> custom({
     Expression<int> id,
     Expression<String> name,
     Expression<String> inn,
@@ -118,9 +118,9 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
     });
   }
 
-  OrganizationsCompanion copyWith(
+  OrgsCompanion copyWith(
       {Value<int> id, Value<String> name, Value<String> inn}) {
-    return OrganizationsCompanion(
+    return OrgsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       inn: inn ?? this.inn,
@@ -143,10 +143,10 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
   }
 }
 
-class Organizations extends Table with TableInfo<Organizations, Organization> {
+class Orgs extends Table with TableInfo<Orgs, Org> {
   final GeneratedDatabase _db;
   final String _alias;
-  Organizations(this._db, [this._alias]);
+  Orgs(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedIntColumn _id;
   GeneratedIntColumn get id => _id ??= _constructId();
@@ -175,13 +175,13 @@ class Organizations extends Table with TableInfo<Organizations, Organization> {
   @override
   List<GeneratedColumn> get $columns => [id, name, inn];
   @override
-  Organizations get asDslTable => this;
+  Orgs get asDslTable => this;
   @override
-  String get $tableName => _alias ?? 'organizations';
+  String get $tableName => _alias ?? 'orgs';
   @override
-  final String actualTableName = 'organizations';
+  final String actualTableName = 'orgs';
   @override
-  VerificationContext validateIntegrity(Insertable<Organization> instance,
+  VerificationContext validateIntegrity(Insertable<Org> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -204,14 +204,14 @@ class Organizations extends Table with TableInfo<Organizations, Organization> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Organization map(Map<String, dynamic> data, {String tablePrefix}) {
+  Org map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Organization.fromData(data, _db, prefix: effectivePrefix);
+    return Org.fromData(data, _db, prefix: effectivePrefix);
   }
 
   @override
-  Organizations createAlias(String alias) {
-    return Organizations(_db, alias);
+  Orgs createAlias(String alias) {
+    return Orgs(_db, alias);
   }
 
   @override
@@ -668,12 +668,12 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
 
 class Group extends DataClass implements Insertable<Group> {
   final int id;
-  final int organizationId;
+  final int orgId;
   final String name;
   final int scheduleId;
   Group(
       {@required this.id,
-      @required this.organizationId,
+      @required this.orgId,
       @required this.name,
       @required this.scheduleId});
   factory Group.fromData(Map<String, dynamic> data, GeneratedDatabase db,
@@ -683,8 +683,7 @@ class Group extends DataClass implements Insertable<Group> {
     final stringType = db.typeSystem.forDartType<String>();
     return Group(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      organizationId: intType
-          .mapFromDatabaseResponse(data['${effectivePrefix}organizationId']),
+      orgId: intType.mapFromDatabaseResponse(data['${effectivePrefix}orgId']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       scheduleId:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}scheduleId']),
@@ -696,8 +695,8 @@ class Group extends DataClass implements Insertable<Group> {
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<int>(id);
     }
-    if (!nullToAbsent || organizationId != null) {
-      map['organizationId'] = Variable<int>(organizationId);
+    if (!nullToAbsent || orgId != null) {
+      map['orgId'] = Variable<int>(orgId);
     }
     if (!nullToAbsent || name != null) {
       map['name'] = Variable<String>(name);
@@ -711,9 +710,8 @@ class Group extends DataClass implements Insertable<Group> {
   GroupsCompanion toCompanion(bool nullToAbsent) {
     return GroupsCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
-      organizationId: organizationId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(organizationId),
+      orgId:
+          orgId == null && nullToAbsent ? const Value.absent() : Value(orgId),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       scheduleId: scheduleId == null && nullToAbsent
           ? const Value.absent()
@@ -726,7 +724,7 @@ class Group extends DataClass implements Insertable<Group> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Group(
       id: serializer.fromJson<int>(json['id']),
-      organizationId: serializer.fromJson<int>(json['organizationId']),
+      orgId: serializer.fromJson<int>(json['orgId']),
       name: serializer.fromJson<String>(json['name']),
       scheduleId: serializer.fromJson<int>(json['scheduleId']),
     );
@@ -736,16 +734,15 @@ class Group extends DataClass implements Insertable<Group> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'organizationId': serializer.toJson<int>(organizationId),
+      'orgId': serializer.toJson<int>(orgId),
       'name': serializer.toJson<String>(name),
       'scheduleId': serializer.toJson<int>(scheduleId),
     };
   }
 
-  Group copyWith({int id, int organizationId, String name, int scheduleId}) =>
-      Group(
+  Group copyWith({int id, int orgId, String name, int scheduleId}) => Group(
         id: id ?? this.id,
-        organizationId: organizationId ?? this.organizationId,
+        orgId: orgId ?? this.orgId,
         name: name ?? this.name,
         scheduleId: scheduleId ?? this.scheduleId,
       );
@@ -753,7 +750,7 @@ class Group extends DataClass implements Insertable<Group> {
   String toString() {
     return (StringBuffer('Group(')
           ..write('id: $id, ')
-          ..write('organizationId: $organizationId, ')
+          ..write('orgId: $orgId, ')
           ..write('name: $name, ')
           ..write('scheduleId: $scheduleId')
           ..write(')'))
@@ -761,48 +758,46 @@ class Group extends DataClass implements Insertable<Group> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(
-      id.hashCode,
-      $mrjc(
-          organizationId.hashCode, $mrjc(name.hashCode, scheduleId.hashCode))));
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(orgId.hashCode, $mrjc(name.hashCode, scheduleId.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Group &&
           other.id == this.id &&
-          other.organizationId == this.organizationId &&
+          other.orgId == this.orgId &&
           other.name == this.name &&
           other.scheduleId == this.scheduleId);
 }
 
 class GroupsCompanion extends UpdateCompanion<Group> {
   final Value<int> id;
-  final Value<int> organizationId;
+  final Value<int> orgId;
   final Value<String> name;
   final Value<int> scheduleId;
   const GroupsCompanion({
     this.id = const Value.absent(),
-    this.organizationId = const Value.absent(),
+    this.orgId = const Value.absent(),
     this.name = const Value.absent(),
     this.scheduleId = const Value.absent(),
   });
   GroupsCompanion.insert({
     this.id = const Value.absent(),
-    @required int organizationId,
+    @required int orgId,
     @required String name,
     @required int scheduleId,
-  })  : organizationId = Value(organizationId),
+  })  : orgId = Value(orgId),
         name = Value(name),
         scheduleId = Value(scheduleId);
   static Insertable<Group> custom({
     Expression<int> id,
-    Expression<int> organizationId,
+    Expression<int> orgId,
     Expression<String> name,
     Expression<int> scheduleId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (organizationId != null) 'organizationId': organizationId,
+      if (orgId != null) 'orgId': orgId,
       if (name != null) 'name': name,
       if (scheduleId != null) 'scheduleId': scheduleId,
     });
@@ -810,12 +805,12 @@ class GroupsCompanion extends UpdateCompanion<Group> {
 
   GroupsCompanion copyWith(
       {Value<int> id,
-      Value<int> organizationId,
+      Value<int> orgId,
       Value<String> name,
       Value<int> scheduleId}) {
     return GroupsCompanion(
       id: id ?? this.id,
-      organizationId: organizationId ?? this.organizationId,
+      orgId: orgId ?? this.orgId,
       name: name ?? this.name,
       scheduleId: scheduleId ?? this.scheduleId,
     );
@@ -827,8 +822,8 @@ class GroupsCompanion extends UpdateCompanion<Group> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (organizationId.present) {
-      map['organizationId'] = Variable<int>(organizationId.value);
+    if (orgId.present) {
+      map['orgId'] = Variable<int>(orgId.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -854,14 +849,12 @@ class Groups extends Table with TableInfo<Groups, Group> {
         $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   }
 
-  final VerificationMeta _organizationIdMeta =
-      const VerificationMeta('organizationId');
-  GeneratedIntColumn _organizationId;
-  GeneratedIntColumn get organizationId =>
-      _organizationId ??= _constructOrganizationId();
-  GeneratedIntColumn _constructOrganizationId() {
-    return GeneratedIntColumn('organizationId', $tableName, false,
-        $customConstraints: 'NOT NULL REFERENCES organizations (id)');
+  final VerificationMeta _orgIdMeta = const VerificationMeta('orgId');
+  GeneratedIntColumn _orgId;
+  GeneratedIntColumn get orgId => _orgId ??= _constructOrgId();
+  GeneratedIntColumn _constructOrgId() {
+    return GeneratedIntColumn('orgId', $tableName, false,
+        $customConstraints: 'NOT NULL REFERENCES orgs (id)');
   }
 
   final VerificationMeta _nameMeta = const VerificationMeta('name');
@@ -881,7 +874,7 @@ class Groups extends Table with TableInfo<Groups, Group> {
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, organizationId, name, scheduleId];
+  List<GeneratedColumn> get $columns => [id, orgId, name, scheduleId];
   @override
   Groups get asDslTable => this;
   @override
@@ -896,13 +889,11 @@ class Groups extends Table with TableInfo<Groups, Group> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
     }
-    if (data.containsKey('organizationId')) {
+    if (data.containsKey('orgId')) {
       context.handle(
-          _organizationIdMeta,
-          organizationId.isAcceptableOrUnknown(
-              data['organizationId'], _organizationIdMeta));
+          _orgIdMeta, orgId.isAcceptableOrUnknown(data['orgId'], _orgIdMeta));
     } else if (isInserting) {
-      context.missing(_organizationIdMeta);
+      context.missing(_orgIdMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -2060,12 +2051,11 @@ class Settings extends Table with TableInfo<Settings, Setting> {
 
 abstract class _$Db extends GeneratedDatabase {
   _$Db(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
-  Organizations _organizations;
-  Organizations get organizations => _organizations ??= Organizations(this);
-  Index _organizationsIndex;
-  Index get organizationsIndex => _organizationsIndex ??= Index(
-      'organizations_index',
-      'CREATE UNIQUE INDEX organizations_index ON organizations (name);');
+  Orgs _orgs;
+  Orgs get orgs => _orgs ??= Orgs(this);
+  Index _orgsIndex;
+  Index get orgsIndex => _orgsIndex ??=
+      Index('orgs_index', 'CREATE UNIQUE INDEX orgs_index ON orgs (name);');
   Schedules _schedules;
   Schedules get schedules => _schedules ??= Schedules(this);
   Index _schedulesIndex;
@@ -2081,7 +2071,7 @@ abstract class _$Db extends GeneratedDatabase {
   Groups get groups => _groups ??= Groups(this);
   Index _groupsIndex;
   Index get groupsIndex => _groupsIndex ??= Index('groups_index',
-      'CREATE UNIQUE INDEX groups_index ON "groups" (name, scheduleId);');
+      'CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name, scheduleId);');
   Persons _persons;
   Persons get persons => _persons ??= Persons(this);
   Index _personsIndex;
@@ -2102,9 +2092,8 @@ abstract class _$Db extends GeneratedDatabase {
   Index _settingsIndex;
   Index get settingsIndex => _settingsIndex ??= Index('settings_index',
       'CREATE UNIQUE INDEX settings_index ON settings (name);');
-  OrganizationsDao _organizationsDao;
-  OrganizationsDao get organizationsDao =>
-      _organizationsDao ??= OrganizationsDao(this as Db);
+  OrgsDao _orgsDao;
+  OrgsDao get orgsDao => _orgsDao ??= OrgsDao(this as Db);
   SchedulesDao _schedulesDao;
   SchedulesDao get schedulesDao => _schedulesDao ??= SchedulesDao(this as Db);
   ScheduleDaysDao _scheduleDaysDao;
@@ -2121,34 +2110,34 @@ abstract class _$Db extends GeneratedDatabase {
       _timesheetsDao ??= TimesheetsDao(this as Db);
   SettingsDao _settingsDao;
   SettingsDao get settingsDao => _settingsDao ??= SettingsDao(this as Db);
-  Organization _rowToOrganization(QueryRow row) {
-    return Organization(
+  Org _rowToOrg(QueryRow row) {
+    return Org(
       id: row.readInt('id'),
       name: row.readString('name'),
       inn: row.readString('inn'),
     );
   }
 
-  Selectable<Organization> _previousOrganization(String organizationName) {
+  Selectable<Org> _previousOrg(String orgName) {
     return customSelect(
-        'SELECT *\n  FROM organizations\n WHERE name =\n       (\n         SELECT MAX(name)\n           FROM organizations\n          WHERE name < :organizationName\n       )',
-        variables: [Variable.withString(organizationName)],
-        readsFrom: {organizations}).map(_rowToOrganization);
+        'SELECT *\n  FROM orgs\n WHERE name =\n       (\n         SELECT MAX(name)\n           FROM orgs\n          WHERE name < :orgName\n       )',
+        variables: [Variable.withString(orgName)],
+        readsFrom: {orgs}).map(_rowToOrg);
   }
 
   Group _rowToGroup(QueryRow row) {
     return Group(
       id: row.readInt('id'),
-      organizationId: row.readInt('organizationId'),
+      orgId: row.readInt('orgId'),
       name: row.readString('name'),
       scheduleId: row.readInt('scheduleId'),
     );
   }
 
-  Selectable<Group> _firstOrganizationGroup(int organizationId) {
+  Selectable<Group> _firstOrgGroup(int orgId) {
     return customSelect(
-        'SELECT *\n  FROM "groups"\n WHERE organizationId = :organizationId\n   AND name =\n       (\n         SELECT MIN(name)\n           FROM "groups"\n          WHERE organizationId = :organizationId\n       )',
-        variables: [Variable.withInt(organizationId)],
+        'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MIN(name)\n           FROM "groups"\n          WHERE orgId = :orgId\n       )',
+        variables: [Variable.withInt(orgId)],
         readsFrom: {groups}).map(_rowToGroup);
   }
 
@@ -2168,22 +2157,17 @@ abstract class _$Db extends GeneratedDatabase {
         readsFrom: {scheduleDays}).map(_rowToScheduleDay);
   }
 
-  Selectable<Group> _previousGroup(int organizationId, String groupName) {
+  Selectable<Group> _previousGroup(int orgId, String groupName) {
     return customSelect(
-        'SELECT *\n  FROM "groups"\n WHERE organizationId = :organizationId\n   AND name =\n       (\n         SELECT MAX(name)\n           FROM "groups"\n          WHERE name < :groupName\n       )',
-        variables: [
-          Variable.withInt(organizationId),
-          Variable.withString(groupName)
-        ],
-        readsFrom: {
-          groups
-        }).map(_rowToGroup);
+        'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MAX(name)\n           FROM "groups"\n          WHERE name < :groupName\n       )',
+        variables: [Variable.withInt(orgId), Variable.withString(groupName)],
+        readsFrom: {groups}).map(_rowToGroup);
   }
 
   GroupsViewResult _rowToGroupsViewResult(QueryRow row) {
     return GroupsViewResult(
       id: row.readInt('id'),
-      organizationId: row.readInt('organizationId'),
+      orgId: row.readInt('orgId'),
       name: row.readString('name'),
       scheduleId: row.readInt('scheduleId'),
       scheduleCode: row.readString('scheduleCode'),
@@ -2191,10 +2175,10 @@ abstract class _$Db extends GeneratedDatabase {
     );
   }
 
-  Selectable<GroupsViewResult> _groupsView(int organizationId) {
+  Selectable<GroupsViewResult> _groupsView(int orgId) {
     return customSelect(
-        'SELECT G.id,\n       G.organizationId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       CAST((SELECT COUNT(*) FROM pg_links WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE organizationId = :organizationId\n ORDER BY\n       G.name,\n       S.code',
-        variables: [Variable.withInt(organizationId)],
+        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       CAST((SELECT COUNT(*) FROM pg_links WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
+        variables: [Variable.withInt(orgId)],
         readsFrom: {groups, schedules, pgLinks}).map(_rowToGroupsViewResult);
   }
 
@@ -2232,16 +2216,16 @@ abstract class _$Db extends GeneratedDatabase {
         readsFrom: {timesheets}).map(_rowToTimesheet);
   }
 
-  Selectable<Organization> _activeOrganization() {
+  Selectable<Org> _activeOrg() {
     return customSelect(
-        'SELECT O.*\n  FROM settings S\n INNER JOIN organizations O ON O.id = S.intValue\n WHERE S.name = \'activeOrganization\'',
+        'SELECT O.*\n  FROM settings S\n INNER JOIN orgs O ON O.id = S.intValue\n WHERE S.name = \'activeOrg\'',
         variables: [],
-        readsFrom: {settings, organizations}).map(_rowToOrganization);
+        readsFrom: {settings, orgs}).map(_rowToOrg);
   }
 
-  Future<int> _setActiveOrganization(int id) {
+  Future<int> _setActiveOrg(int id) {
     return customUpdate(
-      'UPDATE settings SET intValue = :id WHERE name = \'activeOrganization\'',
+      'UPDATE settings SET intValue = :id WHERE name = \'activeOrg\'',
       variables: [Variable.withInt(id)],
       updates: {settings},
       updateKind: UpdateKind.update,
@@ -2286,8 +2270,8 @@ abstract class _$Db extends GeneratedDatabase {
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-        organizations,
-        organizationsIndex,
+        orgs,
+        orgsIndex,
         schedules,
         schedulesIndex,
         scheduleDays,
@@ -2319,14 +2303,14 @@ abstract class _$Db extends GeneratedDatabase {
 
 class GroupsViewResult {
   final int id;
-  final int organizationId;
+  final int orgId;
   final String name;
   final int scheduleId;
   final String scheduleCode;
   final int personCount;
   GroupsViewResult({
     this.id,
-    this.organizationId,
+    this.orgId,
     this.name,
     this.scheduleId,
     this.scheduleCode,
@@ -2355,7 +2339,7 @@ class PersonsInGroupResult {
 // DaoGenerator
 // **************************************************************************
 
-mixin _$OrganizationsDaoMixin on DatabaseAccessor<Db> {}
+mixin _$OrgsDaoMixin on DatabaseAccessor<Db> {}
 mixin _$SchedulesDaoMixin on DatabaseAccessor<Db> {}
 mixin _$ScheduleDaysDaoMixin on DatabaseAccessor<Db> {}
 mixin _$GroupsDaoMixin on DatabaseAccessor<Db> {}

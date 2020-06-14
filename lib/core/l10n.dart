@@ -12,47 +12,37 @@ class L10n {
 
   static const Map<String, Map<String, String>> _l10n = {
     'ru': {
-      'title': 'Табели',
-      'ok': 'OK',
-      'cancel': 'ОТМЕНА',
-      'groups': 'Группы',
       'addGroup': 'Добавить группу',
+      'addingOfGroup': 'Добавление группы',
+      'cancel': 'ОТМЕНА',
+      'deleteGroup': 'Удалить группу',
+      'deleting': 'Удаление',
+      'fio': 'ФИО',
+      'groupName': 'Наименование группы',
+      'groups': 'Группы',
+      'inn': 'ИНН',
+      'ok': 'OK',
+      'organizations': 'ОРГАНИЗАЦИИ',
       'personCount': 'человек',
       'personCount234': 'человека',
-      'deleting': 'Удаление',
-      'deleteGroup': 'Удалить группу',
-      'fio': 'ФИО',
-      'addingOfGroup': 'Добавление группы',
-      'groupName': 'Наименование группы',
-    },
-    'en': {
-      'title': 'Timesheet',
-      'ok': 'OK',
-      'cancel': 'CANCEL',
-      'groups': 'Groups',
-      'addGroup': 'Add group',
-      'personCount': 'persons',
-      'personCount234': 'persons',
-      'deleting': 'Deleting',
-      'deleteGroup': 'Delete group',
-      'fio': 'Family Name',
-      'addingOfGroup': 'Adding of group',
-      'groupName': 'Group name',
-    },
+      'title': 'Табели',
+    }
   };
 
-  get title => _l10n[locale.languageCode]['title'];
-  get ok => _l10n[locale.languageCode]['ok'];
-  get cancel => _l10n[locale.languageCode]['cancel'];
-  get groups => _l10n[locale.languageCode]['groups'];
   get addGroup => _l10n[locale.languageCode]['addGroup'];
+  get addingOfGroup => _l10n[locale.languageCode]['addingOfGroup'];
+  get cancel => _l10n[locale.languageCode]['cancel'];
+  get deleteGroup => _l10n[locale.languageCode]['deleteGroup'];
+  get deleting => _l10n[locale.languageCode]['deleting'];
+  get fio => _l10n[locale.languageCode]['fio'];
+  get groupName => _l10n[locale.languageCode]['groupName'];
+  get groups => _l10n[locale.languageCode]['groups'];
+  get inn => _l10n[locale.languageCode]['inn'];
+  get ok => _l10n[locale.languageCode]['ok'];
+  get organizations => _l10n[locale.languageCode]['organizations'];
   get personCount => _l10n[locale.languageCode]['personCount'];
   get personCount234 => _l10n[locale.languageCode]['personCount234'];
-  get deleting => _l10n[locale.languageCode]['deleting'];
-  get deleteGroup => _l10n[locale.languageCode]['deleteGroup'];
-  get fio => _l10n[locale.languageCode]['fio'];
-  get addingOfGroup => _l10n[locale.languageCode]['addingOfGroup'];
-  get groupName => _l10n[locale.languageCode]['groupName'];
+  get title => _l10n[locale.languageCode]['title'];
 }
 
 class L10nDelegate extends LocalizationsDelegate<L10n> {

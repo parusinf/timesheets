@@ -1,5 +1,5 @@
 -- Организации
-CREATE TABLE organizations (
+CREATE TABLE orgs (
   -- Идентификатор организации
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Наименование организации
@@ -7,7 +7,7 @@ CREATE TABLE organizations (
   -- ИНН
   inn                TEXT
 );
-CREATE UNIQUE INDEX organizations_index ON organizations (name);
+CREATE UNIQUE INDEX orgs_index ON orgs (name);
 
 -- Графики
 CREATE TABLE schedules (
@@ -36,13 +36,13 @@ CREATE TABLE "groups" (
   -- Идентификатор группы
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор организации
-  organizationId     INT NOT NULL REFERENCES organizations (id),
+  orgId     INT NOT NULL REFERENCES orgs (id),
   -- Наименование группы
   name               TEXT NOT NULL,
   -- Идентификатор графика
   scheduleId         INT NOT NULL REFERENCES schedules (id)
 );
-CREATE UNIQUE INDEX groups_index ON "groups" (name, scheduleId);
+CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name, scheduleId);
 
 -- Персоны
 CREATE TABLE persons (
@@ -99,26 +99,26 @@ CREATE TABLE settings (
 CREATE UNIQUE INDEX settings_index ON settings (name);
 
 -- Предыдущая организация перед заданной
-_previousOrganization:
+_previousOrg:
 SELECT *
-  FROM organizations
+  FROM orgs
  WHERE name =
        (
          SELECT MAX(name)
-           FROM organizations
-          WHERE name < :organizationName
+           FROM orgs
+          WHERE name < :orgName
        );
 
 -- Первая группа организации в алфавитном порядке
-_firstOrganizationGroup:
+_firstOrgGroup:
 SELECT *
   FROM "groups"
- WHERE organizationId = :organizationId
+ WHERE orgId = :orgId
    AND name =
        (
          SELECT MIN(name)
            FROM "groups"
-          WHERE organizationId = :organizationId
+          WHERE orgId = :orgId
        );
 
 -- Дни графика
@@ -131,7 +131,7 @@ SELECT *
 _previousGroup:
 SELECT *
   FROM "groups"
- WHERE organizationId = :organizationId
+ WHERE orgId = :orgId
    AND name =
        (
          SELECT MAX(name)
@@ -142,14 +142,14 @@ SELECT *
 -- Список групп огранизации с графиками и количеством персон
 _groupsView:
 SELECT G.id,
-       G.organizationId,
+       G.orgId,
        G.name,
        G.scheduleId,
        S.code AS scheduleCode,
        CAST((SELECT COUNT(*) FROM pg_links WHERE groupId = G.id) AS INT) AS personCount
   FROM "groups" G
  INNER JOIN schedules S ON S.id = G.scheduleId
- WHERE organizationId = :organizationId
+ WHERE orgId = :orgId
  ORDER BY
        G.name,
        S.code;
@@ -179,15 +179,15 @@ SELECT *
    AND attendanceDate BETWEEN date(:period, 'start of month') AND :period;
 
 -- Активная огранизации
-_activeOrganization:
+_activeOrg:
 SELECT O.*
   FROM settings S
- INNER JOIN organizations O ON O.id = S.intValue
- WHERE S.name = 'activeOrganization';
+ INNER JOIN orgs O ON O.id = S.intValue
+ WHERE S.name = 'activeOrg';
 
 -- Установка активной огранизации
-_setActiveOrganization:
-UPDATE settings SET intValue = :id WHERE name = 'activeOrganization';
+_setActiveOrg:
+UPDATE settings SET intValue = :id WHERE name = 'activeOrg';
 
 -- Активная группа
 _activeGroup:

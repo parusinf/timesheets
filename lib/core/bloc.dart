@@ -3,10 +3,10 @@ import 'package:moor/moor.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// Организация с признаком активности
-class ActiveOrganization {
-  Organization organization;
+class ActiveOrg {
+  Org org;
   bool isActive;
-  ActiveOrganization(this.organization, this.isActive);
+  ActiveOrg(this.org, this.isActive);
 }
 
 /// Группа с признаком активности
@@ -21,7 +21,7 @@ class Bloc {
   // База данных
   final Db db;
   // Активная организация
-  final BehaviorSubject<Organization> activeOrganizationStream = BehaviorSubject();
+  final BehaviorSubject<Org> activeOrgStream = BehaviorSubject();
   // Активная группа
   final BehaviorSubject<Group> activeGroupStream = BehaviorSubject();
   // Активный период
@@ -29,7 +29,7 @@ class Bloc {
   // Группы активной организации
   Stream<List<GroupView>> groupsStream;
   // Организации с признаком активности
-  final BehaviorSubject<List<ActiveOrganization>> activeOrganizationsStream = BehaviorSubject();
+  final BehaviorSubject<List<ActiveOrg>> activeOrgsStream = BehaviorSubject();
   // Группы с признаком активности
   final BehaviorSubject<List<ActiveGroup>> activeGroupsStream = BehaviorSubject();
   // Персоны активной группы
@@ -38,8 +38,8 @@ class Bloc {
   // Конструктор блока
   Bloc() : db = Db() {
     // Отслеживание активной организации из настройки
-    Rx.concat([db.settingsDao.watchActiveOrganization()])
-        .listen(activeOrganizationStream.add);
+    Rx.concat([db.settingsDao.watchActiveOrg()])
+        .listen(activeOrgStream.add);
     // Отслеживание активной группы из настройки
     Rx.concat([db.settingsDao.watchActiveGroup()])
         .listen(activeGroupStream.add);
@@ -47,16 +47,16 @@ class Bloc {
     Rx.concat([db.settingsDao.watchActivePeriod()])
         .listen(activePeriodStream.add);
     // Отслеживание групп в активной организации
-    groupsStream = activeOrganizationStream.switchMap(db.groupsDao.watch);
+    groupsStream = activeOrgStream.switchMap(db.groupsDao.watch);
     // Формирование признака активности организаций
-    Rx.combineLatest2<List<Organization>, Organization, List<ActiveOrganization>>(
-        db.organizationsDao.watch(),
-        activeOrganizationStream,
-        (organizations, selected) =>
-            organizations.map((organization) =>
-                ActiveOrganization(organization, organization?.id == selected?.id)
+    Rx.combineLatest2<List<Org>, Org, List<ActiveOrg>>(
+        db.orgsDao.watch(),
+        activeOrgStream,
+        (orgs, selected) =>
+            orgs.map((org) =>
+                ActiveOrg(org, org?.id == selected?.id)
             ).toList()
-    ).listen(activeOrganizationsStream.add);
+    ).listen(activeOrgsStream.add);
     // Формирование признака активности групп
     Rx.combineLatest2<List<GroupView>, Group, List<ActiveGroup>>(
         groupsStream,
@@ -68,6 +68,12 @@ class Bloc {
     ).listen(activeGroupsStream.add);
     // Отслеживание персон в активной группе
     groupPersonsStream = activeGroupStream.switchMap(db.pgLinksDao.watch);
+  }
+
+  // Отображение организации
+  void showOrg(Org org) {
+    activeOrgStream.add(org);
+    db.settingsDao.setActiveOrg(org);
   }
 
   // Отображение группы
@@ -93,10 +99,10 @@ class Bloc {
   // Освобождение ресурсов
   void close() {
     db.close();
-    activeOrganizationStream.close();
+    activeOrgStream.close();
     activeGroupStream.close();
     activePeriodStream.close();
-    activeOrganizationsStream.close();
+    activeOrgsStream.close();
     activeGroupsStream.close();
   }
 }

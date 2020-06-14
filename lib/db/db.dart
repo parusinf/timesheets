@@ -15,13 +15,13 @@ class GroupView extends Group {
 
   GroupView({
     @required int id,
-    @required int organizationId,
+    @required int orgId,
     @required String name,
     @required this.schedule,
     this.personCount = 0,
   }) : super(
       id: id,
-      organizationId: organizationId,
+      orgId: orgId,
       name: name,
       scheduleId: schedule.id
   );
@@ -51,7 +51,7 @@ class GroupPerson extends Person {
 @UseMoor(
   include: {'model.moor'},
   tables: [
-    Organizations, // Организации
+    Orgs, // Организации
     Schedules,     // Графики
     ScheduleDays,  // Дни графиков
     Groups,        // Группы
@@ -61,7 +61,7 @@ class GroupPerson extends Person {
     Settings,      // Настройки
   ],
   daos: [
-    OrganizationsDao,
+    OrgsDao,
     SchedulesDao,
     ScheduleDaysDao,
     GroupsDao,
@@ -91,32 +91,46 @@ class Db extends _$Db {
           final schedule = await schedulesDao.create(
               code: 'пн,вт,ср,чт,пт 12ч',
               createDays: true);
-          final organization1 = await organizationsDao
-              .create(name: 'Организация 1');
-          settingsDao.setActiveOrganization(organization1);
-          final group1 = await groupsDao.create(
-              organization: organization1,
+          final org1 = await orgsDao.create(
+              name: 'Детсад №1 "Светлячок"',
+              inn: '5001030102');
+          settingsDao.setActiveOrg(org1);
+          final group11 = await groupsDao.create(
+              org: org1,
               name: 'Группа 1',
               schedule: schedule
           );
-          settingsDao.setActiveGroup(group1);
+          settingsDao.setActiveGroup(group11);
           pgLinksDao.create(
               person: await personsDao.create(
-                  family: 'Шишкин',
-                  name: 'Константин'
+                family: 'Акульшин',
+                name: 'Роман',
+                middleName: 'Андреевич',
+                birthday: DateTime(2016, 08, 23),
               ),
-              group: group1);
+              group: group11);
           pgLinksDao.create(
               person: await personsDao.create(
-                  family: 'Малеев',
-                  name: 'Виктор'
+                family: 'Алиева',
+                name: 'Амина-Хатун',
+                middleName: 'Кенатовна',
+                birthday: DateTime(2016, 12, 23),
               ),
-              group: group1);
+              group: group11);
           groupsDao.create(
-              organization: organization1,
+              org: org1,
               name: 'Группа 2',
               schedule: schedule
           );
+          final org2 = await orgsDao
+              .create(name: 'Детсад №2', inn: '5001101025');
+          await groupsDao.create(
+              org: org2,
+              name: 'Группа 1',
+              schedule: schedule
+          );
+          await orgsDao
+              .create(name: 'Детсад №3 "Рябинка"', inn: '5001044433');
         });
       }
       customStatement('PRAGMA foreign_keys = ON');
@@ -134,22 +148,22 @@ LazyDatabase _openConnection() => LazyDatabase(() async {
 });
 
 // Организации -----------------------------------------------------------------
-@UseDao(tables: [Organizations])
-class OrganizationsDao extends DatabaseAccessor<Db> with _$OrganizationsDaoMixin {
-  OrganizationsDao(Db db) : super(db);
+@UseDao(tables: [Orgs])
+class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
+  OrgsDao(Db db) : super(db);
 
   /// Создание организации
-  Future<Organization> create({
+  Future<Org> create({
     @required String name,
     String inn,
   }) async {
-    final id = await into(db.organizations).insert(
-        OrganizationsCompanion(
+    final id = await into(db.orgs).insert(
+        OrgsCompanion(
           name: Value(name),
           inn: Value(inn),
         )
     );
-    return Organization(
+    return Org(
       id: id,
       name: name,
       inn: inn,
@@ -157,9 +171,9 @@ class OrganizationsDao extends DatabaseAccessor<Db> with _$OrganizationsDaoMixin
   }
 
   /// Предыдущая организация перед заданной
-  Future<Organization> _getPreviousOrganization(String name) =>
-      db._previousOrganization(name).map((row) =>
-          Organization(
+  Future<Org> _getPreviousOrg(String name) =>
+      db._previousOrg(name).map((row) =>
+          Org(
             id: row.id,
             name: row.name,
             inn: row.inn,
@@ -167,20 +181,20 @@ class OrganizationsDao extends DatabaseAccessor<Db> with _$OrganizationsDaoMixin
       ).getSingle();
 
   /// Удаление организации
-  void remove(Organization organization) async {
-    final activeOrganization = await db.settingsDao.getActiveOrganization();
-    if (organization.id == activeOrganization.id) {
-      final previousOrganization =
-        await _getPreviousOrganization(organization.name);
-      db.settingsDao.setActiveOrganization(previousOrganization);
+  void remove(Org org) async {
+    final activeOrg = await db.settingsDao.getActiveOrg();
+    if (org.id == activeOrg.id) {
+      final previousOrg =
+        await _getPreviousOrg(org.name);
+      db.settingsDao.setActiveOrg(previousOrg);
       db.settingsDao.setActiveGroup(await db.groupsDao
-          .getFirstOrganizationGroup(previousOrganization));
+          .getFirstOrgGroup(previousOrg));
     }
-    delete(db.organizations).delete(organization);
+    delete(db.orgs).delete(org);
   }
 
   /// Отслеживание организаций
-  Stream<List<Organization>> watch() => select(db.organizations).watch();
+  Stream<List<Org>> watch() => select(db.orgs).watch();
 }
 
 // Графики ---------------------------------------------------------------------
@@ -358,20 +372,20 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
   
   /// Создание группы
   Future<Group> create({
-    @required Organization organization,
+    @required Org org,
     @required String name,
     @required Schedule schedule,
   }) async {
     final id = await into(db.groups).insert(
         GroupsCompanion(
-          organizationId: Value(organization.id),
+          orgId: Value(org.id),
           name: Value(name),
           scheduleId: Value(schedule.id),
         )
     );
     return Group(
       id: id,
-      organizationId: organization.id,
+      orgId: org.id,
       name: name,
       scheduleId: schedule.id,
     );
@@ -382,16 +396,16 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
     final activeGroup = await db.settingsDao.getActiveGroup();
     if (group.id == activeGroup.id)
       db.settingsDao.setActiveGroup(
-          await _getPreviousGroup(group.organizationId, group.name));
+          await _getPreviousGroup(group.orgId, group.name));
     delete(db.groups).delete(group);
   }
 
   /// Отслеживание групп организации
-  Stream<List<GroupView>> watch(Organization organization) =>
-      db._groupsView(organization.id).map((row) =>
+  Stream<List<GroupView>> watch(Org org) =>
+      db._groupsView(org.id).map((row) =>
           GroupView(
             id: row.id,
-            organizationId: row.organizationId,
+            orgId: row.orgId,
             name: row.name,
             schedule: Schedule(id: row.scheduleId, code: row.scheduleCode),
             personCount: row.personCount,
@@ -399,26 +413,26 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
       ).watch();
 
   /// Предыдущая группа перед заданной
-  Future<Group> _getPreviousGroup(int organizationId, String groupName) =>
-      db._previousGroup(organizationId, groupName).map((row) =>
+  Future<Group> _getPreviousGroup(int orgId, String groupName) =>
+      db._previousGroup(orgId, groupName).map((row) =>
           Group(
             id: row.id,
-            organizationId: row.organizationId,
+            orgId: row.orgId,
             name: row.name,
             scheduleId: row.scheduleId,
           )
       ).getSingle();
 
   /// Первая группа организации в алфавитном порядке
-  Stream<Group> watchFirstOrganizationGroup(Organization organization) =>
-      _selectFirstOrganizationGroup(organization).watchSingle();
-  Future<Group> getFirstOrganizationGroup(Organization organization) =>
-      _selectFirstOrganizationGroup(organization).getSingle();
-  Selectable<Group> _selectFirstOrganizationGroup(Organization organization) =>
-      db._firstOrganizationGroup(organization?.id).map((row) =>
+  Stream<Group> watchFirstOrgGroup(Org org) =>
+      _selectFirstOrgGroup(org).watchSingle();
+  Future<Group> getFirstOrgGroup(Org org) =>
+      _selectFirstOrgGroup(org).getSingle();
+  Selectable<Group> _selectFirstOrgGroup(Org org) =>
+      db._firstOrgGroup(org?.id).map((row) =>
           Group(
             id: row.id,
-            organizationId: row.organizationId,
+            orgId: row.orgId,
             name: row.name,
             scheduleId: row.scheduleId,
           )
@@ -590,13 +604,13 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
       delete(db.settings).where((s) => s.name.equals(settingName));
 
   /// Активная организация
-  Stream<Organization> watchActiveOrganization() => 
-      _selectActiveOrganization().watchSingle();
-  Future<Organization> getActiveOrganization() async =>
-      await _selectActiveOrganization().getSingle();
-  Selectable<Organization> _selectActiveOrganization() =>
-      db._activeOrganization().map((row) =>
-          Organization(
+  Stream<Org> watchActiveOrg() => 
+      _selectActiveOrg().watchSingle();
+  Future<Org> getActiveOrg() async =>
+      await _selectActiveOrg().getSingle();
+  Selectable<Org> _selectActiveOrg() =>
+      db._activeOrg().map((row) =>
+          Org(
               id: row.id,
               name: row.name,
               inn: row.inn,
@@ -604,15 +618,16 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
       );
 
   /// Установка активной организации
-  void setActiveOrganization(Organization organization) async {
-    if (organization == null)
-      remove('activeOrganization');
+  void setActiveOrg(Org org) async {
+    if (org == null)
+      remove('activeOrg');
     else {
-      final activeOrganizationOld = await getActiveOrganization();
-      if (activeOrganizationOld == null)
-        create('activeOrganization', intValue: organization.id);
-      else if (activeOrganizationOld.id != organization.id)
-        db._setActiveOrganization(organization.id);
+      final activeOrgOld = await getActiveOrg();
+      if (activeOrgOld == null)
+        create('activeOrg', intValue: org.id);
+      else if (activeOrgOld.id != org.id)
+        db._setActiveOrg(org.id);
+      setActiveGroup(await db.groupsDao.getFirstOrgGroup(org));
     }
   }
 
@@ -622,7 +637,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   Selectable<Group> _selectActiveGroup() => db._activeGroup().map((row) =>
       Group(
           id: row.id,
-          organizationId: row.organizationId,
+          orgId: row.orgId,
           name: row.name,
           scheduleId: row.scheduleId,
       )

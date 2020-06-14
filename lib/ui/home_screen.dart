@@ -32,15 +32,13 @@ class HomeScreenState extends State<HomeScreen> {
     drawer: HomeDrawer(),
     body: StreamBuilder<List<GroupPerson>>(
       stream: bloc.groupPersonsStream,
-      builder: (context, snapshot)  => snapshot.hasData ?
-        ListView.builder(
+      builder: (context, snapshot) {
+        final persons = snapshot.data ?? <GroupPerson>[];
+        return ListView.builder(
             itemCount: snapshot.data.length,
-            itemBuilder: (context, index) => TimesheetCard(snapshot.data[index])
-        ) :
-        const Align(
-          alignment: Alignment.center,
-          child: CircularProgressIndicator(),
-        )
+            itemBuilder: (context, index) => TimesheetCard(persons[index]),
+        );
+      }
     ),
     bottomSheet: Material(
       elevation: 12,
