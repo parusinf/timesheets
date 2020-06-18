@@ -5,9 +5,11 @@ CREATE TABLE orgs (
   -- Наименование организации
   name               TEXT NOT NULL,
   -- ИНН
-  inn                TEXT
+  inn                TEXT,
+  -- Активная группа
+  activeGroupId      INT
 );
-CREATE UNIQUE INDEX orgs_index ON orgs (name);
+CREATE UNIQUE INDEX orgs_index ON orgs (name, inn);
 
 -- Графики
 CREATE TABLE schedules (
@@ -139,6 +141,18 @@ SELECT *
           WHERE name < :groupName
        );
 
+-- Список огранизаций с количеством групп
+_orgsView:
+SELECT O.id,
+       O.name,
+       O.inn,
+       O.activeGroupId,
+       CAST((SELECT COUNT(*) FROM "groups" WHERE orgId = O.id) AS INT) AS groupCount
+  FROM orgs O
+ ORDER BY
+       O.name,
+       O.inn;
+
 -- Список групп огранизации с графиками и количеством персон
 _groupsView:
 SELECT G.id,
@@ -189,16 +203,9 @@ SELECT O.*
 _setActiveOrg:
 UPDATE settings SET intValue = :id WHERE name = 'activeOrg';
 
--- Активная группа
-_activeGroup:
-SELECT G.*
-  FROM settings S
- INNER JOIN "groups" G ON G.id = S.intValue
- WHERE S.name = 'activeGroup';
-
 -- Установка активной группы
 _setActiveGroup:
-UPDATE settings SET intValue = :id WHERE name = 'activeGroup';
+UPDATE orgs SET activeGroupId = :activeGroupId WHERE id = :orgId;
 
 -- Активный период
 _activePeriod:

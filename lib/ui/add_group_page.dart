@@ -4,29 +4,25 @@ import 'package:timesheets/core/bloc.dart';
 import 'package:timesheets/core/l10n.dart';
 import 'package:timesheets/db/db.dart';
 
-class AddGroupDialog extends StatefulWidget {
+class AddGroupPage extends StatefulWidget {
   @override
-  _AddGroupDialogState createState() => _AddGroupDialogState();
+  _AddGroupPageState createState() => _AddGroupPageState();
 }
 
-class _AddGroupDialogState extends State<AddGroupDialog> {
+class _AddGroupPageState extends State<AddGroupPage> {
   Bloc get bloc => Provider.of<Bloc>(context, listen: false);
   final TextEditingController _controller = TextEditingController();
 
   @override
-  Widget build(BuildContext context) => Dialog(
-    child: Padding(
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text(L10n.of(context).addingOfGroup),
+    ),
+    body: Padding(
       padding: const EdgeInsets.all(8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              L10n.of(context).addingOfGroup,
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
+        children: <Widget>[
           TextField(
             controller: _controller,
             autofocus: true,
@@ -35,19 +31,10 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
             ),
             onSubmitted: (_) => _addGroup(),
           ),
-          /*Row(
-
-          ),*/
           ButtonBar(
-            children: [
+            children: <Widget>[
               FlatButton(
-                child: Text(L10n.of(context).cancel),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              FlatButton(
-                child: Text(L10n.of(context).ok),
+                child: Text(L10n.of(context).done),
                 textColor: Theme.of(context).accentColor,
                 onPressed: _addGroup,
               ),
@@ -59,16 +46,17 @@ class _AddGroupDialogState extends State<AddGroupDialog> {
   );
 
   /// Добавление группы
-  void _addGroup() {
-    final org = Org(id: 1, name: 'Организация 1');
+  void _addGroup() async {
+    final org = bloc.activeOrgSubject.value;
     final schedule = Schedule(id: 1, code: 'пн,вт,ср,чт,пт 12ч');
     if (_controller.text.isNotEmpty) {
-      bloc.db.groupsDao.create(
+      final group = await bloc.db.groupsDao.create(
         org: org,
         name: _controller.text,
         schedule: schedule,
       );
-      Navigator.of(context).pop();
+      bloc.showGroup(group);
+      Navigator.of(context).pop(); // закрыть диалог добавления
     }
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:timesheets/ui/home_screen.dart';
+import 'package:timesheets/ui/home_page.dart';
 import 'package:timesheets/core/l10n.dart';
 import 'package:timesheets/core/bloc.dart';
 
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.lightBlue,
         typography: Typography.material2018(),
       ),
-      home: HomeScreen(),
+      home: HomePage(),
     ),
   );
 }

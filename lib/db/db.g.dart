@@ -11,7 +11,8 @@ class Org extends DataClass implements Insertable<Org> {
   final int id;
   final String name;
   final String inn;
-  Org({@required this.id, @required this.name, this.inn});
+  final int activeGroupId;
+  Org({@required this.id, @required this.name, this.inn, this.activeGroupId});
   factory Org.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -21,6 +22,8 @@ class Org extends DataClass implements Insertable<Org> {
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       inn: stringType.mapFromDatabaseResponse(data['${effectivePrefix}inn']),
+      activeGroupId: intType
+          .mapFromDatabaseResponse(data['${effectivePrefix}activeGroupId']),
     );
   }
   @override
@@ -35,6 +38,9 @@ class Org extends DataClass implements Insertable<Org> {
     if (!nullToAbsent || inn != null) {
       map['inn'] = Variable<String>(inn);
     }
+    if (!nullToAbsent || activeGroupId != null) {
+      map['activeGroupId'] = Variable<int>(activeGroupId);
+    }
     return map;
   }
 
@@ -43,6 +49,9 @@ class Org extends DataClass implements Insertable<Org> {
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       inn: inn == null && nullToAbsent ? const Value.absent() : Value(inn),
+      activeGroupId: activeGroupId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activeGroupId),
     );
   }
 
@@ -53,6 +62,7 @@ class Org extends DataClass implements Insertable<Org> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       inn: serializer.fromJson<String>(json['inn']),
+      activeGroupId: serializer.fromJson<int>(json['activeGroupId']),
     );
   }
   @override
@@ -62,68 +72,81 @@ class Org extends DataClass implements Insertable<Org> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'inn': serializer.toJson<String>(inn),
+      'activeGroupId': serializer.toJson<int>(activeGroupId),
     };
   }
 
-  Org copyWith({int id, String name, String inn}) => Org(
+  Org copyWith({int id, String name, String inn, int activeGroupId}) => Org(
         id: id ?? this.id,
         name: name ?? this.name,
         inn: inn ?? this.inn,
+        activeGroupId: activeGroupId ?? this.activeGroupId,
       );
   @override
   String toString() {
     return (StringBuffer('Org(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('inn: $inn')
+          ..write('inn: $inn, ')
+          ..write('activeGroupId: $activeGroupId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(name.hashCode, inn.hashCode)));
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(name.hashCode, $mrjc(inn.hashCode, activeGroupId.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Org &&
           other.id == this.id &&
           other.name == this.name &&
-          other.inn == this.inn);
+          other.inn == this.inn &&
+          other.activeGroupId == this.activeGroupId);
 }
 
 class OrgsCompanion extends UpdateCompanion<Org> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> inn;
+  final Value<int> activeGroupId;
   const OrgsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.inn = const Value.absent(),
+    this.activeGroupId = const Value.absent(),
   });
   OrgsCompanion.insert({
     this.id = const Value.absent(),
     @required String name,
     this.inn = const Value.absent(),
+    this.activeGroupId = const Value.absent(),
   }) : name = Value(name);
   static Insertable<Org> custom({
     Expression<int> id,
     Expression<String> name,
     Expression<String> inn,
+    Expression<int> activeGroupId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (inn != null) 'inn': inn,
+      if (activeGroupId != null) 'activeGroupId': activeGroupId,
     });
   }
 
   OrgsCompanion copyWith(
-      {Value<int> id, Value<String> name, Value<String> inn}) {
+      {Value<int> id,
+      Value<String> name,
+      Value<String> inn,
+      Value<int> activeGroupId}) {
     return OrgsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       inn: inn ?? this.inn,
+      activeGroupId: activeGroupId ?? this.activeGroupId,
     );
   }
 
@@ -138,6 +161,9 @@ class OrgsCompanion extends UpdateCompanion<Org> {
     }
     if (inn.present) {
       map['inn'] = Variable<String>(inn.value);
+    }
+    if (activeGroupId.present) {
+      map['activeGroupId'] = Variable<int>(activeGroupId.value);
     }
     return map;
   }
@@ -172,8 +198,18 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
     return GeneratedTextColumn('inn', $tableName, true, $customConstraints: '');
   }
 
+  final VerificationMeta _activeGroupIdMeta =
+      const VerificationMeta('activeGroupId');
+  GeneratedIntColumn _activeGroupId;
+  GeneratedIntColumn get activeGroupId =>
+      _activeGroupId ??= _constructActiveGroupId();
+  GeneratedIntColumn _constructActiveGroupId() {
+    return GeneratedIntColumn('activeGroupId', $tableName, true,
+        $customConstraints: '');
+  }
+
   @override
-  List<GeneratedColumn> get $columns => [id, name, inn];
+  List<GeneratedColumn> get $columns => [id, name, inn, activeGroupId];
   @override
   Orgs get asDslTable => this;
   @override
@@ -197,6 +233,12 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
     if (data.containsKey('inn')) {
       context.handle(
           _innMeta, inn.isAcceptableOrUnknown(data['inn'], _innMeta));
+    }
+    if (data.containsKey('activeGroupId')) {
+      context.handle(
+          _activeGroupIdMeta,
+          activeGroupId.isAcceptableOrUnknown(
+              data['activeGroupId'], _activeGroupIdMeta));
     }
     return context;
   }
@@ -2054,8 +2096,8 @@ abstract class _$Db extends GeneratedDatabase {
   Orgs _orgs;
   Orgs get orgs => _orgs ??= Orgs(this);
   Index _orgsIndex;
-  Index get orgsIndex => _orgsIndex ??=
-      Index('orgs_index', 'CREATE UNIQUE INDEX orgs_index ON orgs (name);');
+  Index get orgsIndex => _orgsIndex ??= Index(
+      'orgs_index', 'CREATE UNIQUE INDEX orgs_index ON orgs (name, inn);');
   Schedules _schedules;
   Schedules get schedules => _schedules ??= Schedules(this);
   Index _schedulesIndex;
@@ -2115,6 +2157,7 @@ abstract class _$Db extends GeneratedDatabase {
       id: row.readInt('id'),
       name: row.readString('name'),
       inn: row.readString('inn'),
+      activeGroupId: row.readInt('activeGroupId'),
     );
   }
 
@@ -2162,6 +2205,23 @@ abstract class _$Db extends GeneratedDatabase {
         'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MAX(name)\n           FROM "groups"\n          WHERE name < :groupName\n       )',
         variables: [Variable.withInt(orgId), Variable.withString(groupName)],
         readsFrom: {groups}).map(_rowToGroup);
+  }
+
+  OrgsViewResult _rowToOrgsViewResult(QueryRow row) {
+    return OrgsViewResult(
+      id: row.readInt('id'),
+      name: row.readString('name'),
+      inn: row.readString('inn'),
+      activeGroupId: row.readInt('activeGroupId'),
+      groupCount: row.readInt('groupCount'),
+    );
+  }
+
+  Selectable<OrgsViewResult> _orgsView() {
+    return customSelect(
+        'SELECT O.id,\n       O.name,\n       O.inn,\n       O.activeGroupId,\n       CAST((SELECT COUNT(*) FROM "groups" WHERE orgId = O.id) AS INT) AS groupCount\n  FROM orgs O\n ORDER BY\n       O.name,\n       O.inn',
+        variables: [],
+        readsFrom: {orgs, groups}).map(_rowToOrgsViewResult);
   }
 
   GroupsViewResult _rowToGroupsViewResult(QueryRow row) {
@@ -2232,18 +2292,11 @@ abstract class _$Db extends GeneratedDatabase {
     );
   }
 
-  Selectable<Group> _activeGroup() {
-    return customSelect(
-        'SELECT G.*\n  FROM settings S\n INNER JOIN "groups" G ON G.id = S.intValue\n WHERE S.name = \'activeGroup\'',
-        variables: [],
-        readsFrom: {settings, groups}).map(_rowToGroup);
-  }
-
-  Future<int> _setActiveGroup(int id) {
+  Future<int> _setActiveGroup(int activeGroupId, int orgId) {
     return customUpdate(
-      'UPDATE settings SET intValue = :id WHERE name = \'activeGroup\'',
-      variables: [Variable.withInt(id)],
-      updates: {settings},
+      'UPDATE orgs SET activeGroupId = :activeGroupId WHERE id = :orgId',
+      variables: [Variable.withInt(activeGroupId), Variable.withInt(orgId)],
+      updates: {orgs},
       updateKind: UpdateKind.update,
     );
   }
@@ -2299,6 +2352,21 @@ abstract class _$Db extends GeneratedDatabase {
           ),
         ],
       );
+}
+
+class OrgsViewResult {
+  final int id;
+  final String name;
+  final String inn;
+  final int activeGroupId;
+  final int groupCount;
+  OrgsViewResult({
+    this.id,
+    this.name,
+    this.inn,
+    this.activeGroupId,
+    this.groupCount,
+  });
 }
 
 class GroupsViewResult {

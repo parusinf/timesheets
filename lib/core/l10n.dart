@@ -12,37 +12,41 @@ class L10n {
 
   static const Map<String, Map<String, String>> _l10n = {
     'ru': {
-      'addGroup': 'Добавить группу',
       'addingOfGroup': 'Добавление группы',
+      'addingOfOrg': 'Добавление организации',
       'cancel': 'ОТМЕНА',
+      'dataLoading': 'Загрузка данных',
       'deleteGroup': 'Удалить группу',
       'deleting': 'Удаление',
+      'done': 'ГОТОВО',
       'fio': 'ФИО',
       'groupName': 'Наименование группы',
-      'groups': 'Группы',
+      'groups': 'ГРУППЫ',
       'inn': 'ИНН',
-      'ok': 'OK',
+      'noPersons': 'Персон в группе нет',
       'organizations': 'ОРГАНИЗАЦИИ',
-      'personCount': 'человек',
-      'personCount234': 'человека',
+      'orgName': 'Наименование организации',
       'title': 'Табели',
+      'withoutInn': 'Без ИНН',
     }
   };
 
-  get addGroup => _l10n[locale.languageCode]['addGroup'];
   get addingOfGroup => _l10n[locale.languageCode]['addingOfGroup'];
+  get addingOfOrg => _l10n[locale.languageCode]['addingOfOrg'];
   get cancel => _l10n[locale.languageCode]['cancel'];
+  get dataLoading => _l10n[locale.languageCode]['dataLoading'];
   get deleteGroup => _l10n[locale.languageCode]['deleteGroup'];
   get deleting => _l10n[locale.languageCode]['deleting'];
+  get done => _l10n[locale.languageCode]['done'];
   get fio => _l10n[locale.languageCode]['fio'];
   get groupName => _l10n[locale.languageCode]['groupName'];
   get groups => _l10n[locale.languageCode]['groups'];
   get inn => _l10n[locale.languageCode]['inn'];
-  get ok => _l10n[locale.languageCode]['ok'];
+  get noPersons => _l10n[locale.languageCode]['noPersons'];
   get organizations => _l10n[locale.languageCode]['organizations'];
-  get personCount => _l10n[locale.languageCode]['personCount'];
-  get personCount234 => _l10n[locale.languageCode]['personCount234'];
+  get orgName => _l10n[locale.languageCode]['orgName'];
   get title => _l10n[locale.languageCode]['title'];
+  get withoutInn => _l10n[locale.languageCode]['withoutInn'];
 }
 
 class L10nDelegate extends LocalizationsDelegate<L10n> {

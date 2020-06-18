@@ -4,9 +4,9 @@ import 'package:rxdart/rxdart.dart';
 
 /// Организация с признаком активности
 class ActiveOrg {
-  Org org;
+  OrgView orgView;
   bool isActive;
-  ActiveOrg(this.org, this.isActive);
+  ActiveOrg(this.orgView, this.isActive);
 }
 
 /// Группа с признаком активности
@@ -21,17 +21,17 @@ class Bloc {
   // База данных
   final Db db;
   // Активная организация
-  final BehaviorSubject<Org> activeOrgStream = BehaviorSubject();
+  final BehaviorSubject<Org> activeOrgSubject = BehaviorSubject();
   // Активная группа
-  final BehaviorSubject<Group> activeGroupStream = BehaviorSubject();
+  final BehaviorSubject<Group> activeGroupSubject = BehaviorSubject();
   // Активный период
-  final BehaviorSubject<DateTime> activePeriodStream = BehaviorSubject();
+  final BehaviorSubject<DateTime> activePeriodSubject = BehaviorSubject();
+  // Организации с признаком активности
+  final BehaviorSubject<List<ActiveOrg>> activeOrgsSubject = BehaviorSubject();
+  // Группы с признаком активности
+  final BehaviorSubject<List<ActiveGroup>> activeGroupsSubject = BehaviorSubject();
   // Группы активной организации
   Stream<List<GroupView>> groupsStream;
-  // Организации с признаком активности
-  final BehaviorSubject<List<ActiveOrg>> activeOrgsStream = BehaviorSubject();
-  // Группы с признаком активности
-  final BehaviorSubject<List<ActiveGroup>> activeGroupsStream = BehaviorSubject();
   // Персоны активной группы
   Stream<List<GroupPerson>> groupPersonsStream;
 
@@ -39,47 +39,47 @@ class Bloc {
   Bloc() : db = Db() {
     // Отслеживание активной организации из настройки
     Rx.concat([db.settingsDao.watchActiveOrg()])
-        .listen(activeOrgStream.add);
-    // Отслеживание активной группы из настройки
-    Rx.concat([db.settingsDao.watchActiveGroup()])
-        .listen(activeGroupStream.add);
+        .listen(activeOrgSubject.add);
+    // Отслеживание активной группы организации
+    Rx.concat([activeOrgSubject.switchMap(db.settingsDao.watchActiveGroup)])
+        .listen(activeGroupSubject.add);
     // Отслеживание активного периода из настройки
     Rx.concat([db.settingsDao.watchActivePeriod()])
-        .listen(activePeriodStream.add);
+        .listen(activePeriodSubject.add);
     // Отслеживание групп в активной организации
-    groupsStream = activeOrgStream.switchMap(db.groupsDao.watch);
+    groupsStream = activeOrgSubject.switchMap(db.groupsDao.watch);
     // Формирование признака активности организаций
     Rx.combineLatest2<List<Org>, Org, List<ActiveOrg>>(
         db.orgsDao.watch(),
-        activeOrgStream,
+        activeOrgSubject,
         (orgs, selected) =>
             orgs.map((org) =>
                 ActiveOrg(org, org?.id == selected?.id)
             ).toList()
-    ).listen(activeOrgsStream.add);
+    ).listen(activeOrgsSubject.add);
     // Формирование признака активности групп
     Rx.combineLatest2<List<GroupView>, Group, List<ActiveGroup>>(
         groupsStream,
-        activeGroupStream,
+        activeGroupSubject,
         (groups, selected) =>
             groups.map((group) =>
                 ActiveGroup(group, group?.id == selected?.id)
             ).toList()
-    ).listen(activeGroupsStream.add);
+    ).listen(activeGroupsSubject.add);
     // Отслеживание персон в активной группе
-    groupPersonsStream = activeGroupStream.switchMap(db.pgLinksDao.watch);
+    groupPersonsStream = activeGroupSubject.switchMap(db.pgLinksDao.watch);
   }
 
   // Отображение организации
   void showOrg(Org org) {
-    activeOrgStream.add(org);
+    activeOrgSubject.add(org);
     db.settingsDao.setActiveOrg(org);
   }
 
   // Отображение группы
   void showGroup(Group group) {
-    activeGroupStream.add(group);
-    db.settingsDao.setActiveGroup(group);
+    activeGroupSubject.add(group);
+    db.settingsDao.setActiveGroup(activeOrgSubject.value, group);
   }
 
   // Создание персоны и добавление её в выбранную группу
@@ -93,16 +93,16 @@ class Bloc {
         name: name,
         middleName: middleName,
     );
-    db.pgLinksDao.create(person: person, group: activeGroupStream.value);
+    db.pgLinksDao.create(person: person, group: activeGroupSubject.value);
   }
   
   // Освобождение ресурсов
   void close() {
     db.close();
-    activeOrgStream.close();
-    activeGroupStream.close();
-    activePeriodStream.close();
-    activeOrgsStream.close();
-    activeGroupsStream.close();
+    activeOrgSubject.close();
+    activeGroupSubject.close();
+    activePeriodSubject.close();
+    activeOrgsSubject.close();
+    activeGroupsSubject.close();
   }
 }

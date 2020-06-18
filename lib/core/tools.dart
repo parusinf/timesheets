@@ -8,6 +8,12 @@ void showSnackBar(GlobalKey<ScaffoldState> scaffoldKey, String errorText) {
   scaffoldKey.currentState.showSnackBar(snackBar);
 }
 
+/// Текст серого цвета
+Widget greyText(BuildContext context, String text) => Text(
+  text,
+  style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.black38),
+);
+
 /// Преобразование даты периода в строку
 String periodString(DateTime period) {
   final s = DateFormat(DateFormat.YEAR_MONTH).format(period);

@@ -8,6 +8,22 @@ import 'package:timesheets/core/tools.dart';
 
 part 'db.g.dart';
 
+/// Представление организации
+class OrgView extends Org {
+  final int groupCount; // количество групп в организации
+
+  OrgView({
+    @required int id,
+    @required String name,
+    String inn,
+    this.groupCount = 0,
+  }) : super(
+    id: id,
+    name: name,
+    inn: inn,
+  );
+}
+
 /// Представление группы
 class GroupView extends Group {
   final Schedule schedule; // график
@@ -20,10 +36,10 @@ class GroupView extends Group {
     @required this.schedule,
     this.personCount = 0,
   }) : super(
-      id: id,
-      orgId: orgId,
-      name: name,
-      scheduleId: schedule.id
+    id: id,
+    orgId: orgId,
+    name: name,
+    scheduleId: schedule.id,
   );
 }
 
@@ -89,18 +105,19 @@ class Db extends _$Db {
       if (details.wasCreated) {
         transaction(() async {
           final schedule = await schedulesDao.create(
-              code: 'пн,вт,ср,чт,пт 12ч',
-              createDays: true);
+            code: 'пн,вт,ср,чт,пт 12ч',
+            createDays: true);
           final org1 = await orgsDao.create(
-              name: 'МБДОУ д/с общеразвивающего типа №1 "Светлячок"',
-              inn: '5001030102');
+            name: 'МБДОУ д/с общеразвивающего типа №1 "Светлячок"',
+            inn: '5001030102',
+          );
           settingsDao.setActiveOrg(org1);
           final group11 = await groupsDao.create(
-              org: org1,
-              name: 'Группа 1',
-              schedule: schedule
+            org: org1,
+            name: 'Группа 1',
+            schedule: schedule,
           );
-          settingsDao.setActiveGroup(group11);
+          settingsDao.setActiveGroup(org1, group11);
           pgLinksDao.create(
               person: await personsDao.create(
                 family: 'Акульшин',
@@ -120,17 +137,16 @@ class Db extends _$Db {
           groupsDao.create(
               org: org1,
               name: 'Группа 2',
-              schedule: schedule
+              schedule: schedule,
           );
           final org2 = await orgsDao
-              .create(name: 'Детсад №2', inn: '5001101025');
-          await groupsDao.create(
+              .create(name: 'Детсад №2'/*, inn: '5001101025'*/);
+          final group21 = await groupsDao.create(
               org: org2,
               name: 'Группа 1',
-              schedule: schedule
+              schedule: schedule,
           );
-          await orgsDao
-              .create(name: 'Детсад №3 "Рябинка"', inn: '5001044433');
+          settingsDao.setActiveGroup(org2, group21);
         });
       }
       customStatement('PRAGMA foreign_keys = ON');
@@ -187,14 +203,20 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
       final previousOrg =
         await _getPreviousOrg(org.name);
       db.settingsDao.setActiveOrg(previousOrg);
-      db.settingsDao.setActiveGroup(await db.groupsDao
-          .getFirstOrgGroup(previousOrg));
     }
     delete(db.orgs).delete(org);
   }
 
   /// Отслеживание организаций
-  Stream<List<Org>> watch() => select(db.orgs).watch();
+  Stream<List<OrgView>> watch() =>
+      db._orgsView().map((row) =>
+          OrgView(
+            id: row.id,
+            name: row.name,
+            inn: row.inn,
+            groupCount: row.groupCount,
+          )
+      ).watch();
 }
 
 // Графики ---------------------------------------------------------------------
@@ -393,10 +415,12 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
 
   /// Удаление группы
   void remove(Group group) async {
-    final activeGroup = await db.settingsDao.getActiveGroup();
-    if (group.id == activeGroup.id)
-      db.settingsDao.setActiveGroup(
-          await _getPreviousGroup(group.orgId, group.name));
+    final org = await (select(db.orgs)
+        ..where((entry) => entry.id.equals(group.orgId))).getSingle();
+    if (group.id == org.activeGroupId) {
+      db.settingsDao.setActiveGroup(org,
+          await _getPreviousGroup(org.id, group.name));
+    }
     delete(db.groups).delete(group);
   }
 
@@ -429,7 +453,7 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
   Future<Group> getFirstOrgGroup(Org org) =>
       _selectFirstOrgGroup(org).getSingle();
   Selectable<Group> _selectFirstOrgGroup(Org org) =>
-      db._firstOrgGroup(org?.id).map((row) =>
+      db._firstOrgGroup(org.id).map((row) =>
           Group(
             id: row.id,
             orgId: row.orgId,
@@ -611,9 +635,10 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   Selectable<Org> _selectActiveOrg() =>
       db._activeOrg().map((row) =>
           Org(
-              id: row.id,
-              name: row.name,
-              inn: row.inn,
+            id: row.id,
+            name: row.name,
+            inn: row.inn,
+            activeGroupId: row.activeGroupId,
           )
       );
 
@@ -627,34 +652,20 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
         create('activeOrg', intValue: org.id);
       else if (activeOrgOld.id != org.id)
         db._setActiveOrg(org.id);
-      setActiveGroup(await db.groupsDao.getFirstOrgGroup(org));
     }
   }
 
   /// Активная группа
-  Stream<Group> watchActiveGroup() => _selectActiveGroup().watchSingle();
-  Future<Group> getActiveGroup() async => await _selectActiveGroup().getSingle();
-  Selectable<Group> _selectActiveGroup() => db._activeGroup().map((row) =>
-      Group(
-          id: row.id,
-          orgId: row.orgId,
-          name: row.name,
-          scheduleId: row.scheduleId,
-      )
-  );
+  Stream<Group> watchActiveGroup(Org org) =>
+      _selectActiveGroup(org).watchSingle();
+  Future<Group> getActiveGroup(Org org) =>
+      _selectActiveGroup(org).getSingle();
+  Selectable<Group> _selectActiveGroup(Org org) =>
+      select(db.groups)..where((entry) => entry.id.equals(org.activeGroupId));
 
   /// Установка активной группы
-  Future setActiveGroup(Group group) async {
-    if (group == null)
-      remove('activeGroup');
-    else {
-      final activeGroupOld = await getActiveGroup();
-      if (activeGroupOld == null)
-        create('activeGroup', intValue: group.id);
-      else if (activeGroupOld.id != group.id)
-        db._setActiveGroup(group.id);
-    }
-  }
+  Future setActiveGroup(Org org, Group group) =>
+      db._setActiveGroup(group.id, org.id);
 
   // Активный период
   Stream<DateTime> watchActivePeriod() => db._activePeriod().watchSingle();
