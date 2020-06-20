@@ -2,21 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/core/bloc.dart';
 import 'package:timesheets/core/l10n.dart';
+import 'package:timesheets/db/db.dart';
 
-class AddOrgPage extends StatefulWidget {
+class OrgPage extends StatefulWidget {
+  final Org entry;
+  const OrgPage({Key key, this.entry}) : super(key: key);
   @override
-  _AddOrgPageState createState() => _AddOrgPageState();
+  _OrgPageState createState() => _OrgPageState();
 }
 
-class _AddOrgPageState extends State<AddOrgPage> {
+class _OrgPageState extends State<OrgPage> {
   Bloc get bloc => Provider.of<Bloc>(context, listen: false);
   final TextEditingController _nameEdit = TextEditingController();
   final TextEditingController _innEdit = TextEditingController();
 
   @override
+  void initState() {
+    _nameEdit.text = widget.entry?.name;
+    _innEdit.text = widget.entry?.inn;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _nameEdit.dispose();
+    _innEdit.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(L10n.of(context).addingOfOrg),
+      title: Text(widget.entry == null ?
+          L10n.of(context).orgInserting : L10n.of(context).orgUpdating
+      ),
     ),
     body: Padding(
       padding: const EdgeInsets.all(8),
@@ -29,7 +48,7 @@ class _AddOrgPageState extends State<AddOrgPage> {
             decoration: InputDecoration(
               labelText: L10n.of(context).orgName,
             ),
-            onSubmitted: (_) => _addOrg(),
+            onSubmitted: (_) => widget.entry == null ? _insertOrg() : _updateOrg(),
           ),
           TextField(
             controller: _innEdit,
@@ -37,14 +56,14 @@ class _AddOrgPageState extends State<AddOrgPage> {
             decoration: InputDecoration(
               labelText: L10n.of(context).inn,
             ),
-            onSubmitted: (_) => _addOrg(),
+            onSubmitted: (_) => widget.entry == null ? _insertOrg() : _updateOrg(),
           ),
           ButtonBar(
             children: <Widget>[
               FlatButton(
                 child: Text(L10n.of(context).done),
                 textColor: Theme.of(context).accentColor,
-                onPressed: _addOrg,
+                onPressed: widget.entry == null ? _insertOrg : _updateOrg,
               ),
             ],
           ),
@@ -53,15 +72,19 @@ class _AddOrgPageState extends State<AddOrgPage> {
     ),
   );
 
-  /// Добавление группы
-  void _addOrg() async {
+  /// Добавление организации
+  void _insertOrg() {
     if (_nameEdit.text.isNotEmpty) {
-      final org = await bloc.db.orgsDao.create(
-        name: _nameEdit.text,
-        inn: _innEdit.text,
-      );
-      bloc.showOrg(org);
-      Navigator.of(context).pop(); // закрыть диалог добавления
+      bloc.insertOrg(name: _nameEdit.text, inn: _innEdit.text);
+      Navigator.of(context).pop();
+    }
+  }
+  
+  /// Исправление организации
+  void _updateOrg() {
+    if (_nameEdit.text.isNotEmpty) {
+      bloc.updateOrg(org: widget.entry, name: _nameEdit.text, inn: _innEdit.text);
+      Navigator.of(context).pop();
     }
   }
 }

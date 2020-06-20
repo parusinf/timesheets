@@ -100,6 +100,22 @@ CREATE TABLE settings (
 );
 CREATE UNIQUE INDEX settings_index ON settings (name);
 
+-- Дни графика
+_daysInSchedule:
+SELECT *
+  FROM schedule_days
+ WHERE scheduleId = :scheduleId;
+
+-- Первая организация в алфавитном порядке
+_firstOrg:
+SELECT *
+  FROM orgs
+ WHERE name =
+       (
+         SELECT MIN(name)
+           FROM orgs
+       );
+
 -- Предыдущая организация перед заданной
 _previousOrg:
 SELECT *
@@ -112,7 +128,7 @@ SELECT *
        );
 
 -- Первая группа организации в алфавитном порядке
-_firstOrgGroup:
+_firstGroup:
 SELECT *
   FROM "groups"
  WHERE orgId = :orgId
@@ -122,12 +138,6 @@ SELECT *
            FROM "groups"
           WHERE orgId = :orgId
        );
-
--- Дни графика
-_daysInSchedule:
-SELECT *
-  FROM schedule_days
- WHERE scheduleId = :scheduleId;
 
 -- Предыдущая группа перед заданной
 _previousGroup:

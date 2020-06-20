@@ -2152,6 +2152,22 @@ abstract class _$Db extends GeneratedDatabase {
       _timesheetsDao ??= TimesheetsDao(this as Db);
   SettingsDao _settingsDao;
   SettingsDao get settingsDao => _settingsDao ??= SettingsDao(this as Db);
+  ScheduleDay _rowToScheduleDay(QueryRow row) {
+    return ScheduleDay(
+      id: row.readInt('id'),
+      scheduleId: row.readInt('scheduleId'),
+      dayNumber: row.readInt('dayNumber'),
+      hoursNorm: row.readDouble('hoursNorm'),
+    );
+  }
+
+  Selectable<ScheduleDay> _daysInSchedule(int scheduleId) {
+    return customSelect(
+        'SELECT *\n  FROM schedule_days\n WHERE scheduleId = :scheduleId',
+        variables: [Variable.withInt(scheduleId)],
+        readsFrom: {scheduleDays}).map(_rowToScheduleDay);
+  }
+
   Org _rowToOrg(QueryRow row) {
     return Org(
       id: row.readInt('id'),
@@ -2159,6 +2175,13 @@ abstract class _$Db extends GeneratedDatabase {
       inn: row.readString('inn'),
       activeGroupId: row.readInt('activeGroupId'),
     );
+  }
+
+  Selectable<Org> _firstOrg() {
+    return customSelect(
+        'SELECT *\n  FROM orgs\n WHERE name =\n       (\n         SELECT MIN(name)\n           FROM orgs\n       )',
+        variables: [],
+        readsFrom: {orgs}).map(_rowToOrg);
   }
 
   Selectable<Org> _previousOrg(String orgName) {
@@ -2177,27 +2200,11 @@ abstract class _$Db extends GeneratedDatabase {
     );
   }
 
-  Selectable<Group> _firstOrgGroup(int orgId) {
+  Selectable<Group> _firstGroup(int orgId) {
     return customSelect(
         'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MIN(name)\n           FROM "groups"\n          WHERE orgId = :orgId\n       )',
         variables: [Variable.withInt(orgId)],
         readsFrom: {groups}).map(_rowToGroup);
-  }
-
-  ScheduleDay _rowToScheduleDay(QueryRow row) {
-    return ScheduleDay(
-      id: row.readInt('id'),
-      scheduleId: row.readInt('scheduleId'),
-      dayNumber: row.readInt('dayNumber'),
-      hoursNorm: row.readDouble('hoursNorm'),
-    );
-  }
-
-  Selectable<ScheduleDay> _daysInSchedule(int scheduleId) {
-    return customSelect(
-        'SELECT *\n  FROM schedule_days\n WHERE scheduleId = :scheduleId',
-        variables: [Variable.withInt(scheduleId)],
-        readsFrom: {scheduleDays}).map(_rowToScheduleDay);
   }
 
   Selectable<Group> _previousGroup(int orgId, String groupName) {

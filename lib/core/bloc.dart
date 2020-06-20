@@ -35,7 +35,7 @@ class Bloc {
   // Персоны активной группы
   Stream<List<GroupPerson>> groupPersonsStream;
 
-  // Конструктор блока
+  /// Конструктор блока
   Bloc() : db = Db() {
     // Отслеживание активной организации из настройки
     Rx.concat([db.settingsDao.watchActiveOrg()])
@@ -70,33 +70,101 @@ class Bloc {
     groupPersonsStream = activeGroupSubject.switchMap(db.pgLinksDao.watch);
   }
 
-  // Отображение организации
+  /// Отображение организации
   void showOrg(Org org) {
     activeOrgSubject.add(org);
     db.settingsDao.setActiveOrg(org);
   }
 
-  // Отображение группы
+  /// Добавление организации
+  void insertOrg({
+    @required String name,
+    String inn,
+  }) async {
+    final org = await db.orgsDao.insert2(
+      name: name,
+      inn: inn == '' ? null : inn,
+    );
+    showOrg(org);
+  }
+
+  /// Исправление организации
+  void updateOrg({
+    @required Org org,
+    @required String name,
+    String inn,
+  }) async {
+    final newOrg = org.copyWith(
+      name: name,
+      inn: inn == '' ? null : inn,
+    );
+    db.orgsDao.update2(newOrg);
+    showOrg(newOrg);
+  }
+
+  /// Удаление организации
+  void deleteOrg(Org org) async {
+    db.orgsDao.delete2(org);
+    final previousOrg = await db.orgsDao.getPreviousOrg(org);
+    showOrg(previousOrg);
+  }
+
+  /// Добавление группы
+  void insertGroup({
+    @required String name,
+    @required Schedule schedule,
+  }) async {
+    final group = await db.groupsDao.insert2(
+      org: activeOrgSubject.value,
+      name: name,
+      schedule: schedule,
+    );
+    showGroup(group);
+  }
+
+  /// Исправление группы
+  void updateGroup({
+    @required Group group,
+    @required String name,
+    @required Schedule schedule,
+  }) async {
+    final newGroup = group.copyWith(
+      name: name,
+      scheduleId: schedule.id,
+    );
+    db.groupsDao.update2(newGroup);
+    showGroup(newGroup);
+  }
+
+  /// Удаление группы
+  void deleteGroup(Group group) async {
+    db.groupsDao.delete2(group);
+    final previousGroup = await db.groupsDao.getPreviousGroup(
+        activeOrgSubject.value, group);
+    showGroup(previousGroup);
+  }
+
+  /// Отображение группы
   void showGroup(Group group) {
     activeGroupSubject.add(group);
     db.settingsDao.setActiveGroup(activeOrgSubject.value, group);
   }
 
-  // Создание персоны и добавление её в выбранную группу
+  /// Создание персоны и добавление её в выбранную группу
   void createPersonOfGroup({
     @required String family,
     @required String name,
     String middleName,
   }) async {
-    final person = await db.personsDao.create(
+    final person = await db.personsDao.insert2(
         family: family,
         name: name,
         middleName: middleName,
     );
-    db.pgLinksDao.create(person: person, group: activeGroupSubject.value);
+    db.pgLinksDao.insert2(person: person, group: activeGroupSubject.value);
   }
   
-  // Освобождение ресурсов
+  /// Освобождение ресурсов
   void close() {
     db.close();
     activeOrgSubject.close();

@@ -16,11 +16,13 @@ class OrgView extends Org {
     @required int id,
     @required String name,
     String inn,
+    int activeGroupId,
     this.groupCount = 0,
   }) : super(
     id: id,
     name: name,
     inn: inn,
+    activeGroupId: activeGroupId,
   );
 }
 
@@ -104,44 +106,44 @@ class Db extends _$Db {
     beforeOpen: (details) async {
       if (details.wasCreated) {
         transaction(() async {
-          final schedule = await schedulesDao.create(
+          final schedule = await schedulesDao.insert2(
             code: 'пн,вт,ср,чт,пт 12ч',
             createDays: true);
-          final org1 = await orgsDao.create(
+          final org1 = await orgsDao.insert2(
             name: 'МБДОУ д/с общеразвивающего типа №1 "Светлячок"',
             inn: '5001030102',
           );
           settingsDao.setActiveOrg(org1);
-          final group11 = await groupsDao.create(
+          final group11 = await groupsDao.insert2(
             org: org1,
             name: 'Группа 1',
             schedule: schedule,
           );
           settingsDao.setActiveGroup(org1, group11);
-          pgLinksDao.create(
-              person: await personsDao.create(
+          pgLinksDao.insert2(
+              person: await personsDao.insert2(
                 family: 'Акульшин',
                 name: 'Роман',
                 middleName: 'Андреевич',
                 birthday: DateTime(2016, 08, 23),
               ),
               group: group11);
-          pgLinksDao.create(
-              person: await personsDao.create(
+          pgLinksDao.insert2(
+              person: await personsDao.insert2(
                 family: 'Алиева',
                 name: 'Амина-Хатун',
                 middleName: 'Кенатовна',
                 birthday: DateTime(2016, 12, 23),
               ),
               group: group11);
-          groupsDao.create(
+          groupsDao.insert2(
               org: org1,
               name: 'Группа 2',
               schedule: schedule,
           );
           final org2 = await orgsDao
-              .create(name: 'Детсад №2'/*, inn: '5001101025'*/);
-          final group21 = await groupsDao.create(
+              .insert2(name: 'Детсад №2', inn: '5001101025');
+          final group21 = await groupsDao.insert2(
               org: org2,
               name: 'Группа 1',
               schedule: schedule,
@@ -168,8 +170,8 @@ LazyDatabase _openConnection() => LazyDatabase(() async {
 class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
   OrgsDao(Db db) : super(db);
 
-  /// Создание организации
-  Future<Org> create({
+  /// Добавление организации
+  Future<Org> insert2({
     @required String name,
     String inn,
   }) async {
@@ -186,26 +188,11 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
     );
   }
 
-  /// Предыдущая организация перед заданной
-  Future<Org> _getPreviousOrg(String name) =>
-      db._previousOrg(name).map((row) =>
-          Org(
-            id: row.id,
-            name: row.name,
-            inn: row.inn,
-          )
-      ).getSingle();
+  /// Исправление организации
+  void update2(Org org) => update(db.orgs).replace(org);
 
   /// Удаление организации
-  void remove(Org org) async {
-    final activeOrg = await db.settingsDao.getActiveOrg();
-    if (org.id == activeOrg.id) {
-      final previousOrg =
-        await _getPreviousOrg(org.name);
-      db.settingsDao.setActiveOrg(previousOrg);
-    }
-    delete(db.orgs).delete(org);
-  }
+  void delete2(Org org) => delete(db.orgs).delete(org);
 
   /// Отслеживание организаций
   Stream<List<OrgView>> watch() =>
@@ -214,9 +201,32 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
             id: row.id,
             name: row.name,
             inn: row.inn,
+            activeGroupId: row.activeGroupId,
             groupCount: row.groupCount,
           )
       ).watch();
+
+  /// Предыдущая организация перед заданной
+  Future<Org> getPreviousOrg(Org org) async =>
+    await db._previousOrg(org.name).map((row) =>
+        Org(
+          id: row.id,
+          name: row.name,
+          inn: row.inn,
+          activeGroupId: row.activeGroupId,
+        )
+    ).getSingle() ?? _getFirstOrg();
+
+  /// Первая организация в алфавитном порядке
+  Future<Org> _getFirstOrg() =>
+      db._firstOrg().map((row) =>
+          Org(
+            id: row.id,
+            name: row.name,
+            inn: row.inn,
+            activeGroupId: row.activeGroupId,
+          )
+      ).getSingle();
 }
 
 // Графики ---------------------------------------------------------------------
@@ -224,8 +234,8 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
 class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
   SchedulesDao(Db db) : super(db);
 
-  /// Создание графика
-  Future<Schedule> create({
+  /// Добавление графика
+  Future<Schedule> insert2({
     @required String code,
     bool createDays = false,
   }) async {
@@ -236,7 +246,7 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
       final hoursByDays = parseScheduleCode(code);
       for (int dayNumber = 0; dayNumber < hoursByDays.length; dayNumber++)
         if (hoursByDays[dayNumber] != 0)
-          db.scheduleDaysDao.create(
+          db.scheduleDaysDao.insert2(
             schedule: schedule,
             dayNumber: dayNumber,
             hoursNorm: hoursByDays[dayNumber],
@@ -246,7 +256,7 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
   }
 
   /// Удаление графика
-  void remove(Schedule schedule) =>
+  void delete2(Schedule schedule) =>
       delete(db.schedules).delete(schedule);
 
   /// Отслеживание графиков
@@ -350,8 +360,8 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
 class ScheduleDaysDao extends DatabaseAccessor<Db> with _$ScheduleDaysDaoMixin {
   ScheduleDaysDao(Db db) : super(db);
 
-  /// Создание дня графика
-  Future<ScheduleDay> create({
+  /// Добавление дня графика
+  Future<ScheduleDay> insert2({
     @required Schedule schedule,
     @required int dayNumber,
     @required double hoursNorm,
@@ -372,7 +382,7 @@ class ScheduleDaysDao extends DatabaseAccessor<Db> with _$ScheduleDaysDaoMixin {
   }
 
   /// Удаление дня графика
-  void remove(ScheduleDay scheduleDay) =>
+  void delete2(ScheduleDay scheduleDay) =>
       delete(db.scheduleDays).delete(scheduleDay);
 
   // Отслеживание дней графика
@@ -392,8 +402,8 @@ class ScheduleDaysDao extends DatabaseAccessor<Db> with _$ScheduleDaysDaoMixin {
 class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
   GroupsDao(Db db) : super(db);
   
-  /// Создание группы
-  Future<Group> create({
+  /// Добавление группы
+  Future<Group> insert2({
     @required Org org,
     @required String name,
     @required Schedule schedule,
@@ -413,20 +423,15 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
     );
   }
 
+  /// Исправление группы
+  void update2(Group group) => update(db.groups).replace(group);
+
   /// Удаление группы
-  void remove(Group group) async {
-    final org = await (select(db.orgs)
-        ..where((entry) => entry.id.equals(group.orgId))).getSingle();
-    if (group.id == org.activeGroupId) {
-      db.settingsDao.setActiveGroup(org,
-          await _getPreviousGroup(org.id, group.name));
-    }
-    delete(db.groups).delete(group);
-  }
+  void delete2(Group group) => delete(db.groups).delete(group);
 
   /// Отслеживание групп организации
   Stream<List<GroupView>> watch(Org org) =>
-      db._groupsView(org.id).map((row) =>
+      db._groupsView(org?.id).map((row) =>
           GroupView(
             id: row.id,
             orgId: row.orgId,
@@ -437,8 +442,19 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
       ).watch();
 
   /// Предыдущая группа перед заданной
-  Future<Group> _getPreviousGroup(int orgId, String groupName) =>
-      db._previousGroup(orgId, groupName).map((row) =>
+  Future<Group> getPreviousGroup(Org org, Group group) async =>
+    await db._previousGroup(org.id, group.name).map((row) =>
+        Group(
+          id: row.id,
+          orgId: row.orgId,
+          name: row.name,
+          scheduleId: row.scheduleId,
+        )
+    ).getSingle() ?? _getFirstGroup(org);
+
+  /// Первая группа организации в алфавитном порядке
+  Future<Group> _getFirstGroup(Org org) =>
+      db._firstGroup(org.id).map((row) =>
           Group(
             id: row.id,
             orgId: row.orgId,
@@ -446,21 +462,6 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
             scheduleId: row.scheduleId,
           )
       ).getSingle();
-
-  /// Первая группа организации в алфавитном порядке
-  Stream<Group> watchFirstOrgGroup(Org org) =>
-      _selectFirstOrgGroup(org).watchSingle();
-  Future<Group> getFirstOrgGroup(Org org) =>
-      _selectFirstOrgGroup(org).getSingle();
-  Selectable<Group> _selectFirstOrgGroup(Org org) =>
-      db._firstOrgGroup(org.id).map((row) =>
-          Group(
-            id: row.id,
-            orgId: row.orgId,
-            name: row.name,
-            scheduleId: row.scheduleId,
-          )
-      );
 }
 
 // Персоны ---------------------------------------------------------------------
@@ -468,8 +469,8 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
 class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
   PersonsDao(Db db) : super(db);
 
-  /// Создание персоны
-  Future<Person> create({
+  /// Добавление персоны
+  Future<Person> insert2({
     @required String family,
     @required String name,
     String middleName,
@@ -493,10 +494,10 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
   }
 
   /// Исправление персоны
-  void modify(Person person) => update(db.persons).replace(person);
+  void update2(Person person) => update(db.persons).replace(person);
 
   /// Удаление персоны
-  void remove(Person person) => delete(db.persons).delete(person);
+  void delete2(Person person) => delete(db.persons).delete(person);
 
   /// Отслеживание персон
   Stream<List<Person>> watch() => select(db.persons).watch();
@@ -508,7 +509,7 @@ class PgLinksDao extends DatabaseAccessor<Db> with _$PgLinksDaoMixin {
   PgLinksDao(Db db) : super(db);
 
   /// Добавление связи персоны с группой
-  Future<GroupPerson> create({
+  Future<GroupPerson> insert2({
     @required Person person,
     @required Group group,
   }) async {
@@ -529,7 +530,7 @@ class PgLinksDao extends DatabaseAccessor<Db> with _$PgLinksDaoMixin {
   }
 
   /// Удаление связи персоны с группой
-  void remove(GroupPerson personOfGroup) =>
+  void delete2(GroupPerson personOfGroup) =>
       delete(db.pgLinks).delete(
           PgLinksCompanion(
             id: Value(personOfGroup.pgLinkId),
@@ -555,8 +556,8 @@ class PgLinksDao extends DatabaseAccessor<Db> with _$PgLinksDaoMixin {
 class TimesheetsDao extends DatabaseAccessor<Db> with _$TimesheetsDaoMixin {
   TimesheetsDao(Db db) : super(db);
 
-  /// Создание посещаемости персоны
-  Future<Timesheet> create({
+  /// Добавление посещаемости
+  Future<Timesheet> insert2({
     @required GroupPerson personOfGroup,
     @required DateTime attendanceDate,
     @required num hoursNumber,
@@ -576,8 +577,8 @@ class TimesheetsDao extends DatabaseAccessor<Db> with _$TimesheetsDaoMixin {
     );
   }
 
-  /// Удаление посещаемости персоны
-  void remove(Timesheet timesheet) =>
+  /// Удаление посещаемости
+  void delete2(Timesheet timesheet) =>
       delete(db.timesheets).delete(timesheet);
 
   /// Отслеживание посещаемости персоны в группе за период
@@ -600,8 +601,8 @@ class TimesheetsDao extends DatabaseAccessor<Db> with _$TimesheetsDaoMixin {
 class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   SettingsDao(Db db) : super(db);
 
-  /// Создание настройки
-  Future<Setting> create(String name, {
+  /// Добавление настройки
+  Future<Setting> insert2(String name, {
     String textValue,
     int intValue,
     DateTime dateValue,
@@ -624,14 +625,12 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   }
 
   /// Удаление настройки
-  void remove(String settingName) =>
+  void delete2(String settingName) =>
       delete(db.settings).where((s) => s.name.equals(settingName));
 
   /// Активная организация
-  Stream<Org> watchActiveOrg() => 
-      _selectActiveOrg().watchSingle();
-  Future<Org> getActiveOrg() async =>
-      await _selectActiveOrg().getSingle();
+  Stream<Org> watchActiveOrg() => _selectActiveOrg().watchSingle();
+  Future<Org> getActiveOrg() => _selectActiveOrg().getSingle();
   Selectable<Org> _selectActiveOrg() =>
       db._activeOrg().map((row) =>
           Org(
@@ -645,13 +644,11 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   /// Установка активной организации
   void setActiveOrg(Org org) async {
     if (org == null)
-      remove('activeOrg');
+      delete2('activeOrg');
     else {
-      final activeOrgOld = await getActiveOrg();
-      if (activeOrgOld == null)
-        create('activeOrg', intValue: org.id);
-      else if (activeOrgOld.id != org.id)
-        db._setActiveOrg(org.id);
+      final count = await db._setActiveOrg(org.id);
+      if (count == 0)
+        insert2('activeOrg', intValue: org.id);
     }
   }
 
@@ -661,7 +658,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   Future<Group> getActiveGroup(Org org) =>
       _selectActiveGroup(org).getSingle();
   Selectable<Group> _selectActiveGroup(Org org) =>
-      select(db.groups)..where((entry) => entry.id.equals(org.activeGroupId));
+      select(db.groups)..where((entry) => entry.id?.equals(org?.activeGroupId));
 
   /// Установка активной группы
   Future setActiveGroup(Org org, Group group) =>
@@ -677,6 +674,6 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
     if (activePeriodOld != null && activePeriodOld != activePeriod)
       db._setActivePeriod(activePeriod);
     else
-      create('activePeriod', dateValue: activePeriod);
+      insert2('activePeriod', dateValue: activePeriod);
   }
 }
