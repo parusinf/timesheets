@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:timesheets/core/bloc.dart';
 import 'package:timesheets/core/l10n.dart';
 import 'package:timesheets/db/db.dart';
@@ -12,6 +13,8 @@ class OrgPage extends StatefulWidget {
 }
 
 class _OrgPageState extends State<OrgPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _autoValidate = false;
   Bloc get bloc => Provider.of<Bloc>(context, listen: false);
   final TextEditingController _nameEdit = TextEditingController();
   final TextEditingController _innEdit = TextEditingController();
@@ -37,53 +40,99 @@ class _OrgPageState extends State<OrgPage> {
           L10n.of(context).orgInserting : L10n.of(context).orgUpdating
       ),
     ),
-    body: Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          TextField(
-            controller: _nameEdit,
-            autofocus: true,
-            decoration: InputDecoration(
-              labelText: L10n.of(context).orgName,
-            ),
-            onSubmitted: (_) => widget.entry == null ? _insertOrg() : _updateOrg(),
-          ),
-          TextField(
-            controller: _innEdit,
-            autofocus: true,
-            decoration: InputDecoration(
-              labelText: L10n.of(context).inn,
-            ),
-            onSubmitted: (_) => widget.entry == null ? _insertOrg() : _updateOrg(),
-          ),
-          ButtonBar(
+    body: Form(
+      key: _formKey,
+      autovalidate: _autoValidate,
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          dragStartBehavior: DragStartBehavior.down,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
             children: <Widget>[
-              FlatButton(
-                child: Text(L10n.of(context).done),
-                textColor: Theme.of(context).accentColor,
-                onPressed: widget.entry == null ? _insertOrg : _updateOrg,
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _nameEdit,
+                textCapitalization: TextCapitalization.words,
+                autofocus: true,
+                decoration: InputDecoration(
+                  filled: true,
+                  icon: const Icon(Icons.business),
+                  labelText: L10n.of(context).orgName,
+                ),
+                validator: _validateName,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _innEdit,
+                keyboardType: TextInputType.numberWithOptions(),
+                decoration: InputDecoration(
+                  icon: const Icon(Icons.dialpad),
+                  labelText: L10n.of(context).inn,
+                ),
+                validator: _validateInn,
+              ),
+              const SizedBox(height: 16),
+              ButtonBar(
+                children: <Widget>[
+                  RaisedButton(
+                    child: Text(L10n.of(context).done),
+                    onPressed: _handleSubmitted,
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     ),
   );
 
-  /// Добавление организации
-  void _insertOrg() {
+  /// Обработка формы
+  void _handleSubmitted() {
+    final form = _formKey.currentState;
+    if (!form.validate()) {
+      _autoValidate = true;
+    } else {
+      if (widget.entry == null) {
+        _insert();
+      } else {
+        _update();
+      }
+    }
+  }
+
+  /// Проверка наименования
+  String _validateName(String value) {
+    if (value.isEmpty) {
+      return L10n.of(context).noName;
+    }
+    return null;
+  }
+
+  /// Проверка ИНН
+  String _validateInn(String value) {
+    final regexp = RegExp(r'^\d{10}$');
+    if (value.isNotEmpty && !regexp.hasMatch(value)) {
+      return L10n.of(context).innLength;
+    }
+    return null;
+  }
+
+  /// Добавление
+  void _insert() {
     if (_nameEdit.text.isNotEmpty) {
       bloc.insertOrg(name: _nameEdit.text, inn: _innEdit.text);
       Navigator.of(context).pop();
     }
   }
   
-  /// Исправление организации
-  void _updateOrg() {
+  /// Исправление
+  void _update() {
     if (_nameEdit.text.isNotEmpty) {
-      bloc.updateOrg(org: widget.entry, name: _nameEdit.text, inn: _innEdit.text);
+      bloc.updateOrg(widget.entry.copyWith(
+        name: _nameEdit.text,
+        inn: _innEdit.text,
+      ));
       Navigator.of(context).pop();
     }
   }

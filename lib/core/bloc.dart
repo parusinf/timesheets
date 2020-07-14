@@ -83,23 +83,15 @@ class Bloc {
   }) async {
     final org = await db.orgsDao.insert2(
       name: name,
-      inn: inn == '' ? null : inn,
+      inn: inn,
     );
     showOrg(org);
   }
 
   /// Исправление организации
-  void updateOrg({
-    @required Org org,
-    @required String name,
-    String inn,
-  }) async {
-    final newOrg = org.copyWith(
-      name: name,
-      inn: inn == '' ? null : inn,
-    );
-    db.orgsDao.update2(newOrg);
-    showOrg(newOrg);
+  void updateOrg(Org org) {
+    db.orgsDao.update2(org);
+    showOrg(org);
   }
 
   /// Удаление организации

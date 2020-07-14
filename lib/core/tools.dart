@@ -21,7 +21,12 @@ String periodString(DateTime period) {
 }
 
 /// Последний день месяца
-DateTime lastDayOfMonth(DateTime date) =>
-    date.month < 12 ?
-    DateTime(date.year, date.month + 1, 0) :
-    DateTime(date.year + 1, 1, 0);
+DateTime lastDayOfMonth(DateTime date) => date.month < 12
+    ? DateTime(date.year, date.month + 1, 0)
+    : DateTime(date.year + 1, 1, 0);
+
+/// Проверка строки на пустоту
+bool isEmpty(String value) => value == null || value.isEmpty;
+
+/// Проверка строки на непустоту
+bool isNotEmpty(String value) => !isEmpty(value);

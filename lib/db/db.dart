@@ -29,7 +29,7 @@ class OrgView extends Org {
 /// Представление группы
 class GroupView extends Group {
   final Schedule schedule; // график
-  final int personCount; // количество персон в группе
+  final int personCount;   // количество персон в группе
 
   GroupView({
     @required int id,
@@ -265,15 +265,17 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
   /// Формирование списка часов по коду графика
   static List<double> parseScheduleCode(String code) {
     var hours = List<double>();
-    if (code.contains(_inWeekStr))
+    if (code.contains(_inWeekStr)) {
       hours = List<double>.generate(14, (i) => 0.0);
-    else
+    } else {
       hours = List<double>.generate(7, (i) => 0.0);
+    }
     final parts = code.split(';');
-    if (parts.length > 1) // пн,вт 1ч;чт 2ч
+    if (parts.length > 1) { // пн,вт 1ч;чт 2ч
       parts.forEach((part) => _parseScheduleCode(hours, part));
-    else // пн,вт 1ч
+    } else { // пн,вт 1ч
       _parseScheduleCode(hours, code);
+    }
     return hours;
   }
 
@@ -283,11 +285,11 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
     assert(hours.reduce((a, b) => a + b) != 0);
     final parts = List<String>();
     final week = _createOneWeekDays(hours, 0);
-    if (hours.length == 7)
+    if (hours.length == 7) {
       week.forEach((hour, days) {
         parts.add(days.join(',') + ' $hour$_hourStr');
       });
-    else {
+    } else {
       final week2 = _createOneWeekDays(hours, 7);
       week.forEach((hour, days) {
         week2.forEach((hour2, days2) {
@@ -333,9 +335,10 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
       String hourString, int shift) {
     final hour = double.parse(
         hourString.replaceFirst(_hourStr, '').replaceFirst(',', '.'));
-    for (int day = 0; day < 7; day++)
+    for (int day = 0; day < 7; day++) {
       if (daysString == '' || daysString.contains(weekDays[day]))
         hours[day + shift] = hour;
+    }
   }
 
   /// Формирование дней одной недели
@@ -344,9 +347,11 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
     hours.sublist(offset, offset + 7).where((e) => e > 0).toSet().forEach((hour) {
       hoursMap[hour] = [];
     });
-    for (int day = offset; day < offset + 7; day++)
-      if (hoursMap.containsKey(hours[day]))
+    for (int day = offset; day < offset + 7; day++) {
+      if (hoursMap.containsKey(hours[day])) {
         hoursMap[hours[day]].add(weekDays[day % 7]);
+      }
+    }
     return hoursMap;
   }
 

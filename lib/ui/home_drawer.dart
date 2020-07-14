@@ -18,7 +18,8 @@ class HomeDrawer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             // Список организаций
-            _listTitle(context, L10n.of(context).organizations, OrgPage()),
+            _listTitle(context, Icons.business,
+                L10n.of(context).organizations, OrgPage()),
             Flexible(
               child: StreamBuilder<List<ActiveOrg>>(
                 stream: Provider.of<Bloc>(context).activeOrgsSubject,
@@ -35,8 +36,9 @@ class HomeDrawer extends StatelessWidget {
             // Список групп активной организации
             StreamBuilder<Org>(
                 stream: Provider.of<Bloc>(context).activeOrgSubject,
-                builder: (context, snapshot) => snapshot.hasData ?
-                    _listTitle(context, L10n.of(context).groups, GroupPage())
+                builder: (context, snapshot) => snapshot.hasData
+                    ? _listTitle(context, Icons.group,
+                          L10n.of(context).groups, GroupPage())
                     : Spacer()
             ),
             Flexible(
@@ -60,9 +62,13 @@ class HomeDrawer extends StatelessWidget {
   );
 
   /// Заголовок списка с кнопкой добавления
- _listTitle(BuildContext context, String title, Widget entryPage) =>
+Widget _listTitle(BuildContext context, IconData icon, String title, Widget entryPage) =>
    Row(
      children: <Widget>[
+       Padding(
+         padding: const EdgeInsets.all(4.0),
+         child: Icon(icon, color: Colors.black38)
+       ),
        greyText(context, title),
        const Spacer(),
        IconButton(
@@ -79,6 +85,7 @@ class HomeDrawer extends StatelessWidget {
    );
 }
 
+/// Запись организации
 class _OrgDrawerEntry extends StatelessWidget {
   final List<ActiveOrg> orgs;
   final int index;
@@ -114,7 +121,7 @@ class _OrgDrawerEntry extends StatelessWidget {
         },
         child: ListTile(
           title: Text(entry.orgView.name),
-          subtitle: Text(entry.orgView.inn != null
+          subtitle: Text(isNotEmpty(entry.orgView.inn)
               ? entry.orgView.inn
               : L10n.of(context).withoutInn
           ),
@@ -128,6 +135,7 @@ class _OrgDrawerEntry extends StatelessWidget {
   );
 }
 
+/// Запись группы
 class _GroupDrawerEntry extends StatelessWidget {
   final List<ActiveGroup> groups;
   final int index;
