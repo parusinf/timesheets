@@ -28,6 +28,7 @@ class L10n {
       'groups': 'ГРУППЫ',
       'inn': 'ИНН',
       'innLength': 'ИНН должен состоять из 10 цифр',
+      'noCode': 'Нет мнемокода',
       'noGroups': 'Групп нет',
       'noName': 'Нет наименования',
       'noOrgs': 'Организаций нет',
@@ -39,8 +40,12 @@ class L10n {
       'orgName': 'Наименование организации',
       'orgUpdated': 'Организация исправлена',
       'orgUpdating': 'Исправление организации',
-      'organizations': 'ОРГАНИЗАЦИИ',
+      'orgs': 'ОРГАНИЗАЦИИ',
       'schedule': 'График',
+      'scheduleCode': 'Мнемокод графика',
+      'scheduleInserting': 'Добавление графика',
+      'scheduleUpdating': 'Исправление графика',
+      'schedules': 'Графики',
       'title': 'Табели',
       'withoutInn': 'Без ИНН',
     }
@@ -62,6 +67,7 @@ class L10n {
   get groups => _l10n[locale.languageCode]['groups'];
   get inn => _l10n[locale.languageCode]['inn'];
   get innLength => _l10n[locale.languageCode]['innLength'];
+  get noCode => _l10n[locale.languageCode]['noCode'];
   get noGroups => _l10n[locale.languageCode]['noGroups'];
   get noName => _l10n[locale.languageCode]['noName'];
   get noOrgs => _l10n[locale.languageCode]['noOrgs'];
@@ -73,8 +79,12 @@ class L10n {
   get orgName => _l10n[locale.languageCode]['orgName'];
   get orgUpdated => _l10n[locale.languageCode]['orgUpdated'];
   get orgUpdating => _l10n[locale.languageCode]['orgUpdating'];
-  get organizations => _l10n[locale.languageCode]['organizations'];
+  get orgs => _l10n[locale.languageCode]['orgs'];
   get schedule => _l10n[locale.languageCode]['schedule'];
+  get scheduleCode => _l10n[locale.languageCode]['scheduleCode'];
+  get scheduleInserting => _l10n[locale.languageCode]['scheduleInserting'];
+  get scheduleUpdating => _l10n[locale.languageCode]['scheduleUpdating'];
+  get schedules => _l10n[locale.languageCode]['schedules'];
   get title => _l10n[locale.languageCode]['title'];
   get withoutInn => _l10n[locale.languageCode]['withoutInn'];
 }

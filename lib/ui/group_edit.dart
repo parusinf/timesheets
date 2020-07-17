@@ -1,43 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
-import 'package:timesheets/core/bloc.dart';
-import 'package:timesheets/core/l10n.dart';
+import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
+import 'package:timesheets/ui/schedules_dictionary.dart';
 
-class OrgPage extends StatefulWidget {
-  final Org entry;
-  const OrgPage({Key key, this.entry}) : super(key: key);
+/// Форма редактирования группы
+class GroupEdit extends StatefulWidget {
+  final GroupView groupView;
+  const GroupEdit({Key key, this.groupView}) : super(key: key);
   @override
-  _OrgPageState createState() => _OrgPageState();
+  _GroupEditState createState() => _GroupEditState();
 }
 
-class _OrgPageState extends State<OrgPage> {
+/// Состояние формы редактирования группы
+class _GroupEditState extends State<GroupEdit> {
+  Schedule schedule;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
   Bloc get bloc => Provider.of<Bloc>(context, listen: false);
   final TextEditingController _nameEdit = TextEditingController();
-  final TextEditingController _innEdit = TextEditingController();
+  final TextEditingController _scheduleEdit = TextEditingController();
 
   @override
   void initState() {
-    _nameEdit.text = widget.entry?.name;
-    _innEdit.text = widget.entry?.inn;
+    _nameEdit.text = widget.groupView?.name;
+    final activeSchedule = bloc.activeScheduleSubject.value;
+    schedule = widget.groupView?.schedule ?? activeSchedule;
+    _scheduleEdit.text = schedule.code;
     super.initState();
   }
 
   @override
   void dispose() {
     _nameEdit.dispose();
-    _innEdit.dispose();
+    _scheduleEdit.dispose();
     super.dispose();
   }
-
+  
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(widget.entry == null ?
-          L10n.of(context).orgInserting : L10n.of(context).orgUpdating
+      title: Text(widget.groupView == null
+          ? L10n.of(context).groupInserting
+          : L10n.of(context).groupUpdating
       ),
     ),
     body: Form(
@@ -56,20 +62,22 @@ class _OrgPageState extends State<OrgPage> {
                 autofocus: true,
                 decoration: InputDecoration(
                   filled: true,
-                  icon: const Icon(Icons.business),
-                  labelText: L10n.of(context).orgName,
+                  icon: const Icon(Icons.group),
+                  labelText: L10n.of(context).groupName,
                 ),
                 validator: _validateName,
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _innEdit,
-                keyboardType: TextInputType.numberWithOptions(),
+                controller: _scheduleEdit,
+                readOnly: true,
                 decoration: InputDecoration(
-                  icon: const Icon(Icons.dialpad),
-                  labelText: L10n.of(context).inn,
+                  filled: true,
+                  icon: const Icon(Icons.calendar_today),
+                  labelText: L10n.of(context).schedule,
                 ),
-                validator: _validateInn,
+                validator: _validateSchedule,
+                onTap: () => _selectSchedule(context),
               ),
               const SizedBox(height: 16),
               ButtonBar(
@@ -87,13 +95,22 @@ class _OrgPageState extends State<OrgPage> {
     ),
   );
 
+  /// Выбор графика из словаря
+  void _selectSchedule(BuildContext context) async {
+    schedule = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SchedulesDictionary()),
+    );
+    _scheduleEdit.text = schedule?.code ?? bloc.activeScheduleSubject.value.code;
+  }
+
   /// Обработка формы
   void _handleSubmitted() {
     final form = _formKey.currentState;
     if (!form.validate()) {
       _autoValidate = true;
     } else {
-      if (widget.entry == null) {
+      if (widget.groupView == null) {
         _insert();
       } else {
         _update();
@@ -109,31 +126,29 @@ class _OrgPageState extends State<OrgPage> {
     return null;
   }
 
-  /// Проверка ИНН
-  String _validateInn(String value) {
-    final regexp = RegExp(r'^\d{10}$');
-    if (value.isNotEmpty && !regexp.hasMatch(value)) {
-      return L10n.of(context).innLength;
+  /// Проверка графика
+  String _validateSchedule(String value) {
+    if (value.isEmpty) {
+      return L10n.of(context).noSchedule;
     }
     return null;
   }
 
   /// Добавление
   void _insert() {
-    if (_nameEdit.text.isNotEmpty) {
-      bloc.insertOrg(name: _nameEdit.text, inn: _innEdit.text);
-      Navigator.of(context).pop();
-    }
+    bloc.insertGroup(
+      name: _nameEdit.text,
+      schedule: schedule
+    );
+    Navigator.of(context).pop();
   }
-  
+
   /// Исправление
   void _update() {
-    if (_nameEdit.text.isNotEmpty) {
-      bloc.updateOrg(widget.entry.copyWith(
-        name: _nameEdit.text,
-        inn: _innEdit.text,
-      ));
-      Navigator.of(context).pop();
-    }
+    bloc.updateGroup(widget.groupView.copyWith(
+      name: _nameEdit.text,
+      scheduleId: schedule.id,
+    ));
+    Navigator.of(context).pop();
   }
 }

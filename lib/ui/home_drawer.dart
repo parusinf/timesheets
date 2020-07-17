@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:timesheets/core/l10n.dart';
-import 'package:timesheets/core/bloc.dart';
-import 'package:timesheets/core/tools.dart';
+import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
-import 'package:timesheets/ui/group_page.dart';
-import 'package:timesheets/ui/org_page.dart';
+import 'package:timesheets/ui/group_edit.dart';
+import 'package:timesheets/ui/org_edit.dart';
 
 /// Дроувер домашнего экрана
 class HomeDrawer extends StatelessWidget {
@@ -18,8 +16,8 @@ class HomeDrawer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             // Список организаций
-            _listTitle(context, Icons.business,
-                L10n.of(context).organizations, OrgPage()),
+            _listTitle(context, Icons.business, L10n.of(context).orgs,
+                L10n.of(context).orgInserting, OrgEdit()),
             Flexible(
               child: StreamBuilder<List<ActiveOrg>>(
                 stream: Provider.of<Bloc>(context).activeOrgsSubject,
@@ -27,7 +25,7 @@ class HomeDrawer extends StatelessWidget {
                   final orgs = snapshot.data ?? <ActiveOrg>[];
                   return ListView.builder(
                     itemBuilder: (context, index) =>
-                        _OrgDrawerEntry(orgs, index),
+                        _OrgCard(orgs, index),
                     itemCount: orgs.length,
                   );
                 },
@@ -37,8 +35,8 @@ class HomeDrawer extends StatelessWidget {
             StreamBuilder<Org>(
                 stream: Provider.of<Bloc>(context).activeOrgSubject,
                 builder: (context, snapshot) => snapshot.hasData
-                    ? _listTitle(context, Icons.group,
-                          L10n.of(context).groups, GroupPage())
+                    ? _listTitle(context, Icons.group, L10n.of(context).groups,
+                        L10n.of(context).groupInserting, GroupEdit())
                     : Spacer()
             ),
             Flexible(
@@ -49,7 +47,7 @@ class HomeDrawer extends StatelessWidget {
                   final groups = snapshot.data ?? <ActiveGroup>[];
                   return ListView.builder(
                     itemBuilder: (context, index) =>
-                        _GroupDrawerEntry(groups, index),
+                        _GroupCard(groups, index),
                     itemCount: groups.length,
                   );
                 },
@@ -62,7 +60,8 @@ class HomeDrawer extends StatelessWidget {
   );
 
   /// Заголовок списка с кнопкой добавления
-Widget _listTitle(BuildContext context, IconData icon, String title, Widget entryPage) =>
+Widget _listTitle(BuildContext context, IconData icon, String title,
+    String actionName, Widget entryPage) =>
    Row(
      children: <Widget>[
        Padding(
@@ -74,23 +73,22 @@ Widget _listTitle(BuildContext context, IconData icon, String title, Widget entr
        IconButton(
          icon: const Icon(Icons.add),
          color: Colors.black38,
-         onPressed: () {
-           Navigator.push(
-             context,
-             MaterialPageRoute(builder: (context) => entryPage),
-           );
-         },
+         tooltip: actionName,
+         onPressed: () => Navigator.push(
+           context,
+           MaterialPageRoute(builder: (context) => entryPage),
+         ),
        ),
      ]
    );
 }
 
-/// Запись организации
-class _OrgDrawerEntry extends StatelessWidget {
+/// Карточка организации
+class _OrgCard extends StatelessWidget {
   final List<ActiveOrg> orgs;
   final int index;
   final ActiveOrg entry;
-  _OrgDrawerEntry(this.orgs, this.index) : entry = orgs[index];
+  _OrgCard(this.orgs, this.index) : entry = orgs[index];
 
   @override
   Widget build(BuildContext context) => Dismissible(
@@ -116,7 +114,7 @@ class _OrgDrawerEntry extends StatelessWidget {
         onDoubleTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => OrgPage(entry: entry.orgView)),
+            MaterialPageRoute(builder: (context) => OrgEdit(org: entry.orgView)),
           );
         },
         child: ListTile(
@@ -135,12 +133,12 @@ class _OrgDrawerEntry extends StatelessWidget {
   );
 }
 
-/// Запись группы
-class _GroupDrawerEntry extends StatelessWidget {
+/// Карточка группы
+class _GroupCard extends StatelessWidget {
   final List<ActiveGroup> groups;
   final int index;
   final ActiveGroup entry;
-  _GroupDrawerEntry(this.groups, this.index) : entry = groups[index];
+  _GroupCard(this.groups, this.index) : entry = groups[index];
 
   @override
   Widget build(BuildContext context) => Dismissible(
@@ -167,7 +165,7 @@ class _GroupDrawerEntry extends StatelessWidget {
         onDoubleTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => GroupPage(entry: entry.groupView)),
+            MaterialPageRoute(builder: (context) => GroupEdit(groupView: entry.groupView)),
           );
         },
         child: ListTile(

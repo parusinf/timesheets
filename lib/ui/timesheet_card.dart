@@ -11,6 +11,5 @@ class TimesheetCard extends StatelessWidget {
   Widget build(BuildContext context) => ListTile(
     title: Text(personOfGroup.family),
     subtitle: Text('${personOfGroup.name} ${personOfGroup.middleName}'),
-
   );
 }

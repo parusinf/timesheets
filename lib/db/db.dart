@@ -26,6 +26,20 @@ class OrgView extends Org {
   );
 }
 
+/// Представление графика
+class ScheduleView extends Schedule {
+  final int groupCount; // количество групп, ссылающихся на график
+
+  ScheduleView({
+    @required int id,
+    @required String code,
+    this.groupCount = 0,
+  }) : super(
+    id: id,
+    code: code,
+  );
+}
+
 /// Представление группы
 class GroupView extends Group {
   final Schedule schedule; // график
@@ -109,6 +123,7 @@ class Db extends _$Db {
           final schedule = await schedulesDao.insert2(
             code: 'пн,вт,ср,чт,пт 12ч',
             createDays: true);
+          settingsDao.setActiveSchedule(schedule);
           final org1 = await orgsDao.insert2(
             name: 'МБДОУ д/с общеразвивающего типа №1 "Светлячок"',
             inn: '5001030102',
@@ -255,12 +270,39 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
     return schedule;
   }
 
+  /// Исправление графика
+  void update2(Schedule schedule) => update(db.schedules).replace(schedule);
+
   /// Удаление графика
-  void delete2(Schedule schedule) =>
-      delete(db.schedules).delete(schedule);
+  void delete2(Schedule schedule) => delete(db.schedules).delete(schedule);
 
   /// Отслеживание графиков
-  Stream<List<Schedule>> watch() => select(db.schedules).watch();
+  Stream<List<ScheduleView>> watch() =>
+      db._schedulesView().map((row) =>
+          ScheduleView(
+            id: row.id,
+            code: row.code,
+            groupCount: row.groupCount,
+          )
+      ).watch();
+
+  /// Предыдущий график перед заданным
+  Future<Schedule> getPreviousSchedule(Schedule schedule) async =>
+      await db._previousSchedule(schedule.code).map((row) =>
+          Schedule(
+            id: row.id,
+            code: row.code,
+          )
+      ).getSingle() ?? _getFirstSchedule();
+
+  /// Первая организация в алфавитном порядке
+  Future<Schedule> _getFirstSchedule() =>
+      db._firstSchedule().map((row) =>
+          Schedule(
+            id: row.id,
+            code: row.code,
+          )
+      ).getSingle();
 
   /// Формирование списка часов по коду графика
   static List<double> parseScheduleCode(String code) {
@@ -296,10 +338,12 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
           if (hour == hour2) {
             final daysStr = days.join(',');
             final days2Str = days2.join(',');
-            if (daysStr == days2Str)
+            if (daysStr == days2Str) {
               parts.add(daysStr + ' $hour$_hourStr');
-            else
-              parts.add(daysStr + '/' + days2Str + ' $_inWeekStr $hour$_hourStr');
+            } else {
+              parts.add(
+                  daysStr + '/' + days2Str + ' $_inWeekStr $hour$_hourStr');
+            }
           }
         });
       });
@@ -320,12 +364,13 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
     } else { // пн,вт 1ч
       final daysHour = code.split(' '); // ['пн,вт','1ч']
       assert(daysHour.length == 2);
-      if (daysHour.length == 1)
+      if (daysHour.length == 1) {
         _parseWeek(hours, '', daysHour[1], 0);
-      else {
+      } else {
         _parseWeek(hours, daysHour[0], daysHour[1], 0);
-        if (hours.length == 14)
+        if (hours.length == 14) {
           _parseWeek(hours, daysHour[0], daysHour[1], 7);
+        }
       }
     }
   }
@@ -336,8 +381,9 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
     final hour = double.parse(
         hourString.replaceFirst(_hourStr, '').replaceFirst(',', '.'));
     for (int day = 0; day < 7; day++) {
-      if (daysString == '' || daysString.contains(weekDays[day]))
+      if (daysString == '' || daysString.contains(weekDays[day])) {
         hours[day + shift] = hour;
+      }
     }
   }
 
@@ -652,8 +698,32 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
       delete2('activeOrg');
     else {
       final count = await db._setActiveOrg(org.id);
-      if (count == 0)
+      if (count == 0) {
         insert2('activeOrg', intValue: org.id);
+      }
+    }
+  }
+
+  /// Активный график
+  Stream<Schedule> watchActiveSchedule() => _selectActiveSchedule().watchSingle();
+  Future<Schedule> getActiveSchedule() => _selectActiveSchedule().getSingle();
+  Selectable<Schedule> _selectActiveSchedule() =>
+      db._activeSchedule().map((row) =>
+          Schedule(
+            id: row.id,
+            code: row.code,
+          )
+      );
+
+  /// Установка активного графика
+  void setActiveSchedule(Schedule schedule) async {
+    if (schedule == null)
+      delete2('activeSchedule');
+    else {
+      final count = await db._setActiveSchedule(schedule.id);
+      if (count == 0) {
+        insert2('activeSchedule', intValue: schedule.id);
+      }
     }
   }
 
@@ -676,9 +746,10 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   /// Установка активного периода
   Future setActivePeriod(DateTime activePeriod) async {
     final activePeriodOld = await getActivePeriod();
-    if (activePeriodOld != null && activePeriodOld != activePeriod)
+    if (activePeriodOld != null && activePeriodOld != activePeriod) {
       db._setActivePeriod(activePeriod);
-    else
+    } else {
       insert2('activePeriod', dateValue: activePeriod);
+    }
   }
 }

@@ -2191,6 +2191,27 @@ abstract class _$Db extends GeneratedDatabase {
         readsFrom: {orgs}).map(_rowToOrg);
   }
 
+  Schedule _rowToSchedule(QueryRow row) {
+    return Schedule(
+      id: row.readInt('id'),
+      code: row.readString('code'),
+    );
+  }
+
+  Selectable<Schedule> _firstSchedule() {
+    return customSelect(
+        'SELECT *\n  FROM schedules\n WHERE code =\n       (\n         SELECT MIN(code)\n           FROM schedules\n       )',
+        variables: [],
+        readsFrom: {schedules}).map(_rowToSchedule);
+  }
+
+  Selectable<Schedule> _previousSchedule(String scheduleCode) {
+    return customSelect(
+        'SELECT *\n  FROM schedules\n WHERE code =\n       (\n         SELECT MAX(code)\n           FROM schedules\n          WHERE code < :scheduleCode\n       )',
+        variables: [Variable.withString(scheduleCode)],
+        readsFrom: {schedules}).map(_rowToSchedule);
+  }
+
   Group _rowToGroup(QueryRow row) {
     return Group(
       id: row.readInt('id'),
@@ -2229,6 +2250,21 @@ abstract class _$Db extends GeneratedDatabase {
         'SELECT O.id,\n       O.name,\n       O.inn,\n       O.activeGroupId,\n       CAST((SELECT COUNT(*) FROM "groups" WHERE orgId = O.id) AS INT) AS groupCount\n  FROM orgs O\n ORDER BY\n       O.name,\n       O.inn',
         variables: [],
         readsFrom: {orgs, groups}).map(_rowToOrgsViewResult);
+  }
+
+  SchedulesViewResult _rowToSchedulesViewResult(QueryRow row) {
+    return SchedulesViewResult(
+      id: row.readInt('id'),
+      code: row.readString('code'),
+      groupCount: row.readInt('groupCount'),
+    );
+  }
+
+  Selectable<SchedulesViewResult> _schedulesView() {
+    return customSelect(
+        'SELECT S.id,\n       S.code,\n       CAST((SELECT COUNT(*) FROM "groups" WHERE scheduleId = S.id) AS INT) AS groupCount\n  FROM schedules S\n ORDER BY\n       S.code',
+        variables: [],
+        readsFrom: {schedules, groups}).map(_rowToSchedulesViewResult);
   }
 
   GroupsViewResult _rowToGroupsViewResult(QueryRow row) {
@@ -2293,6 +2329,22 @@ abstract class _$Db extends GeneratedDatabase {
   Future<int> _setActiveOrg(int id) {
     return customUpdate(
       'UPDATE settings SET intValue = :id WHERE name = \'activeOrg\'',
+      variables: [Variable.withInt(id)],
+      updates: {settings},
+      updateKind: UpdateKind.update,
+    );
+  }
+
+  Selectable<Schedule> _activeSchedule() {
+    return customSelect(
+        'SELECT SCH.*\n  FROM settings S\n INNER JOIN schedules SCH ON SCH.id = S.intValue\n WHERE S.name = \'activeSchedule\'',
+        variables: [],
+        readsFrom: {settings, schedules}).map(_rowToSchedule);
+  }
+
+  Future<int> _setActiveSchedule(int id) {
+    return customUpdate(
+      'UPDATE settings SET intValue = :id WHERE name = \'activeSchedule\'',
       variables: [Variable.withInt(id)],
       updates: {settings},
       updateKind: UpdateKind.update,
@@ -2372,6 +2424,17 @@ class OrgsViewResult {
     this.name,
     this.inn,
     this.activeGroupId,
+    this.groupCount,
+  });
+}
+
+class SchedulesViewResult {
+  final int id;
+  final String code;
+  final int groupCount;
+  SchedulesViewResult({
+    this.id,
+    this.code,
     this.groupCount,
   });
 }

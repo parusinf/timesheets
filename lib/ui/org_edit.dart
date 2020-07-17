@@ -1,43 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
-import 'package:timesheets/core/bloc.dart';
-import 'package:timesheets/core/l10n.dart';
+import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
-class GroupPage extends StatefulWidget {
-  final GroupView entry;
-  const GroupPage({Key key, this.entry}) : super(key: key);
+/// Форма редактирования организации
+class OrgEdit extends StatefulWidget {
+  final Org org;
+  const OrgEdit({Key key, this.org}) : super(key: key);
   @override
-  _GroupPageState createState() => _GroupPageState();
+  _OrgEditState createState() => _OrgEditState();
 }
 
-class _GroupPageState extends State<GroupPage> {
+/// Состояние формы редактирования организации
+class _OrgEditState extends State<OrgEdit> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
   Bloc get bloc => Provider.of<Bloc>(context, listen: false);
   final TextEditingController _nameEdit = TextEditingController();
-  final TextEditingController _scheduleEdit = TextEditingController();
+  final TextEditingController _innEdit = TextEditingController();
 
   @override
   void initState() {
-    _nameEdit.text = widget.entry?.name;
-    _scheduleEdit.text = widget.entry?.schedule?.code;
+    _nameEdit.text = widget.org?.name;
+    _innEdit.text = widget.org?.inn;
     super.initState();
   }
 
   @override
   void dispose() {
     _nameEdit.dispose();
+    _innEdit.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(widget.entry == null
-          ? L10n.of(context).groupInserting
-          : L10n.of(context).groupUpdating
+      title: Text(widget.org == null
+          ? L10n.of(context).orgInserting : L10n.of(context).orgUpdating
       ),
     ),
     body: Form(
@@ -56,21 +57,20 @@ class _GroupPageState extends State<GroupPage> {
                 autofocus: true,
                 decoration: InputDecoration(
                   filled: true,
-                  icon: const Icon(Icons.group),
-                  labelText: L10n.of(context).groupName,
+                  icon: const Icon(Icons.business),
+                  labelText: L10n.of(context).orgName,
                 ),
                 validator: _validateName,
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _scheduleEdit,
-                readOnly: true,
+                controller: _innEdit,
+                keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
-                  filled: true,
-                  icon: const Icon(Icons.calendar_today),
-                  labelText: L10n.of(context).schedule,
+                  icon: const Icon(Icons.dialpad),
+                  labelText: L10n.of(context).inn,
                 ),
-                validator: _validateSchedule,
+                validator: _validateInn,
               ),
               const SizedBox(height: 16),
               ButtonBar(
@@ -94,7 +94,7 @@ class _GroupPageState extends State<GroupPage> {
     if (!form.validate()) {
       _autoValidate = true;
     } else {
-      if (widget.entry == null) {
+      if (widget.org == null) {
         _insert();
       } else {
         _update();
@@ -110,29 +110,27 @@ class _GroupPageState extends State<GroupPage> {
     return null;
   }
 
-  /// Проверка графика
-  String _validateSchedule(String value) {
-    if (value.isEmpty) {
-      return L10n.of(context).noSchedule;
+  /// Проверка ИНН
+  String _validateInn(String value) {
+    final regexp = RegExp(r'^\d{10}$');
+    if (value.isNotEmpty && !regexp.hasMatch(value)) {
+      return L10n.of(context).innLength;
     }
     return null;
   }
 
-  /// Добавление группы
+  /// Добавление
   void _insert() {
-    if (_nameEdit.text.isNotEmpty) {
-      bloc.insertGroup(name: _nameEdit.text,
-          schedule: Schedule(id: 1, code: 'пн,вт,ср,чт,пт 12ч'));
-      Navigator.of(context).pop();
-    }
+    bloc.insertOrg(name: _nameEdit.text, inn: _innEdit.text);
+    Navigator.of(context).pop();
   }
-
-  /// Исправление группы
+  
+  /// Исправление
   void _update() {
-    if (_nameEdit.text.isNotEmpty) {
-      bloc.updateGroup(group: widget.entry, name: _nameEdit.text,
-          schedule: Schedule(id: 1, code: 'пн,вт,ср,чт,пт 12ч'));
-      Navigator.of(context).pop();
-    }
+    bloc.updateOrg(widget.org.copyWith(
+      name: _nameEdit.text,
+      inn: _innEdit.text,
+    ));
+    Navigator.of(context).pop();
   }
 }

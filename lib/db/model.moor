@@ -127,6 +127,27 @@ SELECT *
           WHERE name < :orgName
        );
 
+-- Первый график в алфавитном порядке
+_firstSchedule:
+SELECT *
+  FROM schedules
+ WHERE code =
+       (
+         SELECT MIN(code)
+           FROM schedules
+       );
+
+-- Предыдущий график перед заданным
+_previousSchedule:
+SELECT *
+  FROM schedules
+ WHERE code =
+       (
+         SELECT MAX(code)
+           FROM schedules
+          WHERE code < :scheduleCode
+       );
+
 -- Первая группа организации в алфавитном порядке
 _firstGroup:
 SELECT *
@@ -162,6 +183,15 @@ SELECT O.id,
  ORDER BY
        O.name,
        O.inn;
+
+-- Список графиков с количеством групп
+_schedulesView:
+SELECT S.id,
+       S.code,
+       CAST((SELECT COUNT(*) FROM "groups" WHERE scheduleId = S.id) AS INT) AS groupCount
+  FROM schedules S
+ ORDER BY
+       S.code;
 
 -- Список групп огранизации с графиками и количеством персон
 _groupsView:
@@ -212,6 +242,17 @@ SELECT O.*
 -- Установка активной огранизации
 _setActiveOrg:
 UPDATE settings SET intValue = :id WHERE name = 'activeOrg';
+
+-- Активный график
+_activeSchedule:
+SELECT SCH.*
+  FROM settings S
+ INNER JOIN schedules SCH ON SCH.id = S.intValue
+ WHERE S.name = 'activeSchedule';
+
+-- Установка активного графика
+_setActiveSchedule:
+UPDATE settings SET intValue = :id WHERE name = 'activeSchedule';
 
 -- Установка активной группы
 _setActiveGroup:

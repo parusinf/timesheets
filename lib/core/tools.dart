@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
-/// Виджет сообщения
-void showSnackBar(GlobalKey<ScaffoldState> scaffoldKey, String errorText) {
-  final snackBar = SnackBar(content: Text(errorText));
+/// Сообщение в снакбаре
+void snackBarMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
+  final snackBar = SnackBar(content: Text(message));
   scaffoldKey.currentState.showSnackBar(snackBar);
 }
 
 /// Текст серого цвета
-Widget greyText(BuildContext context, String text) => Text(
-  text,
-  style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.black38),
-);
+Widget greyText(BuildContext context, String text) => Text(text,
+  style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.black38));
+
+/// Сообщение в центре страницы серым цветом
+Widget centerMessage(BuildContext context, String message) =>
+    Center(child: greyText(context, message));
 
 /// Преобразование даты периода в строку
 String periodString(DateTime period) {
