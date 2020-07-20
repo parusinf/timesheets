@@ -61,7 +61,7 @@ class GroupView extends Group {
 
 /// Персона группы
 class GroupPerson extends Person {
-  final int gpLinkId;
+  final int groupPersonLinkId;
 
   GroupPerson({
     @required int id,
@@ -69,7 +69,7 @@ class GroupPerson extends Person {
     @required String name,
     String middleName,
     DateTime birthday,
-    @required this.gpLinkId,
+    @required this.groupPersonLinkId,
   }) : super(
     id: id,
     family: family,
@@ -83,14 +83,14 @@ class GroupPerson extends Person {
 @UseMoor(
   include: {'model.moor'},
   tables: [
-    Orgs, // Организации
-    Schedules,     // Графики
-    ScheduleDays,  // Дни графиков
-    Groups,        // Группы
-    Persons,       // Персоны
-    GpLinks,       // Связи персон с группами
-    Timesheets,    // Табели
-    Settings,      // Настройки
+    Orgs,             // Организации
+    Schedules,        // Графики
+    ScheduleDays,     // Дни графиков
+    Groups,           // Группы
+    Persons,          // Персоны
+    GroupPersonLinks, // Связи групп с персонами
+    Timesheets,       // Табели
+    Settings,         // Настройки
   ],
   daos: [
     OrgsDao,
@@ -98,7 +98,7 @@ class GroupPerson extends Person {
     ScheduleDaysDao,
     GroupsDao,
     PersonsDao,
-    GpLinksDao,
+    GroupPersonLinksDao,
     TimesheetsDao,
     SettingsDao
   ]
@@ -135,7 +135,7 @@ class Db extends _$Db {
             schedule: schedule,
           );
           settingsDao.setActiveGroup(org1, group11);
-          gpLinksDao.insert2(
+          groupPersonLinksDao.insert2(
               person: await personsDao.insert2(
                 family: 'Акульшин',
                 name: 'Роман',
@@ -143,7 +143,7 @@ class Db extends _$Db {
                 birthday: DateTime(2016, 08, 23),
               ),
               group: group11);
-          gpLinksDao.insert2(
+          groupPersonLinksDao.insert2(
               person: await personsDao.insert2(
                 family: 'Алиева',
                 name: 'Амина-Хатун',
@@ -554,18 +554,18 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
   Stream<List<Person>> watch() => select(db.persons).watch();
 }
 
-// Связи персон с группами -----------------------------------------------------
-@UseDao(tables: [GpLinks])
-class GpLinksDao extends DatabaseAccessor<Db> with _$GpLinksDaoMixin {
-  GpLinksDao(Db db) : super(db);
+// Связи групп с персонами -----------------------------------------------------
+@UseDao(tables: [GroupPersonLinks])
+class GroupPersonLinksDao extends DatabaseAccessor<Db> with _$GroupPersonLinksDaoMixin {
+  GroupPersonLinksDao(Db db) : super(db);
 
   /// Добавление связи персоны с группой
   Future<GroupPerson> insert2({
     @required Person person,
     @required Group group,
   }) async {
-    final id = await into(db.gpLinks).insert(
-        GpLinksCompanion(
+    final id = await into(db.groupPersonLinks).insert(
+        GroupPersonLinksCompanion(
           personId: Value(person.id),
           groupId: Value(group.id),
         )
@@ -576,15 +576,15 @@ class GpLinksDao extends DatabaseAccessor<Db> with _$GpLinksDaoMixin {
       name: person.name,
       middleName: person.middleName,
       birthday: person.birthday,
-      gpLinkId: id,
+      groupPersonLinkId: id,
     );
   }
 
   /// Удаление связи персоны с группой
   void delete2(GroupPerson personOfGroup) =>
-      delete(db.gpLinks).delete(
-          GpLinksCompanion(
-            id: Value(personOfGroup.gpLinkId),
+      delete(db.groupPersonLinks).delete(
+          GroupPersonLinksCompanion(
+            id: Value(personOfGroup.groupPersonLinkId),
           )
       );
 
@@ -597,7 +597,7 @@ class GpLinksDao extends DatabaseAccessor<Db> with _$GpLinksDaoMixin {
             name: row.name,
             middleName: row.middleName,
             birthday: row.birthday,
-            gpLinkId: row.gpLinkId,
+            groupPersonLinkId: row.groupPersonLinkId,
           )
       ).watch();
 }
@@ -615,14 +615,14 @@ class TimesheetsDao extends DatabaseAccessor<Db> with _$TimesheetsDaoMixin {
   }) async {
     final id = await into(db.timesheets).insert(
         TimesheetsCompanion(
-          gpLinkId: Value(personOfGroup.gpLinkId),
+          groupPersonLinkId: Value(personOfGroup.groupPersonLinkId),
           attendanceDate: Value(attendanceDate),
           hoursNumber: Value(hoursNumber),
         )
     );
     return Timesheet(
         id: id,
-        gpLinkId: personOfGroup.gpLinkId,
+        groupPersonLinkId: personOfGroup.groupPersonLinkId,
         attendanceDate: attendanceDate,
         hoursNumber: hoursNumber
     );
@@ -637,10 +637,10 @@ class TimesheetsDao extends DatabaseAccessor<Db> with _$TimesheetsDaoMixin {
     @required GroupPerson personOfGroup,
     @required DateTime period,
   }) => db._timesheetsView(
-      personOfGroup.gpLinkId, period.toIso8601String()).map((row) =>
+      personOfGroup.groupPersonLinkId, period.toIso8601String()).map((row) =>
       Timesheet(
         id: row.id,
-        gpLinkId: row.gpLinkId,
+        groupPersonLinkId: row.groupPersonLinkId,
         attendanceDate: row.attendanceDate,
         hoursNumber: row.hoursNumber,
       )
