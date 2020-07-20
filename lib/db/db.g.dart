@@ -1281,21 +1281,21 @@ class Persons extends Table with TableInfo<Persons, Person> {
   bool get dontWriteConstraints => true;
 }
 
-class PgLink extends DataClass implements Insertable<PgLink> {
+class GpLink extends DataClass implements Insertable<GpLink> {
   final int id;
-  final int personId;
   final int groupId;
-  PgLink({@required this.id, @required this.personId, @required this.groupId});
-  factory PgLink.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+  final int personId;
+  GpLink({@required this.id, @required this.groupId, @required this.personId});
+  factory GpLink.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
-    return PgLink(
+    return GpLink(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      personId:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}personId']),
       groupId:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}groupId']),
+      personId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}personId']),
     );
   }
   @override
@@ -1304,34 +1304,34 @@ class PgLink extends DataClass implements Insertable<PgLink> {
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<int>(id);
     }
-    if (!nullToAbsent || personId != null) {
-      map['personId'] = Variable<int>(personId);
-    }
     if (!nullToAbsent || groupId != null) {
       map['groupId'] = Variable<int>(groupId);
+    }
+    if (!nullToAbsent || personId != null) {
+      map['personId'] = Variable<int>(personId);
     }
     return map;
   }
 
-  PgLinksCompanion toCompanion(bool nullToAbsent) {
-    return PgLinksCompanion(
+  GpLinksCompanion toCompanion(bool nullToAbsent) {
+    return GpLinksCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
-      personId: personId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(personId),
       groupId: groupId == null && nullToAbsent
           ? const Value.absent()
           : Value(groupId),
+      personId: personId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(personId),
     );
   }
 
-  factory PgLink.fromJson(Map<String, dynamic> json,
+  factory GpLink.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
-    return PgLink(
+    return GpLink(
       id: serializer.fromJson<int>(json['id']),
-      personId: serializer.fromJson<int>(json['personId']),
       groupId: serializer.fromJson<int>(json['groupId']),
+      personId: serializer.fromJson<int>(json['personId']),
     );
   }
   @override
@@ -1339,71 +1339,71 @@ class PgLink extends DataClass implements Insertable<PgLink> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'personId': serializer.toJson<int>(personId),
       'groupId': serializer.toJson<int>(groupId),
+      'personId': serializer.toJson<int>(personId),
     };
   }
 
-  PgLink copyWith({int id, int personId, int groupId}) => PgLink(
+  GpLink copyWith({int id, int groupId, int personId}) => GpLink(
         id: id ?? this.id,
-        personId: personId ?? this.personId,
         groupId: groupId ?? this.groupId,
+        personId: personId ?? this.personId,
       );
   @override
   String toString() {
-    return (StringBuffer('PgLink(')
+    return (StringBuffer('GpLink(')
           ..write('id: $id, ')
-          ..write('personId: $personId, ')
-          ..write('groupId: $groupId')
+          ..write('groupId: $groupId, ')
+          ..write('personId: $personId')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(personId.hashCode, groupId.hashCode)));
+      $mrjf($mrjc(id.hashCode, $mrjc(groupId.hashCode, personId.hashCode)));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
-      (other is PgLink &&
+      (other is GpLink &&
           other.id == this.id &&
-          other.personId == this.personId &&
-          other.groupId == this.groupId);
+          other.groupId == this.groupId &&
+          other.personId == this.personId);
 }
 
-class PgLinksCompanion extends UpdateCompanion<PgLink> {
+class GpLinksCompanion extends UpdateCompanion<GpLink> {
   final Value<int> id;
-  final Value<int> personId;
   final Value<int> groupId;
-  const PgLinksCompanion({
+  final Value<int> personId;
+  const GpLinksCompanion({
     this.id = const Value.absent(),
-    this.personId = const Value.absent(),
     this.groupId = const Value.absent(),
+    this.personId = const Value.absent(),
   });
-  PgLinksCompanion.insert({
+  GpLinksCompanion.insert({
     this.id = const Value.absent(),
-    @required int personId,
     @required int groupId,
-  })  : personId = Value(personId),
-        groupId = Value(groupId);
-  static Insertable<PgLink> custom({
+    @required int personId,
+  })  : groupId = Value(groupId),
+        personId = Value(personId);
+  static Insertable<GpLink> custom({
     Expression<int> id,
-    Expression<int> personId,
     Expression<int> groupId,
+    Expression<int> personId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (personId != null) 'personId': personId,
       if (groupId != null) 'groupId': groupId,
+      if (personId != null) 'personId': personId,
     });
   }
 
-  PgLinksCompanion copyWith(
-      {Value<int> id, Value<int> personId, Value<int> groupId}) {
-    return PgLinksCompanion(
+  GpLinksCompanion copyWith(
+      {Value<int> id, Value<int> groupId, Value<int> personId}) {
+    return GpLinksCompanion(
       id: id ?? this.id,
-      personId: personId ?? this.personId,
       groupId: groupId ?? this.groupId,
+      personId: personId ?? this.personId,
     );
   }
 
@@ -1413,20 +1413,20 @@ class PgLinksCompanion extends UpdateCompanion<PgLink> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (personId.present) {
-      map['personId'] = Variable<int>(personId.value);
-    }
     if (groupId.present) {
       map['groupId'] = Variable<int>(groupId.value);
+    }
+    if (personId.present) {
+      map['personId'] = Variable<int>(personId.value);
     }
     return map;
   }
 }
 
-class PgLinks extends Table with TableInfo<PgLinks, PgLink> {
+class GpLinks extends Table with TableInfo<GpLinks, GpLink> {
   final GeneratedDatabase _db;
   final String _alias;
-  PgLinks(this._db, [this._alias]);
+  GpLinks(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedIntColumn _id;
   GeneratedIntColumn get id => _id ??= _constructId();
@@ -1437,14 +1437,6 @@ class PgLinks extends Table with TableInfo<PgLinks, PgLink> {
         $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   }
 
-  final VerificationMeta _personIdMeta = const VerificationMeta('personId');
-  GeneratedIntColumn _personId;
-  GeneratedIntColumn get personId => _personId ??= _constructPersonId();
-  GeneratedIntColumn _constructPersonId() {
-    return GeneratedIntColumn('personId', $tableName, false,
-        $customConstraints: 'NOT NULL REFERENCES persons (id)');
-  }
-
   final VerificationMeta _groupIdMeta = const VerificationMeta('groupId');
   GeneratedIntColumn _groupId;
   GeneratedIntColumn get groupId => _groupId ??= _constructGroupId();
@@ -1453,27 +1445,29 @@ class PgLinks extends Table with TableInfo<PgLinks, PgLink> {
         $customConstraints: 'NOT NULL REFERENCES "groups" (id)');
   }
 
+  final VerificationMeta _personIdMeta = const VerificationMeta('personId');
+  GeneratedIntColumn _personId;
+  GeneratedIntColumn get personId => _personId ??= _constructPersonId();
+  GeneratedIntColumn _constructPersonId() {
+    return GeneratedIntColumn('personId', $tableName, false,
+        $customConstraints: 'NOT NULL REFERENCES persons (id)');
+  }
+
   @override
-  List<GeneratedColumn> get $columns => [id, personId, groupId];
+  List<GeneratedColumn> get $columns => [id, groupId, personId];
   @override
-  PgLinks get asDslTable => this;
+  GpLinks get asDslTable => this;
   @override
-  String get $tableName => _alias ?? 'pg_links';
+  String get $tableName => _alias ?? 'gp_links';
   @override
-  final String actualTableName = 'pg_links';
+  final String actualTableName = 'gp_links';
   @override
-  VerificationContext validateIntegrity(Insertable<PgLink> instance,
+  VerificationContext validateIntegrity(Insertable<GpLink> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
-    }
-    if (data.containsKey('personId')) {
-      context.handle(_personIdMeta,
-          personId.isAcceptableOrUnknown(data['personId'], _personIdMeta));
-    } else if (isInserting) {
-      context.missing(_personIdMeta);
     }
     if (data.containsKey('groupId')) {
       context.handle(_groupIdMeta,
@@ -1481,20 +1475,26 @@ class PgLinks extends Table with TableInfo<PgLinks, PgLink> {
     } else if (isInserting) {
       context.missing(_groupIdMeta);
     }
+    if (data.containsKey('personId')) {
+      context.handle(_personIdMeta,
+          personId.isAcceptableOrUnknown(data['personId'], _personIdMeta));
+    } else if (isInserting) {
+      context.missing(_personIdMeta);
+    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  PgLink map(Map<String, dynamic> data, {String tablePrefix}) {
+  GpLink map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return PgLink.fromData(data, _db, prefix: effectivePrefix);
+    return GpLink.fromData(data, _db, prefix: effectivePrefix);
   }
 
   @override
-  PgLinks createAlias(String alias) {
-    return PgLinks(_db, alias);
+  GpLinks createAlias(String alias) {
+    return GpLinks(_db, alias);
   }
 
   @override
@@ -1503,12 +1503,12 @@ class PgLinks extends Table with TableInfo<PgLinks, PgLink> {
 
 class Timesheet extends DataClass implements Insertable<Timesheet> {
   final int id;
-  final int pgLinkId;
+  final int gpLinkId;
   final DateTime attendanceDate;
   final double hoursNumber;
   Timesheet(
       {@required this.id,
-      @required this.pgLinkId,
+      @required this.gpLinkId,
       @required this.attendanceDate,
       @required this.hoursNumber});
   factory Timesheet.fromData(Map<String, dynamic> data, GeneratedDatabase db,
@@ -1519,8 +1519,8 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
     final doubleType = db.typeSystem.forDartType<double>();
     return Timesheet(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      pgLinkId:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}pgLinkId']),
+      gpLinkId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}gpLinkId']),
       attendanceDate: dateTimeType
           .mapFromDatabaseResponse(data['${effectivePrefix}attendanceDate']),
       hoursNumber: doubleType
@@ -1533,8 +1533,8 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<int>(id);
     }
-    if (!nullToAbsent || pgLinkId != null) {
-      map['pgLinkId'] = Variable<int>(pgLinkId);
+    if (!nullToAbsent || gpLinkId != null) {
+      map['gpLinkId'] = Variable<int>(gpLinkId);
     }
     if (!nullToAbsent || attendanceDate != null) {
       map['attendanceDate'] = Variable<DateTime>(attendanceDate);
@@ -1548,9 +1548,9 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
   TimesheetsCompanion toCompanion(bool nullToAbsent) {
     return TimesheetsCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
-      pgLinkId: pgLinkId == null && nullToAbsent
+      gpLinkId: gpLinkId == null && nullToAbsent
           ? const Value.absent()
-          : Value(pgLinkId),
+          : Value(gpLinkId),
       attendanceDate: attendanceDate == null && nullToAbsent
           ? const Value.absent()
           : Value(attendanceDate),
@@ -1565,7 +1565,7 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Timesheet(
       id: serializer.fromJson<int>(json['id']),
-      pgLinkId: serializer.fromJson<int>(json['pgLinkId']),
+      gpLinkId: serializer.fromJson<int>(json['gpLinkId']),
       attendanceDate: serializer.fromJson<DateTime>(json['attendanceDate']),
       hoursNumber: serializer.fromJson<double>(json['hoursNumber']),
     );
@@ -1575,7 +1575,7 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'pgLinkId': serializer.toJson<int>(pgLinkId),
+      'gpLinkId': serializer.toJson<int>(gpLinkId),
       'attendanceDate': serializer.toJson<DateTime>(attendanceDate),
       'hoursNumber': serializer.toJson<double>(hoursNumber),
     };
@@ -1583,12 +1583,12 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
 
   Timesheet copyWith(
           {int id,
-          int pgLinkId,
+          int gpLinkId,
           DateTime attendanceDate,
           double hoursNumber}) =>
       Timesheet(
         id: id ?? this.id,
-        pgLinkId: pgLinkId ?? this.pgLinkId,
+        gpLinkId: gpLinkId ?? this.gpLinkId,
         attendanceDate: attendanceDate ?? this.attendanceDate,
         hoursNumber: hoursNumber ?? this.hoursNumber,
       );
@@ -1596,7 +1596,7 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
   String toString() {
     return (StringBuffer('Timesheet(')
           ..write('id: $id, ')
-          ..write('pgLinkId: $pgLinkId, ')
+          ..write('gpLinkId: $gpLinkId, ')
           ..write('attendanceDate: $attendanceDate, ')
           ..write('hoursNumber: $hoursNumber')
           ..write(')'))
@@ -1606,46 +1606,46 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
   @override
   int get hashCode => $mrjf($mrjc(
       id.hashCode,
-      $mrjc(pgLinkId.hashCode,
+      $mrjc(gpLinkId.hashCode,
           $mrjc(attendanceDate.hashCode, hoursNumber.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Timesheet &&
           other.id == this.id &&
-          other.pgLinkId == this.pgLinkId &&
+          other.gpLinkId == this.gpLinkId &&
           other.attendanceDate == this.attendanceDate &&
           other.hoursNumber == this.hoursNumber);
 }
 
 class TimesheetsCompanion extends UpdateCompanion<Timesheet> {
   final Value<int> id;
-  final Value<int> pgLinkId;
+  final Value<int> gpLinkId;
   final Value<DateTime> attendanceDate;
   final Value<double> hoursNumber;
   const TimesheetsCompanion({
     this.id = const Value.absent(),
-    this.pgLinkId = const Value.absent(),
+    this.gpLinkId = const Value.absent(),
     this.attendanceDate = const Value.absent(),
     this.hoursNumber = const Value.absent(),
   });
   TimesheetsCompanion.insert({
     this.id = const Value.absent(),
-    @required int pgLinkId,
+    @required int gpLinkId,
     @required DateTime attendanceDate,
     @required double hoursNumber,
-  })  : pgLinkId = Value(pgLinkId),
+  })  : gpLinkId = Value(gpLinkId),
         attendanceDate = Value(attendanceDate),
         hoursNumber = Value(hoursNumber);
   static Insertable<Timesheet> custom({
     Expression<int> id,
-    Expression<int> pgLinkId,
+    Expression<int> gpLinkId,
     Expression<DateTime> attendanceDate,
     Expression<double> hoursNumber,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (pgLinkId != null) 'pgLinkId': pgLinkId,
+      if (gpLinkId != null) 'gpLinkId': gpLinkId,
       if (attendanceDate != null) 'attendanceDate': attendanceDate,
       if (hoursNumber != null) 'hoursNumber': hoursNumber,
     });
@@ -1653,12 +1653,12 @@ class TimesheetsCompanion extends UpdateCompanion<Timesheet> {
 
   TimesheetsCompanion copyWith(
       {Value<int> id,
-      Value<int> pgLinkId,
+      Value<int> gpLinkId,
       Value<DateTime> attendanceDate,
       Value<double> hoursNumber}) {
     return TimesheetsCompanion(
       id: id ?? this.id,
-      pgLinkId: pgLinkId ?? this.pgLinkId,
+      gpLinkId: gpLinkId ?? this.gpLinkId,
       attendanceDate: attendanceDate ?? this.attendanceDate,
       hoursNumber: hoursNumber ?? this.hoursNumber,
     );
@@ -1670,8 +1670,8 @@ class TimesheetsCompanion extends UpdateCompanion<Timesheet> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (pgLinkId.present) {
-      map['pgLinkId'] = Variable<int>(pgLinkId.value);
+    if (gpLinkId.present) {
+      map['gpLinkId'] = Variable<int>(gpLinkId.value);
     }
     if (attendanceDate.present) {
       map['attendanceDate'] = Variable<DateTime>(attendanceDate.value);
@@ -1697,13 +1697,13 @@ class Timesheets extends Table with TableInfo<Timesheets, Timesheet> {
         $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   }
 
-  final VerificationMeta _pgLinkIdMeta = const VerificationMeta('pgLinkId');
-  GeneratedIntColumn _pgLinkId;
-  GeneratedIntColumn get pgLinkId => _pgLinkId ??= _constructPgLinkId();
-  GeneratedIntColumn _constructPgLinkId() {
-    return GeneratedIntColumn('pgLinkId', $tableName, false,
+  final VerificationMeta _gpLinkIdMeta = const VerificationMeta('gpLinkId');
+  GeneratedIntColumn _gpLinkId;
+  GeneratedIntColumn get gpLinkId => _gpLinkId ??= _constructGpLinkId();
+  GeneratedIntColumn _constructGpLinkId() {
+    return GeneratedIntColumn('gpLinkId', $tableName, false,
         $customConstraints:
-            'NOT NULL REFERENCES pg_links (id) ON DELETE CASCADE');
+            'NOT NULL REFERENCES gp_links (id) ON DELETE CASCADE');
   }
 
   final VerificationMeta _attendanceDateMeta =
@@ -1728,7 +1728,7 @@ class Timesheets extends Table with TableInfo<Timesheets, Timesheet> {
 
   @override
   List<GeneratedColumn> get $columns =>
-      [id, pgLinkId, attendanceDate, hoursNumber];
+      [id, gpLinkId, attendanceDate, hoursNumber];
   @override
   Timesheets get asDslTable => this;
   @override
@@ -1743,11 +1743,11 @@ class Timesheets extends Table with TableInfo<Timesheets, Timesheet> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
     }
-    if (data.containsKey('pgLinkId')) {
-      context.handle(_pgLinkIdMeta,
-          pgLinkId.isAcceptableOrUnknown(data['pgLinkId'], _pgLinkIdMeta));
+    if (data.containsKey('gpLinkId')) {
+      context.handle(_gpLinkIdMeta,
+          gpLinkId.isAcceptableOrUnknown(data['gpLinkId'], _gpLinkIdMeta));
     } else if (isInserting) {
-      context.missing(_pgLinkIdMeta);
+      context.missing(_gpLinkIdMeta);
     }
     if (data.containsKey('attendanceDate')) {
       context.handle(
@@ -2114,21 +2114,25 @@ abstract class _$Db extends GeneratedDatabase {
   Index _groupsIndex;
   Index get groupsIndex => _groupsIndex ??= Index('groups_index',
       'CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name, scheduleId);');
+  Index _groupsScheduleIndex;
+  Index get groupsScheduleIndex => _groupsScheduleIndex ??= Index(
+      'groups_schedule_index',
+      'CREATE INDEX groups_schedule_index ON "groups" (scheduleId);');
   Persons _persons;
   Persons get persons => _persons ??= Persons(this);
   Index _personsIndex;
   Index get personsIndex => _personsIndex ??= Index('persons_index',
       'CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName, birthday);');
-  PgLinks _pgLinks;
-  PgLinks get pgLinks => _pgLinks ??= PgLinks(this);
-  Index _pgLinksIndex;
-  Index get pgLinksIndex => _pgLinksIndex ??= Index('pg_links_index',
-      'CREATE UNIQUE INDEX pg_links_index ON pg_links (personId, groupId);');
+  GpLinks _gpLinks;
+  GpLinks get gpLinks => _gpLinks ??= GpLinks(this);
+  Index _gpLinksIndex;
+  Index get gpLinksIndex => _gpLinksIndex ??= Index('gp_links_index',
+      'CREATE UNIQUE INDEX gp_links_index ON gp_links (groupId, personId);');
   Timesheets _timesheets;
   Timesheets get timesheets => _timesheets ??= Timesheets(this);
   Index _timesheetsIndex;
   Index get timesheetsIndex => _timesheetsIndex ??= Index('timesheets_index',
-      'CREATE UNIQUE INDEX timesheets_index ON timesheets (pgLinkId, attendanceDate);');
+      'CREATE UNIQUE INDEX timesheets_index ON timesheets (gpLinkId, attendanceDate);');
   Settings _settings;
   Settings get settings => _settings ??= Settings(this);
   Index _settingsIndex;
@@ -2145,8 +2149,8 @@ abstract class _$Db extends GeneratedDatabase {
   GroupsDao get groupsDao => _groupsDao ??= GroupsDao(this as Db);
   PersonsDao _personsDao;
   PersonsDao get personsDao => _personsDao ??= PersonsDao(this as Db);
-  PgLinksDao _pgLinksDao;
-  PgLinksDao get pgLinksDao => _pgLinksDao ??= PgLinksDao(this as Db);
+  GpLinksDao _gpLinksDao;
+  GpLinksDao get gpLinksDao => _gpLinksDao ??= GpLinksDao(this as Db);
   TimesheetsDao _timesheetsDao;
   TimesheetsDao get timesheetsDao =>
       _timesheetsDao ??= TimesheetsDao(this as Db);
@@ -2280,14 +2284,14 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<GroupsViewResult> _groupsView(int orgId) {
     return customSelect(
-        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       CAST((SELECT COUNT(*) FROM pg_links WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
+        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       CAST((SELECT COUNT(*) FROM gp_links WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
         variables: [Variable.withInt(orgId)],
-        readsFrom: {groups, schedules, pgLinks}).map(_rowToGroupsViewResult);
+        readsFrom: {groups, schedules, gpLinks}).map(_rowToGroupsViewResult);
   }
 
   PersonsInGroupResult _rowToPersonsInGroupResult(QueryRow row) {
     return PersonsInGroupResult(
-      pgLinkId: row.readInt('pgLinkId'),
+      gpLinkId: row.readInt('gpLinkId'),
       personId: row.readInt('personId'),
       family: row.readString('family'),
       name: row.readString('name'),
@@ -2298,24 +2302,24 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {
     return customSelect(
-        'SELECT L.id AS pgLinkId,\n       L.personId,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday\n  FROM pg_links L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        'SELECT L.id AS gpLinkId,\n       L.personId,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday\n  FROM gp_links L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
         variables: [Variable.withInt(groupId)],
-        readsFrom: {pgLinks, persons}).map(_rowToPersonsInGroupResult);
+        readsFrom: {gpLinks, persons}).map(_rowToPersonsInGroupResult);
   }
 
   Timesheet _rowToTimesheet(QueryRow row) {
     return Timesheet(
       id: row.readInt('id'),
-      pgLinkId: row.readInt('pgLinkId'),
+      gpLinkId: row.readInt('gpLinkId'),
       attendanceDate: row.readDateTime('attendanceDate'),
       hoursNumber: row.readDouble('hoursNumber'),
     );
   }
 
-  Selectable<Timesheet> _timesheetsView(int pgLinkId, String period) {
+  Selectable<Timesheet> _timesheetsView(int gpLinkId, String period) {
     return customSelect(
-        'SELECT *\n  FROM timesheets\n WHERE pgLinkId = :pgLinkId\n   AND attendanceDate BETWEEN date(:period, \'start of month\') AND :period',
-        variables: [Variable.withInt(pgLinkId), Variable.withString(period)],
+        'SELECT *\n  FROM timesheets\n WHERE gpLinkId = :gpLinkId\n   AND attendanceDate BETWEEN date(:period, \'start of month\') AND :period',
+        variables: [Variable.withInt(gpLinkId), Variable.withString(period)],
         readsFrom: {timesheets}).map(_rowToTimesheet);
   }
 
@@ -2390,10 +2394,11 @@ abstract class _$Db extends GeneratedDatabase {
         scheduleDaysIndex,
         groups,
         groupsIndex,
+        groupsScheduleIndex,
         persons,
         personsIndex,
-        pgLinks,
-        pgLinksIndex,
+        gpLinks,
+        gpLinksIndex,
         timesheets,
         timesheetsIndex,
         settings,
@@ -2403,7 +2408,7 @@ abstract class _$Db extends GeneratedDatabase {
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [
           WritePropagation(
-            on: TableUpdateQuery.onTableName('pg_links',
+            on: TableUpdateQuery.onTableName('gp_links',
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('timesheets', kind: UpdateKind.delete),
@@ -2457,14 +2462,14 @@ class GroupsViewResult {
 }
 
 class PersonsInGroupResult {
-  final int pgLinkId;
+  final int gpLinkId;
   final int personId;
   final String family;
   final String name;
   final String middleName;
   final DateTime birthday;
   PersonsInGroupResult({
-    this.pgLinkId,
+    this.gpLinkId,
     this.personId,
     this.family,
     this.name,
@@ -2482,6 +2487,6 @@ mixin _$SchedulesDaoMixin on DatabaseAccessor<Db> {}
 mixin _$ScheduleDaysDaoMixin on DatabaseAccessor<Db> {}
 mixin _$GroupsDaoMixin on DatabaseAccessor<Db> {}
 mixin _$PersonsDaoMixin on DatabaseAccessor<Db> {}
-mixin _$PgLinksDaoMixin on DatabaseAccessor<Db> {}
+mixin _$GpLinksDaoMixin on DatabaseAccessor<Db> {}
 mixin _$TimesheetsDaoMixin on DatabaseAccessor<Db> {}
 mixin _$SettingsDaoMixin on DatabaseAccessor<Db> {}

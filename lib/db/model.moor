@@ -45,6 +45,7 @@ CREATE TABLE "groups" (
   scheduleId         INT NOT NULL REFERENCES schedules (id)
 );
 CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name, scheduleId);
+CREATE INDEX groups_schedule_index ON "groups" (scheduleId);
 
 -- Персоны
 CREATE TABLE persons (
@@ -61,29 +62,29 @@ CREATE TABLE persons (
 );
 CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName, birthday);
 
--- Связи персон с группами
-CREATE TABLE pg_links (
+-- Связи групп с персонами
+CREATE TABLE gp_links (
   -- Идентификатор связи персоны с группой
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
-  -- Идентификатор персоны
-  personId           INT NOT NULL REFERENCES persons (id),
   -- Идентификатор группы
-  groupId            INT NOT NULL REFERENCES "groups" (id)
+  groupId            INT NOT NULL REFERENCES "groups" (id),
+  -- Идентификатор персоны
+  personId           INT NOT NULL REFERENCES persons (id)
 );
-CREATE UNIQUE INDEX pg_links_index ON pg_links (personId, groupId);
+CREATE UNIQUE INDEX gp_links_index ON gp_links (groupId, personId);
 
 -- Посещаемость персон в группах
 CREATE TABLE timesheets (
   -- Идентификатор посещаемости
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор связи персоны с группой
-  pgLinkId           INT NOT NULL REFERENCES pg_links (id) ON DELETE CASCADE,
+  gpLinkId           INT NOT NULL REFERENCES gp_links (id) ON DELETE CASCADE,
   -- Дата посещения
   attendanceDate     DATE NOT NULL,
   -- Количество часов
   hoursNumber        REAL NOT NULL
 );
-CREATE UNIQUE INDEX timesheets_index ON timesheets (pgLinkId, attendanceDate);
+CREATE UNIQUE INDEX timesheets_index ON timesheets (gpLinkId, attendanceDate);
 
 -- Настройки
 CREATE TABLE settings (
@@ -200,7 +201,7 @@ SELECT G.id,
        G.name,
        G.scheduleId,
        S.code AS scheduleCode,
-       CAST((SELECT COUNT(*) FROM pg_links WHERE groupId = G.id) AS INT) AS personCount
+       CAST((SELECT COUNT(*) FROM gp_links WHERE groupId = G.id) AS INT) AS personCount
   FROM "groups" G
  INNER JOIN schedules S ON S.id = G.scheduleId
  WHERE orgId = :orgId
@@ -210,13 +211,13 @@ SELECT G.id,
 
 -- Список персон в группе
 _personsInGroup:
-SELECT L.id AS pgLinkId,
+SELECT L.id AS gpLinkId,
        L.personId,
        P.family,
        P.name,
        P.middleName,
        P.birthday
-  FROM pg_links L
+  FROM gp_links L
  INNER JOIN persons P ON P.id = L.personId
  WHERE L.groupId = :groupId
  ORDER BY
@@ -229,7 +230,7 @@ SELECT L.id AS pgLinkId,
 _timesheetsView:
 SELECT *
   FROM timesheets
- WHERE pgLinkId = :pgLinkId
+ WHERE gpLinkId = :gpLinkId
    AND attendanceDate BETWEEN date(:period, 'start of month') AND :period;
 
 -- Активная огранизации

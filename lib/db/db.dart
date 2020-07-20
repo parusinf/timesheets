@@ -61,7 +61,7 @@ class GroupView extends Group {
 
 /// Персона группы
 class GroupPerson extends Person {
-  final int pgLinkId;
+  final int gpLinkId;
 
   GroupPerson({
     @required int id,
@@ -69,7 +69,7 @@ class GroupPerson extends Person {
     @required String name,
     String middleName,
     DateTime birthday,
-    @required this.pgLinkId,
+    @required this.gpLinkId,
   }) : super(
     id: id,
     family: family,
@@ -88,7 +88,7 @@ class GroupPerson extends Person {
     ScheduleDays,  // Дни графиков
     Groups,        // Группы
     Persons,       // Персоны
-    PgLinks,       // Связи персон с группами
+    GpLinks,       // Связи персон с группами
     Timesheets,    // Табели
     Settings,      // Настройки
   ],
@@ -98,7 +98,7 @@ class GroupPerson extends Person {
     ScheduleDaysDao,
     GroupsDao,
     PersonsDao,
-    PgLinksDao,
+    GpLinksDao,
     TimesheetsDao,
     SettingsDao
   ]
@@ -135,7 +135,7 @@ class Db extends _$Db {
             schedule: schedule,
           );
           settingsDao.setActiveGroup(org1, group11);
-          pgLinksDao.insert2(
+          gpLinksDao.insert2(
               person: await personsDao.insert2(
                 family: 'Акульшин',
                 name: 'Роман',
@@ -143,7 +143,7 @@ class Db extends _$Db {
                 birthday: DateTime(2016, 08, 23),
               ),
               group: group11);
-          pgLinksDao.insert2(
+          gpLinksDao.insert2(
               person: await personsDao.insert2(
                 family: 'Алиева',
                 name: 'Амина-Хатун',
@@ -555,17 +555,17 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
 }
 
 // Связи персон с группами -----------------------------------------------------
-@UseDao(tables: [PgLinks])
-class PgLinksDao extends DatabaseAccessor<Db> with _$PgLinksDaoMixin {
-  PgLinksDao(Db db) : super(db);
+@UseDao(tables: [GpLinks])
+class GpLinksDao extends DatabaseAccessor<Db> with _$GpLinksDaoMixin {
+  GpLinksDao(Db db) : super(db);
 
   /// Добавление связи персоны с группой
   Future<GroupPerson> insert2({
     @required Person person,
     @required Group group,
   }) async {
-    final id = await into(db.pgLinks).insert(
-        PgLinksCompanion(
+    final id = await into(db.gpLinks).insert(
+        GpLinksCompanion(
           personId: Value(person.id),
           groupId: Value(group.id),
         )
@@ -576,15 +576,15 @@ class PgLinksDao extends DatabaseAccessor<Db> with _$PgLinksDaoMixin {
       name: person.name,
       middleName: person.middleName,
       birthday: person.birthday,
-      pgLinkId: id,
+      gpLinkId: id,
     );
   }
 
   /// Удаление связи персоны с группой
   void delete2(GroupPerson personOfGroup) =>
-      delete(db.pgLinks).delete(
-          PgLinksCompanion(
-            id: Value(personOfGroup.pgLinkId),
+      delete(db.gpLinks).delete(
+          GpLinksCompanion(
+            id: Value(personOfGroup.gpLinkId),
           )
       );
 
@@ -597,7 +597,7 @@ class PgLinksDao extends DatabaseAccessor<Db> with _$PgLinksDaoMixin {
             name: row.name,
             middleName: row.middleName,
             birthday: row.birthday,
-            pgLinkId: row.pgLinkId,
+            gpLinkId: row.gpLinkId,
           )
       ).watch();
 }
@@ -615,14 +615,14 @@ class TimesheetsDao extends DatabaseAccessor<Db> with _$TimesheetsDaoMixin {
   }) async {
     final id = await into(db.timesheets).insert(
         TimesheetsCompanion(
-          pgLinkId: Value(personOfGroup.pgLinkId),
+          gpLinkId: Value(personOfGroup.gpLinkId),
           attendanceDate: Value(attendanceDate),
           hoursNumber: Value(hoursNumber),
         )
     );
     return Timesheet(
         id: id,
-        pgLinkId: personOfGroup.pgLinkId,
+        gpLinkId: personOfGroup.gpLinkId,
         attendanceDate: attendanceDate,
         hoursNumber: hoursNumber
     );
@@ -637,10 +637,10 @@ class TimesheetsDao extends DatabaseAccessor<Db> with _$TimesheetsDaoMixin {
     @required GroupPerson personOfGroup,
     @required DateTime period,
   }) => db._timesheetsView(
-      personOfGroup.pgLinkId, period.toIso8601String()).map((row) =>
+      personOfGroup.gpLinkId, period.toIso8601String()).map((row) =>
       Timesheet(
         id: row.id,
-        pgLinkId: row.pgLinkId,
+        gpLinkId: row.gpLinkId,
         attendanceDate: row.attendanceDate,
         hoursNumber: row.hoursNumber,
       )

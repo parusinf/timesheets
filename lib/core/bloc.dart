@@ -86,7 +86,7 @@ class Bloc {
       ).toList()
     ).listen(activeGroupsSubject.add);
     // Отслеживание персон в активной группе
-    groupPersonsStream = activeGroupSubject.switchMap(db.pgLinksDao.watch);
+    groupPersonsStream = activeGroupSubject.switchMap(db.gpLinksDao.watch);
   }
 
   /// Отображение организации
@@ -188,12 +188,11 @@ class Bloc {
         name: name,
         middleName: middleName,
     );
-    db.pgLinksDao.insert2(person: person, group: activeGroupSubject.value);
+    db.gpLinksDao.insert2(person: person, group: activeGroupSubject.value);
   }
   
   /// Освобождение ресурсов
   void close() {
-    db.close();
     activeOrgSubject.close();
     activeScheduleSubject.close();
     activeGroupSubject.close();
@@ -201,5 +200,6 @@ class Bloc {
     activeOrgsSubject.close();
     activeSchedulesSubject.close();
     activeGroupsSubject.close();
+    db.close();
   }
 }
