@@ -40,6 +40,13 @@ class _OrgEditState extends State<OrgEdit> {
       title: Text(widget.org == null
           ? L10n.of(context).orgInserting : L10n.of(context).orgUpdating
       ),
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.done),
+          tooltip: L10n.of(context).done,
+          onPressed: _handleSubmitted,
+        ),
+      ],
     ),
     body: Form(
       key: _formKey,
@@ -50,7 +57,7 @@ class _OrgEditState extends State<OrgEdit> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: <Widget>[
-              const SizedBox(height: 16),
+              horizontalSpace,
               TextFormField(
                 controller: _nameEdit,
                 textCapitalization: TextCapitalization.words,
@@ -62,7 +69,7 @@ class _OrgEditState extends State<OrgEdit> {
                 ),
                 validator: _validateName,
               ),
-              const SizedBox(height: 16),
+              horizontalSpace,
               TextFormField(
                 controller: _innEdit,
                 keyboardType: TextInputType.numberWithOptions(),
@@ -71,15 +78,6 @@ class _OrgEditState extends State<OrgEdit> {
                   labelText: L10n.of(context).inn,
                 ),
                 validator: _validateInn,
-              ),
-              const SizedBox(height: 16),
-              ButtonBar(
-                children: <Widget>[
-                  RaisedButton(
-                    child: Text(L10n.of(context).done),
-                    onPressed: _handleSubmitted,
-                  ),
-                ],
               ),
             ],
           ),

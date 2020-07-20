@@ -38,6 +38,13 @@ class _ScheduleEditState extends State<ScheduleEdit> {
           ? L10n.of(context).scheduleInserting
           : L10n.of(context).scheduleUpdating
       ),
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.done),
+          tooltip: L10n.of(context).done,
+          onPressed: _handleSubmitted,
+        ),
+      ],
     ),
     body: Form(
       key: _formKey,
@@ -48,7 +55,8 @@ class _ScheduleEditState extends State<ScheduleEdit> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: <Widget>[
-              const SizedBox(height: 16),
+              horizontalSpace,
+              // Мнемокод графика
               TextFormField(
                 controller: _codeEdit,
                 autofocus: true,
@@ -59,15 +67,9 @@ class _ScheduleEditState extends State<ScheduleEdit> {
                 ),
                 validator: _validateCode,
               ),
-              const SizedBox(height: 16),
-              ButtonBar(
-                children: <Widget>[
-                  RaisedButton(
-                    child: Text(L10n.of(context).done),
-                    onPressed: _handleSubmitted,
-                  ),
-                ],
-              ),
+              horizontalSpace,
+              // Дни графика
+
             ],
           ),
         ),

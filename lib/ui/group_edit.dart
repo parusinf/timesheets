@@ -45,6 +45,13 @@ class _GroupEditState extends State<GroupEdit> {
           ? L10n.of(context).groupInserting
           : L10n.of(context).groupUpdating
       ),
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.done),
+          tooltip: L10n.of(context).done,
+          onPressed: _handleSubmitted,
+        ),
+      ],
     ),
     body: Form(
       key: _formKey,
@@ -55,7 +62,7 @@ class _GroupEditState extends State<GroupEdit> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: <Widget>[
-              const SizedBox(height: 16),
+              horizontalSpace,
               TextFormField(
                 controller: _nameEdit,
                 textCapitalization: TextCapitalization.words,
@@ -67,7 +74,7 @@ class _GroupEditState extends State<GroupEdit> {
                 ),
                 validator: _validateName,
               ),
-              const SizedBox(height: 16),
+              horizontalSpace,
               TextFormField(
                 controller: _scheduleEdit,
                 readOnly: true,
@@ -78,15 +85,6 @@ class _GroupEditState extends State<GroupEdit> {
                 ),
                 validator: _validateSchedule,
                 onTap: () => _selectSchedule(context),
-              ),
-              const SizedBox(height: 16),
-              ButtonBar(
-                children: <Widget>[
-                  RaisedButton(
-                    child: Text(L10n.of(context).done),
-                    onPressed: _handleSubmitted,
-                  ),
-                ],
               ),
             ],
           ),

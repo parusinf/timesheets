@@ -32,3 +32,6 @@ bool isEmpty(String value) => value == null || value.isEmpty;
 
 /// Проверка строки на непустоту
 bool isNotEmpty(String value) => !isEmpty(value);
+
+///
+const horizontalSpace = SizedBox(height: 16);
