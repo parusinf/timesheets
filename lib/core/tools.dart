@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'l10n.dart';
 
 /// Сообщение в снакбаре
-void snackBarMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
-  final snackBar = SnackBar(content: Text(message));
-  scaffoldKey.currentState.showSnackBar(snackBar);
+void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
+  final context = scaffoldKey.currentContext;
+  String message = originalMessage;
+  final uniqueRegexp = RegExp(r'UNIQUE constraint failed: ([a-z_]+)\.');
+  if (uniqueRegexp.hasMatch(originalMessage)) {
+    final tableName = uniqueRegexp.firstMatch(originalMessage)[1];
+    switch (tableName) {
+      case 'orgs': message = L10n.of(context).uniqueOrg; break;
+      case 'schedules': message = L10n.of(context).uniqueSchedule; break;
+      case 'groups': message = L10n.of(context).uniqueGroup; break;
+    }
+  }
+  scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
 }
 
 /// Текст серого цвета
@@ -33,5 +44,6 @@ bool isEmpty(String value) => value == null || value.isEmpty;
 /// Проверка строки на непустоту
 bool isNotEmpty(String value) => !isEmpty(value);
 
-///
+/// Горизонтальный разделитель пространства между контролами
 const horizontalSpace = SizedBox(height: 16);
+

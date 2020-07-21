@@ -16,6 +16,7 @@ class GroupEdit extends StatefulWidget {
 /// Состояние формы редактирования группы
 class _GroupEditState extends State<GroupEdit> {
   Schedule schedule;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
   Bloc get bloc => Provider.of<Bloc>(context, listen: false);
@@ -25,7 +26,7 @@ class _GroupEditState extends State<GroupEdit> {
   @override
   void initState() {
     _nameEdit.text = widget.groupView?.name;
-    final activeSchedule = bloc.activeScheduleSubject.value;
+    final activeSchedule = bloc.activeSchedule.value;
     schedule = widget.groupView?.schedule ?? activeSchedule;
     _scheduleEdit.text = schedule.code;
     super.initState();
@@ -40,6 +41,7 @@ class _GroupEditState extends State<GroupEdit> {
   
   @override
   Widget build(BuildContext context) => Scaffold(
+    key: _scaffoldKey,
     appBar: AppBar(
       title: Text(widget.groupView == null
           ? L10n.of(context).groupInserting
@@ -99,7 +101,7 @@ class _GroupEditState extends State<GroupEdit> {
       context,
       MaterialPageRoute(builder: (context) => SchedulesDictionary()),
     );
-    _scheduleEdit.text = schedule?.code ?? bloc.activeScheduleSubject.value.code;
+    _scheduleEdit.text = schedule?.code ?? bloc.activeSchedule.value.code;
   }
 
   /// Обработка формы
@@ -133,20 +135,23 @@ class _GroupEditState extends State<GroupEdit> {
   }
 
   /// Добавление
-  void _insert() {
-    bloc.insertGroup(
-      name: _nameEdit.text,
-      schedule: schedule
-    );
-    Navigator.of(context).pop();
+  Future _insert() async {
+    try {
+      await bloc.insertGroup(name: _nameEdit.text, schedule: schedule);
+      Navigator.of(context).pop();
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
   }
 
   /// Исправление
-  void _update() {
-    bloc.updateGroup(widget.groupView.copyWith(
-      name: _nameEdit.text,
-      scheduleId: schedule.id,
-    ));
-    Navigator.of(context).pop();
+  Future _update() async {
+    try {
+      await bloc.updateGroup(widget.groupView.copyWith(name: _nameEdit.text,
+          scheduleId: schedule.id));
+      Navigator.of(context).pop();
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
   }
 }

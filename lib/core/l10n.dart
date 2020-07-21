@@ -48,6 +48,9 @@ class L10n {
       'schedules': 'Графики',
       'title': 'Табели',
       'withoutInn': 'Без ИНН',
+      'uniqueOrg': 'Уже есть такая организация',
+      'uniqueSchedule': 'Уже есть такой график',
+      'uniqueGroup': 'Уже есть такая группа',
     }
   };
 
@@ -87,6 +90,9 @@ class L10n {
   get schedules => _l10n[locale.languageCode]['schedules'];
   get title => _l10n[locale.languageCode]['title'];
   get withoutInn => _l10n[locale.languageCode]['withoutInn'];
+  get uniqueOrg => _l10n[locale.languageCode]['uniqueOrg'];
+  get uniqueSchedule => _l10n[locale.languageCode]['uniqueSchedule'];
+  get uniqueGroup => _l10n[locale.languageCode]['uniqueGroup'];
 }
 
 class L10nDelegate extends LocalizationsDelegate<L10n> {

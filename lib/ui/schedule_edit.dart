@@ -14,6 +14,7 @@ class ScheduleEdit extends StatefulWidget {
 
 /// Состояние формы редактирования графика
 class _ScheduleEditState extends State<ScheduleEdit> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
   Bloc get bloc => Provider.of<Bloc>(context, listen: false);
@@ -33,6 +34,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    key: _scaffoldKey,
     appBar: AppBar(
       title: Text(widget.scheduleView == null
           ? L10n.of(context).scheduleInserting
@@ -100,16 +102,22 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   }
 
   /// Добавление
-  void _insert() {
-    bloc.insertSchedule(code: _codeEdit.text);
-    Navigator.of(context).pop();
+  Future _insert() async {
+    try {
+      await bloc.insertSchedule(code: _codeEdit.text);
+      Navigator.of(context).pop();
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
   }
 
   /// Исправление
-  void _update() {
-    bloc.updateSchedule(widget.scheduleView.copyWith(
-      code: _codeEdit.text,
-    ));
-    Navigator.of(context).pop();
+  Future _update() async {
+    try {
+      await bloc.updateSchedule(widget.scheduleView.copyWith(code: _codeEdit.text));
+      Navigator.of(context).pop();
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
   }
 }

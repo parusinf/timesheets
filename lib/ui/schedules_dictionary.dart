@@ -32,7 +32,7 @@ class SchedulesDictionaryState extends State<SchedulesDictionary> {
       child: Padding(
       padding: const EdgeInsets.all(8.0),
       child: StreamBuilder<List<ActiveSchedule>>(
-          stream: Provider.of<Bloc>(context).activeSchedulesSubject,
+          stream: Provider.of<Bloc>(context).activeScheduleList,
           builder: (context, snapshot) {
             final schedules = snapshot.data ?? <ActiveSchedule>[];
             return ListView.builder(
@@ -73,7 +73,7 @@ class _ScheduleCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: () {
-          Provider.of<Bloc>(context, listen: false).showSchedule(entry.scheduleView);
+          Provider.of<Bloc>(context, listen: false).setActiveSchedule(entry.scheduleView);
           Navigator.pop(context, entry.scheduleView);
         },
         onDoubleTap: () {

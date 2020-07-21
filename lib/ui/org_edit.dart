@@ -14,6 +14,7 @@ class OrgEdit extends StatefulWidget {
 
 /// Состояние формы редактирования организации
 class _OrgEditState extends State<OrgEdit> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
   Bloc get bloc => Provider.of<Bloc>(context, listen: false);
@@ -36,6 +37,7 @@ class _OrgEditState extends State<OrgEdit> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    key: _scaffoldKey,
     appBar: AppBar(
       title: Text(widget.org == null
           ? L10n.of(context).orgInserting : L10n.of(context).orgUpdating
@@ -118,17 +120,23 @@ class _OrgEditState extends State<OrgEdit> {
   }
 
   /// Добавление
-  void _insert() {
-    bloc.insertOrg(name: _nameEdit.text, inn: _innEdit.text);
-    Navigator.of(context).pop();
+  Future _insert() async {
+    try {
+      await bloc.insertOrg(name: _nameEdit.text, inn: _innEdit.text);
+      Navigator.of(context).pop();
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
   }
   
   /// Исправление
-  void _update() {
-    bloc.updateOrg(widget.org.copyWith(
-      name: _nameEdit.text,
-      inn: _innEdit.text,
-    ));
-    Navigator.of(context).pop();
+  Future _update() async {
+    try {
+      await bloc.updateOrg(widget.org.copyWith(
+          name: _nameEdit.text, inn: _innEdit.text));
+      Navigator.of(context).pop();
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
   }
 }

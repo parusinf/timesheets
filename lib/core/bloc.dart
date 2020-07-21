@@ -28,178 +28,178 @@ class Bloc {
   // База данных
   final Db db;
   // Активная организация
-  final BehaviorSubject<Org> activeOrgSubject = BehaviorSubject();
+  final BehaviorSubject<Org> activeOrg = BehaviorSubject();
   // Активный график
-  final BehaviorSubject<Schedule> activeScheduleSubject = BehaviorSubject();
+  final BehaviorSubject<Schedule> activeSchedule = BehaviorSubject();
   // Активная группа
-  final BehaviorSubject<Group> activeGroupSubject = BehaviorSubject();
+  final BehaviorSubject<Group> activeGroup = BehaviorSubject();
   // Активный период
-  final BehaviorSubject<DateTime> activePeriodSubject = BehaviorSubject();
+  final BehaviorSubject<DateTime> activePeriod = BehaviorSubject();
   // Организации с признаком активности
-  final BehaviorSubject<List<ActiveOrg>> activeOrgsSubject = BehaviorSubject();
+  final BehaviorSubject<List<ActiveOrg>> activeOrgList = BehaviorSubject();
   // Графики с признаком активности
-  final BehaviorSubject<List<ActiveSchedule>> activeSchedulesSubject = BehaviorSubject();
+  final BehaviorSubject<List<ActiveSchedule>> activeScheduleList = BehaviorSubject();
   // Группы с признаком активности
-  final BehaviorSubject<List<ActiveGroup>> activeGroupsSubject = BehaviorSubject();
+  final BehaviorSubject<List<ActiveGroup>> activeGroupList = BehaviorSubject();
   // Группы активной организации
-  Stream<List<GroupView>> groupsStream;
+  Stream<List<GroupView>> groupList;
   // Персоны активной группы
-  Stream<List<GroupPerson>> groupPersonsStream;
+  Stream<List<GroupPerson>> groupPersonList;
 
   /// Конструктор блока
   Bloc() : db = Db() {
     // Отслеживание активной организации из настройки
     Rx.concat([db.settingsDao.watchActiveOrg()])
-        .listen(activeOrgSubject.add);
+        .listen(activeOrg.add);
     // Отслеживание активного графика из настройки
     Rx.concat([db.settingsDao.watchActiveSchedule()])
-        .listen(activeScheduleSubject.add);
+        .listen(activeSchedule.add);
     // Отслеживание активной группы организации
-    Rx.concat([activeOrgSubject.switchMap(db.settingsDao.watchActiveGroup)])
-        .listen(activeGroupSubject.add);
+    Rx.concat([activeOrg.switchMap(db.settingsDao.watchActiveGroup)])
+        .listen(activeGroup.add);
     // Отслеживание активного периода из настройки
     Rx.concat([db.settingsDao.watchActivePeriod()])
-        .listen(activePeriodSubject.add);
+        .listen(activePeriod.add);
     // Отслеживание групп в активной организации
-    groupsStream = activeOrgSubject.switchMap(db.groupsDao.watch);
+    groupList = activeOrg.switchMap(db.groupsDao.watch);
     // Формирование признака активности организаций
     Rx.combineLatest2<List<Org>, Org, List<ActiveOrg>>(
       db.orgsDao.watch(),
-      activeOrgSubject,
+      activeOrg,
       (orgs, selected) => orgs.map(
         (org) => ActiveOrg(org, org?.id == selected?.id)).toList()
-    ).listen(activeOrgsSubject.add);
+    ).listen(activeOrgList.add);
     // Формирование признака активности графиков
     Rx.combineLatest2<List<Schedule>, Schedule, List<ActiveSchedule>>(
       db.schedulesDao.watch(),
-      activeScheduleSubject,
+      activeSchedule,
       (schedules, selected) => schedules.map(
         (schedule) => ActiveSchedule(schedule, schedule?.id == selected?.id)
       ).toList()
-    ).listen(activeSchedulesSubject.add);
+    ).listen(activeScheduleList.add);
     // Формирование признака активности групп
     Rx.combineLatest2<List<GroupView>, Group, List<ActiveGroup>>(
-      groupsStream,
-      activeGroupSubject,
+      groupList,
+      activeGroup,
       (groups, selected) => groups.map(
         (group) => ActiveGroup(group, group?.id == selected?.id)
       ).toList()
-    ).listen(activeGroupsSubject.add);
+    ).listen(activeGroupList.add);
     // Отслеживание персон в активной группе
-    groupPersonsStream = activeGroupSubject.switchMap(db.groupPersonLinksDao.watch);
+    groupPersonList = activeGroup.switchMap(db.groupPersonLinksDao.watch);
   }
 
-  /// Отображение организации
-  void showOrg(Org org) {
-    activeOrgSubject.add(org);
-    db.settingsDao.setActiveOrg(org);
+  /// Освобождение ресурсов
+  void close() {
+    activeOrg.close();
+    activeSchedule.close();
+    activeGroup.close();
+    activePeriod.close();
+    activeOrgList.close();
+    activeScheduleList.close();
+    activeGroupList.close();
+    db.close();
   }
+
+  // Организации ---------------------------------------------------------------
+  /// Установка активной организации
+  Future setActiveOrg(Org org) async =>
+    await db.settingsDao.setActiveOrg(org);
 
   /// Добавление организации
-  void insertOrg({
+  Future<Org> insertOrg({
     @required String name,
     String inn,
   }) async {
-    final org = await db.orgsDao.insert2(
-      name: name,
-      inn: inn,
-    );
-    showOrg(org);
+    final org = await db.orgsDao.insert2(name: name, inn: inn);
+    setActiveOrg(org);
+    return org;
   }
 
   /// Исправление организации
-  void updateOrg(Org org) {
-    db.orgsDao.update2(org);
-  }
+  Future<bool> updateOrg(Org org) async =>
+    await db.orgsDao.update2(org);
 
   /// Удаление организации
-  void deleteOrg(Org org) async {
-    db.orgsDao.delete2(org);
+  Future<bool> deleteOrg(Org org) async {
+    final result = db.orgsDao.delete2(org);
     final previousOrg = await db.orgsDao.getPreviousOrg(org);
-    showOrg(previousOrg);
+    setActiveOrg(previousOrg);
+    return result;
   }
 
-  /// Отображение графика
-  void showSchedule(Schedule schedule) {
-    activeScheduleSubject.add(schedule);
-    db.settingsDao.setActiveSchedule(schedule);
-  }
+  // Графики -------------------------------------------------------------------
+  /// Установка активного графика
+  Future setActiveSchedule(Schedule schedule) async =>
+    await db.settingsDao.setActiveSchedule(schedule);
 
   /// Добавление графика
-  void insertSchedule({
+  Future insertSchedule({
     @required String code,
   }) async {
     final schedule = await db.schedulesDao.insert2(code: code);
-    showSchedule(schedule);
+    setActiveSchedule(schedule);
   }
 
   /// Исправление графика
-  void updateSchedule(Schedule schedule) {
-    db.schedulesDao.update2(schedule);
-  }
+  Future<bool> updateSchedule(Schedule schedule) async =>
+    await db.schedulesDao.update2(schedule);
 
   /// Удаление графика
-  void deleteSchedule(Schedule schedule) async {
-    db.schedulesDao.delete2(schedule);
+  Future<bool> deleteSchedule(Schedule schedule) async {
+    final result = db.schedulesDao.delete2(schedule);
     final previousSchedule = await db.schedulesDao.getPreviousSchedule(schedule);
-    showSchedule(previousSchedule);
+    setActiveSchedule(previousSchedule);
+    return result;
   }
 
-  /// Отображение группы
-  void showGroup(Group group) {
-    activeGroupSubject.add(group);
-    db.settingsDao.setActiveGroup(activeOrgSubject.value, group);
-  }
+  // Группы --------------------------------------------------------------------
+  /// Установка активной группы
+  Future setActiveGroup(Group group) async =>
+    await db.settingsDao.setActiveGroup(activeOrg.value, group);
 
   /// Добавление группы
-  void insertGroup({
+  Future<Group> insertGroup({
     @required String name,
     @required Schedule schedule,
   }) async {
     final group = await db.groupsDao.insert2(
-      org: activeOrgSubject.value,
+      org: activeOrg.value,
       name: name,
       schedule: schedule,
     );
-    showGroup(group);
+    setActiveGroup(group);
+    return group;
   }
 
   /// Исправление группы
-  void updateGroup(Group group) {
-    db.groupsDao.update2(group);
-  }
+  Future<bool> updateGroup(Group group) async =>
+    await db.groupsDao.update2(group);
 
   /// Удаление группы
-  void deleteGroup(Group group) async {
-    db.groupsDao.delete2(group);
+  Future<bool> deleteGroup(Group group) async {
+    final result = db.groupsDao.delete2(group);
     final previousGroup = await db.groupsDao.getPreviousGroup(
-        activeOrgSubject.value, group);
-    showGroup(previousGroup);
+        activeOrg.value, group);
+    setActiveGroup(previousGroup);
+    return result;
   }
 
-  /// Создание персоны и добавление её в выбранную группу
-  void createPersonOfGroup({
+  // Персоны -------------------------------------------------------------------
+  /// Добавление персоны
+  Future<Person> insertPerson({
     @required String family,
     @required String name,
     String middleName,
+    DateTime birthday,
   }) async {
     final person = await db.personsDao.insert2(
         family: family,
         name: name,
         middleName: middleName,
+        birthday: birthday,
     );
-    db.groupPersonLinksDao.insert2(person: person, group: activeGroupSubject.value);
-  }
-  
-  /// Освобождение ресурсов
-  void close() {
-    activeOrgSubject.close();
-    activeScheduleSubject.close();
-    activeGroupSubject.close();
-    activePeriodSubject.close();
-    activeOrgsSubject.close();
-    activeSchedulesSubject.close();
-    activeGroupsSubject.close();
-    db.close();
+    //db.groupPersonLinksDao.insert2(group: activeGroup.value, person: person);
+    return person;
   }
 }

@@ -20,7 +20,7 @@ class HomeDrawer extends StatelessWidget {
                 L10n.of(context).orgInserting, OrgEdit()),
             Flexible(
               child: StreamBuilder<List<ActiveOrg>>(
-                stream: Provider.of<Bloc>(context).activeOrgsSubject,
+                stream: Provider.of<Bloc>(context).activeOrgList,
                 builder: (context, snapshot) {
                   final orgs = snapshot.data ?? <ActiveOrg>[];
                   return ListView.builder(
@@ -33,7 +33,7 @@ class HomeDrawer extends StatelessWidget {
             ),
             // Список групп активной организации
             StreamBuilder<Org>(
-                stream: Provider.of<Bloc>(context).activeOrgSubject,
+                stream: Provider.of<Bloc>(context).activeOrg,
                 builder: (context, snapshot) => snapshot.hasData
                     ? _listTitle(context, Icons.group, L10n.of(context).groups,
                         L10n.of(context).groupInserting, GroupEdit())
@@ -42,7 +42,7 @@ class HomeDrawer extends StatelessWidget {
             Flexible(
               flex: 3,
               child: StreamBuilder<List<ActiveGroup>>(
-                stream: Provider.of<Bloc>(context).activeGroupsSubject,
+                stream: Provider.of<Bloc>(context).activeGroupList,
                 builder: (context, snapshot) {
                   final groups = snapshot.data ?? <ActiveGroup>[];
                   return ListView.builder(
@@ -109,7 +109,7 @@ class _OrgCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: () {
-          Provider.of<Bloc>(context, listen: false).showOrg(entry.orgView);
+          Provider.of<Bloc>(context, listen: false).setActiveOrg(entry.orgView);
         },
         onDoubleTap: () {
           Navigator.push(
@@ -159,13 +159,16 @@ class _GroupCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: () {
-          Provider.of<Bloc>(context, listen: false).showGroup(entry.groupView);
+          Provider.of<Bloc>(context, listen: false)
+              .setActiveGroup(entry.groupView);
           Navigator.pop(context);
         },
         onDoubleTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => GroupEdit(groupView: entry.groupView)),
+            MaterialPageRoute(
+                builder: (context) => GroupEdit(groupView: entry.groupView),
+            ),
           );
         },
         child: ListTile(

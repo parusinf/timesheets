@@ -19,21 +19,21 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: StreamBuilder<Group>(
-        stream: bloc.activeGroupSubject,
+        stream: bloc.activeGroup,
         builder: (context, snapshot) =>
             snapshot.hasData ? Text(snapshot.data.name) : Text('')
       )
     ),
     drawer: HomeDrawer(),
     body: StreamBuilder<List<GroupPerson>>(
-      stream: bloc.groupPersonsStream,
+      stream: bloc.groupPersonList,
       builder: (context, snapshot) {
         // Организаций нет
-        if (bloc.activeOrgSubject.value == null) {
+        if (bloc.activeOrg.value == null) {
           return centerMessage(context, L10n.of(context).noOrgs);
         } else {
           // Групп нет
-          if (bloc.activeGroupSubject.value == null) {
+          if (bloc.activeGroup.value == null) {
             return centerMessage(context, L10n.of(context).noGroups);
           } else {
             // Данные загрузились
