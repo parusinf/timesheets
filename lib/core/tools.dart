@@ -16,6 +16,7 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
       case 'groups': message = L10n.of(context).uniqueGroup; break;
     }
   }
+  scaffoldKey.currentState.hideCurrentSnackBar();
   scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
 }
 
