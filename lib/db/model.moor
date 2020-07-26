@@ -25,7 +25,7 @@ CREATE TABLE schedule_days (
   -- Идертификатор дня недели графика
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор графика
-  scheduleId         INT NOT NULL REFERENCES schedules (id),
+  scheduleId         INT NOT NULL REFERENCES schedules (id) ON DELETE CASCADE,
   -- Номер дня начинается с нуля
   dayNumber          INT NOT NULL,
   -- Норма часов

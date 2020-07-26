@@ -4,15 +4,7 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/ui/schedule_edit.dart';
 
 /// Словарь графиков
-class SchedulesDictionary extends StatefulWidget {
-  @override
-  SchedulesDictionaryState createState() => SchedulesDictionaryState();
-}
-
-/// Состояние словаря графиков
-class SchedulesDictionaryState extends State<SchedulesDictionary> {
-  Bloc get bloc => Provider.of<Bloc>(context);
-
+class SchedulesDictionary extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -77,10 +69,11 @@ class _ScheduleCard extends StatelessWidget {
           Navigator.pop(context, entry.scheduleView);
         },
         onDoubleTap: () {
+          Provider.of<Bloc>(context, listen: false).setActiveSchedule(entry.scheduleView);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) =>
-                ScheduleEdit(scheduleView: entry.scheduleView)
+                ScheduleEdit(schedule: entry.scheduleView)
             ),
           );
         },

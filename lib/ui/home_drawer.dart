@@ -60,27 +60,31 @@ class HomeDrawer extends StatelessWidget {
   );
 
   /// Заголовок списка с кнопкой добавления
-Widget _listTitle(BuildContext context, IconData icon, String title,
-    String actionName, Widget entryPage) =>
-   Row(
-     children: <Widget>[
-       Padding(
-         padding: const EdgeInsets.all(4.0),
-         child: Icon(icon, color: Colors.black38)
-       ),
-       greyText(context, title),
-       const Spacer(),
-       IconButton(
-         icon: const Icon(Icons.add),
-         color: Colors.black38,
-         tooltip: actionName,
-         onPressed: () => Navigator.push(
-           context,
-           MaterialPageRoute(builder: (context) => entryPage),
-         ),
-       ),
-     ]
-   );
+  Widget _listTitle(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String actionName,
+    Widget entryPage
+  ) => Row(
+    children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Icon(icon, color: Colors.black54)
+      ),
+      text(context, title),
+      const Spacer(),
+      IconButton(
+        icon: const Icon(Icons.add),
+        color: Colors.black54,
+        tooltip: actionName,
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => entryPage),
+        ),
+      ),
+    ]
+  );
 }
 
 /// Карточка организации

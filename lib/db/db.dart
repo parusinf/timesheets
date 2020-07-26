@@ -122,7 +122,8 @@ class Db extends _$Db {
         transaction(() async {
           final schedule = await schedulesDao.insert2(
             code: 'пн,вт,ср,чт,пт 12ч',
-            createDays: true);
+            createDays: true
+          );
           settingsDao.setActiveSchedule(schedule);
           final org1 = await orgsDao.insert2(
             name: 'МБДОУ д/с общеразвивающего типа №1 "Светлячок"',
@@ -260,15 +261,15 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
     final id = await into(db.schedules).insert(
         SchedulesCompanion(code: Value(code)));
     final schedule = Schedule(id: id, code: code);
-    if (createDays != null && createDays) {
+    if (createDays) {
       final hoursByDays = parseScheduleCode(code);
-      for (int dayNumber = 0; dayNumber < hoursByDays.length; dayNumber++)
-        if (hoursByDays[dayNumber] != 0)
-          db.scheduleDaysDao.insert2(
-            schedule: schedule,
-            dayNumber: dayNumber,
-            hoursNorm: hoursByDays[dayNumber],
-          );
+      for (int dayNumber = 0; dayNumber < hoursByDays.length; dayNumber++) {
+        db.scheduleDaysDao.insert2(
+          schedule: schedule,
+          dayNumber: dayNumber,
+          hoursNorm: hoursByDays[dayNumber],
+        );
+      }
     }
     return schedule;
   }

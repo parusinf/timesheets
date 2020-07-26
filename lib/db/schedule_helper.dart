@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'package:timesheets/core/tools.dart';
 
 /// Формирование списка часов по коду графика
 List<double> parseScheduleCode(String code) {
@@ -20,12 +21,12 @@ List<double> parseScheduleCode(String code) {
 /// Формирование кода графика по списку часов
 String createScheduleCode(List<double> hours) {
   assert(hours.every((e) => e != null));
-  assert(hours.reduce((a, b) => a + b) != 0);
+  assert(hours.reduce((a, b) => a + b) != 0.0);
   final parts = List<String>();
   final week = _createOneWeekDays(hours, 0);
   if (hours.length == 7) {
     week.forEach((hour, days) {
-      parts.add(days.join(',') + ' $hour$_hourStr');
+      parts.add(days.join(',') + ' ${format(hour)}$_hourStr');
     });
   } else {
     final week2 = _createOneWeekDays(hours, 7);
@@ -35,10 +36,9 @@ String createScheduleCode(List<double> hours) {
           final daysStr = days.join(',');
           final days2Str = days2.join(',');
           if (daysStr == days2Str) {
-            parts.add(daysStr + ' $hour$_hourStr');
+            parts.add('$daysStr $hour$_hourStr');
           } else {
-            parts.add(
-                daysStr + '/' + days2Str + ' $_inWeekStr $hour$_hourStr');
+            parts.add('$daysStr/$days2Str $_inWeekStr ${format(hour)}$_hourStr');
           }
         }
       });

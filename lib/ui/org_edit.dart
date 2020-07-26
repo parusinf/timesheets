@@ -14,12 +14,12 @@ class OrgEdit extends StatefulWidget {
 
 /// Состояние формы редактирования организации
 class _OrgEditState extends State<OrgEdit> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _autoValidate = false;
   Bloc get bloc => Provider.of<Bloc>(context, listen: false);
-  final TextEditingController _nameEdit = TextEditingController();
-  final TextEditingController _innEdit = TextEditingController();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
+  final _nameEdit = TextEditingController();
+  final _innEdit = TextEditingController();
+  bool _autoValidate = false;
 
   @override
   void initState() {
@@ -119,7 +119,7 @@ class _OrgEditState extends State<OrgEdit> {
     return null;
   }
 
-  /// Добавление
+  /// Добавление организации
   Future _insert() async {
     try {
       await bloc.insertOrg(name: _nameEdit.text, inn: _innEdit.text);
@@ -129,7 +129,7 @@ class _OrgEditState extends State<OrgEdit> {
     }
   }
   
-  /// Исправление
+  /// Исправление организации
   Future _update() async {
     try {
       await bloc.updateOrg(widget.org.copyWith(

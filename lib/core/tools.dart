@@ -3,6 +3,13 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'l10n.dart';
 
+/// Тип действия с данными
+enum DataActionType {
+  Insert,
+  Update,
+  Delete
+}
+
 /// Сообщение в снакбаре
 void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
   final context = scaffoldKey.currentContext;
@@ -15,18 +22,25 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
       case 'schedules': message = L10n.of(context).uniqueSchedule; break;
       case 'groups': message = L10n.of(context).uniqueGroup; break;
     }
+  } else {
+    message = message.replaceFirst('Invalid argument(s): ', '');
   }
   scaffoldKey.currentState.hideCurrentSnackBar();
   scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
 }
 
 /// Текст серого цвета
-Widget greyText(BuildContext context, String text) => Text(text,
-  style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.black38));
+Widget text(BuildContext context, String text, {color: Colors.black54, fontSize: 14.0}) => Text(
+  text,
+  style: TextStyle(
+    color: color,
+    fontSize: fontSize,
+  ),
+);
 
 /// Сообщение в центре страницы серым цветом
 Widget centerMessage(BuildContext context, String message) =>
-    Center(child: greyText(context, message));
+    Center(child: text(context, message));
 
 /// Преобразование даты периода в строку
 String periodString(DateTime period) {
@@ -47,4 +61,10 @@ bool isNotEmpty(String value) => !isEmpty(value);
 
 /// Горизонтальный разделитель пространства между контролами
 const horizontalSpace = SizedBox(height: 16);
+
+/// Форматирование числа с плавающей точкой
+String format(double number) {
+  final stringNumber = NumberFormat('##.#', 'en_US').format(number);
+  return stringNumber == '0' ? '' : stringNumber;
+}
 

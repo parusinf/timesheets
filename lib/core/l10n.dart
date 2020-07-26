@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show SynchronousFuture;
 
 class L10n {
-  L10n(this.locale);
-
   final Locale locale;
+
+  L10n(this.locale);
 
   static L10n of(BuildContext context) {
     return Localizations.of<L10n>(context, L10n);
@@ -28,6 +28,7 @@ class L10n {
       'groups': 'ГРУППЫ',
       'inn': 'ИНН',
       'innLength': 'ИНН должен состоять из 10 цифр',
+      'invalidHoursNorm': 'Некорректная норма часов',
       'noCode': 'Нет мнемокода',
       'noGroups': 'Групп нет',
       'noName': 'Нет наименования',
@@ -47,10 +48,11 @@ class L10n {
       'scheduleUpdating': 'Исправление графика',
       'schedules': 'Графики',
       'title': 'Табели',
-      'withoutInn': 'Без ИНН',
+      'uniqueGroup': 'Уже есть группа с таким наименованием и графиком',
       'uniqueOrg': 'Уже есть организация с таким наименованием и ИНН',
       'uniqueSchedule': 'Уже есть такой график',
-      'uniqueGroup': 'Уже есть группа с таким наименованием и графиком',
+      'withoutInn': 'Без ИНН',
+      'noHoursNorm': 'Нет нормы часов',
     }
   };
 
@@ -70,6 +72,7 @@ class L10n {
   get groups => _l10n[locale.languageCode]['groups'];
   get inn => _l10n[locale.languageCode]['inn'];
   get innLength => _l10n[locale.languageCode]['innLength'];
+  get invalidHoursNorm => _l10n[locale.languageCode]['invalidHoursNorm'];
   get noCode => _l10n[locale.languageCode]['noCode'];
   get noGroups => _l10n[locale.languageCode]['noGroups'];
   get noName => _l10n[locale.languageCode]['noName'];
@@ -89,17 +92,18 @@ class L10n {
   get scheduleUpdating => _l10n[locale.languageCode]['scheduleUpdating'];
   get schedules => _l10n[locale.languageCode]['schedules'];
   get title => _l10n[locale.languageCode]['title'];
-  get withoutInn => _l10n[locale.languageCode]['withoutInn'];
+  get uniqueGroup => _l10n[locale.languageCode]['uniqueGroup'];
   get uniqueOrg => _l10n[locale.languageCode]['uniqueOrg'];
   get uniqueSchedule => _l10n[locale.languageCode]['uniqueSchedule'];
-  get uniqueGroup => _l10n[locale.languageCode]['uniqueGroup'];
+  get withoutInn => _l10n[locale.languageCode]['withoutInn'];
+  get noHoursNorm => _l10n[locale.languageCode]['noHoursNorm'];
 }
 
 class L10nDelegate extends LocalizationsDelegate<L10n> {
   const L10nDelegate();
 
   @override
-  bool isSupported(Locale locale) => ['ru','en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => ['ru'].contains(locale.languageCode);
 
   @override
   Future<L10n> load(Locale locale) {

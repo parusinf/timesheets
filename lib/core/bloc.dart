@@ -27,22 +27,34 @@ class ActiveGroup {
 class Bloc {
   // База данных
   final Db db;
+
   // Активная организация
-  final BehaviorSubject<Org> activeOrg = BehaviorSubject();
+  final activeOrg = BehaviorSubject<Org>();
+
   // Активный график
-  final BehaviorSubject<Schedule> activeSchedule = BehaviorSubject();
+  final activeSchedule = BehaviorSubject<Schedule>();
+
   // Активная группа
-  final BehaviorSubject<Group> activeGroup = BehaviorSubject();
+  final activeGroup = BehaviorSubject<Group>();
+
   // Активный период
-  final BehaviorSubject<DateTime> activePeriod = BehaviorSubject();
+  final activePeriod = BehaviorSubject<DateTime>();
+
   // Организации с признаком активности
-  final BehaviorSubject<List<ActiveOrg>> activeOrgList = BehaviorSubject();
+  final activeOrgList = BehaviorSubject<List<ActiveOrg>>();
+
   // Графики с признаком активности
-  final BehaviorSubject<List<ActiveSchedule>> activeScheduleList = BehaviorSubject();
+  final activeScheduleList = BehaviorSubject<List<ActiveSchedule>>();
+
+  // Дни активного графика
+  final scheduleDayList = BehaviorSubject<List<ScheduleDay>>();
+
   // Группы с признаком активности
-  final BehaviorSubject<List<ActiveGroup>> activeGroupList = BehaviorSubject();
+  final activeGroupList = BehaviorSubject<List<ActiveGroup>>();
+
   // Группы активной организации
   Stream<List<GroupView>> groupList;
+
   // Персоны активной группы
   Stream<List<GroupPerson>> groupPersonList;
 
@@ -51,17 +63,26 @@ class Bloc {
     // Отслеживание активной организации из настройки
     Rx.concat([db.settingsDao.watchActiveOrg()])
         .listen(activeOrg.add);
+
     // Отслеживание активного графика из настройки
     Rx.concat([db.settingsDao.watchActiveSchedule()])
         .listen(activeSchedule.add);
+
     // Отслеживание активной группы организации
     Rx.concat([activeOrg.switchMap(db.settingsDao.watchActiveGroup)])
         .listen(activeGroup.add);
+
     // Отслеживание активного периода из настройки
     Rx.concat([db.settingsDao.watchActivePeriod()])
         .listen(activePeriod.add);
+
+    // Отслеживание дней активного графика
+    Rx.concat([activeSchedule.switchMap(db.scheduleDaysDao.watch)])
+        .listen(scheduleDayList.add);
+
     // Отслеживание групп в активной организации
     groupList = activeOrg.switchMap(db.groupsDao.watch);
+
     // Формирование признака активности организаций
     Rx.combineLatest2<List<Org>, Org, List<ActiveOrg>>(
       db.orgsDao.watch(),
@@ -69,6 +90,7 @@ class Bloc {
       (orgs, selected) => orgs.map(
         (org) => ActiveOrg(org, org?.id == selected?.id)).toList()
     ).listen(activeOrgList.add);
+
     // Формирование признака активности графиков
     Rx.combineLatest2<List<Schedule>, Schedule, List<ActiveSchedule>>(
       db.schedulesDao.watch(),
@@ -77,6 +99,7 @@ class Bloc {
         (schedule) => ActiveSchedule(schedule, schedule?.id == selected?.id)
       ).toList()
     ).listen(activeScheduleList.add);
+
     // Формирование признака активности групп
     Rx.combineLatest2<List<GroupView>, Group, List<ActiveGroup>>(
       groupList,
@@ -85,6 +108,7 @@ class Bloc {
         (group) => ActiveGroup(group, group?.id == selected?.id)
       ).toList()
     ).listen(activeGroupList.add);
+
     // Отслеживание персон в активной группе
     groupPersonList = activeGroup.switchMap(db.groupPersonLinksDao.watch);
   }
@@ -98,6 +122,7 @@ class Bloc {
     activeOrgList.close();
     activeScheduleList.close();
     activeGroupList.close();
+    scheduleDayList.close();
     db.close();
   }
 
@@ -134,11 +159,12 @@ class Bloc {
     await db.settingsDao.setActiveSchedule(schedule);
 
   /// Добавление графика
-  Future insertSchedule({
+  Future<Schedule> insertSchedule({
     @required String code,
   }) async {
     final schedule = await db.schedulesDao.insert2(code: code);
     setActiveSchedule(schedule);
+    return schedule;
   }
 
   /// Исправление графика

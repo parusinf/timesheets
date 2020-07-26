@@ -15,13 +15,13 @@ class GroupEdit extends StatefulWidget {
 
 /// Состояние формы редактирования группы
 class _GroupEditState extends State<GroupEdit> {
-  Schedule schedule;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _autoValidate = false;
   Bloc get bloc => Provider.of<Bloc>(context, listen: false);
-  final TextEditingController _nameEdit = TextEditingController();
-  final TextEditingController _scheduleEdit = TextEditingController();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
+  final _nameEdit = TextEditingController();
+  final _scheduleEdit = TextEditingController();
+  Schedule schedule;
+  bool _autoValidate = false;
 
   @override
   void initState() {
@@ -65,6 +65,7 @@ class _GroupEditState extends State<GroupEdit> {
           child: Column(
             children: <Widget>[
               horizontalSpace,
+              // Наименование группы
               TextFormField(
                 controller: _nameEdit,
                 textCapitalization: TextCapitalization.words,
@@ -77,6 +78,7 @@ class _GroupEditState extends State<GroupEdit> {
                 validator: _validateName,
               ),
               horizontalSpace,
+              // График
               TextFormField(
                 controller: _scheduleEdit,
                 readOnly: true,
@@ -134,7 +136,7 @@ class _GroupEditState extends State<GroupEdit> {
     return null;
   }
 
-  /// Добавление
+  /// Добавление группы
   Future _insert() async {
     try {
       await bloc.insertGroup(name: _nameEdit.text, schedule: schedule);
@@ -144,7 +146,7 @@ class _GroupEditState extends State<GroupEdit> {
     }
   }
 
-  /// Исправление
+  /// Исправление группы
   Future _update() async {
     try {
       await bloc.updateGroup(widget.groupView.copyWith(name: _nameEdit.text,

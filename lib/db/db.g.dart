@@ -633,7 +633,8 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
   GeneratedIntColumn get scheduleId => _scheduleId ??= _constructScheduleId();
   GeneratedIntColumn _constructScheduleId() {
     return GeneratedIntColumn('scheduleId', $tableName, false,
-        $customConstraints: 'NOT NULL REFERENCES schedules (id)');
+        $customConstraints:
+            'NOT NULL REFERENCES schedules (id) ON DELETE CASCADE');
   }
 
   final VerificationMeta _dayNumberMeta = const VerificationMeta('dayNumber');
@@ -2429,6 +2430,13 @@ abstract class _$Db extends GeneratedDatabase {
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('schedules',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('schedule_days', kind: UpdateKind.delete),
+            ],
+          ),
           WritePropagation(
             on: TableUpdateQuery.onTableName('group_person_links',
                 limitUpdateKind: UpdateKind.delete),
