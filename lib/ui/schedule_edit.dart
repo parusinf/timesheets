@@ -28,46 +28,47 @@ class _ScheduleEditState extends State<ScheduleEdit> {
     super.initState();
     if (_schedule == null) {
       _actionType = DataActionType.Insert;
-      _insert();
+      final scheduleDays = List<ScheduleDay>();
+      for (int dayNumber = 0; dayNumber < weekDays.length; dayNumber++) {
+        scheduleDays.add(ScheduleDay(
+          id: dayNumber,
+          scheduleId: 0,
+          dayNumber: dayNumber,
+          hoursNorm: 0.0,
+        ));
+      }
+      bloc.scheduleDayList.add(scheduleDays);
     } else {
       _actionType = DataActionType.Update;
     }
   }
 
   @override
-  Widget build(BuildContext context) => WillPopScope(
-    onWillPop: () async {
-      if (_actionType == DataActionType.Insert) {
-        bloc.deleteSchedule(_schedule);
-      }
-      return true;
-    },
-    child: Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(_schedule == null
-            ? L10n.of(context).scheduleInserting
-            : L10n.of(context).scheduleUpdating
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.done),
-            tooltip: L10n.of(context).done,
-            onPressed: _handleSubmitted,
-          ),
-        ],
+  Widget build(BuildContext context) => Scaffold(
+    key: _scaffoldKey,
+    appBar: AppBar(
+      title: Text(_schedule == null
+          ? L10n.of(context).scheduleInserting
+          : L10n.of(context).scheduleUpdating
       ),
-      body: Form(
-        key: _formKey,
-        autovalidate: _autoValidate,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: StreamBuilder<List<ScheduleDay>>(
-            stream: bloc.scheduleDayList,
-            builder: (context, snapshot) => ListView.builder(
-              itemBuilder: (context, index) => _scheduleDayCard(snapshot.data, index),
-              itemCount: snapshot.data?.length ?? 0,
-            ),
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.done),
+          tooltip: L10n.of(context).done,
+          onPressed: _handleSubmitted,
+        ),
+      ],
+    ),
+    body: Form(
+      key: _formKey,
+      autovalidate: _autoValidate,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: StreamBuilder<List<ScheduleDay>>(
+          stream: bloc.scheduleDayList,
+          builder: (context, snapshot) => ListView.builder(
+            itemBuilder: (context, index) => _scheduleDayCard(snapshot.data, index),
+            itemCount: snapshot.data?.length ?? 0,
           ),
         ),
       ),
@@ -90,12 +91,26 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   );
 
   /// Обработка формы
-  void _handleSubmitted() {
+  Future _handleSubmitted() async {
     final form = _formKey.currentState;
     if (!form.validate()) {
       _autoValidate = true;
     } else {
-      _update();
+      try {
+        final hours = bloc.scheduleDayList.value.map((e) => e.hoursNorm).toList();
+        if (hours.reduce((a, b) => a + b) == 0.0) {
+          showMessage(_scaffoldKey, L10n.of(context).noHoursNorm);
+        } else {
+          switch (_actionType) {
+            case DataActionType.Insert: _insert(hours); break;
+            case DataActionType.Update: _update(hours); break;
+            case DataActionType.Delete: break;
+          }
+          Navigator.of(context).pop();
+        }
+      } catch(e) {
+        showMessage(_scaffoldKey, e.toString());
+      }
     }
   }
 
@@ -111,43 +126,21 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   }
 
   /// Добавление графика
-  Future _insert() async {
-    try {
-      _schedule = await bloc.insertSchedule(code: UniqueKey().toString());
-      for (int dayNumber = 0; dayNumber < weekDays.length; dayNumber++) {
-        await bloc.db.scheduleDaysDao.insert2(
+  Future _insert(List<double> hours) async {
+    _schedule = await bloc.insertSchedule(code: createScheduleCode(hours));
+    bloc.scheduleDayList.value.forEach((scheduleDay) =>
+        bloc.db.scheduleDaysDao.insert2(
           schedule: _schedule,
-          dayNumber: dayNumber,
-          hoursNorm: 0.0,
-        );
-      }
-    } catch(e) {
-      showMessage(_scaffoldKey, e.toString());
-    }
+          dayNumber: scheduleDay.dayNumber,
+          hoursNorm: scheduleDay.hoursNorm,
+        ));
   }
 
   /// Исправление графика
-  Future _update() async {
-    try {
-      final hours = bloc.scheduleDayList.value.map((e) => e.hoursNorm).toList();
-      if (_checkHoursNorm(hours)) {
-        await bloc.updateSchedule(
-            _schedule.copyWith(code: createScheduleCode(hours)));
-        bloc.scheduleDayList.value.forEach((scheduleDay) =>
-            bloc.db.scheduleDaysDao.update2(scheduleDay));
-        Navigator.of(context).pop();
-      }
-    } catch(e) {
-      showMessage(_scaffoldKey, e.toString());
-    }
-  }
-
-  /// Проверка нормы часов
-  bool _checkHoursNorm(List<double> hours) {
-    final result = hours.reduce((a, b) => a + b) != 0.0;
-    if (!result) {
-      showMessage(_scaffoldKey, L10n.of(context).noHoursNorm);
-    }
-    return result;
+  Future _update(List<double> hours) async {
+    await bloc.updateSchedule(
+        _schedule.copyWith(code: createScheduleCode(hours)));
+    bloc.scheduleDayList.value.forEach((scheduleDay) =>
+        bloc.db.scheduleDaysDao.update2(scheduleDay));
   }
 }

@@ -347,7 +347,7 @@ class ScheduleDaysDao extends DatabaseAccessor<Db> with _$ScheduleDaysDaoMixin {
 
   // Отслеживание дней графика
   Stream<List<ScheduleDay>> watch(Schedule schedule) =>
-      db._daysInSchedule(schedule.id).map((row) =>
+      db._daysInSchedule(schedule?.id).map((row) =>
           ScheduleDay(
               id: row.id,
               scheduleId: row.scheduleId,
