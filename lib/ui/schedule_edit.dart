@@ -7,9 +7,12 @@ import 'package:timesheets/db/schedule_helper.dart';
 /// Форма редактирования графика
 class ScheduleEdit extends StatefulWidget {
   final Schedule schedule;
-  const ScheduleEdit({Key key, this.schedule}) : super(key: key);
+  final DataActionType actionType;
+  const ScheduleEdit({Key key, this.schedule})
+      : this.actionType = schedule == null ? DataActionType.Insert : DataActionType.Update,
+        super(key: key);
   @override
-  _ScheduleEditState createState() => _ScheduleEditState(schedule);
+  _ScheduleEditState createState() => _ScheduleEditState();
 }
 
 /// Состояние формы редактирования графика
@@ -18,16 +21,11 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
-  Schedule _schedule;
-  DataActionType _actionType;
-
-  _ScheduleEditState(this._schedule);
 
   @override
   void initState() {
     super.initState();
-    if (_schedule == null) {
-      _actionType = DataActionType.Insert;
+    if (widget.actionType == DataActionType.Insert) {
       final scheduleDays = List<ScheduleDay>();
       for (int dayNumber = 0; dayNumber < weekDays.length; dayNumber++) {
         scheduleDays.add(ScheduleDay(
@@ -38,8 +36,6 @@ class _ScheduleEditState extends State<ScheduleEdit> {
         ));
       }
       bloc.scheduleDayList.add(scheduleDays);
-    } else {
-      _actionType = DataActionType.Update;
     }
   }
 
@@ -47,7 +43,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(_schedule == null
+      title: Text(widget.actionType == DataActionType.Insert
           ? L10n.of(context).scheduleInserting
           : L10n.of(context).scheduleUpdating
       ),
@@ -101,7 +97,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
         if (hours.reduce((a, b) => a + b) == 0.0) {
           showMessage(_scaffoldKey, L10n.of(context).noHoursNorm);
         } else {
-          switch (_actionType) {
+          switch (widget.actionType) {
             case DataActionType.Insert: _insert(hours); break;
             case DataActionType.Update: _update(hours); break;
             case DataActionType.Delete: break;
@@ -127,10 +123,10 @@ class _ScheduleEditState extends State<ScheduleEdit> {
 
   /// Добавление графика
   Future _insert(List<double> hours) async {
-    _schedule = await bloc.insertSchedule(code: createScheduleCode(hours));
+    final schedule = await bloc.insertSchedule(code: createScheduleCode(hours));
     bloc.scheduleDayList.value.forEach((scheduleDay) =>
         bloc.db.scheduleDaysDao.insert2(
-          schedule: _schedule,
+          schedule: schedule,
           dayNumber: scheduleDay.dayNumber,
           hoursNorm: scheduleDay.hoursNorm,
         ));
@@ -138,8 +134,10 @@ class _ScheduleEditState extends State<ScheduleEdit> {
 
   /// Исправление графика
   Future _update(List<double> hours) async {
-    await bloc.updateSchedule(
-        _schedule.copyWith(code: createScheduleCode(hours)));
+    await bloc.updateSchedule(Schedule(
+      id: widget.schedule.id,
+      code: createScheduleCode(hours),
+    ));
     bloc.scheduleDayList.value.forEach((scheduleDay) =>
         bloc.db.scheduleDaysDao.update2(scheduleDay));
   }

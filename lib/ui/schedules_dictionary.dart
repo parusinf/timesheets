@@ -13,10 +13,8 @@ class SchedulesDictionary extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.add),
           tooltip: L10n.of(context).scheduleInserting,
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ScheduleEdit()),
-          ),
+          onPressed: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => ScheduleEdit())),
         ),
       ],
     ),
@@ -25,14 +23,10 @@ class SchedulesDictionary extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: StreamBuilder<List<ActiveSchedule>>(
           stream: Provider.of<Bloc>(context).activeScheduleList,
-          builder: (context, snapshot) {
-            final schedules = snapshot.data ?? <ActiveSchedule>[];
-            return ListView.builder(
-              itemBuilder: (context, index) =>
-                  _ScheduleCard(schedules, index),
-              itemCount: schedules.length,
-            );
-          },
+          builder: (context, snapshot) => ListView.builder(
+            itemBuilder: (context, index) => _ScheduleCard(snapshot.data, index),
+            itemCount: snapshot.data == null ? 0 : snapshot.data.length,
+          ),
         ),
       ),
     ),

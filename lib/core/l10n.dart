@@ -48,11 +48,24 @@ class L10n {
       'scheduleUpdating': 'Исправление графика',
       'schedules': 'Графики',
       'title': 'Табели',
-      'uniqueGroup': 'Уже есть группа с таким наименованием и графиком',
-      'uniqueOrg': 'Уже есть организация с таким наименованием и ИНН',
+      'uniqueGroup': 'Уже есть такая группа',
+      'uniqueOrg': 'Уже есть такая организация',
       'uniqueSchedule': 'Уже есть такой график',
       'withoutInn': 'Без ИНН',
       'noHoursNorm': 'Нет нормы часов',
+      'addPersonToGroup': 'Добавить персону в группу',
+      'personInserting': 'Добавление персоны',
+      'personUpdating': 'Исправление персоны',
+      'personFamily': 'Фамилия',
+      'personName': 'Имя',
+      'personMiddleName': 'Отчество',
+      'personBirthday': 'Дата рождения',
+      'noPersonFamily': 'Нет фамилии',
+      'noPersonName': 'Нет имени',
+      'invalidDate': 'Некорректная дата',
+      'persons': 'Персоны',
+      'uniquePerson': 'Уже есть такая персона',
+      'uniqueGroupPerson': 'Уже есть такая персона в группе',
     }
   };
 
@@ -97,6 +110,19 @@ class L10n {
   get uniqueSchedule => _l10n[locale.languageCode]['uniqueSchedule'];
   get withoutInn => _l10n[locale.languageCode]['withoutInn'];
   get noHoursNorm => _l10n[locale.languageCode]['noHoursNorm'];
+  get addPersonToGroup => _l10n[locale.languageCode]['addPersonToGroup'];
+  get personInserting => _l10n[locale.languageCode]['personInserting'];
+  get personUpdating => _l10n[locale.languageCode]['personUpdating'];
+  get personFamily => _l10n[locale.languageCode]['personFamily'];
+  get personName => _l10n[locale.languageCode]['personName'];
+  get personMiddleName => _l10n[locale.languageCode]['personMiddleName'];
+  get personBirthday => _l10n[locale.languageCode]['personBirthday'];
+  get noPersonFamily => _l10n[locale.languageCode]['noPersonFamily'];
+  get noPersonName => _l10n[locale.languageCode]['noPersonName'];
+  get invalidDate => _l10n[locale.languageCode]['invalidDate'];
+  get persons => _l10n[locale.languageCode]['persons'];
+  get uniquePerson => _l10n[locale.languageCode]['uniquePerson'];
+  get uniqueGroupPerson => _l10n[locale.languageCode]['uniqueGroupPerson'];
 }
 
 class L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -21,6 +21,8 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
       case 'orgs': message = L10n.of(context).uniqueOrg; break;
       case 'schedules': message = L10n.of(context).uniqueSchedule; break;
       case 'groups': message = L10n.of(context).uniqueGroup; break;
+      case 'persons': message = L10n.of(context).uniquePerson; break;
+      case 'group_person_links': message = L10n.of(context).uniqueGroupPerson; break;
     }
   } else {
     message = message.replaceFirst('Invalid argument(s): ', '');
@@ -30,13 +32,8 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
 }
 
 /// Текст серого цвета
-Widget text(BuildContext context, String text, {color: Colors.black54, fontSize: 14.0}) => Text(
-  text,
-  style: TextStyle(
-    color: color,
-    fontSize: fontSize,
-  ),
-);
+Widget text(BuildContext context, String text, {color: Colors.black54, fontSize: 14.0}) =>
+    Text(text, style: TextStyle(color: color, fontSize: fontSize));
 
 /// Сообщение в центре страницы серым цветом
 Widget centerMessage(BuildContext context, String message) =>
@@ -54,7 +51,7 @@ DateTime lastDayOfMonth(DateTime date) => date.month < 12
     : DateTime(date.year + 1, 1, 0);
 
 /// Проверка строки на пустоту
-bool isEmpty(String value) => value == null || value.isEmpty;
+bool isEmpty(String value) => value == null || value.trim().isEmpty;
 
 /// Проверка строки на непустоту
 bool isNotEmpty(String value) => !isEmpty(value);
@@ -68,3 +65,18 @@ String format(double number) {
   return stringNumber == '0' ? '' : stringNumber;
 }
 
+/// Преобразование строки в дату
+DateTime dateTimeValue(String value) =>
+    isNotEmpty(value) ? DateTime.parse(value.trim()) : null;
+
+/// Преобразование строки
+String stringValue(String value) =>
+    isNotEmpty(value) ? value.trim() : null;
+
+/// Преобразование строки в число
+double doubleValue(String value) =>
+    isNotEmpty(value) ? double.parse(value.trim()) : null;
+
+/// Преобразование строки в целое
+int intValue(String value) =>
+    isNotEmpty(value) ? int.parse(value.trim()) : null;

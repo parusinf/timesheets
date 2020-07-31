@@ -2307,6 +2307,24 @@ abstract class _$Db extends GeneratedDatabase {
         }).map(_rowToGroupsViewResult);
   }
 
+  PersonsViewResult _rowToPersonsViewResult(QueryRow row) {
+    return PersonsViewResult(
+      id: row.readInt('id'),
+      family: row.readString('family'),
+      name: row.readString('name'),
+      middleName: row.readString('middleName'),
+      birthday: row.readDateTime('birthday'),
+      groupCount: row.readInt('groupCount'),
+    );
+  }
+
+  Selectable<PersonsViewResult> _personsView() {
+    return customSelect(
+        'SELECT P.id,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       CAST((SELECT COUNT(*) FROM group_person_links WHERE personId = P.id) AS INT) AS groupCount\n  FROM persons P\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        variables: [],
+        readsFrom: {persons, groupPersonLinks}).map(_rowToPersonsViewResult);
+  }
+
   PersonsInGroupResult _rowToPersonsInGroupResult(QueryRow row) {
     return PersonsInGroupResult(
       groupPersonLinkId: row.readInt('groupPersonLinkId'),
@@ -2488,6 +2506,23 @@ class GroupsViewResult {
     this.scheduleId,
     this.scheduleCode,
     this.personCount,
+  });
+}
+
+class PersonsViewResult {
+  final int id;
+  final String family;
+  final String name;
+  final String middleName;
+  final DateTime birthday;
+  final int groupCount;
+  PersonsViewResult({
+    this.id,
+    this.family,
+    this.name,
+    this.middleName,
+    this.birthday,
+    this.groupCount,
   });
 }
 

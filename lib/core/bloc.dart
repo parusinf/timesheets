@@ -228,4 +228,20 @@ class Bloc {
     //db.groupPersonLinksDao.insert2(group: activeGroup.value, person: person);
     return person;
   }
+
+  /// Исправление персоны
+  Future<bool> updatePerson(Person person) async =>
+      await db.personsDao.update2(person);
+
+  /// Удаление персоны
+  Future<bool> deletePerson(Person person) async =>
+      await db.personsDao.delete2(person);
+
+  /// Добавление персоны в группу
+  Future<GroupPerson> addPersonToGroup(Group group, Person person) async =>
+      await db.groupPersonLinksDao.insert2(group, person);
+
+  /// Удаление персоны из группы
+  Future<bool> deletePersonFromGroup(GroupPerson groupPerson) async =>
+      await db.groupPersonLinksDao.delete2(groupPerson);
 }

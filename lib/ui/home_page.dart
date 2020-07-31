@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/home_drawer.dart';
-import 'package:timesheets/ui/timesheet_card.dart';
+import 'package:timesheets/ui/persons_dictionary.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
@@ -13,16 +13,27 @@ class HomePage extends StatefulWidget {
 
 /// Состояние табелей
 class HomePageState extends State<HomePage> {
-  Bloc get bloc => Provider.of<Bloc>(context);
+  Bloc get bloc => Provider.of<Bloc>(context, listen: false);
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    key: _scaffoldKey,
     appBar: AppBar(
       title: StreamBuilder<Group>(
         stream: bloc.activeGroup,
         builder: (context, snapshot) =>
             snapshot.hasData ? Text(snapshot.data.name) : Text('')
-      )
+      ),
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.person_add),
+          tooltip: L10n.of(context).addPersonToGroup,
+          onPressed: () {
+            _addPersonToGroup();
+          },
+        ),
+      ],
     ),
     drawer: HomeDrawer(),
     body: StreamBuilder<List<GroupPerson>>(
@@ -43,7 +54,7 @@ class HomePageState extends State<HomePage> {
                 return centerMessage(context, L10n.of(context).noPersons);
               } else {
                 return ListView.builder(
-                  itemBuilder: (context, index) => TimesheetCard(snapshot.data[index]),
+                  itemBuilder: (context, index) => _GroupPersonCard(snapshot.data, index),
                   itemCount: snapshot.data.length,
                 );
               }
@@ -54,6 +65,54 @@ class HomePageState extends State<HomePage> {
           }
         }
       }
+    ),
+  );
+
+  /// Добавление персоны в группу
+  Future _addPersonToGroup() async {
+    try {
+      final person = await Navigator.push(context,
+          MaterialPageRoute(builder: (context) => PersonsDictionary()));
+      if (person != null) {
+        await bloc.addPersonToGroup(bloc.activeGroup.value, person);
+      }
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
+  }
+}
+
+/// Карточка персоны в группе
+class _GroupPersonCard extends StatelessWidget {
+  final List<GroupPerson> groupPerson;
+  final int index;
+  final GroupPerson entry;
+
+  _GroupPersonCard(this.groupPerson, this.index) : entry = groupPerson[index];
+
+  @override
+  Widget build(BuildContext context) => Dismissible(
+    confirmDismiss: (direction) async => true,
+    background: Material(
+      color: Colors.red,
+      borderRadius: BorderRadius.circular(16),
+      child: const Icon(Icons.delete, color: Colors.white),
+    ),
+    key: UniqueKey(),
+    onDismissed: (direction) {
+      groupPerson.removeAt(index);
+      Provider.of<Bloc>(context, listen: false).deletePersonFromGroup(entry);
+    },
+    child: Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: () => Navigator.pop(context, entry),
+        child: ListTile(
+          title: Text(entry.family),
+          subtitle: Text('${entry.name} ${entry.middleName}'),
+        ),
+      ),
     ),
   );
 }

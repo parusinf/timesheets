@@ -33,24 +33,20 @@ class HomeDrawer extends StatelessWidget {
             ),
             // Список групп активной организации
             StreamBuilder<Org>(
-                stream: Provider.of<Bloc>(context).activeOrg,
-                builder: (context, snapshot) => snapshot.hasData
-                    ? _listTitle(context, Icons.group, L10n.of(context).groups,
-                        L10n.of(context).groupInserting, GroupEdit())
-                    : Spacer()
+              stream: Provider.of<Bloc>(context).activeOrg,
+              builder: (context, snapshot) => snapshot.hasData
+                  ? _listTitle(context, Icons.group, L10n.of(context).groups,
+                      L10n.of(context).groupInserting, GroupEdit())
+                  : Spacer()
             ),
             Flexible(
               flex: 3,
               child: StreamBuilder<List<ActiveGroup>>(
                 stream: Provider.of<Bloc>(context).activeGroupList,
-                builder: (context, snapshot) {
-                  final groups = snapshot.data ?? <ActiveGroup>[];
-                  return ListView.builder(
-                    itemBuilder: (context, index) =>
-                        _GroupCard(groups, index),
-                    itemCount: groups.length,
-                  );
-                },
+                builder: (context, snapshot) => ListView.builder(
+                  itemBuilder: (context, index) => _GroupCard(snapshot.data, index),
+                  itemCount: snapshot.data?.length ?? 0,
+                ),
               ),
             ),
           ],
@@ -83,7 +79,7 @@ class HomeDrawer extends StatelessWidget {
           MaterialPageRoute(builder: (context) => entryPage),
         ),
       ),
-    ]
+    ],
   );
 }
 
@@ -127,10 +123,8 @@ class _OrgCard extends StatelessWidget {
               ? entry.orgView.inn
               : L10n.of(context).withoutInn
           ),
-          trailing: Text('${entry.orgView.groupCount}',
-            style: Theme.of(context).textTheme.bodyText2.copyWith(
-                color: entry.isActive ? Colors.black54 : Colors.black26),
-          ),
+          trailing: text(context, '${entry.orgView.groupCount}',
+              color: entry.isActive ? Colors.black54 : Colors.black26),
         ),
       ),
     ),

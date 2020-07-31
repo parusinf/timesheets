@@ -8,7 +8,10 @@ import 'package:timesheets/ui/schedules_dictionary.dart';
 /// Форма редактирования группы
 class GroupEdit extends StatefulWidget {
   final GroupView groupView;
-  const GroupEdit({Key key, this.groupView}) : super(key: key);
+  final DataActionType actionType;
+  const GroupEdit({Key key, this.groupView})
+      : this.actionType = groupView == null ? DataActionType.Insert : DataActionType.Update,
+        super(key: key);
   @override
   _GroupEditState createState() => _GroupEditState();
 }
@@ -26,8 +29,7 @@ class _GroupEditState extends State<GroupEdit> {
   @override
   void initState() {
     _nameEdit.text = widget.groupView?.name;
-    final activeSchedule = bloc.activeSchedule.value;
-    schedule = widget.groupView?.schedule ?? activeSchedule;
+    schedule = widget.groupView?.schedule ?? bloc.activeSchedule.value;
     _scheduleEdit.text = schedule.code;
     super.initState();
   }
@@ -38,12 +40,12 @@ class _GroupEditState extends State<GroupEdit> {
     _scheduleEdit.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(widget.groupView == null
+      title: Text(widget.actionType == DataActionType.Insert
           ? L10n.of(context).groupInserting
           : L10n.of(context).groupUpdating
       ),
@@ -71,7 +73,6 @@ class _GroupEditState extends State<GroupEdit> {
                 textCapitalization: TextCapitalization.words,
                 autofocus: true,
                 decoration: InputDecoration(
-                  filled: true,
                   icon: const Icon(Icons.group),
                   labelText: L10n.of(context).groupName,
                 ),
@@ -83,7 +84,6 @@ class _GroupEditState extends State<GroupEdit> {
                 controller: _scheduleEdit,
                 readOnly: true,
                 decoration: InputDecoration(
-                  filled: true,
                   icon: const Icon(Icons.calendar_today),
                   labelText: L10n.of(context).schedule,
                 ),
@@ -98,31 +98,46 @@ class _GroupEditState extends State<GroupEdit> {
   );
 
   /// Выбор графика из словаря
-  void _selectSchedule(BuildContext context) async {
-    schedule = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SchedulesDictionary()),
-    );
+  Future _selectSchedule(BuildContext context) async {
+    schedule = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => SchedulesDictionary()));
     _scheduleEdit.text = schedule?.code ?? bloc.activeSchedule.value.code;
   }
 
   /// Обработка формы
-  void _handleSubmitted() {
+  Future _handleSubmitted() async {
     final form = _formKey.currentState;
     if (!form.validate()) {
       _autoValidate = true;
     } else {
-      if (widget.groupView == null) {
-        _insert();
-      } else {
-        _update();
+      try {
+        switch (widget.actionType) {
+          case DataActionType.Insert:
+            await bloc.insertGroup(
+                name: stringValue(_nameEdit.text),
+                schedule: schedule
+            );
+            break;
+          case DataActionType.Update:
+            await bloc.updateGroup(Group(
+                id: widget.groupView.id,
+                orgId: widget.groupView.orgId,
+                name: stringValue(_nameEdit.text),
+                scheduleId: schedule.id
+            ));
+            break;
+          case DataActionType.Delete: break;
+        }
+        Navigator.of(context).pop();
+      } catch(e) {
+        showMessage(_scaffoldKey, e.toString());
       }
     }
   }
 
   /// Проверка наименования
   String _validateName(String value) {
-    if (value.isEmpty) {
+    if (isEmpty(value)) {
       return L10n.of(context).noName;
     }
     return null;
@@ -130,30 +145,9 @@ class _GroupEditState extends State<GroupEdit> {
 
   /// Проверка графика
   String _validateSchedule(String value) {
-    if (value.isEmpty) {
+    if (isEmpty(value)) {
       return L10n.of(context).noSchedule;
     }
     return null;
-  }
-
-  /// Добавление группы
-  Future _insert() async {
-    try {
-      await bloc.insertGroup(name: _nameEdit.text, schedule: schedule);
-      Navigator.of(context).pop();
-    } catch(e) {
-      showMessage(_scaffoldKey, e.toString());
-    }
-  }
-
-  /// Исправление группы
-  Future _update() async {
-    try {
-      await bloc.updateGroup(widget.groupView.copyWith(name: _nameEdit.text,
-          scheduleId: schedule.id));
-      Navigator.of(context).pop();
-    } catch(e) {
-      showMessage(_scaffoldKey, e.toString());
-    }
   }
 }

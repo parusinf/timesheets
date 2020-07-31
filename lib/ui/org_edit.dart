@@ -7,7 +7,10 @@ import 'package:timesheets/db/db.dart';
 /// Форма редактирования организации
 class OrgEdit extends StatefulWidget {
   final Org org;
-  const OrgEdit({Key key, this.org}) : super(key: key);
+  final DataActionType actionType;
+  const OrgEdit({Key key, this.org})
+      : this.actionType = org == null ? DataActionType.Insert : DataActionType.Update,
+        super(key: key);
   @override
   _OrgEditState createState() => _OrgEditState();
 }
@@ -39,8 +42,9 @@ class _OrgEditState extends State<OrgEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(widget.org == null
-          ? L10n.of(context).orgInserting : L10n.of(context).orgUpdating
+      title: Text(widget.actionType == DataActionType.Insert
+          ? L10n.of(context).orgInserting
+          : L10n.of(context).orgUpdating
       ),
       actions: <Widget>[
         IconButton(
@@ -65,7 +69,6 @@ class _OrgEditState extends State<OrgEdit> {
                 textCapitalization: TextCapitalization.words,
                 autofocus: true,
                 decoration: InputDecoration(
-                  filled: true,
                   icon: const Icon(Icons.business),
                   labelText: L10n.of(context).orgName,
                 ),
@@ -89,22 +92,38 @@ class _OrgEditState extends State<OrgEdit> {
   );
 
   /// Обработка формы
-  void _handleSubmitted() {
+  Future _handleSubmitted() async {
     final form = _formKey.currentState;
     if (!form.validate()) {
       _autoValidate = true;
     } else {
-      if (widget.org == null) {
-        _insert();
-      } else {
-        _update();
+      try {
+        switch (widget.actionType) {
+          case DataActionType.Insert:
+            await bloc.insertOrg(
+              name: stringValue(_nameEdit.text),
+              inn: stringValue(_innEdit.text),
+            );
+            break;
+          case DataActionType.Update:
+            await bloc.updateOrg(Org(
+              id: widget.org.id,
+              name: stringValue(_nameEdit.text),
+              inn: stringValue(_innEdit.text),
+            ));
+            break;
+          case DataActionType.Delete: break;
+        }
+        Navigator.of(context).pop();
+      } catch(e) {
+        showMessage(_scaffoldKey, e.toString());
       }
     }
   }
 
   /// Проверка наименования
   String _validateName(String value) {
-    if (value.isEmpty) {
+    if (isEmpty(value)) {
       return L10n.of(context).noName;
     }
     return null;
@@ -117,26 +136,5 @@ class _OrgEditState extends State<OrgEdit> {
       return L10n.of(context).innLength;
     }
     return null;
-  }
-
-  /// Добавление организации
-  Future _insert() async {
-    try {
-      await bloc.insertOrg(name: _nameEdit.text, inn: _innEdit.text);
-      Navigator.of(context).pop();
-    } catch(e) {
-      showMessage(_scaffoldKey, e.toString());
-    }
-  }
-  
-  /// Исправление организации
-  Future _update() async {
-    try {
-      await bloc.updateOrg(widget.org.copyWith(
-          name: _nameEdit.text, inn: _innEdit.text));
-      Navigator.of(context).pop();
-    } catch(e) {
-      showMessage(_scaffoldKey, e.toString());
-    }
   }
 }

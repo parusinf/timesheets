@@ -209,6 +209,21 @@ SELECT G.id,
        G.name,
        S.code;
 
+-- Список персон с количеством групп
+_personsView:
+SELECT P.id,
+       P.family,
+       P.name,
+       P.middleName,
+       P.birthday,
+       CAST((SELECT COUNT(*) FROM group_person_links WHERE personId = P.id) AS INT) AS groupCount
+  FROM persons P
+ ORDER BY
+       P.family,
+       P.name,
+       P.middleName,
+       P.birthday;
+
 -- Список персон в группе
 _personsInGroup:
 SELECT L.id AS groupPersonLinkId,

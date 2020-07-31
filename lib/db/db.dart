@@ -40,6 +40,26 @@ class ScheduleView extends Schedule {
   );
 }
 
+/// Представление персоны
+class PersonView extends Person {
+  final int groupCount;   // количество групп персоны
+
+  PersonView({
+    @required int id,
+    @required String family,
+    @required String name,
+    String middleName,
+    DateTime birthday,
+    this.groupCount = 0,
+  }) : super(
+    id: id,
+    family: family,
+    name: name,
+    middleName: middleName,
+    birthday: birthday,
+  );
+}
+
 /// Представление группы
 class GroupView extends Group {
   final Schedule schedule; // график
@@ -137,8 +157,8 @@ class Db extends _$Db {
           );
           settingsDao.setActiveGroup(org1, group11);
           groupPersonLinksDao.insert2(
-            group: group11,
-            person: await personsDao.insert2(
+            group11,
+            await personsDao.insert2(
               family: 'Акульшин',
               name: 'Роман',
               middleName: 'Андреевич',
@@ -146,8 +166,8 @@ class Db extends _$Db {
             ),
           );
           groupPersonLinksDao.insert2(
-            group: group11,
-            person: await personsDao.insert2(
+            group11,
+            await personsDao.insert2(
               family: 'Алиева',
               name: 'Амина-Хатун',
               middleName: 'Кенатовна',
@@ -443,7 +463,7 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
           family: Value(family),
           name: Value(name),
           middleName: Value(middleName),
-          birthday: Value(birthday),
+          birthday: birthday != null ? Value(birthday) : Value.absent(),
         )
     );
     return Person(
@@ -464,7 +484,17 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
       (await delete(db.persons).delete(person)) > 0 ? true : false;
 
   /// Отслеживание персон
-  Stream<List<Person>> watch() => select(db.persons).watch();
+  Stream<List<PersonView>> watch() =>
+      db._personsView().map((row) =>
+          PersonView(
+            id: row.id,
+            family: row.family,
+            name: row.name,
+            middleName: row.middleName,
+            birthday: row.birthday,
+            groupCount: row.groupCount,
+          )
+      ).watch();
 }
 
 // Связи групп с персонами -----------------------------------------------------
@@ -473,10 +503,7 @@ class GroupPersonLinksDao extends DatabaseAccessor<Db> with _$GroupPersonLinksDa
   GroupPersonLinksDao(Db db) : super(db);
 
   /// Добавление связи группы с персоной
-  Future<GroupPerson> insert2({
-    @required Group group,
-    @required Person person,
-  }) async {
+  Future<GroupPerson> insert2(Group group, Person person) async {
     final id = await into(db.groupPersonLinks).insert(
         GroupPersonLinksCompanion(
           groupId: Value(group.id),
@@ -494,10 +521,10 @@ class GroupPersonLinksDao extends DatabaseAccessor<Db> with _$GroupPersonLinksDa
   }
 
   /// Удаление связи персоны с группой
-  Future<bool> delete2(GroupPerson personOfGroup) async =>
+  Future<bool> delete2(GroupPerson groupPerson) async =>
       (await delete(db.groupPersonLinks).delete(
           GroupPersonLinksCompanion(
-            id: Value(personOfGroup.groupPersonLinkId),
+            id: Value(groupPerson.groupPersonLinkId),
           )
       )) > 0 ? true : false;
 
