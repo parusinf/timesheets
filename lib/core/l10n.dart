@@ -62,7 +62,7 @@ class L10n {
       'personBirthday': 'Дата рождения',
       'noPersonFamily': 'Нет фамилии',
       'noPersonName': 'Нет имени',
-      'invalidDate': 'Некорректная дата',
+      'invalidDate': 'Дата должна быть в формате ДД.ММ.ГГГГ',
       'persons': 'Персоны',
       'uniquePerson': 'Уже есть такая персона',
       'uniqueGroupPerson': 'Уже есть такая персона в группе',

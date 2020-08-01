@@ -107,10 +107,10 @@ class _GroupPersonCard extends StatelessWidget {
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        onTap: () => Navigator.pop(context, entry),
+        onTap: () {},
         child: ListTile(
           title: Text(entry.family),
-          subtitle: Text('${entry.name} ${entry.middleName}'),
+          subtitle: Text('${entry.name} ${entry.middleName ?? ''}'),
         ),
       ),
     ),

@@ -64,6 +64,7 @@ class _OrgEditState extends State<OrgEdit> {
           child: Column(
             children: <Widget>[
               horizontalSpace,
+              // Наименование организации
               TextFormField(
                 controller: _nameEdit,
                 textCapitalization: TextCapitalization.words,
@@ -75,6 +76,7 @@ class _OrgEditState extends State<OrgEdit> {
                 validator: _validateName,
               ),
               horizontalSpace,
+              // ИНН
               TextFormField(
                 controller: _innEdit,
                 keyboardType: TextInputType.numberWithOptions(),
@@ -83,6 +85,8 @@ class _OrgEditState extends State<OrgEdit> {
                   labelText: L10n.of(context).inn,
                 ),
                 validator: _validateInn,
+                inputFormatters: IntFormatters.formatters,
+                maxLength: 10,
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:timesheets/core.dart';
@@ -31,7 +32,7 @@ class _PersonEditState extends State<PersonEdit> {
     _familyEdit.text = widget.person?.family;
     _nameEdit.text = widget.person?.name;
     _middleNameEdit.text = widget.person?.middleName;
-    _birthdayEdit.text = widget.person?.birthday?.toIso8601String();
+    _birthdayEdit.text = dateToString(widget.person?.birthday);
     super.initState();
   }
 
@@ -69,7 +70,7 @@ class _PersonEditState extends State<PersonEdit> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: <Widget>[
-              horizontalSpace,
+              // Фамилия
               TextFormField(
                 controller: _familyEdit,
                 textCapitalization: TextCapitalization.words,
@@ -81,6 +82,7 @@ class _PersonEditState extends State<PersonEdit> {
                 validator: _validateFamily,
               ),
               horizontalSpace,
+              // Имя
               TextFormField(
                 controller: _nameEdit,
                 textCapitalization: TextCapitalization.words,
@@ -91,6 +93,7 @@ class _PersonEditState extends State<PersonEdit> {
                 validator: _validateName,
               ),
               horizontalSpace,
+              // Отчество
               TextFormField(
                 controller: _middleNameEdit,
                 textCapitalization: TextCapitalization.words,
@@ -100,13 +103,17 @@ class _PersonEditState extends State<PersonEdit> {
                 ),
               ),
               horizontalSpace,
+              // Дата рождения
               TextFormField(
                 controller: _birthdayEdit,
+                keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.event),
                   labelText: L10n.of(context).personBirthday,
                 ),
                 validator: _validateDate,
+                inputFormatters: DateFormatters.formatters,
+                maxLength: 10,
               ),
             ],
           ),
@@ -149,7 +156,7 @@ class _PersonEditState extends State<PersonEdit> {
     }
   }
 
-  /// Проверка фамилиии
+  /// Проверка фамилии
   String _validateFamily(String value) {
     if (isEmpty(value)) {
       return L10n.of(context).noPersonFamily;
@@ -167,11 +174,8 @@ class _PersonEditState extends State<PersonEdit> {
 
   /// Проверка даты
   String _validateDate(String value) {
-    if (value.isNotEmpty) {
-      final hoursNorm = DateTime.tryParse(value);
-      if (hoursNorm == null) {
-        return L10n.of(context).invalidDate;
-      }
+    if (value.isNotEmpty && dateTimeValue(value) == null) {
+      return L10n.of(context).invalidDate;
     }
     return null;
   }

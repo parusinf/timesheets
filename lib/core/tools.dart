@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'l10n.dart';
@@ -66,8 +67,20 @@ String format(double number) {
 }
 
 /// Преобразование строки в дату
-DateTime dateTimeValue(String value) =>
-    isNotEmpty(value) ? DateTime.parse(value.trim()) : null;
+DateTime dateTimeValue(String value) {
+  DateTime result = isNotEmpty(value) ? DateTime.tryParse(value.trim()) : null;
+  if (result == null) {
+    final _parseFormat = RegExp(r'^(\d\d)\.(\d\d)\.(\d\d\d\d)$');
+    Match match = _parseFormat.firstMatch(value);
+    if (match != null) {
+      final day = int.parse(match[1]);
+      final month = int.parse(match[2]);
+      final year = int.parse(match[3]);
+      result = DateTime(year, month, day);
+    }
+  }
+  return result;
+}
 
 /// Преобразование строки
 String stringValue(String value) =>
@@ -75,8 +88,54 @@ String stringValue(String value) =>
 
 /// Преобразование строки в число
 double doubleValue(String value) =>
-    isNotEmpty(value) ? double.parse(value.trim()) : null;
+    isNotEmpty(value) ? double.tryParse(value.trim()) : null;
 
 /// Преобразование строки в целое
 int intValue(String value) =>
-    isNotEmpty(value) ? int.parse(value.trim()) : null;
+    isNotEmpty(value) ? int.tryParse(value.trim()) : null;
+
+/// Преобразование даты в строку
+String dateToString(DateTime dateTime) =>
+    dateTime != null ? DateFormat('dd.MM.yyyy').format(dateTime) : null;
+
+/// Форматировщики даты
+class DateFormatters {
+  static final _dateDMYFormatter = _DateDMYFormatter();
+  static final formatters = <TextInputFormatter>[
+    WhitelistingTextInputFormatter.digitsOnly,
+    _dateDMYFormatter,
+  ];
+}
+
+/// Форматировщики целых чисел
+class IntFormatters {
+  static final formatters = <TextInputFormatter>[
+    WhitelistingTextInputFormatter.digitsOnly,
+  ];
+}
+
+/// Форматировщик даты в формате ДД.ММ.ГГГГ
+class _DateDMYFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue _, TextEditingValue newValue) {
+    final newTextLength = newValue.text.length;
+    final newText = StringBuffer();
+    var selectionIndex = newValue.selection.end;
+    var usedSubstringIndex = 0;
+    if (newTextLength >= 3) {
+      newText.write(newValue.text.substring(0, usedSubstringIndex = 2) + '.');
+      if (newValue.selection.end >= 2) selectionIndex++;
+    }
+    if (newTextLength >= 5) {
+      newText.write(newValue.text.substring(2, usedSubstringIndex = 4) + '.');
+      if (newValue.selection.end >= 4) selectionIndex++;
+    }
+    if (newTextLength >= usedSubstringIndex) {
+      newText.write(newValue.text.substring(usedSubstringIndex));
+    }
+    return TextEditingValue(
+      text: newText.toString(),
+      selection: TextSelection.collapsed(offset: selectionIndex),
+    );
+  }
+}

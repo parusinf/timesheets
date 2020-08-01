@@ -64,7 +64,7 @@ class _PersonCard extends StatelessWidget {
             MaterialPageRoute(builder: (context) => PersonEdit(person: entry))),
         child: ListTile(
           title: Text(entry.family),
-          subtitle: Text('${entry.name} ${entry.middleName}'),
+          subtitle: Text('${entry.name} ${entry.middleName ?? ''}'),
           trailing: text(context, '${entry.groupCount}', color: Colors.black26)
         ),
       ),
