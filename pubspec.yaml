@@ -1,5 +1,5 @@
 name: timesheets
-description: Табели посещаемости людей в группах по графикам
+description: Табели посещаемости в группах по графикам
 
 version: 0.1.0
 
@@ -19,6 +19,8 @@ dependencies:
   path_provider:
   rxdart:
   provider:
+  month_picker_dialog:
+  horizontal_data_table:
 
 dev_dependencies:
   flutter_test:

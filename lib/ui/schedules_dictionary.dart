@@ -22,7 +22,7 @@ class SchedulesDictionary extends StatelessWidget {
       child: Padding(
       padding: const EdgeInsets.all(8.0),
       child: StreamBuilder<List<ActiveSchedule>>(
-          stream: Provider.of<Bloc>(context).activeScheduleList,
+          stream: Provider.of<Bloc>(context).activeSchedules,
           builder: (context, snapshot) => ListView.builder(
             itemBuilder: (context, index) => _ScheduleCard(snapshot.data, index),
             itemCount: snapshot.data == null ? 0 : snapshot.data.length,

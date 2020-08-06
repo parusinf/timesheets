@@ -66,7 +66,7 @@ class _GroupEditState extends State<GroupEdit> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: <Widget>[
-              horizontalSpace,
+              horizontalSpace(),
               // Наименование группы
               TextFormField(
                 controller: _nameEdit,
@@ -78,7 +78,7 @@ class _GroupEditState extends State<GroupEdit> {
                 ),
                 validator: _validateName,
               ),
-              horizontalSpace,
+              horizontalSpace(),
               // График
               TextFormField(
                 controller: _scheduleEdit,

@@ -241,12 +241,14 @@ SELECT L.id AS groupPersonLinkId,
        P.middleName,
        P.birthday;
 
--- Посещаемость персоны в группе за период
+-- Посещаемость персон в группе за период
 _timesheetsView:
-SELECT *
-  FROM timesheets
- WHERE groupPersonLinkId = :groupPersonLinkId
-   AND attendanceDate BETWEEN date(:period, 'start of month') AND :period;
+SELECT T.*
+  FROM group_person_links L
+ INNER JOIN timesheets T ON T.groupPersonLinkId = L.id
+ WHERE L.groupId = :groupId
+   AND T.attendanceDate >= :period_begin
+   AND T.attendanceDate <= :period_end;
 
 -- Активная огранизации
 _activeOrg:

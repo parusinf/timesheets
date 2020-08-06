@@ -2352,14 +2352,17 @@ abstract class _$Db extends GeneratedDatabase {
     );
   }
 
-  Selectable<Timesheet> _timesheetsView(int groupPersonLinkId, String period) {
+  Selectable<Timesheet> _timesheetsView(
+      int groupId, DateTime period_begin, DateTime period_end) {
     return customSelect(
-        'SELECT *\n  FROM timesheets\n WHERE groupPersonLinkId = :groupPersonLinkId\n   AND attendanceDate BETWEEN date(:period, \'start of month\') AND :period',
+        'SELECT T.*\n  FROM group_person_links L\n INNER JOIN timesheets T ON T.groupPersonLinkId = L.id\n WHERE L.groupId = :groupId\n   AND T.attendanceDate >= :period_begin\n   AND T.attendanceDate <= :period_end',
         variables: [
-          Variable.withInt(groupPersonLinkId),
-          Variable.withString(period)
+          Variable.withInt(groupId),
+          Variable.withDateTime(period_begin),
+          Variable.withDateTime(period_end)
         ],
         readsFrom: {
+          groupPersonLinks,
           timesheets
         }).map(_rowToTimesheet);
   }

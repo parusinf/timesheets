@@ -35,7 +35,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
           hoursNorm: 0.0,
         ));
       }
-      bloc.scheduleDayList.add(scheduleDays);
+      bloc.scheduleDays.add(scheduleDays);
     }
   }
 
@@ -61,7 +61,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: StreamBuilder<List<ScheduleDay>>(
-          stream: bloc.scheduleDayList,
+          stream: bloc.scheduleDays,
           builder: (context, snapshot) => ListView.builder(
             itemBuilder: (context, index) => _scheduleDayCard(snapshot.data, index),
             itemCount: snapshot.data?.length ?? 0,
@@ -73,7 +73,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
 
   /// Карточка дня графика
   Widget _scheduleDayCard(List<ScheduleDay> scheduleDays, int index) => TextFormField(
-    initialValue: format(scheduleDays[index].hoursNorm),
+    initialValue: doubleToString(scheduleDays[index].hoursNorm),
     keyboardType: TextInputType.numberWithOptions(),
     decoration: InputDecoration(
       icon: const Icon(Icons.watch_later),
@@ -93,7 +93,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
       _autoValidate = true;
     } else {
       try {
-        final hours = bloc.scheduleDayList.value.map((e) => e.hoursNorm).toList();
+        final hours = bloc.scheduleDays.value.map((e) => e.hoursNorm).toList();
         if (hours.reduce((a, b) => a + b) == 0.0) {
           showMessage(_scaffoldKey, L10n.of(context).noHoursNorm);
         } else {
@@ -124,7 +124,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   /// Добавление графика
   Future _insert(List<double> hours) async {
     final schedule = await bloc.insertSchedule(code: createScheduleCode(hours));
-    bloc.scheduleDayList.value.forEach((scheduleDay) =>
+    bloc.scheduleDays.value.forEach((scheduleDay) =>
         bloc.db.scheduleDaysDao.insert2(
           schedule: schedule,
           dayNumber: scheduleDay.dayNumber,
@@ -138,7 +138,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
       id: widget.schedule.id,
       code: createScheduleCode(hours),
     ));
-    bloc.scheduleDayList.value.forEach((scheduleDay) =>
+    bloc.scheduleDays.value.forEach((scheduleDay) =>
         bloc.db.scheduleDaysDao.update2(scheduleDay));
   }
 }

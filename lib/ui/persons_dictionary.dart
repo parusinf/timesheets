@@ -65,7 +65,7 @@ class _PersonCard extends StatelessWidget {
         child: ListTile(
           title: Text(entry.family),
           subtitle: Text('${entry.name} ${entry.middleName ?? ''}'),
-          trailing: text(context, '${entry.groupCount}', color: Colors.black26)
+          trailing: text(context, '${entry.groupCount}', color: Colors.black26),
         ),
       ),
     ),

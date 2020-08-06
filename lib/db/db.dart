@@ -99,6 +99,13 @@ class GroupPerson extends Person {
   );
 }
 
+/// Группа и период
+class GroupPeriod {
+  Group group;
+  DateTime period;
+  GroupPeriod(this.group, this.period);
+}
+
 /// База данных
 @UseMoor(
   include: {'model.moor'},
@@ -156,16 +163,21 @@ class Db extends _$Db {
             schedule: schedule,
           );
           settingsDao.setActiveGroup(org1, group11);
-          groupPersonLinksDao.insert2(
+          final groupPerson1 = await groupPersonLinksDao.insert2(
             group11,
             await personsDao.insert2(
               family: 'Акульшин',
               name: 'Роман',
               middleName: 'Андреевич',
-              birthday: DateTime(2016, 08, 23),
+              birthday: DateTime(2016, 8, 23),
             ),
           );
-          groupPersonLinksDao.insert2(
+          timesheetsDao.insert2(
+            personOfGroup: groupPerson1,
+            attendanceDate: DateTime(2020, 8, 3),
+            hoursNumber: 12.0,
+          );
+          final groupPerson2 = await groupPersonLinksDao.insert2(
             group11,
             await personsDao.insert2(
               family: 'Алиева',
@@ -173,6 +185,11 @@ class Db extends _$Db {
               middleName: 'Кенатовна',
               birthday: DateTime(2016, 12, 23),
             ),
+          );
+          timesheetsDao.insert2(
+            personOfGroup: groupPerson2,
+            attendanceDate: DateTime(2020, 8, 4),
+            hoursNumber: 12.0,
           );
           groupsDao.insert2(
               org: org1,
@@ -572,19 +589,16 @@ class TimesheetsDao extends DatabaseAccessor<Db> with _$TimesheetsDaoMixin {
   Future<bool> delete2(Timesheet timesheet) async =>
       (await delete(db.timesheets).delete(timesheet)) > 0 ? true : false;
 
-  /// Отслеживание посещаемости персоны в группе за период
-  Stream<List<Timesheet>> watch({
-    @required GroupPerson personOfGroup,
-    @required DateTime period,
-  }) => db._timesheetsView(
-      personOfGroup.groupPersonLinkId, period.toIso8601String()).map((row) =>
-      Timesheet(
-        id: row.id,
-        groupPersonLinkId: row.groupPersonLinkId,
-        attendanceDate: row.attendanceDate,
-        hoursNumber: row.hoursNumber,
-      )
-  ).watch();
+  /// Получение посещаемости персоны в группе за период
+  Stream<List<Timesheet>> watch(GroupPeriod gp) =>
+      db._timesheetsView(gp.group.id, DateTime(gp.period.year, gp.period.month, 1), gp.period).map((row) =>
+        Timesheet(
+          id: row.id,
+          groupPersonLinkId: row.groupPersonLinkId,
+          attendanceDate: row.attendanceDate,
+          hoursNumber: row.hoursNumber,
+        )
+      ).watch();
 }
 
 // Настройки -------------------------------------------------------------------
@@ -685,12 +699,14 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   Future<DateTime> getActivePeriod() async => await db._activePeriod().getSingle();
 
   /// Установка активного периода
-  Future setActivePeriod(DateTime activePeriod) async {
-    final activePeriodOld = await getActivePeriod();
-    if (activePeriodOld != null && activePeriodOld != activePeriod) {
-      db._setActivePeriod(activePeriod);
-    } else {
-      insert2('activePeriod', dateValue: activePeriod);
+  Future setActivePeriod(DateTime period) async {
+    if (period == null)
+      delete2('activePeriod');
+    else {
+      final count = await db._setActivePeriod(period);
+      if (count == 0) {
+        insert2('activePeriod', dateValue: period);
+      }
     }
   }
 }

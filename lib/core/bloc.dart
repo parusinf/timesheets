@@ -40,23 +40,29 @@ class Bloc {
   // Активный период
   final activePeriod = BehaviorSubject<DateTime>();
 
+  // Активная группа и период
+  final activeGroupPeriod = BehaviorSubject<GroupPeriod>();
+  
   // Организации с признаком активности
-  final activeOrgList = BehaviorSubject<List<ActiveOrg>>();
+  final activeOrgs = BehaviorSubject<List<ActiveOrg>>();
 
   // Графики с признаком активности
-  final activeScheduleList = BehaviorSubject<List<ActiveSchedule>>();
+  final activeSchedules = BehaviorSubject<List<ActiveSchedule>>();
 
   // Дни активного графика
-  final scheduleDayList = BehaviorSubject<List<ScheduleDay>>();
+  final scheduleDays = BehaviorSubject<List<ScheduleDay>>();
 
   // Группы с признаком активности
-  final activeGroupList = BehaviorSubject<List<ActiveGroup>>();
+  final activeGroups = BehaviorSubject<List<ActiveGroup>>();
 
   // Группы активной организации
-  Stream<List<GroupView>> groupList;
+  Stream<List<GroupView>> groups;
 
   // Персоны активной группы
-  Stream<List<GroupPerson>> groupPersonList;
+  Stream<List<GroupPerson>> groupPersons;
+
+  // Посещаемость персон активной группы в активном периоде
+  Stream<List<Timesheet>> timesheets;
 
   /// Конструктор блока
   Bloc() : db = Db() {
@@ -78,10 +84,20 @@ class Bloc {
 
     // Отслеживание дней активного графика
     Rx.concat([activeSchedule.switchMap(db.scheduleDaysDao.watch)])
-        .listen(scheduleDayList.add);
+        .listen(scheduleDays.add);
 
     // Отслеживание групп в активной организации
-    groupList = activeOrg.switchMap(db.groupsDao.watch);
+    groups = activeOrg.switchMap(db.groupsDao.watch);
+
+    // Отслеживание активной группы и периода
+    Rx.combineLatest2<Group, DateTime, GroupPeriod>(
+      activeGroup,
+      activePeriod,
+      (group, period) => GroupPeriod(group, period),
+    ).listen(activeGroupPeriod.add);
+
+    // Отслеживание групп в активной организации
+    timesheets = activeGroupPeriod.switchMap(db.timesheetsDao.watch);
 
     // Формирование признака активности организаций
     Rx.combineLatest2<List<Org>, Org, List<ActiveOrg>>(
@@ -89,7 +105,7 @@ class Bloc {
       activeOrg,
       (orgs, selected) => orgs.map(
         (org) => ActiveOrg(org, org?.id == selected?.id)).toList()
-    ).listen(activeOrgList.add);
+    ).listen(activeOrgs.add);
 
     // Формирование признака активности графиков
     Rx.combineLatest2<List<Schedule>, Schedule, List<ActiveSchedule>>(
@@ -98,19 +114,19 @@ class Bloc {
       (schedules, selected) => schedules.map(
         (schedule) => ActiveSchedule(schedule, schedule?.id == selected?.id)
       ).toList()
-    ).listen(activeScheduleList.add);
+    ).listen(activeSchedules.add);
 
     // Формирование признака активности групп
     Rx.combineLatest2<List<GroupView>, Group, List<ActiveGroup>>(
-      groupList,
+      groups,
       activeGroup,
       (groups, selected) => groups.map(
         (group) => ActiveGroup(group, group?.id == selected?.id)
       ).toList()
-    ).listen(activeGroupList.add);
+    ).listen(activeGroups.add);
 
     // Отслеживание персон в активной группе
-    groupPersonList = activeGroup.switchMap(db.groupPersonLinksDao.watch);
+    groupPersons = activeGroup.switchMap(db.groupPersonLinksDao.watch);
   }
 
   /// Освобождение ресурсов
@@ -119,12 +135,18 @@ class Bloc {
     activeSchedule.close();
     activeGroup.close();
     activePeriod.close();
-    activeOrgList.close();
-    activeScheduleList.close();
-    activeGroupList.close();
-    scheduleDayList.close();
+    activeGroupPeriod.close();
+    activeOrgs.close();
+    activeSchedules.close();
+    activeGroups.close();
+    scheduleDays.close();
     db.close();
   }
+
+  // Активный период -----------------------------------------------------------
+  /// Установка активного периода
+  Future setActivePeriod(DateTime period) async =>
+      await db.settingsDao.setActivePeriod(period);
 
   // Организации ---------------------------------------------------------------
   /// Установка активной организации

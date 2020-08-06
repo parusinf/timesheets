@@ -26,7 +26,7 @@ String createScheduleCode(List<double> hours) {
   final week = _createOneWeekDays(hours, 0);
   if (hours.length == 7) {
     week.forEach((hour, days) {
-      parts.add(days.join(',') + ' ${format(hour)}$_hourStr');
+      parts.add(days.join(',') + ' ${doubleToString(hour)}$_hourStr');
     });
   } else {
     final week2 = _createOneWeekDays(hours, 7);
@@ -38,7 +38,7 @@ String createScheduleCode(List<double> hours) {
           if (daysStr == days2Str) {
             parts.add('$daysStr $hour$_hourStr');
           } else {
-            parts.add('$daysStr/$days2Str $_inWeekStr ${format(hour)}$_hourStr');
+            parts.add('$daysStr/$days2Str $_inWeekStr ${doubleToString(hour)}$_hourStr');
           }
         }
       });

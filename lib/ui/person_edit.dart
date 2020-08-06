@@ -81,7 +81,7 @@ class _PersonEditState extends State<PersonEdit> {
                 ),
                 validator: _validateFamily,
               ),
-              horizontalSpace,
+              horizontalSpace(),
               // Имя
               TextFormField(
                 controller: _nameEdit,
@@ -92,7 +92,7 @@ class _PersonEditState extends State<PersonEdit> {
                 ),
                 validator: _validateName,
               ),
-              horizontalSpace,
+              horizontalSpace(),
               // Отчество
               TextFormField(
                 controller: _middleNameEdit,
@@ -102,7 +102,7 @@ class _PersonEditState extends State<PersonEdit> {
                   labelText: L10n.of(context).personMiddleName,
                 ),
               ),
-              horizontalSpace,
+              horizontalSpace(),
               // Дата рождения
               TextFormField(
                 controller: _birthdayEdit,
@@ -135,7 +135,7 @@ class _PersonEditState extends State<PersonEdit> {
               family: stringValue(_familyEdit.text),
               name: stringValue(_nameEdit.text),
               middleName: stringValue(_middleNameEdit.text),
-              birthday: dateTimeValue(_birthdayEdit.text),
+              birthday: dateValue(_birthdayEdit.text),
             );
             break;
           case DataActionType.Update:
@@ -144,7 +144,7 @@ class _PersonEditState extends State<PersonEdit> {
               family: stringValue(_familyEdit.text),
               name: stringValue(_nameEdit.text),
               middleName: stringValue(_middleNameEdit.text),
-              birthday: dateTimeValue(_birthdayEdit.text),
+              birthday: dateValue(_birthdayEdit.text),
             ));
             break;
           case DataActionType.Delete: break;
@@ -174,7 +174,7 @@ class _PersonEditState extends State<PersonEdit> {
 
   /// Проверка даты
   String _validateDate(String value) {
-    if (value.isNotEmpty && dateTimeValue(value) == null) {
+    if (value.isNotEmpty && dateValue(value) == null) {
       return L10n.of(context).invalidDate;
     }
     return null;

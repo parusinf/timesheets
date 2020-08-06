@@ -47,7 +47,7 @@ class L10n {
       'scheduleInserting': 'Добавление графика',
       'scheduleUpdating': 'Исправление графика',
       'schedules': 'Графики',
-      'title': 'Табели',
+      'title': 'Табели посещаемости',
       'uniqueGroup': 'Уже есть такая группа',
       'uniqueOrg': 'Уже есть такая организация',
       'uniqueSchedule': 'Уже есть такой график',

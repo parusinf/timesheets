@@ -20,7 +20,7 @@ class HomeDrawer extends StatelessWidget {
                 L10n.of(context).orgInserting, OrgEdit()),
             Flexible(
               child: StreamBuilder<List<ActiveOrg>>(
-                stream: Provider.of<Bloc>(context).activeOrgList,
+                stream: Provider.of<Bloc>(context).activeOrgs,
                 builder: (context, snapshot) {
                   final orgs = snapshot.data ?? <ActiveOrg>[];
                   return ListView.builder(
@@ -42,7 +42,7 @@ class HomeDrawer extends StatelessWidget {
             Flexible(
               flex: 3,
               child: StreamBuilder<List<ActiveGroup>>(
-                stream: Provider.of<Bloc>(context).activeGroupList,
+                stream: Provider.of<Bloc>(context).activeGroups,
                 builder: (context, snapshot) => ListView.builder(
                   itemBuilder: (context, index) => _GroupCard(snapshot.data, index),
                   itemCount: snapshot.data?.length ?? 0,
