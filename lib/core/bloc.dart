@@ -62,7 +62,7 @@ class Bloc {
   Stream<List<GroupPerson>> groupPersons;
 
   // Посещаемость персон активной группы в активном периоде
-  Stream<List<Timesheet>> timesheets;
+  Stream<List<Attendance>> attendances;
 
   /// Конструктор блока
   Bloc() : db = Db() {
@@ -97,7 +97,7 @@ class Bloc {
     ).listen(activeGroupPeriod.add);
 
     // Отслеживание групп в активной организации
-    timesheets = activeGroupPeriod.switchMap(db.timesheetsDao.watch);
+    attendances = activeGroupPeriod.switchMap(db.attendancesDao.watch);
 
     // Формирование признака активности организаций
     Rx.combineLatest2<List<Org>, Org, List<ActiveOrg>>(
@@ -202,9 +202,12 @@ class Bloc {
   }
 
   // Группы --------------------------------------------------------------------
-  /// Установка активной группы
-  Future setActiveGroup(Group group) async =>
-    await db.settingsDao.setActiveGroup(activeOrg.value, group);
+  /// Установка активной группы и установка активным её графика 
+  Future setActiveGroup(Group group) async {
+    db.settingsDao.setActiveGroup(activeOrg.value, group);
+    final schedule = await db.schedulesDao.getSchedule(group.scheduleId);
+    setActiveSchedule(schedule);
+  }
 
   /// Добавление группы
   Future<Group> insertGroup({
@@ -240,16 +243,12 @@ class Bloc {
     @required String name,
     String middleName,
     DateTime birthday,
-  }) async {
-    final person = await db.personsDao.insert2(
-        family: family,
-        name: name,
-        middleName: middleName,
-        birthday: birthday,
-    );
-    //db.groupPersonLinksDao.insert2(group: activeGroup.value, person: person);
-    return person;
-  }
+  }) async => await db.personsDao.insert2(
+    family: family,
+    name: name,
+    middleName: middleName,
+    birthday: birthday,
+  );
 
   /// Исправление персоны
   Future<bool> updatePerson(Person person) async =>
@@ -266,4 +265,20 @@ class Bloc {
   /// Удаление персоны из группы
   Future<bool> deletePersonFromGroup(GroupPerson groupPerson) async =>
       await db.groupPersonLinksDao.delete2(groupPerson);
+  
+  // Посещаемость --------------------------------------------------------------
+  /// Добавление посещаемости
+  Future<Attendance> insertAttendance({
+    @required GroupPerson groupPerson,
+    @required DateTime date,
+    @required double hoursFact,
+  }) async => await db.attendancesDao.insert2(
+    groupPerson: groupPerson,
+    date: date,
+    hoursFact: hoursFact,
+  );
+
+  /// Удаление посещаемости
+  Future<bool> deleteAttendance(Attendance attendance) async =>
+      await db.attendancesDao.delete2(attendance);
 }

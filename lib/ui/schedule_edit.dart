@@ -27,7 +27,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
     super.initState();
     if (widget.actionType == DataActionType.Insert) {
       final scheduleDays = List<ScheduleDay>();
-      for (int dayNumber = 0; dayNumber < weekDays.length; dayNumber++) {
+      for (int dayNumber = 0; dayNumber < abbrWeekdays.length; dayNumber++) {
         scheduleDays.add(ScheduleDay(
           id: dayNumber,
           scheduleId: 0,
@@ -77,7 +77,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
     keyboardType: TextInputType.numberWithOptions(),
     decoration: InputDecoration(
       icon: const Icon(Icons.watch_later),
-      labelText: weekDays[scheduleDays[index].dayNumber],
+      labelText: abbrWeekdays[scheduleDays[index].dayNumber],
     ),
     validator: _validateHoursNorm,
     onChanged: (value) {

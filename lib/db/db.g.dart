@@ -1506,30 +1506,30 @@ class GroupPersonLinks extends Table
   bool get dontWriteConstraints => true;
 }
 
-class Timesheet extends DataClass implements Insertable<Timesheet> {
+class Attendance extends DataClass implements Insertable<Attendance> {
   final int id;
   final int groupPersonLinkId;
-  final DateTime attendanceDate;
-  final double hoursNumber;
-  Timesheet(
+  final DateTime date;
+  final double hoursFact;
+  Attendance(
       {@required this.id,
       @required this.groupPersonLinkId,
-      @required this.attendanceDate,
-      @required this.hoursNumber});
-  factory Timesheet.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      @required this.date,
+      @required this.hoursFact});
+  factory Attendance.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final dateTimeType = db.typeSystem.forDartType<DateTime>();
     final doubleType = db.typeSystem.forDartType<double>();
-    return Timesheet(
+    return Attendance(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       groupPersonLinkId: intType
           .mapFromDatabaseResponse(data['${effectivePrefix}groupPersonLinkId']),
-      attendanceDate: dateTimeType
-          .mapFromDatabaseResponse(data['${effectivePrefix}attendanceDate']),
-      hoursNumber: doubleType
-          .mapFromDatabaseResponse(data['${effectivePrefix}hoursNumber']),
+      date:
+          dateTimeType.mapFromDatabaseResponse(data['${effectivePrefix}date']),
+      hoursFact: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}hoursFact']),
     );
   }
   @override
@@ -1541,38 +1541,36 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
     if (!nullToAbsent || groupPersonLinkId != null) {
       map['groupPersonLinkId'] = Variable<int>(groupPersonLinkId);
     }
-    if (!nullToAbsent || attendanceDate != null) {
-      map['attendanceDate'] = Variable<DateTime>(attendanceDate);
+    if (!nullToAbsent || date != null) {
+      map['date'] = Variable<DateTime>(date);
     }
-    if (!nullToAbsent || hoursNumber != null) {
-      map['hoursNumber'] = Variable<double>(hoursNumber);
+    if (!nullToAbsent || hoursFact != null) {
+      map['hoursFact'] = Variable<double>(hoursFact);
     }
     return map;
   }
 
-  TimesheetsCompanion toCompanion(bool nullToAbsent) {
-    return TimesheetsCompanion(
+  AttendancesCompanion toCompanion(bool nullToAbsent) {
+    return AttendancesCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       groupPersonLinkId: groupPersonLinkId == null && nullToAbsent
           ? const Value.absent()
           : Value(groupPersonLinkId),
-      attendanceDate: attendanceDate == null && nullToAbsent
+      date: date == null && nullToAbsent ? const Value.absent() : Value(date),
+      hoursFact: hoursFact == null && nullToAbsent
           ? const Value.absent()
-          : Value(attendanceDate),
-      hoursNumber: hoursNumber == null && nullToAbsent
-          ? const Value.absent()
-          : Value(hoursNumber),
+          : Value(hoursFact),
     );
   }
 
-  factory Timesheet.fromJson(Map<String, dynamic> json,
+  factory Attendance.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
-    return Timesheet(
+    return Attendance(
       id: serializer.fromJson<int>(json['id']),
       groupPersonLinkId: serializer.fromJson<int>(json['groupPersonLinkId']),
-      attendanceDate: serializer.fromJson<DateTime>(json['attendanceDate']),
-      hoursNumber: serializer.fromJson<double>(json['hoursNumber']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      hoursFact: serializer.fromJson<double>(json['hoursFact']),
     );
   }
   @override
@@ -1581,29 +1579,26 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'groupPersonLinkId': serializer.toJson<int>(groupPersonLinkId),
-      'attendanceDate': serializer.toJson<DateTime>(attendanceDate),
-      'hoursNumber': serializer.toJson<double>(hoursNumber),
+      'date': serializer.toJson<DateTime>(date),
+      'hoursFact': serializer.toJson<double>(hoursFact),
     };
   }
 
-  Timesheet copyWith(
-          {int id,
-          int groupPersonLinkId,
-          DateTime attendanceDate,
-          double hoursNumber}) =>
-      Timesheet(
+  Attendance copyWith(
+          {int id, int groupPersonLinkId, DateTime date, double hoursFact}) =>
+      Attendance(
         id: id ?? this.id,
         groupPersonLinkId: groupPersonLinkId ?? this.groupPersonLinkId,
-        attendanceDate: attendanceDate ?? this.attendanceDate,
-        hoursNumber: hoursNumber ?? this.hoursNumber,
+        date: date ?? this.date,
+        hoursFact: hoursFact ?? this.hoursFact,
       );
   @override
   String toString() {
-    return (StringBuffer('Timesheet(')
+    return (StringBuffer('Attendance(')
           ..write('id: $id, ')
           ..write('groupPersonLinkId: $groupPersonLinkId, ')
-          ..write('attendanceDate: $attendanceDate, ')
-          ..write('hoursNumber: $hoursNumber')
+          ..write('date: $date, ')
+          ..write('hoursFact: $hoursFact')
           ..write(')'))
         .toString();
   }
@@ -1612,60 +1607,60 @@ class Timesheet extends DataClass implements Insertable<Timesheet> {
   int get hashCode => $mrjf($mrjc(
       id.hashCode,
       $mrjc(groupPersonLinkId.hashCode,
-          $mrjc(attendanceDate.hashCode, hoursNumber.hashCode))));
+          $mrjc(date.hashCode, hoursFact.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
-      (other is Timesheet &&
+      (other is Attendance &&
           other.id == this.id &&
           other.groupPersonLinkId == this.groupPersonLinkId &&
-          other.attendanceDate == this.attendanceDate &&
-          other.hoursNumber == this.hoursNumber);
+          other.date == this.date &&
+          other.hoursFact == this.hoursFact);
 }
 
-class TimesheetsCompanion extends UpdateCompanion<Timesheet> {
+class AttendancesCompanion extends UpdateCompanion<Attendance> {
   final Value<int> id;
   final Value<int> groupPersonLinkId;
-  final Value<DateTime> attendanceDate;
-  final Value<double> hoursNumber;
-  const TimesheetsCompanion({
+  final Value<DateTime> date;
+  final Value<double> hoursFact;
+  const AttendancesCompanion({
     this.id = const Value.absent(),
     this.groupPersonLinkId = const Value.absent(),
-    this.attendanceDate = const Value.absent(),
-    this.hoursNumber = const Value.absent(),
+    this.date = const Value.absent(),
+    this.hoursFact = const Value.absent(),
   });
-  TimesheetsCompanion.insert({
+  AttendancesCompanion.insert({
     this.id = const Value.absent(),
     @required int groupPersonLinkId,
-    @required DateTime attendanceDate,
-    @required double hoursNumber,
+    @required DateTime date,
+    @required double hoursFact,
   })  : groupPersonLinkId = Value(groupPersonLinkId),
-        attendanceDate = Value(attendanceDate),
-        hoursNumber = Value(hoursNumber);
-  static Insertable<Timesheet> custom({
+        date = Value(date),
+        hoursFact = Value(hoursFact);
+  static Insertable<Attendance> custom({
     Expression<int> id,
     Expression<int> groupPersonLinkId,
-    Expression<DateTime> attendanceDate,
-    Expression<double> hoursNumber,
+    Expression<DateTime> date,
+    Expression<double> hoursFact,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (groupPersonLinkId != null) 'groupPersonLinkId': groupPersonLinkId,
-      if (attendanceDate != null) 'attendanceDate': attendanceDate,
-      if (hoursNumber != null) 'hoursNumber': hoursNumber,
+      if (date != null) 'date': date,
+      if (hoursFact != null) 'hoursFact': hoursFact,
     });
   }
 
-  TimesheetsCompanion copyWith(
+  AttendancesCompanion copyWith(
       {Value<int> id,
       Value<int> groupPersonLinkId,
-      Value<DateTime> attendanceDate,
-      Value<double> hoursNumber}) {
-    return TimesheetsCompanion(
+      Value<DateTime> date,
+      Value<double> hoursFact}) {
+    return AttendancesCompanion(
       id: id ?? this.id,
       groupPersonLinkId: groupPersonLinkId ?? this.groupPersonLinkId,
-      attendanceDate: attendanceDate ?? this.attendanceDate,
-      hoursNumber: hoursNumber ?? this.hoursNumber,
+      date: date ?? this.date,
+      hoursFact: hoursFact ?? this.hoursFact,
     );
   }
 
@@ -1678,20 +1673,20 @@ class TimesheetsCompanion extends UpdateCompanion<Timesheet> {
     if (groupPersonLinkId.present) {
       map['groupPersonLinkId'] = Variable<int>(groupPersonLinkId.value);
     }
-    if (attendanceDate.present) {
-      map['attendanceDate'] = Variable<DateTime>(attendanceDate.value);
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
     }
-    if (hoursNumber.present) {
-      map['hoursNumber'] = Variable<double>(hoursNumber.value);
+    if (hoursFact.present) {
+      map['hoursFact'] = Variable<double>(hoursFact.value);
     }
     return map;
   }
 }
 
-class Timesheets extends Table with TableInfo<Timesheets, Timesheet> {
+class Attendances extends Table with TableInfo<Attendances, Attendance> {
   final GeneratedDatabase _db;
   final String _alias;
-  Timesheets(this._db, [this._alias]);
+  Attendances(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedIntColumn _id;
   GeneratedIntColumn get id => _id ??= _constructId();
@@ -1713,37 +1708,33 @@ class Timesheets extends Table with TableInfo<Timesheets, Timesheet> {
             'NOT NULL REFERENCES group_person_links (id) ON DELETE CASCADE');
   }
 
-  final VerificationMeta _attendanceDateMeta =
-      const VerificationMeta('attendanceDate');
-  GeneratedDateTimeColumn _attendanceDate;
-  GeneratedDateTimeColumn get attendanceDate =>
-      _attendanceDate ??= _constructAttendanceDate();
-  GeneratedDateTimeColumn _constructAttendanceDate() {
-    return GeneratedDateTimeColumn('attendanceDate', $tableName, false,
+  final VerificationMeta _dateMeta = const VerificationMeta('date');
+  GeneratedDateTimeColumn _date;
+  GeneratedDateTimeColumn get date => _date ??= _constructDate();
+  GeneratedDateTimeColumn _constructDate() {
+    return GeneratedDateTimeColumn('date', $tableName, false,
         $customConstraints: 'NOT NULL');
   }
 
-  final VerificationMeta _hoursNumberMeta =
-      const VerificationMeta('hoursNumber');
-  GeneratedRealColumn _hoursNumber;
-  GeneratedRealColumn get hoursNumber =>
-      _hoursNumber ??= _constructHoursNumber();
-  GeneratedRealColumn _constructHoursNumber() {
-    return GeneratedRealColumn('hoursNumber', $tableName, false,
+  final VerificationMeta _hoursFactMeta = const VerificationMeta('hoursFact');
+  GeneratedRealColumn _hoursFact;
+  GeneratedRealColumn get hoursFact => _hoursFact ??= _constructHoursFact();
+  GeneratedRealColumn _constructHoursFact() {
+    return GeneratedRealColumn('hoursFact', $tableName, false,
         $customConstraints: 'NOT NULL');
   }
 
   @override
   List<GeneratedColumn> get $columns =>
-      [id, groupPersonLinkId, attendanceDate, hoursNumber];
+      [id, groupPersonLinkId, date, hoursFact];
   @override
-  Timesheets get asDslTable => this;
+  Attendances get asDslTable => this;
   @override
-  String get $tableName => _alias ?? 'timesheets';
+  String get $tableName => _alias ?? 'attendances';
   @override
-  final String actualTableName = 'timesheets';
+  final String actualTableName = 'attendances';
   @override
-  VerificationContext validateIntegrity(Insertable<Timesheet> instance,
+  VerificationContext validateIntegrity(Insertable<Attendance> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1758,21 +1749,17 @@ class Timesheets extends Table with TableInfo<Timesheets, Timesheet> {
     } else if (isInserting) {
       context.missing(_groupPersonLinkIdMeta);
     }
-    if (data.containsKey('attendanceDate')) {
+    if (data.containsKey('date')) {
       context.handle(
-          _attendanceDateMeta,
-          attendanceDate.isAcceptableOrUnknown(
-              data['attendanceDate'], _attendanceDateMeta));
+          _dateMeta, date.isAcceptableOrUnknown(data['date'], _dateMeta));
     } else if (isInserting) {
-      context.missing(_attendanceDateMeta);
+      context.missing(_dateMeta);
     }
-    if (data.containsKey('hoursNumber')) {
-      context.handle(
-          _hoursNumberMeta,
-          hoursNumber.isAcceptableOrUnknown(
-              data['hoursNumber'], _hoursNumberMeta));
+    if (data.containsKey('hoursFact')) {
+      context.handle(_hoursFactMeta,
+          hoursFact.isAcceptableOrUnknown(data['hoursFact'], _hoursFactMeta));
     } else if (isInserting) {
-      context.missing(_hoursNumberMeta);
+      context.missing(_hoursFactMeta);
     }
     return context;
   }
@@ -1780,14 +1767,14 @@ class Timesheets extends Table with TableInfo<Timesheets, Timesheet> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Timesheet map(Map<String, dynamic> data, {String tablePrefix}) {
+  Attendance map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Timesheet.fromData(data, _db, prefix: effectivePrefix);
+    return Attendance.fromData(data, _db, prefix: effectivePrefix);
   }
 
   @override
-  Timesheets createAlias(String alias) {
-    return Timesheets(_db, alias);
+  Attendances createAlias(String alias) {
+    return Attendances(_db, alias);
   }
 
   @override
@@ -2139,11 +2126,11 @@ abstract class _$Db extends GeneratedDatabase {
   Index get groupPersonLinksIndex => _groupPersonLinksIndex ??= Index(
       'group_person_links_index',
       'CREATE UNIQUE INDEX group_person_links_index ON group_person_links (groupId, personId);');
-  Timesheets _timesheets;
-  Timesheets get timesheets => _timesheets ??= Timesheets(this);
-  Index _timesheetsIndex;
-  Index get timesheetsIndex => _timesheetsIndex ??= Index('timesheets_index',
-      'CREATE UNIQUE INDEX timesheets_index ON timesheets (groupPersonLinkId, attendanceDate);');
+  Attendances _attendances;
+  Attendances get attendances => _attendances ??= Attendances(this);
+  Index _attendancesIndex;
+  Index get attendancesIndex => _attendancesIndex ??= Index('attendances_index',
+      'CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonLinkId, date);');
   Settings _settings;
   Settings get settings => _settings ??= Settings(this);
   Index _settingsIndex;
@@ -2163,9 +2150,9 @@ abstract class _$Db extends GeneratedDatabase {
   GroupPersonLinksDao _groupPersonLinksDao;
   GroupPersonLinksDao get groupPersonLinksDao =>
       _groupPersonLinksDao ??= GroupPersonLinksDao(this as Db);
-  TimesheetsDao _timesheetsDao;
-  TimesheetsDao get timesheetsDao =>
-      _timesheetsDao ??= TimesheetsDao(this as Db);
+  AttendancesDao _attendancesDao;
+  AttendancesDao get attendancesDao =>
+      _attendancesDao ??= AttendancesDao(this as Db);
   SettingsDao _settingsDao;
   SettingsDao get settingsDao => _settingsDao ??= SettingsDao(this as Db);
   ScheduleDay _rowToScheduleDay(QueryRow row) {
@@ -2296,7 +2283,7 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<GroupsViewResult> _groupsView(int orgId) {
     return customSelect(
-        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       CAST((SELECT COUNT(*) FROM group_person_links WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
+        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       CAST((SELECT COUNT(*) FROM group_person_links WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE G.orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
         variables: [
           Variable.withInt(orgId)
         ],
@@ -2343,19 +2330,19 @@ abstract class _$Db extends GeneratedDatabase {
         readsFrom: {groupPersonLinks, persons}).map(_rowToPersonsInGroupResult);
   }
 
-  Timesheet _rowToTimesheet(QueryRow row) {
-    return Timesheet(
+  Attendance _rowToAttendance(QueryRow row) {
+    return Attendance(
       id: row.readInt('id'),
       groupPersonLinkId: row.readInt('groupPersonLinkId'),
-      attendanceDate: row.readDateTime('attendanceDate'),
-      hoursNumber: row.readDouble('hoursNumber'),
+      date: row.readDateTime('date'),
+      hoursFact: row.readDouble('hoursFact'),
     );
   }
 
-  Selectable<Timesheet> _timesheetsView(
+  Selectable<Attendance> _attendancesView(
       int groupId, DateTime period_begin, DateTime period_end) {
     return customSelect(
-        'SELECT T.*\n  FROM group_person_links L\n INNER JOIN timesheets T ON T.groupPersonLinkId = L.id\n WHERE L.groupId = :groupId\n   AND T.attendanceDate >= :period_begin\n   AND T.attendanceDate <= :period_end',
+        'SELECT T.*\n  FROM group_person_links L\n INNER JOIN attendances T ON T.groupPersonLinkId = L.id\n WHERE L.groupId = :groupId\n   AND T.date >= :period_begin\n   AND T.date <= :period_end',
         variables: [
           Variable.withInt(groupId),
           Variable.withDateTime(period_begin),
@@ -2363,8 +2350,8 @@ abstract class _$Db extends GeneratedDatabase {
         ],
         readsFrom: {
           groupPersonLinks,
-          timesheets
-        }).map(_rowToTimesheet);
+          attendances
+        }).map(_rowToAttendance);
   }
 
   Selectable<Org> _activeOrg() {
@@ -2443,8 +2430,8 @@ abstract class _$Db extends GeneratedDatabase {
         personsIndex,
         groupPersonLinks,
         groupPersonLinksIndex,
-        timesheets,
-        timesheetsIndex,
+        attendances,
+        attendancesIndex,
         settings,
         settingsIndex
       ];
@@ -2462,7 +2449,7 @@ abstract class _$Db extends GeneratedDatabase {
             on: TableUpdateQuery.onTableName('group_person_links',
                 limitUpdateKind: UpdateKind.delete),
             result: [
-              TableUpdate('timesheets', kind: UpdateKind.delete),
+              TableUpdate('attendances', kind: UpdateKind.delete),
             ],
           ),
         ],
@@ -2556,5 +2543,5 @@ mixin _$ScheduleDaysDaoMixin on DatabaseAccessor<Db> {}
 mixin _$GroupsDaoMixin on DatabaseAccessor<Db> {}
 mixin _$PersonsDaoMixin on DatabaseAccessor<Db> {}
 mixin _$GroupPersonLinksDaoMixin on DatabaseAccessor<Db> {}
-mixin _$TimesheetsDaoMixin on DatabaseAccessor<Db> {}
+mixin _$AttendancesDaoMixin on DatabaseAccessor<Db> {}
 mixin _$SettingsDaoMixin on DatabaseAccessor<Db> {}

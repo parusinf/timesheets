@@ -74,17 +74,17 @@ CREATE TABLE group_person_links (
 CREATE UNIQUE INDEX group_person_links_index ON group_person_links (groupId, personId);
 
 -- Посещаемость персон в группах
-CREATE TABLE timesheets (
+CREATE TABLE attendances (
   -- Идентификатор посещаемости
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор связи персоны с группой
-  groupPersonLinkId INT NOT NULL REFERENCES group_person_links (id) ON DELETE CASCADE,
+  groupPersonLinkId  INT NOT NULL REFERENCES group_person_links (id) ON DELETE CASCADE,
   -- Дата посещения
-  attendanceDate     DATE NOT NULL,
+  date               DATE NOT NULL,
   -- Количество часов
-  hoursNumber        REAL NOT NULL
+  hoursFact          REAL NOT NULL
 );
-CREATE UNIQUE INDEX timesheets_index ON timesheets (groupPersonLinkId, attendanceDate);
+CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonLinkId, date);
 
 -- Настройки
 CREATE TABLE settings (
@@ -204,7 +204,7 @@ SELECT G.id,
        CAST((SELECT COUNT(*) FROM group_person_links WHERE groupId = G.id) AS INT) AS personCount
   FROM "groups" G
  INNER JOIN schedules S ON S.id = G.scheduleId
- WHERE orgId = :orgId
+ WHERE G.orgId = :orgId
  ORDER BY
        G.name,
        S.code;
@@ -242,13 +242,13 @@ SELECT L.id AS groupPersonLinkId,
        P.birthday;
 
 -- Посещаемость персон в группе за период
-_timesheetsView:
+_attendancesView:
 SELECT T.*
   FROM group_person_links L
- INNER JOIN timesheets T ON T.groupPersonLinkId = L.id
+ INNER JOIN attendances T ON T.groupPersonLinkId = L.id
  WHERE L.groupId = :groupId
-   AND T.attendanceDate >= :period_begin
-   AND T.attendanceDate <= :period_end;
+   AND T.date >= :period_begin
+   AND T.date <= :period_end;
 
 -- Активная огранизации
 _activeOrg:

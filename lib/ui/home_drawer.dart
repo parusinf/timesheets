@@ -68,7 +68,7 @@ class HomeDrawer extends StatelessWidget {
         padding: const EdgeInsets.all(4.0),
         child: Icon(icon, color: Colors.black54)
       ),
-      text(context, title),
+      text(title),
       const Spacer(),
       IconButton(
         icon: const Icon(Icons.add),
@@ -123,7 +123,7 @@ class _OrgCard extends StatelessWidget {
               ? entry.orgView.inn
               : L10n.of(context).withoutInn
           ),
-          trailing: text(context, '${entry.orgView.groupCount}',
+          trailing: text('${entry.orgView.groupCount}',
               color: entry.isActive ? Colors.black54 : Colors.black26),
         ),
       ),

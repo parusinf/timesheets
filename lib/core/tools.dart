@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:timesheets/db/schedule_helper.dart';
 import 'l10n.dart';
 
 /// Тип действия с данными
@@ -33,12 +34,16 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
 }
 
 /// Текст серого цвета
-Widget text(BuildContext context, String text, {color: Colors.black54, fontSize: 14.0}) =>
-    Text(text, style: TextStyle(color: color, fontSize: fontSize));
+Widget text(
+    String text, {
+    color: Colors.black54,
+    fontSize: 14.0,
+    fontWeight = FontWeight.normal,
+  }) => Text(text, style: TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight));
 
 /// Сообщение в центре страницы серым цветом
 Widget centerMessage(BuildContext context, String message) =>
-    Center(child: text(context, message));
+    Center(child: text(message));
 
 /// Последний день месяца
 DateTime lastDayOfMonth(DateTime date) => date.month < 12
@@ -99,8 +104,8 @@ String periodToString(DateTime period) {
 }
 
 /// Преобразование даты периода в строку
-String dayToString(DateTime day) {
-  final s = DateFormat(DateFormat.ABBR_WEEKDAY).format(day);
+String abbrWeekday(DateTime date) {
+  final s = DateFormat(DateFormat.ABBR_WEEKDAY).format(date);
   return s;
 }
 
@@ -144,4 +149,11 @@ class _DateDMYFormatter extends TextInputFormatter {
       selection: TextSelection.collapsed(offset: selectionIndex),
     );
   }
+}
+
+/// Дата является выходным днём
+bool isHoliday(DateTime date) {
+  final weekday = abbrWeekday(date);
+  final weekdayIndex = abbrWeekdays.indexOf(weekday);
+  return [5,6].contains(weekdayIndex);
 }

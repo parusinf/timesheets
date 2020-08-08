@@ -116,7 +116,7 @@ class GroupPeriod {
     Groups,           // Группы
     Persons,          // Персоны
     GroupPersonLinks, // Связи групп с персонами
-    Timesheets,       // Табели
+    Attendances,       // Табели
     Settings,         // Настройки
   ],
   daos: [
@@ -126,7 +126,7 @@ class GroupPeriod {
     GroupsDao,
     PersonsDao,
     GroupPersonLinksDao,
-    TimesheetsDao,
+    AttendancesDao,
     SettingsDao
   ]
 )
@@ -172,10 +172,10 @@ class Db extends _$Db {
               birthday: DateTime(2016, 8, 23),
             ),
           );
-          timesheetsDao.insert2(
-            personOfGroup: groupPerson1,
-            attendanceDate: DateTime(2020, 8, 3),
-            hoursNumber: 12.0,
+          attendancesDao.insert2(
+            groupPerson: groupPerson1,
+            date: DateTime(2020, 8, 3),
+            hoursFact: 12.0,
           );
           final groupPerson2 = await groupPersonLinksDao.insert2(
             group11,
@@ -186,10 +186,10 @@ class Db extends _$Db {
               birthday: DateTime(2016, 12, 23),
             ),
           );
-          timesheetsDao.insert2(
-            personOfGroup: groupPerson2,
-            attendanceDate: DateTime(2020, 8, 4),
-            hoursNumber: 12.0,
+          attendancesDao.insert2(
+            groupPerson: groupPerson2,
+            date: DateTime(2020, 8, 4),
+            hoursFact: 12.0,
           );
           groupsDao.insert2(
               org: org1,
@@ -346,6 +346,10 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
             code: row.code,
           )
       ).getSingle();
+
+  /// Получение графика
+  Future<Schedule> getSchedule(int id) async =>
+      await (select(db.schedules)..where((schedule) => schedule.id?.equals(id))).getSingle();
 }
 
 // Дни графиков ----------------------------------------------------------------
@@ -560,43 +564,43 @@ class GroupPersonLinksDao extends DatabaseAccessor<Db> with _$GroupPersonLinksDa
 }
 
 // Посещаемость персон в группе ----------------------------------------------
-@UseDao(tables: [Timesheets])
-class TimesheetsDao extends DatabaseAccessor<Db> with _$TimesheetsDaoMixin {
-  TimesheetsDao(Db db) : super(db);
+@UseDao(tables: [Attendances])
+class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
+  AttendancesDao(Db db) : super(db);
 
   /// Добавление посещаемости
-  Future<Timesheet> insert2({
-    @required GroupPerson personOfGroup,
-    @required DateTime attendanceDate,
-    @required num hoursNumber,
+  Future<Attendance> insert2({
+    @required GroupPerson groupPerson,
+    @required DateTime date,
+    @required double hoursFact,
   }) async {
-    final id = await into(db.timesheets).insert(
-        TimesheetsCompanion(
-          groupPersonLinkId: Value(personOfGroup.groupPersonLinkId),
-          attendanceDate: Value(attendanceDate),
-          hoursNumber: Value(hoursNumber),
+    final id = await into(db.attendances).insert(
+        AttendancesCompanion(
+          groupPersonLinkId: Value(groupPerson.groupPersonLinkId),
+          date: Value(date),
+          hoursFact: Value(hoursFact),
         )
     );
-    return Timesheet(
+    return Attendance(
         id: id,
-        groupPersonLinkId: personOfGroup.groupPersonLinkId,
-        attendanceDate: attendanceDate,
-        hoursNumber: hoursNumber
+        groupPersonLinkId: groupPerson.groupPersonLinkId,
+        date: date,
+        hoursFact: hoursFact
     );
   }
 
   /// Удаление посещаемости
-  Future<bool> delete2(Timesheet timesheet) async =>
-      (await delete(db.timesheets).delete(timesheet)) > 0 ? true : false;
+  Future<bool> delete2(Attendance attendance) async =>
+      (await delete(db.attendances).delete(attendance)) > 0 ? true : false;
 
   /// Получение посещаемости персоны в группе за период
-  Stream<List<Timesheet>> watch(GroupPeriod gp) =>
-      db._timesheetsView(gp.group.id, DateTime(gp.period.year, gp.period.month, 1), gp.period).map((row) =>
-        Timesheet(
+  Stream<List<Attendance>> watch(GroupPeriod gp) =>
+      db._attendancesView(gp.group.id, DateTime(gp.period.year, gp.period.month, 1), gp.period).map((row) =>
+        Attendance(
           id: row.id,
           groupPersonLinkId: row.groupPersonLinkId,
-          attendanceDate: row.attendanceDate,
-          hoursNumber: row.hoursNumber,
+          date: row.date,
+          hoursFact: row.hoursFact,
         )
       ).watch();
 }
@@ -634,17 +638,14 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
       delete(db.settings).where((row) => row.name.equals(settingName));
 
   /// Активная организация
-  Stream<Org> watchActiveOrg() => _selectActiveOrg().watchSingle();
-  Future<Org> getActiveOrg() async => await _selectActiveOrg().getSingle();
-  Selectable<Org> _selectActiveOrg() =>
-      db._activeOrg().map((row) =>
-          Org(
-            id: row.id,
-            name: row.name,
-            inn: row.inn,
-            activeGroupId: row.activeGroupId,
-          )
-      );
+  Stream<Org> watchActiveOrg() => db._activeOrg().map((row) =>
+      Org(
+        id: row.id,
+        name: row.name,
+        inn: row.inn,
+        activeGroupId: row.activeGroupId,
+      )
+  ).watchSingle();
 
   /// Установка активной организации
   Future setActiveOrg(Org org) async {
@@ -659,16 +660,12 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   }
 
   /// Активный график
-  Stream<Schedule> watchActiveSchedule() => _selectActiveSchedule().watchSingle();
-  Future<Schedule> getActiveSchedule() async =>
-      await _selectActiveSchedule().getSingle();
-  Selectable<Schedule> _selectActiveSchedule() =>
-      db._activeSchedule().map((row) =>
-          Schedule(
-            id: row.id,
-            code: row.code,
-          )
-      );
+  Stream<Schedule> watchActiveSchedule() => (db._activeSchedule().map((row) =>
+      Schedule(
+        id: row.id,
+        code: row.code,
+      )
+  )).watchSingle();
 
   /// Установка активного графика
   Future setActiveSchedule(Schedule schedule) async {
@@ -684,11 +681,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
 
   /// Активная группа
   Stream<Group> watchActiveGroup(Org org) =>
-      _selectActiveGroup(org).watchSingle();
-  Future<Group> getActiveGroup(Org org) async =>
-      await _selectActiveGroup(org).getSingle();
-  Selectable<Group> _selectActiveGroup(Org org) =>
-      select(db.groups)..where((entry) => entry.id?.equals(org?.activeGroupId));
+      (select(db.groups)..where((group) => group.id?.equals(org?.activeGroupId))).watchSingle();
 
   /// Установка активной группы
   Future setActiveGroup(Org org, Group group) async =>

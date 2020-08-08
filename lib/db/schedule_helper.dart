@@ -77,7 +77,7 @@ void _parseWeek(List<double> hours, String daysString,
   final hour = double.parse(
       hourString.replaceFirst(_hourStr, '').replaceFirst(',', '.'));
   for (int day = 0; day < 7; day++) {
-    if (daysString == '' || daysString.contains(weekDays[day])) {
+    if (daysString == '' || daysString.contains(abbrWeekdays[day])) {
       hours[day + shift] = hour;
     }
   }
@@ -91,12 +91,12 @@ _createOneWeekDays(List<double> hours, int offset) {
   });
   for (int day = offset; day < offset + 7; day++) {
     if (hoursMap.containsKey(hours[day])) {
-      hoursMap[hours[day]].add(weekDays[day % 7]);
+      hoursMap[hours[day]].add(abbrWeekdays[day % 7]);
     }
   }
   return hoursMap;
 }
 
-const List<String> weekDays = ['пн','вт','ср','чт','пт','сб','вс'];
+const List<String> abbrWeekdays = ['пн','вт','ср','чт','пт','сб','вс'];
 const String _inWeekStr = 'чз/нед';
 const String _hourStr = 'ч';
