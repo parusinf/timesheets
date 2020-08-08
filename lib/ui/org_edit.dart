@@ -114,6 +114,7 @@ class _OrgEditState extends State<OrgEdit> {
               id: widget.org.id,
               name: stringValue(_nameEdit.text),
               inn: stringValue(_innEdit.text),
+              activeGroupId: widget.org.activeGroupId,
             ));
             break;
           case DataActionType.Delete: break;

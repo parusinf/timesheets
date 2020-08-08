@@ -98,18 +98,19 @@ class HomePageState extends State<HomePage> {
     final rowCells = <Widget>[
       StreamBuilder<DateTime>(
         stream: bloc.activePeriod,
-        builder: (context, snapshot) => InkWell(
-          onTap: _selectPeriod,
-          child: snapshot.hasData
-              ? _createCell(
-                  periodToString(snapshot.data),
-                  width: fixedColumnWidth,
-                  alignment: Alignment.centerLeft,
-                  leftPadding: leftPadding,
-                  borderStyle: BorderStyle.none,
-                )
-              : Text('')
-          ),
+        builder: (context, snapshot) =>
+            InkWell(
+              onTap: _selectPeriod,
+              child: snapshot.hasData
+                  ? _createCell(
+                      periodToString(snapshot.data),
+                      width: fixedColumnWidth,
+                      alignment: Alignment.centerLeft,
+                      leftPadding: leftPadding,
+                      borderStyle: BorderStyle.none,
+                    )
+                  : Text('')
+            ),
       ),
     ];
     for (int day = 1; day <= period.day; day++) {

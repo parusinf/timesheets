@@ -6,54 +6,80 @@ import 'package:timesheets/ui/group_edit.dart';
 import 'package:timesheets/ui/org_edit.dart';
 
 /// Дроувер домашнего экрана
-class HomeDrawer extends StatelessWidget {
+class HomeDrawer extends StatefulWidget {
+  const HomeDrawer({Key key}) : super(key: key);
   @override
-  Widget build(BuildContext context) => Drawer(
-    child: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            // Список организаций
-            _listTitle(context, Icons.business, L10n.of(context).orgs,
-                L10n.of(context).orgInserting, OrgEdit()),
-            Flexible(
-              child: StreamBuilder<List<ActiveOrg>>(
-                stream: Provider.of<Bloc>(context).activeOrgs,
-                builder: (context, snapshot) {
-                  final orgs = snapshot.data ?? <ActiveOrg>[];
-                  return ListView.builder(
-                    itemBuilder: (context, index) =>
-                        _OrgCard(orgs, index),
-                    itemCount: orgs.length,
-                  );
-                },
-              ),
-            ),
-            // Список групп активной организации
-            StreamBuilder<Org>(
-              stream: Provider.of<Bloc>(context).activeOrg,
-              builder: (context, snapshot) => snapshot.hasData
-                  ? _listTitle(context, Icons.group, L10n.of(context).groups,
-                      L10n.of(context).groupInserting, GroupEdit())
-                  : Spacer()
-            ),
-            Flexible(
-              flex: 3,
-              child: StreamBuilder<List<ActiveGroup>>(
-                stream: Provider.of<Bloc>(context).activeGroups,
-                builder: (context, snapshot) => ListView.builder(
-                  itemBuilder: (context, index) => _GroupCard(snapshot.data, index),
-                  itemCount: snapshot.data?.length ?? 0,
+  _HomeDrawerState createState() => _HomeDrawerState();
+}
+
+/// Состояние дроувера домашнего экрана
+class _HomeDrawerState extends State<HomeDrawer> {
+  Bloc get bloc => Provider.of<Bloc>(context, listen: false);
+  get l10n => L10n.of(context);
+
+  @override
+  Widget build(BuildContext context) =>
+      OrientationBuilder(
+        builder: (context, orientation) =>
+            Drawer(
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      // Список организаций
+                      _listTitle(context, Icons.business, l10n.orgs,
+                          l10n.orgInserting, OrgEdit()),
+                      Flexible(
+                        child: StreamBuilder<List<ActiveOrg>>(
+                          stream: bloc.activeOrgs,
+                          builder: (context, snapshot) {
+                            final orgs = snapshot.data ?? <ActiveOrg>[];
+                            return ListView.builder(
+                              itemBuilder: (context, index) =>
+                                  _OrgCard(orgs, index),
+                              itemCount: orgs.length,
+                            );
+                          },
+                        ),
+                      ),
+                      // Список групп активной организации
+                      StreamBuilder<Org>(
+                          stream: bloc.activeOrg,
+                          builder: (context, snapshot) => snapshot.hasData
+                              ? _listTitle(context, Icons.group, l10n.groups,
+                              l10n.groupInserting, GroupEdit())
+                              : Spacer()
+                      ),
+                      StreamBuilder<List<ActiveOrg>>(
+                          stream: bloc.activeOrgs,
+                          builder: (context, snapshot) => snapshot.hasData
+                              ? _groupList(orientation, snapshot.data.length)
+                              : Text('')
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ],
+      );
+
+  /// Список групп
+  Widget _groupList(Orientation orientation, int orgsCount) =>
+      Flexible(
+        flex: orientation == Orientation.portrait
+            ? orgsCount < 2 ? 7 : 3
+            : 2,
+        child: StreamBuilder<List<ActiveGroup>>(
+          stream: bloc.activeGroups,
+          builder: (context, snapshot) =>
+              ListView.builder(
+                itemBuilder: (context, index) => _GroupCard(snapshot.data, index),
+                itemCount: snapshot.data?.length ?? 0,
+              ),
         ),
-      ),
-    ),
-  );
+      );
 
   /// Заголовок списка с кнопкой добавления
   Widget _listTitle(
@@ -95,7 +121,7 @@ class _OrgCard extends StatelessWidget {
     confirmDismiss: (direction) async => entry.orgView.groupCount == 0,
     background: Material(
       color: Colors.red,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8.0),
       child: const Icon(Icons.delete, color: Colors.white),
     ),
     key: UniqueKey(),
@@ -106,7 +132,7 @@ class _OrgCard extends StatelessWidget {
     child: Material(
       color: entry.isActive
           ? Colors.lightBlue.withOpacity(0.3) : Colors.transparent,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8.0),
       child: InkWell(
         onTap: () {
           Provider.of<Bloc>(context, listen: false).setActiveOrg(entry.orgView);
@@ -143,7 +169,7 @@ class _GroupCard extends StatelessWidget {
     confirmDismiss: (direction) async => entry.groupView.personCount == 0,
     background: Material(
       color: Colors.red,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8.0),
       child: const Icon(Icons.delete, color: Colors.white),
     ),
     key: UniqueKey(),
@@ -154,7 +180,7 @@ class _GroupCard extends StatelessWidget {
     child: Material(
       color: entry.isActive
           ? Colors.lightGreen.withOpacity(0.3) : Colors.transparent,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8.0),
       child: InkWell(
         onTap: () {
           Provider.of<Bloc>(context, listen: false)
@@ -176,6 +202,7 @@ class _GroupCard extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyText2.copyWith(
               color: entry.isActive ? Colors.black54 : Colors.black26),
           ),
+          //contentPadding: EdgeInsets.all(0.0),
         ),
       ),
     ),

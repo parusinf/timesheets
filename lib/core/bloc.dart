@@ -91,9 +91,9 @@ class Bloc {
 
     // Отслеживание активной группы и периода
     Rx.combineLatest2<Group, DateTime, GroupPeriod>(
-      activeGroup,
-      activePeriod,
-      (group, period) => GroupPeriod(group, period),
+        activeGroup,
+        activePeriod,
+        (group, period) => GroupPeriod(group, period)
     ).listen(activeGroupPeriod.add);
 
     // Отслеживание групп в активной организации
@@ -101,28 +101,32 @@ class Bloc {
 
     // Формирование признака активности организаций
     Rx.combineLatest2<List<Org>, Org, List<ActiveOrg>>(
-      db.orgsDao.watch(),
-      activeOrg,
-      (orgs, selected) => orgs.map(
-        (org) => ActiveOrg(org, org?.id == selected?.id)).toList()
+        db.orgsDao.watch(),
+        activeOrg,
+        (orgs, selected) =>
+            orgs.map((org) =>
+                ActiveOrg(org, org?.id == selected?.id)
+            ).toList()
     ).listen(activeOrgs.add);
 
     // Формирование признака активности графиков
     Rx.combineLatest2<List<Schedule>, Schedule, List<ActiveSchedule>>(
-      db.schedulesDao.watch(),
-      activeSchedule,
-      (schedules, selected) => schedules.map(
-        (schedule) => ActiveSchedule(schedule, schedule?.id == selected?.id)
-      ).toList()
+        db.schedulesDao.watch(),
+        activeSchedule,
+        (schedules, selected) =>
+            schedules.map((schedule) =>
+                ActiveSchedule(schedule, schedule?.id == selected?.id)
+            ).toList()
     ).listen(activeSchedules.add);
 
     // Формирование признака активности групп
     Rx.combineLatest2<List<GroupView>, Group, List<ActiveGroup>>(
-      groups,
-      activeGroup,
-      (groups, selected) => groups.map(
-        (group) => ActiveGroup(group, group?.id == selected?.id)
-      ).toList()
+        groups,
+        activeGroup,
+        (groups, selected) =>
+            groups.map((group) =>
+                ActiveGroup(group, group?.id == selected?.id)
+            ).toList()
     ).listen(activeGroups.add);
 
     // Отслеживание персон в активной группе
@@ -154,10 +158,7 @@ class Bloc {
     await db.settingsDao.setActiveOrg(org);
 
   /// Добавление организации
-  Future<Org> insertOrg({
-    @required String name,
-    String inn,
-  }) async {
+  Future<Org> insertOrg({@required String name, String inn}) async {
     final org = await db.orgsDao.insert2(name: name, inn: inn);
     setActiveOrg(org);
     return org;
@@ -178,12 +179,10 @@ class Bloc {
   // Графики -------------------------------------------------------------------
   /// Установка активного графика
   Future setActiveSchedule(Schedule schedule) async =>
-    await db.settingsDao.setActiveSchedule(schedule);
+      await db.settingsDao.setActiveSchedule(schedule);
 
   /// Добавление графика
-  Future<Schedule> insertSchedule({
-    @required String code,
-  }) async {
+  Future<Schedule> insertSchedule({@required String code}) async {
     final schedule = await db.schedulesDao.insert2(code: code);
     setActiveSchedule(schedule);
     return schedule;
@@ -191,7 +190,7 @@ class Bloc {
 
   /// Исправление графика
   Future<bool> updateSchedule(Schedule schedule) async =>
-    await db.schedulesDao.update2(schedule);
+      await db.schedulesDao.update2(schedule);
 
   /// Удаление графика
   Future<bool> deleteSchedule(Schedule schedule) async {
@@ -210,10 +209,7 @@ class Bloc {
   }
 
   /// Добавление группы
-  Future<Group> insertGroup({
-    @required String name,
-    @required Schedule schedule,
-  }) async {
+  Future<Group> insertGroup({@required String name, @required Schedule schedule}) async {
     final group = await db.groupsDao.insert2(
       org: activeOrg.value,
       name: name,
@@ -225,7 +221,7 @@ class Bloc {
 
   /// Исправление группы
   Future<bool> updateGroup(Group group) async =>
-    await db.groupsDao.update2(group);
+      await db.groupsDao.update2(group);
 
   /// Удаление группы
   Future<bool> deleteGroup(Group group) async {
