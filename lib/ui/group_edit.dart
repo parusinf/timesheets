@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/schedules_dictionary.dart';
+import 'package:timesheets/ui/persons_dictionary.dart';
 
 /// Форма редактирования группы
 class GroupEdit extends StatefulWidget {
@@ -18,7 +18,8 @@ class GroupEdit extends StatefulWidget {
 
 /// Состояние формы редактирования группы
 class _GroupEditState extends State<GroupEdit> {
-  Bloc get bloc => Provider.of<Bloc>(context, listen: false);
+  get bloc => Provider.of<Bloc>(context, listen: false);
+  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _nameEdit = TextEditingController();
@@ -28,10 +29,10 @@ class _GroupEditState extends State<GroupEdit> {
 
   @override
   void initState() {
+    super.initState();
     _nameEdit.text = widget.groupView?.name;
     schedule = widget.groupView?.schedule ?? bloc.activeSchedule.value;
     _scheduleEdit.text = schedule.code;
-    super.initState();
   }
 
   @override
@@ -42,65 +43,81 @@ class _GroupEditState extends State<GroupEdit> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    key: _scaffoldKey,
-    appBar: AppBar(
-      title: Text(widget.actionType == DataActionType.Insert
-          ? L10n.of(context).groupInserting
-          : L10n.of(context).groupUpdating
-      ),
-      actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.done),
-          tooltip: L10n.of(context).done,
-          onPressed: _handleSubmitted,
+  Widget build(BuildContext context) {
+    final items = <Widget>[
+      horizontalSpace(),
+      // Наименование группы
+      TextFormField(
+        controller: _nameEdit,
+        autofocus: widget.actionType == DataActionType.Insert ? true : false,
+        textCapitalization: TextCapitalization.words,
+        decoration: InputDecoration(
+          icon: const Icon(Icons.group),
+          labelText: l10n.groupName,
         ),
-      ],
-    ),
-    body: Form(
-      key: _formKey,
-      autovalidate: _autoValidate,
-      child: Scrollbar(
-        child: SingleChildScrollView(
-          dragStartBehavior: DragStartBehavior.down,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+        validator: _validateName,
+      ),
+      horizontalSpace(),
+      // График
+      TextFormField(
+        controller: _scheduleEdit,
+        readOnly: true,
+        decoration: InputDecoration(
+          icon: const Icon(Icons.calendar_today),
+          labelText: l10n.schedule,
+        ),
+        validator: _validateSchedule,
+        onTap: () => _selectSchedule(context),
+      ),
+    ];
+    if (widget.actionType == DataActionType.Update) {
+      items.addAll(<Widget>[
+        horizontalSpace(),
+        listHeater(context, Icons.person, l10n.persons.toUpperCase(), _addPersonToGroup),
+        Flexible(
+          child: StreamBuilder<List<GroupPersonView>>(
+          stream: bloc.groupPersons,
+          builder: (context, snapshot) =>
+              ListView.builder(
+                itemBuilder: (context, index) => _GroupPersonCard(snapshot.data, index),
+                itemCount: snapshot.data?.length ?? 0,
+              ),
+          ),
+        ),
+      ]);
+    }
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text(widget.actionType == DataActionType.Insert
+            ? l10n.groupInserting
+            : l10n.groupUpdating
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.done),
+            tooltip: l10n.done,
+            onPressed: _handleSubmitted,
+          ),
+        ],
+      ),
+      body: Form(
+        key: _formKey,
+        autovalidate: _autoValidate,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: padding),
           child: Column(
-            children: <Widget>[
-              horizontalSpace(),
-              // Наименование группы
-              TextFormField(
-                controller: _nameEdit,
-                textCapitalization: TextCapitalization.words,
-                autofocus: true,
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.group),
-                  labelText: L10n.of(context).groupName,
-                ),
-                validator: _validateName,
-              ),
-              horizontalSpace(),
-              // График
-              TextFormField(
-                controller: _scheduleEdit,
-                readOnly: true,
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.calendar_today),
-                  labelText: L10n.of(context).schedule,
-                ),
-                validator: _validateSchedule,
-                onTap: () => _selectSchedule(context),
-              ),
-            ],
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: items,
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 
   /// Выбор графика из словаря
   Future _selectSchedule(BuildContext context) async {
-    schedule = await Navigator.push(context,
-        MaterialPageRoute(builder: (context) => SchedulesDictionary()));
+    schedule = await push(context, SchedulesDictionary());
     _scheduleEdit.text = schedule?.code ?? bloc.activeSchedule.value.code;
   }
 
@@ -150,4 +167,51 @@ class _GroupEditState extends State<GroupEdit> {
     }
     return null;
   }
+
+  /// Добавление персоны в группу
+  Future _addPersonToGroup() async {
+    try {
+      final person = await push(context, PersonsDictionary());
+      if (person != null) {
+        await bloc.addPersonToGroup(bloc.activeGroup.value, person);
+      }
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
+  }
+}
+
+/// Карточка персоны
+class _GroupPersonCard extends StatelessWidget {
+  final List<GroupPersonView> groupPersons;
+  final int index;
+  final GroupPersonView entry;
+  _GroupPersonCard(this.groupPersons, this.index) : entry = groupPersons[index];
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, dividerHeight),
+    child: Dismissible(
+      confirmDismiss: (direction) async => entry.attendanceCount == 0,
+      background: Material(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      key: UniqueKey(),
+      onDismissed: (direction) {
+        groupPersons.removeAt(index);
+        Provider.of<Bloc>(context, listen: false).deletePersonFromGroup(entry);
+      },
+      child: Material(
+        color: Colors.lightGreen.withOpacity(passiveColorOpacity),
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: ListTile(
+          title: Text(entry.family),
+          subtitle: Text(entry.name),
+          trailing: text('${entry.attendanceCount}', color: Colors.black26),
+        ),
+      ),
+    ),
+  );
 }

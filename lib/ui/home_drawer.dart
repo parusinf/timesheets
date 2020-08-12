@@ -14,56 +14,51 @@ class HomeDrawer extends StatefulWidget {
 
 /// Состояние дроувера домашнего экрана
 class _HomeDrawerState extends State<HomeDrawer> {
-  Bloc get bloc => Provider.of<Bloc>(context, listen: false);
+  get bloc => Provider.of<Bloc>(context, listen: false);
   get l10n => L10n.of(context);
 
   @override
-  Widget build(BuildContext context) =>
-      OrientationBuilder(
-        builder: (context, orientation) =>
-            Drawer(
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      // Список организаций
-                      _listTitle(context, Icons.business, l10n.orgs,
-                          l10n.orgInserting, OrgEdit()),
-                      Flexible(
-                        child: StreamBuilder<List<ActiveOrg>>(
-                          stream: bloc.activeOrgs,
-                          builder: (context, snapshot) {
-                            final orgs = snapshot.data ?? <ActiveOrg>[];
-                            return ListView.builder(
-                              itemBuilder: (context, index) =>
-                                  _OrgCard(orgs, index),
-                              itemCount: orgs.length,
-                            );
-                          },
-                        ),
-                      ),
-                      // Список групп активной организации
-                      StreamBuilder<Org>(
-                          stream: bloc.activeOrg,
-                          builder: (context, snapshot) => snapshot.hasData
-                              ? _listTitle(context, Icons.group, l10n.groups,
-                              l10n.groupInserting, GroupEdit())
-                              : Spacer()
-                      ),
-                      StreamBuilder<List<ActiveOrg>>(
-                          stream: bloc.activeOrgs,
-                          builder: (context, snapshot) => snapshot.hasData
-                              ? _groupList(orientation, snapshot.data.length)
-                              : Text('')
-                      ),
-                    ],
-                  ),
+  Widget build(BuildContext context) => OrientationBuilder(
+    builder: (context, orientation) => Drawer(
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: padding),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              // Список организаций
+              listHeater(context, Icons.business, l10n.orgs, () => push(context, OrgEdit())),
+              Flexible(
+                child: StreamBuilder<List<ActiveOrg>>(
+                  stream: bloc.activeOrgs,
+                  builder: (context, snapshot) {
+                    final orgs = snapshot.data ?? <ActiveOrg>[];
+                    return ListView.builder(
+                      itemBuilder: (context, index) => _OrgCard(orgs, index),
+                      itemCount: orgs.length,
+                    );
+                  },
                 ),
               ),
-            ),
-      );
+              // Список групп активной организации
+              StreamBuilder<Org>(
+                  stream: bloc.activeOrg,
+                  builder: (context, snapshot) => snapshot.hasData
+                      ? listHeater(context, Icons.group, l10n.groups, () => push(context, GroupEdit()))
+                      : Spacer()
+              ),
+              StreamBuilder<List<ActiveOrg>>(
+                  stream: bloc.activeOrgs,
+                  builder: (context, snapshot) => snapshot.hasData
+                      ? _groupList(orientation, snapshot.data.length)
+                      : Text('')
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 
   /// Список групп
   Widget _groupList(Orientation orientation, int orgsCount) =>
@@ -80,33 +75,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
               ),
         ),
       );
-
-  /// Заголовок списка с кнопкой добавления
-  Widget _listTitle(
-    BuildContext context,
-    IconData icon,
-    String title,
-    String actionName,
-    Widget entryPage
-  ) => Row(
-    children: <Widget>[
-      Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Icon(icon, color: Colors.black54)
-      ),
-      text(title),
-      const Spacer(),
-      IconButton(
-        icon: const Icon(Icons.add),
-        color: Colors.black54,
-        tooltip: actionName,
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => entryPage),
-        ),
-      ),
-    ],
-  );
 }
 
 /// Карточка организации
@@ -117,44 +85,44 @@ class _OrgCard extends StatelessWidget {
   _OrgCard(this.orgs, this.index) : entry = orgs[index];
 
   @override
-  Widget build(BuildContext context) => Dismissible(
-    confirmDismiss: (direction) async => entry.orgView.groupCount == 0,
-    background: Material(
-      color: Colors.red,
-      borderRadius: BorderRadius.circular(8.0),
-      child: const Icon(Icons.delete, color: Colors.white),
-    ),
-    key: UniqueKey(),
-    onDismissed: (direction) {
-      orgs.removeAt(index);
-      Provider.of<Bloc>(context, listen: false).deleteOrg(entry.orgView);
-    },
-    child: Material(
-      color: entry.isActive
-          ? Colors.lightBlue.withOpacity(0.3) : Colors.transparent,
-      borderRadius: BorderRadius.circular(8.0),
-      child: InkWell(
-        onTap: () {
-          Provider.of<Bloc>(context, listen: false).setActiveOrg(entry.orgView);
-        },
-        onDoubleTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => OrgEdit(org: entry.orgView)),
-          );
-        },
-        child: ListTile(
-          title: Text(entry.orgView.name),
-          subtitle: Text(isNotEmpty(entry.orgView.inn)
-              ? entry.orgView.inn
-              : L10n.of(context).withoutInn
+  Widget build(BuildContext context) =>
+      Padding(
+        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, dividerHeight),
+        child: Dismissible(
+          confirmDismiss: (direction) async => entry.orgView.groupCount == 0,
+          background: Material(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(borderRadius),
+            child: const Icon(Icons.delete, color: Colors.white),
           ),
-          trailing: text('${entry.orgView.groupCount}',
-              color: entry.isActive ? Colors.black54 : Colors.black26),
-        ),
+          key: UniqueKey(),
+          onDismissed: (direction) {
+            orgs.removeAt(index);
+            Provider.of<Bloc>(context, listen: false).deleteOrg(entry.orgView);
+          },
+          child: Material(
+            color: entry.isActive
+                ? Colors.lightBlue.withOpacity(activeColorOpacity)
+                : Colors.lightBlue.withOpacity(passiveColorOpacity),
+            borderRadius: BorderRadius.circular(borderRadius),
+            child: InkWell(
+              onTap: () {
+                Provider.of<Bloc>(context, listen: false).setActiveOrg(entry.orgView);
+              },
+              onDoubleTap: () => push(context, OrgEdit(org: entry.orgView)),
+              child: ListTile(
+                title: Text(entry.orgView.name),
+                subtitle: Text(isNotEmpty(entry.orgView.inn)
+                    ? entry.orgView.inn
+                    : L10n.of(context).withoutInn
+                ),
+                trailing: text('${entry.orgView.groupCount}',
+                    color: entry.isActive ? Colors.black54 : Colors.black26),
+              ),
+            ),
+          ),
       ),
-    ),
-  );
+    );
 }
 
 /// Карточка группы
@@ -165,46 +133,43 @@ class _GroupCard extends StatelessWidget {
   _GroupCard(this.groups, this.index) : entry = groups[index];
 
   @override
-  Widget build(BuildContext context) => Dismissible(
-    confirmDismiss: (direction) async => entry.groupView.personCount == 0,
-    background: Material(
-      color: Colors.red,
-      borderRadius: BorderRadius.circular(8.0),
-      child: const Icon(Icons.delete, color: Colors.white),
-    ),
-    key: UniqueKey(),
-    onDismissed: (direction) {
-      groups.removeAt(index);
-      Provider.of<Bloc>(context, listen: false).deleteGroup(entry.groupView);
-    },
-    child: Material(
-      color: entry.isActive
-          ? Colors.lightGreen.withOpacity(0.3) : Colors.transparent,
-      borderRadius: BorderRadius.circular(8.0),
-      child: InkWell(
-        onTap: () {
-          Provider.of<Bloc>(context, listen: false)
-              .setActiveGroup(entry.groupView);
-          Navigator.pop(context);
-        },
-        onDoubleTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => GroupEdit(groupView: entry.groupView),
-            ),
-          );
-        },
-        child: ListTile(
-          title: Text(entry.groupView.name),
-          subtitle: Text(entry.groupView.schedule.code),
-          trailing: Text('${entry.groupView.personCount}',
-            style: Theme.of(context).textTheme.bodyText2.copyWith(
-              color: entry.isActive ? Colors.black54 : Colors.black26),
+  Widget build(BuildContext context) =>
+      Padding(
+        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, dividerHeight),
+        child: Dismissible(
+          confirmDismiss: (direction) async => entry.groupView.personCount == 0,
+          background: Material(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(borderRadius),
+            child: const Icon(Icons.delete, color: Colors.white),
           ),
-          //contentPadding: EdgeInsets.all(0.0),
+          key: UniqueKey(),
+          onDismissed: (direction) {
+            groups.removeAt(index);
+            Provider.of<Bloc>(context, listen: false).deleteGroup(entry.groupView);
+          },
+          child: Material(
+            color: entry.isActive
+                ? Colors.lightGreen.withOpacity(activeColorOpacity)
+                : Colors.lightGreen.withOpacity(passiveColorOpacity),
+            borderRadius: BorderRadius.circular(borderRadius),
+            child: InkWell(
+              onTap: () {
+                Provider.of<Bloc>(context, listen: false)
+                    .setActiveGroup(entry.groupView);
+                Navigator.pop(context);
+              },
+              onDoubleTap: () => push(context, GroupEdit(groupView: entry.groupView)),
+              child: ListTile(
+                title: Text(entry.groupView.name),
+                subtitle: Text(entry.groupView.schedule.code),
+                trailing: Text('${entry.groupView.personCount}',
+                  style: Theme.of(context).textTheme.bodyText2.copyWith(
+                    color: entry.isActive ? Colors.black54 : Colors.black26),
+                ),
+              ),
+            ),
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }

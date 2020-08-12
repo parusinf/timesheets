@@ -80,16 +80,18 @@ class GroupView extends Group {
 }
 
 /// Персона группы
-class GroupPerson extends Person {
+class GroupPersonView extends Person {
   final int groupPersonLinkId;
+  final int attendanceCount;
 
-  GroupPerson({
+  GroupPersonView({
     @required int id,
     @required String family,
     @required String name,
     String middleName,
     DateTime birthday,
     @required this.groupPersonLinkId,
+    this.attendanceCount = 0,
   }) : super(
     id: id,
     family: family,
@@ -524,14 +526,14 @@ class GroupPersonLinksDao extends DatabaseAccessor<Db> with _$GroupPersonLinksDa
   GroupPersonLinksDao(Db db) : super(db);
 
   /// Добавление связи группы с персоной
-  Future<GroupPerson> insert2(Group group, Person person) async {
+  Future<GroupPersonView> insert2(Group group, Person person) async {
     final id = await into(db.groupPersonLinks).insert(
         GroupPersonLinksCompanion(
           groupId: Value(group.id),
           personId: Value(person.id),
         )
     );
-    return GroupPerson(
+    return GroupPersonView(
       id: person.id,
       family: person.family,
       name: person.name,
@@ -542,7 +544,7 @@ class GroupPersonLinksDao extends DatabaseAccessor<Db> with _$GroupPersonLinksDa
   }
 
   /// Удаление связи персоны с группой
-  Future<bool> delete2(GroupPerson groupPerson) async =>
+  Future<bool> delete2(GroupPersonView groupPerson) async =>
       (await delete(db.groupPersonLinks).delete(
           GroupPersonLinksCompanion(
             id: Value(groupPerson.groupPersonLinkId),
@@ -550,15 +552,16 @@ class GroupPersonLinksDao extends DatabaseAccessor<Db> with _$GroupPersonLinksDa
       )) > 0 ? true : false;
 
   /// Отслеживание связей персон с группой
-  Stream<List<GroupPerson>> watch(Group group) =>
-      db._personsInGroup(group.id).map((row) =>
-          GroupPerson(
+  Stream<List<GroupPersonView>> watch(Group group) =>
+      db._groupPersons(group?.id).map((row) =>
+          GroupPersonView(
             id: row.personId,
             family: row.family,
             name: row.name,
             middleName: row.middleName,
             birthday: row.birthday,
             groupPersonLinkId: row.groupPersonLinkId,
+            attendanceCount: row.attendanceCount,
           )
       ).watch();
 }
@@ -570,7 +573,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
 
   /// Добавление посещаемости
   Future<Attendance> insert2({
-    @required GroupPerson groupPerson,
+    @required GroupPersonView groupPerson,
     @required DateTime date,
     @required double hoursFact,
   }) async {

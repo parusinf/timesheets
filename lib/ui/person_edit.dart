@@ -18,7 +18,7 @@ class PersonEdit extends StatefulWidget {
 
 /// Состояние формы редактирования персоны
 class _PersonEditState extends State<PersonEdit> {
-  Bloc get bloc => Provider.of<Bloc>(context, listen: false);
+  get bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _familyEdit = TextEditingController();
@@ -74,7 +74,7 @@ class _PersonEditState extends State<PersonEdit> {
               TextFormField(
                 controller: _familyEdit,
                 textCapitalization: TextCapitalization.words,
-                autofocus: true,
+                autofocus: widget.actionType == DataActionType.Insert ? true : false,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.person),
                   labelText: L10n.of(context).personFamily,

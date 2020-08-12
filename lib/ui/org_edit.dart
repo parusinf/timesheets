@@ -68,7 +68,7 @@ class _OrgEditState extends State<OrgEdit> {
               TextFormField(
                 controller: _nameEdit,
                 textCapitalization: TextCapitalization.words,
-                autofocus: true,
+                autofocus: widget.actionType == DataActionType.Insert ? true : false,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.business),
                   labelText: L10n.of(context).orgName,

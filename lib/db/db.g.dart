@@ -2312,22 +2312,29 @@ abstract class _$Db extends GeneratedDatabase {
         readsFrom: {persons, groupPersonLinks}).map(_rowToPersonsViewResult);
   }
 
-  PersonsInGroupResult _rowToPersonsInGroupResult(QueryRow row) {
-    return PersonsInGroupResult(
+  GroupPersonsResult _rowToGroupPersonsResult(QueryRow row) {
+    return GroupPersonsResult(
       groupPersonLinkId: row.readInt('groupPersonLinkId'),
       personId: row.readInt('personId'),
       family: row.readString('family'),
       name: row.readString('name'),
       middleName: row.readString('middleName'),
       birthday: row.readDateTime('birthday'),
+      attendanceCount: row.readInt('attendanceCount'),
     );
   }
 
-  Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {
+  Selectable<GroupPersonsResult> _groupPersons(int groupId) {
     return customSelect(
-        'SELECT L.id AS groupPersonLinkId,\n       L.personId,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday\n  FROM group_person_links L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
-        variables: [Variable.withInt(groupId)],
-        readsFrom: {groupPersonLinks, persons}).map(_rowToPersonsInGroupResult);
+        'SELECT L.id AS groupPersonLinkId,\n       L.personId,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonLinkId = L.id) AS INT) AS attendanceCount\n  FROM group_person_links L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        variables: [
+          Variable.withInt(groupId)
+        ],
+        readsFrom: {
+          groupPersonLinks,
+          persons,
+          attendances
+        }).map(_rowToGroupPersonsResult);
   }
 
   Attendance _rowToAttendance(QueryRow row) {
@@ -2516,20 +2523,22 @@ class PersonsViewResult {
   });
 }
 
-class PersonsInGroupResult {
+class GroupPersonsResult {
   final int groupPersonLinkId;
   final int personId;
   final String family;
   final String name;
   final String middleName;
   final DateTime birthday;
-  PersonsInGroupResult({
+  final int attendanceCount;
+  GroupPersonsResult({
     this.groupPersonLinkId,
     this.personId,
     this.family,
     this.name,
     this.middleName,
     this.birthday,
+    this.attendanceCount,
   });
 }
 

@@ -55,11 +55,11 @@ class Bloc {
   // Группы с признаком активности
   final activeGroups = BehaviorSubject<List<ActiveGroup>>();
 
+  // Персоны активной группы
+  final groupPersons = BehaviorSubject<List<GroupPersonView>>();
+
   // Группы активной организации
   Stream<List<GroupView>> groups;
-
-  // Персоны активной группы
-  Stream<List<GroupPerson>> groupPersons;
 
   // Посещаемость персон активной группы в активном периоде
   Stream<List<Attendance>> attendances;
@@ -130,7 +130,8 @@ class Bloc {
     ).listen(activeGroups.add);
 
     // Отслеживание персон в активной группе
-    groupPersons = activeGroup.switchMap(db.groupPersonLinksDao.watch);
+    Rx.concat([activeGroup.switchMap(db.groupPersonLinksDao.watch)])
+        .listen(groupPersons.add);
   }
 
   /// Освобождение ресурсов
@@ -144,6 +145,7 @@ class Bloc {
     activeSchedules.close();
     activeGroups.close();
     scheduleDays.close();
+    groupPersons.close();
     db.close();
   }
 
@@ -255,17 +257,17 @@ class Bloc {
       await db.personsDao.delete2(person);
 
   /// Добавление персоны в группу
-  Future<GroupPerson> addPersonToGroup(Group group, Person person) async =>
+  Future<GroupPersonView> addPersonToGroup(Group group, Person person) async =>
       await db.groupPersonLinksDao.insert2(group, person);
 
   /// Удаление персоны из группы
-  Future<bool> deletePersonFromGroup(GroupPerson groupPerson) async =>
+  Future<bool> deletePersonFromGroup(GroupPersonView groupPerson) async =>
       await db.groupPersonLinksDao.delete2(groupPerson);
   
   // Посещаемость --------------------------------------------------------------
   /// Добавление посещаемости
   Future<Attendance> insertAttendance({
-    @required GroupPerson groupPerson,
+    @required GroupPersonView groupPerson,
     @required DateTime date,
     @required double hoursFact,
   }) async => await db.attendancesDao.insert2(

@@ -225,13 +225,14 @@ SELECT P.id,
        P.birthday;
 
 -- Список персон в группе
-_personsInGroup:
+_groupPersons:
 SELECT L.id AS groupPersonLinkId,
        L.personId,
        P.family,
        P.name,
        P.middleName,
-       P.birthday
+       P.birthday,
+       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonLinkId = L.id) AS INT) AS attendanceCount
   FROM group_person_links L
  INNER JOIN persons P ON P.id = L.personId
  WHERE L.groupId = :groupId

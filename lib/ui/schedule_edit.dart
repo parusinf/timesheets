@@ -17,7 +17,7 @@ class ScheduleEdit extends StatefulWidget {
 
 /// Состояние формы редактирования графика
 class _ScheduleEditState extends State<ScheduleEdit> {
-  Bloc get bloc => Provider.of<Bloc>(context, listen: false);
+  get bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;

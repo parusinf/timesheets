@@ -3,6 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:timesheets/core/l10n.dart';
 
+const lineColor = Colors.black12;
+const activeColorOpacity = 0.3;
+const passiveColorOpacity = 0.1;
+const borderRadius = 8.0;
+const dividerHeight = 8.0;
+const padding = 16.0;
+const horizontalSpaceHeight = 8.0;
+
 /// Сообщение в снакбаре
 void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
   final context = scaffoldKey.currentContext;
@@ -24,7 +32,7 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
   scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
 }
 
-/// Текст серого цвета
+/// Текст
 Widget text(
     String text, {
       color: Colors.black54,
@@ -37,7 +45,10 @@ Widget centerMessage(BuildContext context, String message) =>
     Center(child: text(message));
 
 /// Горизонтальный разделитель пространства между контролами
-Widget horizontalSpace({height = 16.0}) => SizedBox(height: height);
+Widget horizontalSpace({height = horizontalSpaceHeight}) => SizedBox(height: height);
+
+/// Горизонтальная линия
+Widget divider() => const Divider(color: lineColor, height: 0.5);
 
 /// Форматировщики даты
 class DateFormatters {
@@ -80,3 +91,25 @@ class _DateDMYFormatter extends TextInputFormatter {
     );
   }
 }
+
+/// Заголовок списка с кнопкой добавления
+Widget listHeater(BuildContext context, IconData icon, String title, Function() onPressed) {
+  final items = <Widget>[
+    Padding(
+        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 16.0, 0.0),
+        child: Icon(icon, color: Colors.black54)
+    ),
+    text(title),
+  ];
+  if (onPressed != null) {
+    items.addAll(<Widget>[
+      const Spacer(),
+      IconButton(icon: const Icon(Icons.add), color: Colors.black54, onPressed: onPressed),
+    ]);
+  }
+  return Row(children: items);
+}
+
+/// Переход на страницу
+Future<T> push<T extends Object>(BuildContext context, Widget page) async =>
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => page));

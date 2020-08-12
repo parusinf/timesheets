@@ -7,7 +7,6 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/db/schedule_helper.dart';
 import 'package:timesheets/ui/home_drawer.dart';
-import 'package:timesheets/ui/persons_dictionary.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
@@ -20,13 +19,13 @@ class HomePageState extends State<HomePage> {
   get bloc => Provider.of<Bloc>(context, listen: false);
   get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<GroupPerson> groupPersons;
-  static const fixedColumnWidth = 130.0;
+  List<GroupPersonView> groupPersons;
+  List<Attendance> groupAttendances;
+  static const fixedColumnWidth = 134.0;
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
   static const leftPadding = 12.0;
-  static const lineColor = Colors.black12;
-  
+
   @override
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
@@ -36,18 +35,9 @@ class HomePageState extends State<HomePage> {
         builder: (context, snapshot) => snapshot.hasData
             ? Text(snapshot.data.name) : Text('')
       ),
-      actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.person_add),
-          tooltip: l10n.addPersonToGroup,
-          onPressed: () {
-            _addPersonToGroup();
-          },
-        ),
-      ],
     ),
     drawer: HomeDrawer(),
-    body: StreamBuilder<List<GroupPerson>>(
+    body: StreamBuilder<List<GroupPersonView>>(
       stream: bloc.groupPersons,
       builder: (context, snapshot) {
         // Организаций нет
@@ -58,31 +48,42 @@ class HomePageState extends State<HomePage> {
           if (bloc.activeGroup.value == null) {
             return centerMessage(context, l10n.noGroups);
           } else {
-            // Данные загрузились
+            // Персоны группы загрузились
             if (snapshot.hasData) {
               groupPersons = snapshot.data;
               // Персон нет
               if (groupPersons.length == 0) {
                 return centerMessage(context, l10n.noPersons);
               } else {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: HorizontalDataTable(
-                    leftHandSideColumnWidth: fixedColumnWidth,
-                    rightHandSideColumnWidth: columnWidth * bloc.activePeriod.value.day,
-                    isFixedHeader: true,
-                    headerWidgets: _createTitleRow(),
-                    leftSideItemBuilder: _createFixedColumn,
-                    rightSideItemBuilder: _createTableRow,
-                    itemCount: groupPersons.length,
-                    rowSeparatorWidget: const Divider(
-                      color: lineColor,
-                      height: 0.5,
-                    ),
-                  ),
+                return StreamBuilder<List<Attendance>>(
+                  stream: bloc.attendances,
+                  builder: (context, snapshot) {
+                    // Посещаемость загрузилась
+                    if (snapshot.hasData) {
+                      groupAttendances = snapshot.data;
+                      // Персон нет
+                      if (groupPersons.length == 0) {
+                        return centerMessage(context, l10n.noPersons);
+                      } else {
+                        return HorizontalDataTable(
+                          leftHandSideColumnWidth: fixedColumnWidth,
+                          rightHandSideColumnWidth: columnWidth * bloc.activePeriod.value.day,
+                          isFixedHeader: true,
+                          headerWidgets: _createTitleRow(),
+                          leftSideItemBuilder: _createFixedColumn,
+                          rightSideItemBuilder: _createTableRow,
+                          itemCount: groupPersons.length,
+                          rowSeparatorWidget: divider(),
+                        );
+                      }
+                      // Посещаемость загружаются
+                    } else {
+                      return centerMessage(context, l10n.dataLoading);
+                    }
+                  }
                 );
               }
-            // Данные загружаются
+            // Персоны группы загружаются
             } else {
               return centerMessage(context, l10n.dataLoading);
             }
@@ -177,7 +178,7 @@ class HomePageState extends State<HomePage> {
       crossAxisAlignment: crossAxisAlignment,
       children: <Widget>[
         text(title, fontSize: 16.0, color: titleColor),
-        horizontalSpace(height: 4.0),
+        horizontalSpace(height: dividerHeight),
         text(subtitle, fontSize: 14.0, color: subtitleColor),
       ],
     ),
@@ -202,67 +203,48 @@ class HomePageState extends State<HomePage> {
 
   /// Создание строки таблицы
   Widget _createTableRow(BuildContext context, int index) {
-    return StreamBuilder<List<Attendance>>(
-      stream: bloc.attendances,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final attendances = snapshot.data.where((attendance) =>
-              attendance.groupPersonLinkId == groupPersons[index].groupPersonLinkId);
-          final dates = attendances.map((attendance) => attendance.date).toList();
-          final period = bloc.activePeriod.value;
-          final rowCells = List<Widget>();
-          // Цикл по дням текущего периода
-          for (int day = 1; day <= period.day; day++) {
-            final date = DateTime(period.year, period.month, day);
-            // Есть посещаемость в этот день, её можно удалить
-            if (dates.contains(date)) {
-              final attendance = attendances.firstWhere((attendance) => attendance.date == date);
-              rowCells.add(
-                InkWell(
-                  onTap: () => _deleteAttendance(attendance),
-                  child: _createCell(doubleToString(attendance.hoursFact), color: Colors.green, fontWeight: FontWeight.bold),
-                ),
-              );
-            // Посещаемости нет, её можно добавить
-            } else {
-              final hoursNorm = _getHoursNorm(date);
-              if (hoursNorm > 0.0) {
-                rowCells.add(
-                  InkWell(
-                    onTap: () => _insertAttendance(groupPersons[index], date, hoursNorm),
-                    child: _createCell(doubleToString(hoursNorm), color: Colors.black12),
-                  ),
-                );
-              } else {
-                rowCells.add(_createCell(''));
-              }
-            }
-          }
-          return Row(children: rowCells);
+    final personAttendances = groupAttendances.where(
+            (attendance) => attendance.groupPersonLinkId == groupPersons[index].groupPersonLinkId);
+    final dates = personAttendances.map((attendance) => attendance.date).toList();
+    final period = bloc.activePeriod.value;
+    final rowCells = List<Widget>();
+    // Цикл по дням текущего периода
+    for (int day = 1; day <= period.day; day++) {
+      final date = DateTime(period.year, period.month, day);
+      // Есть посещаемость в этот день, её можно удалить
+      if (dates.contains(date)) {
+        final attendance = personAttendances.firstWhere((
+            attendance) => attendance.date == date);
+        rowCells.add(
+          InkWell(
+            onTap: () => _deleteAttendance(attendance),
+            child: _createCell(
+                doubleToString(attendance.hoursFact), color: Colors.green,
+                fontWeight: FontWeight.bold),
+          ),
+        );
+        // Посещаемости нет, её можно добавить
+      } else {
+        final hoursNorm = _getHoursNorm(date);
+        if (hoursNorm > 0.0) {
+          rowCells.add(
+            InkWell(
+              onTap: () => _insertAttendance(groupPersons[index], date, hoursNorm),
+              child: _createCell(doubleToString(hoursNorm), color: Colors.black12),
+            ),
+          );
         } else {
-          return Text('');
+          rowCells.add(_createCell(''));
         }
       }
-    );
+    }
+    return Row(children: rowCells);
   }
 
   /// Получение нормы часов на дату по активному графику
   double _getHoursNorm(DateTime date) {
     final weekdayNumber = abbrWeekdays.indexOf(abbrWeekday(date));
     return bloc.scheduleDays.value[weekdayNumber].hoursNorm;
-  }
-
-  /// Добавление персоны в группу
-  Future _addPersonToGroup() async {
-    try {
-      final person = await Navigator.push(context,
-          MaterialPageRoute(builder: (context) => PersonsDictionary()));
-      if (person != null) {
-        await bloc.addPersonToGroup(bloc.activeGroup.value, person);
-      }
-    } catch(e) {
-      showMessage(_scaffoldKey, e.toString());
-    }
   }
 
   /// Выбор активного периода
@@ -280,7 +262,7 @@ class HomePageState extends State<HomePage> {
   }
 
   /// Добавление посещаемости
-  Future _insertAttendance(GroupPerson groupPerson, DateTime date, double hoursFact) async {
+  Future _insertAttendance(GroupPersonView groupPerson, DateTime date, double hoursFact) async {
     try {
       bloc.insertAttendance(groupPerson: groupPerson, date: date, hoursFact: hoursFact);
     } catch(e) {
