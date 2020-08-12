@@ -6,7 +6,10 @@ import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/db/schedule_helper.dart';
+import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/home_drawer.dart';
+import 'package:timesheets/ui/org_edit.dart';
+import 'package:timesheets/ui/group_edit.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
@@ -19,8 +22,8 @@ class HomePageState extends State<HomePage> {
   get bloc => Provider.of<Bloc>(context, listen: false);
   get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<GroupPersonView> groupPersons;
-  List<Attendance> groupAttendances;
+  List<GroupPersonView> _groupPersons;
+  List<Attendance> _groupAttendances;
   static const fixedColumnWidth = 134.0;
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
@@ -33,8 +36,41 @@ class HomePageState extends State<HomePage> {
       title: StreamBuilder<Group>(
         stream: bloc.activeGroup,
         builder: (context, snapshot) => snapshot.hasData
-            ? Text(snapshot.data.name) : Text('')
+            ? Text(snapshot.data.name)
+            : StreamBuilder<Org>(
+                stream: bloc.activeOrg,
+                builder: (context, snapshot) => snapshot.hasData
+                    ? Text(snapshot.data.name) : Text(l10n.title)
+              ),
       ),
+      actions: <Widget>[
+        StreamBuilder<List<GroupPersonView>>(
+          stream: bloc.groupPersons,
+          builder: (context, snapshot) {
+            if (bloc.activeOrg.value == null) {
+              // Организаций нет
+              return IconButton(
+                icon: Icon(Icons.business),
+                onPressed: () => push(context, OrgEdit()),
+              );
+            } else {
+              if (bloc.activeGroup.value == null) {
+                // Групп нет
+                return IconButton(
+                  icon: Icon(Icons.group),
+                  onPressed: () => push(context, GroupEdit()),
+                );
+              } else {
+                // Персон в группе нет
+                return IconButton(
+                  icon: Icon(Icons.person_add),
+                  onPressed: () => push(context, GroupPersonsDictionary(groupView: bloc.activeGroup.value)),
+                );
+              }
+            }
+          }
+        ),
+      ],
     ),
     drawer: HomeDrawer(),
     body: StreamBuilder<List<GroupPersonView>>(
@@ -42,27 +78,27 @@ class HomePageState extends State<HomePage> {
       builder: (context, snapshot) {
         // Организаций нет
         if (bloc.activeOrg.value == null) {
-          return centerMessage(context, l10n.noOrgs);
+          return centerMessage(context, l10n.addOrg);
         } else {
           // Групп нет
           if (bloc.activeGroup.value == null) {
-            return centerMessage(context, l10n.noGroups);
+            return centerMessage(context, l10n.addGroup);
           } else {
             // Персоны группы загрузились
             if (snapshot.hasData) {
-              groupPersons = snapshot.data;
+              _groupPersons = snapshot.data;
               // Персон нет
-              if (groupPersons.length == 0) {
-                return centerMessage(context, l10n.noPersons);
+              if (_groupPersons.length == 0) {
+                return centerMessage(context, l10n.addPersonToGroup);
               } else {
                 return StreamBuilder<List<Attendance>>(
                   stream: bloc.attendances,
                   builder: (context, snapshot) {
                     // Посещаемость загрузилась
                     if (snapshot.hasData) {
-                      groupAttendances = snapshot.data;
+                      _groupAttendances = snapshot.data;
                       // Персон нет
-                      if (groupPersons.length == 0) {
+                      if (_groupPersons.length == 0) {
                         return centerMessage(context, l10n.noPersons);
                       } else {
                         return HorizontalDataTable(
@@ -72,7 +108,7 @@ class HomePageState extends State<HomePage> {
                           headerWidgets: _createTitleRow(),
                           leftSideItemBuilder: _createFixedColumn,
                           rightSideItemBuilder: _createTableRow,
-                          itemCount: groupPersons.length,
+                          itemCount: _groupPersons.length,
                           rowSeparatorWidget: divider(),
                         );
                       }
@@ -193,8 +229,8 @@ class HomePageState extends State<HomePage> {
 
   /// Создание фиксированной колонки
   Widget _createFixedColumn(BuildContext context, int index) => _createFixedCell(
-    groupPersons[index].family,
-    groupPersons[index].name,
+    _groupPersons[index].family,
+    _groupPersons[index].name,
     width: fixedColumnWidth,
     alignment: Alignment.centerLeft,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,8 +239,8 @@ class HomePageState extends State<HomePage> {
 
   /// Создание строки таблицы
   Widget _createTableRow(BuildContext context, int index) {
-    final personAttendances = groupAttendances.where(
-            (attendance) => attendance.groupPersonLinkId == groupPersons[index].groupPersonLinkId);
+    final personAttendances = _groupAttendances.where(
+            (attendance) => attendance.groupPersonLinkId == _groupPersons[index].groupPersonLinkId);
     final dates = personAttendances.map((attendance) => attendance.date).toList();
     final period = bloc.activePeriod.value;
     final rowCells = List<Widget>();
@@ -229,7 +265,7 @@ class HomePageState extends State<HomePage> {
         if (hoursNorm > 0.0) {
           rowCells.add(
             InkWell(
-              onTap: () => _insertAttendance(groupPersons[index], date, hoursNorm),
+              onTap: () => _insertAttendance(_groupPersons[index], date, hoursNorm),
               child: _createCell(doubleToString(hoursNorm), color: Colors.black12),
             ),
           );

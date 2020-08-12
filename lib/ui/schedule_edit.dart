@@ -18,6 +18,7 @@ class ScheduleEdit extends StatefulWidget {
 /// Состояние формы редактирования графика
 class _ScheduleEditState extends State<ScheduleEdit> {
   get bloc => Provider.of<Bloc>(context, listen: false);
+  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   bool _autoValidate = false;
@@ -44,15 +45,11 @@ class _ScheduleEditState extends State<ScheduleEdit> {
     key: _scaffoldKey,
     appBar: AppBar(
       title: Text(widget.actionType == DataActionType.Insert
-          ? L10n.of(context).scheduleInserting
-          : L10n.of(context).scheduleUpdating
+          ? l10n.scheduleInserting
+          : l10n.scheduleUpdating
       ),
       actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.done),
-          tooltip: L10n.of(context).done,
-          onPressed: _handleSubmitted,
-        ),
+        IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],
     ),
     body: Form(
@@ -93,9 +90,12 @@ class _ScheduleEditState extends State<ScheduleEdit> {
       _autoValidate = true;
     } else {
       try {
-        final hours = bloc.scheduleDays.value.map((e) => e.hoursNorm).toList();
+        final hours = <double>[];
+        for (int i = 0; i < bloc.scheduleDays.value.length; i++) {
+          hours.add(bloc.scheduleDays.value[i].hoursNorm);
+        }
         if (hours.reduce((a, b) => a + b) == 0.0) {
-          showMessage(_scaffoldKey, L10n.of(context).noHoursNorm);
+          showMessage(_scaffoldKey, l10n.noHoursNorm);
         } else {
           switch (widget.actionType) {
             case DataActionType.Insert: _insert(hours); break;
@@ -115,7 +115,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
     if (value.isNotEmpty) {
       final hoursNorm = double.tryParse(value);
       if (hoursNorm == null || hoursNorm > 24.0) {
-        return L10n.of(context).invalidHoursNorm;
+        return l10n.invalidHoursNorm;
       }
     }
     return null;

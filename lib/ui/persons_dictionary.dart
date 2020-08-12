@@ -23,11 +23,20 @@ class PersonsDictionary extends StatelessWidget {
         padding: const EdgeInsets.all(padding),
         child: StreamBuilder<List<PersonView>>(
           stream: Provider.of<Bloc>(context).db.personsDao.watch(),
-          builder: (context, snapshot) =>
-              ListView.builder(
-                itemBuilder: (context, index) => _PersonCard(snapshot.data, index),
-                itemCount: snapshot.data == null ? 0 : snapshot.data.length,
-              ),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data.length > 0) {
+                return ListView.builder(
+                  itemBuilder: (context, index) => _PersonCard(snapshot.data, index),
+                  itemCount: snapshot.data == null ? 0 : snapshot.data.length,
+                );
+              } else {
+                return centerMessage(context, L10n.of(context).addPerson);
+              }
+            } else {
+              return centerMessage(context, L10n.of(context).dataLoading);
+            }
+          }
         ),
       ),
     ),

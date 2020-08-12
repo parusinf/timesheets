@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
+import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
@@ -17,7 +17,8 @@ class OrgEdit extends StatefulWidget {
 
 /// Состояние формы редактирования организации
 class _OrgEditState extends State<OrgEdit> {
-  Bloc get bloc => Provider.of<Bloc>(context, listen: false);
+  get bloc => Provider.of<Bloc>(context, listen: false);
+  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _nameEdit = TextEditingController();
@@ -43,15 +44,11 @@ class _OrgEditState extends State<OrgEdit> {
     key: _scaffoldKey,
     appBar: AppBar(
       title: Text(widget.actionType == DataActionType.Insert
-          ? L10n.of(context).orgInserting
-          : L10n.of(context).orgUpdating
+          ? l10n.orgInserting
+          : l10n.orgUpdating
       ),
       actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.done),
-          tooltip: L10n.of(context).done,
-          onPressed: _handleSubmitted,
-        ),
+        IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],
     ),
     body: Form(
@@ -60,7 +57,7 @@ class _OrgEditState extends State<OrgEdit> {
       child: Scrollbar(
         child: SingleChildScrollView(
           dragStartBehavior: DragStartBehavior.down,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: padding),
           child: Column(
             children: <Widget>[
               horizontalSpace(),
@@ -71,7 +68,7 @@ class _OrgEditState extends State<OrgEdit> {
                 autofocus: widget.actionType == DataActionType.Insert ? true : false,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.business),
-                  labelText: L10n.of(context).orgName,
+                  labelText: l10n.orgName,
                 ),
                 validator: _validateName,
               ),
@@ -82,7 +79,7 @@ class _OrgEditState extends State<OrgEdit> {
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.dialpad),
-                  labelText: L10n.of(context).inn,
+                  labelText: l10n.inn,
                 ),
                 validator: _validateInn,
                 inputFormatters: IntFormatters.formatters,
@@ -129,7 +126,7 @@ class _OrgEditState extends State<OrgEdit> {
   /// Проверка наименования
   String _validateName(String value) {
     if (isEmpty(value)) {
-      return L10n.of(context).noName;
+      return l10n.noName;
     }
     return null;
   }
@@ -138,7 +135,7 @@ class _OrgEditState extends State<OrgEdit> {
   String _validateInn(String value) {
     final regexp = RegExp(r'^\d{10}$');
     if (value.isNotEmpty && !regexp.hasMatch(value)) {
-      return L10n.of(context).innLength;
+      return l10n.innLength;
     }
     return null;
   }

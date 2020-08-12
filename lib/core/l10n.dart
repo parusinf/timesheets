@@ -12,117 +12,89 @@ class L10n {
 
   static const Map<String, Map<String, String>> _l10n = {
     'ru': {
-      'cancel': 'ОТМЕНА',
+      'addGroup': 'Добавьте группу',
+      'addOrg': 'Добавьте организацию',
+      'addPerson': 'Добавьте персону',
+      'addPersonToGroup': 'Добавьте персону в группу',
       'dataLoading': 'Загрузка данных',
-      'deleteGroup': 'Удалить группу',
-      'deleting': 'Удаление',
-      'done': 'ГОТОВО',
-      'errorInData': 'Ошибка в данных',
-      'fio': 'ФИО',
-      'groupDeleted': 'Группа удалена',
-      'groupInserted': 'Группа добавлена',
       'groupInserting': 'Добавление группы',
       'groupName': 'Наименование группы',
-      'groupUpdated': 'Группа исправлена',
       'groupUpdating': 'Исправление группы',
-      'groups': 'ГРУППЫ',
+      'groups': 'Группы',
       'inn': 'ИНН',
       'innLength': 'ИНН должен состоять из 10 цифр',
+      'invalidDate': 'Дата должна быть в формате ДД.ММ.ГГГГ',
       'invalidHoursNorm': 'Некорректная норма часов',
-      'noCode': 'Нет мнемокода',
-      'noGroups': 'Групп нет',
+      'noHoursNorm': 'Нет нормы часов',
       'noName': 'Нет наименования',
-      'noOrgs': 'Организаций нет',
-      'noPersons': 'Персон нет',
+      'noPersonFamily': 'Нет фамилии',
+      'noPersonName': 'Нет имени',
       'noSchedule': 'Нет графика',
-      'orgDeleted': 'Организация удалена',
-      'orgInserted': 'Организация добавлена',
       'orgInserting': 'Добавление организации',
       'orgName': 'Наименование организации',
-      'orgUpdated': 'Организация исправлена',
       'orgUpdating': 'Исправление организации',
-      'orgs': 'ОРГАНИЗАЦИИ',
+      'orgs': 'Организации',
+      'personBirthday': 'Дата рождения',
+      'personFamily': 'Фамилия',
+      'personInserting': 'Добавление персоны',
+      'personMiddleName': 'Отчество',
+      'personName': 'Имя',
+      'personUpdating': 'Исправление персоны',
+      'persons': 'Персоны',
       'schedule': 'График',
-      'scheduleCode': 'Мнемокод графика',
       'scheduleInserting': 'Добавление графика',
       'scheduleUpdating': 'Исправление графика',
       'schedules': 'Графики',
       'title': 'Табели посещаемости',
       'uniqueGroup': 'Уже есть такая группа',
+      'uniqueGroupPerson': 'Уже есть такая персона в группе',
       'uniqueOrg': 'Уже есть такая организация',
+      'uniquePerson': 'Уже есть такая персона',
       'uniqueSchedule': 'Уже есть такой график',
       'withoutInn': 'Без ИНН',
-      'noHoursNorm': 'Нет нормы часов',
-      'addPersonToGroup': 'Добавить персону в группу',
-      'personInserting': 'Добавление персоны',
-      'personUpdating': 'Исправление персоны',
-      'personFamily': 'Фамилия',
-      'personName': 'Имя',
-      'personMiddleName': 'Отчество',
-      'personBirthday': 'Дата рождения',
-      'noPersonFamily': 'Нет фамилии',
-      'noPersonName': 'Нет имени',
-      'invalidDate': 'Дата должна быть в формате ДД.ММ.ГГГГ',
-      'persons': 'Персоны',
-      'uniquePerson': 'Уже есть такая персона',
-      'uniqueGroupPerson': 'Уже есть такая персона в группе',
     }
   };
 
-  get cancel => _l10n[locale.languageCode]['cancel'];
+  get addGroup => _l10n[locale.languageCode]['addGroup'];
+  get addOrg => _l10n[locale.languageCode]['addOrg'];
+  get addPerson => _l10n[locale.languageCode]['addPerson'];
+  get addPersonToGroup => _l10n[locale.languageCode]['addPersonToGroup'];
   get dataLoading => _l10n[locale.languageCode]['dataLoading'];
-  get deleteGroup => _l10n[locale.languageCode]['deleteGroup'];
-  get deleting => _l10n[locale.languageCode]['deleting'];
-  get done => _l10n[locale.languageCode]['done'];
-  get errorInData => _l10n[locale.languageCode]['errorInData'];
-  get fio => _l10n[locale.languageCode]['fio'];
-  get groupDeleted => _l10n[locale.languageCode]['groupDeleted'];
-  get groupInserted => _l10n[locale.languageCode]['groupInserted'];
   get groupInserting => _l10n[locale.languageCode]['groupInserting'];
   get groupName => _l10n[locale.languageCode]['groupName'];
-  get groupUpdated => _l10n[locale.languageCode]['groupUpdated'];
   get groupUpdating => _l10n[locale.languageCode]['groupUpdating'];
   get groups => _l10n[locale.languageCode]['groups'];
   get inn => _l10n[locale.languageCode]['inn'];
   get innLength => _l10n[locale.languageCode]['innLength'];
+  get invalidDate => _l10n[locale.languageCode]['invalidDate'];
   get invalidHoursNorm => _l10n[locale.languageCode]['invalidHoursNorm'];
-  get noCode => _l10n[locale.languageCode]['noCode'];
-  get noGroups => _l10n[locale.languageCode]['noGroups'];
+  get noHoursNorm => _l10n[locale.languageCode]['noHoursNorm'];
   get noName => _l10n[locale.languageCode]['noName'];
-  get noOrgs => _l10n[locale.languageCode]['noOrgs'];
-  get noPersons => _l10n[locale.languageCode]['noPersons'];
+  get noPersonFamily => _l10n[locale.languageCode]['noPersonFamily'];
+  get noPersonName => _l10n[locale.languageCode]['noPersonName'];
   get noSchedule => _l10n[locale.languageCode]['noSchedule'];
-  get orgDeleted => _l10n[locale.languageCode]['orgDeleted'];
-  get orgInserted => _l10n[locale.languageCode]['orgInserted'];
   get orgInserting => _l10n[locale.languageCode]['orgInserting'];
   get orgName => _l10n[locale.languageCode]['orgName'];
-  get orgUpdated => _l10n[locale.languageCode]['orgUpdated'];
   get orgUpdating => _l10n[locale.languageCode]['orgUpdating'];
   get orgs => _l10n[locale.languageCode]['orgs'];
+  get personBirthday => _l10n[locale.languageCode]['personBirthday'];
+  get personFamily => _l10n[locale.languageCode]['personFamily'];
+  get personInserting => _l10n[locale.languageCode]['personInserting'];
+  get personMiddleName => _l10n[locale.languageCode]['personMiddleName'];
+  get personName => _l10n[locale.languageCode]['personName'];
+  get personUpdating => _l10n[locale.languageCode]['personUpdating'];
+  get persons => _l10n[locale.languageCode]['persons'];
   get schedule => _l10n[locale.languageCode]['schedule'];
-  get scheduleCode => _l10n[locale.languageCode]['scheduleCode'];
   get scheduleInserting => _l10n[locale.languageCode]['scheduleInserting'];
   get scheduleUpdating => _l10n[locale.languageCode]['scheduleUpdating'];
   get schedules => _l10n[locale.languageCode]['schedules'];
   get title => _l10n[locale.languageCode]['title'];
   get uniqueGroup => _l10n[locale.languageCode]['uniqueGroup'];
+  get uniqueGroupPerson => _l10n[locale.languageCode]['uniqueGroupPerson'];
   get uniqueOrg => _l10n[locale.languageCode]['uniqueOrg'];
+  get uniquePerson => _l10n[locale.languageCode]['uniquePerson'];
   get uniqueSchedule => _l10n[locale.languageCode]['uniqueSchedule'];
   get withoutInn => _l10n[locale.languageCode]['withoutInn'];
-  get noHoursNorm => _l10n[locale.languageCode]['noHoursNorm'];
-  get addPersonToGroup => _l10n[locale.languageCode]['addPersonToGroup'];
-  get personInserting => _l10n[locale.languageCode]['personInserting'];
-  get personUpdating => _l10n[locale.languageCode]['personUpdating'];
-  get personFamily => _l10n[locale.languageCode]['personFamily'];
-  get personName => _l10n[locale.languageCode]['personName'];
-  get personMiddleName => _l10n[locale.languageCode]['personMiddleName'];
-  get personBirthday => _l10n[locale.languageCode]['personBirthday'];
-  get noPersonFamily => _l10n[locale.languageCode]['noPersonFamily'];
-  get noPersonName => _l10n[locale.languageCode]['noPersonName'];
-  get invalidDate => _l10n[locale.languageCode]['invalidDate'];
-  get persons => _l10n[locale.languageCode]['persons'];
-  get uniquePerson => _l10n[locale.languageCode]['uniquePerson'];
-  get uniqueGroupPerson => _l10n[locale.languageCode]['uniqueGroupPerson'];
 }
 
 class L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -2393,6 +2393,31 @@ abstract class _$Db extends GeneratedDatabase {
     );
   }
 
+  ActiveGroupResult _rowToActiveGroupResult(QueryRow row) {
+    return ActiveGroupResult(
+      id: row.readInt('id'),
+      orgId: row.readInt('orgId'),
+      name: row.readString('name'),
+      scheduleId: row.readInt('scheduleId'),
+      scheduleCode: row.readString('scheduleCode'),
+      personCount: row.readInt('personCount'),
+    );
+  }
+
+  Selectable<ActiveGroupResult> _activeGroup(int orgId) {
+    return customSelect(
+        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       CAST((SELECT COUNT(*) FROM group_person_links WHERE groupId = G.id) AS INT) AS personCount\n  FROM orgs O\n INNER JOIN "groups" G ON G.id = O.activeGroupId\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE O.id = :orgId',
+        variables: [
+          Variable.withInt(orgId)
+        ],
+        readsFrom: {
+          groups,
+          schedules,
+          groupPersonLinks,
+          orgs
+        }).map(_rowToActiveGroupResult);
+  }
+
   Future<int> _setActiveGroup(int activeGroupId, int orgId) {
     return customUpdate(
       'UPDATE orgs SET activeGroupId = :activeGroupId WHERE id = :orgId',
@@ -2539,6 +2564,23 @@ class GroupPersonsResult {
     this.middleName,
     this.birthday,
     this.attendanceCount,
+  });
+}
+
+class ActiveGroupResult {
+  final int id;
+  final int orgId;
+  final String name;
+  final int scheduleId;
+  final String scheduleCode;
+  final int personCount;
+  ActiveGroupResult({
+    this.id,
+    this.orgId,
+    this.name,
+    this.scheduleId,
+    this.scheduleCode,
+    this.personCount,
   });
 }
 

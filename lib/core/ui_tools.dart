@@ -96,10 +96,10 @@ class _DateDMYFormatter extends TextInputFormatter {
 Widget listHeater(BuildContext context, IconData icon, String title, Function() onPressed) {
   final items = <Widget>[
     Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 16.0, 0.0),
-        child: Icon(icon, color: Colors.black54)
+      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 16.0, 0.0),
+      child: Icon(icon, color: Colors.black54)
     ),
-    text(title),
+    text(title.toUpperCase()),
   ];
   if (onPressed != null) {
     items.addAll(<Widget>[

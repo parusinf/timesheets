@@ -273,6 +273,19 @@ SELECT SCH.*
 _setActiveSchedule:
 UPDATE settings SET intValue = :id WHERE name = 'activeSchedule';
 
+-- Активная группа
+_activeGroup:
+SELECT G.id,
+       G.orgId,
+       G.name,
+       G.scheduleId,
+       S.code AS scheduleCode,
+       CAST((SELECT COUNT(*) FROM group_person_links WHERE groupId = G.id) AS INT) AS personCount
+  FROM orgs O
+ INNER JOIN "groups" G ON G.id = O.activeGroupId
+ INNER JOIN schedules S ON S.id = G.scheduleId
+ WHERE O.id = :orgId;
+
 -- Установка активной группы
 _setActiveGroup:
 UPDATE orgs SET activeGroupId = :activeGroupId WHERE id = :orgId;

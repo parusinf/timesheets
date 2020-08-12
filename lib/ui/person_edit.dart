@@ -19,6 +19,7 @@ class PersonEdit extends StatefulWidget {
 /// Состояние формы редактирования персоны
 class _PersonEditState extends State<PersonEdit> {
   get bloc => Provider.of<Bloc>(context, listen: false);
+  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _familyEdit = TextEditingController();
@@ -50,15 +51,11 @@ class _PersonEditState extends State<PersonEdit> {
     key: _scaffoldKey,
     appBar: AppBar(
       title: Text(widget.actionType == DataActionType.Insert
-          ? L10n.of(context).personInserting
-          : L10n.of(context).personUpdating
+          ? l10n.personInserting
+          : l10n.personUpdating
       ),
       actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.done),
-          tooltip: L10n.of(context).done,
-          onPressed: _handleSubmitted,
-        ),
+        IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],
     ),
     body: Form(
@@ -77,7 +74,7 @@ class _PersonEditState extends State<PersonEdit> {
                 autofocus: widget.actionType == DataActionType.Insert ? true : false,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.person),
-                  labelText: L10n.of(context).personFamily,
+                  labelText: l10n.personFamily,
                 ),
                 validator: _validateFamily,
               ),
@@ -88,7 +85,7 @@ class _PersonEditState extends State<PersonEdit> {
                 textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.person),
-                  labelText: L10n.of(context).personName,
+                  labelText: l10n.personName,
                 ),
                 validator: _validateName,
               ),
@@ -99,7 +96,7 @@ class _PersonEditState extends State<PersonEdit> {
                 textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.person),
-                  labelText: L10n.of(context).personMiddleName,
+                  labelText: l10n.personMiddleName,
                 ),
               ),
               horizontalSpace(),
@@ -109,7 +106,7 @@ class _PersonEditState extends State<PersonEdit> {
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.event),
-                  labelText: L10n.of(context).personBirthday,
+                  labelText: l10n.personBirthday,
                 ),
                 validator: _validateDate,
                 inputFormatters: DateFormatters.formatters,
@@ -159,7 +156,7 @@ class _PersonEditState extends State<PersonEdit> {
   /// Проверка фамилии
   String _validateFamily(String value) {
     if (isEmpty(value)) {
-      return L10n.of(context).noPersonFamily;
+      return l10n.noPersonFamily;
     }
     return null;
   }
@@ -167,7 +164,7 @@ class _PersonEditState extends State<PersonEdit> {
   /// Проверка имени
   String _validateName(String value) {
     if (isEmpty(value)) {
-      return L10n.of(context).noPersonName;
+      return l10n.noPersonName;
     }
     return null;
   }
@@ -175,7 +172,7 @@ class _PersonEditState extends State<PersonEdit> {
   /// Проверка даты
   String _validateDate(String value) {
     if (value.isNotEmpty && dateValue(value) == null) {
-      return L10n.of(context).invalidDate;
+      return l10n.invalidDate;
     }
     return null;
   }

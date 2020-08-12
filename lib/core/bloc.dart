@@ -35,7 +35,7 @@ class Bloc {
   final activeSchedule = BehaviorSubject<Schedule>();
 
   // Активная группа
-  final activeGroup = BehaviorSubject<Group>();
+  final activeGroup = BehaviorSubject<GroupView>();
 
   // Активный период
   final activePeriod = BehaviorSubject<DateTime>();
@@ -206,8 +206,10 @@ class Bloc {
   /// Установка активной группы и установка активным её графика 
   Future setActiveGroup(Group group) async {
     db.settingsDao.setActiveGroup(activeOrg.value, group);
-    final schedule = await db.schedulesDao.getSchedule(group.scheduleId);
-    setActiveSchedule(schedule);
+    if (group != null) {
+      final schedule = await db.schedulesDao.getSchedule(group.scheduleId);
+      setActiveSchedule(schedule);
+    }
   }
 
   /// Добавление группы

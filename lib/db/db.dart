@@ -147,70 +147,19 @@ class Db extends _$Db {
       return m.createAll();
     },
     beforeOpen: (details) async {
+      customStatement('PRAGMA foreign_keys = ON');
       if (details.wasCreated) {
         transaction(() async {
           final schedule = await schedulesDao.insert2(
-            code: 'пн,вт,ср,чт,пт 12ч',
-            createDays: true
+              code: 'пн,вт,ср,чт,пт 12ч',
+              createDays: true
           );
           settingsDao.setActiveSchedule(schedule);
-          final org1 = await orgsDao.insert2(
-            name: 'МБДОУ д/с общеразвивающего типа №1 "Светлячок"',
-            inn: '5001030102',
-          );
-          settingsDao.setActiveOrg(org1);
-          final group11 = await groupsDao.insert2(
-            org: org1,
-            name: 'Группа 1',
-            schedule: schedule,
-          );
-          settingsDao.setActiveGroup(org1, group11);
-          final groupPerson1 = await groupPersonLinksDao.insert2(
-            group11,
-            await personsDao.insert2(
-              family: 'Акульшин',
-              name: 'Роман',
-              middleName: 'Андреевич',
-              birthday: DateTime(2016, 8, 23),
-            ),
-          );
-          attendancesDao.insert2(
-            groupPerson: groupPerson1,
-            date: DateTime(2020, 8, 3),
-            hoursFact: 12.0,
-          );
-          final groupPerson2 = await groupPersonLinksDao.insert2(
-            group11,
-            await personsDao.insert2(
-              family: 'Алиева',
-              name: 'Амина-Хатун',
-              middleName: 'Кенатовна',
-              birthday: DateTime(2016, 12, 23),
-            ),
-          );
-          attendancesDao.insert2(
-            groupPerson: groupPerson2,
-            date: DateTime(2020, 8, 4),
-            hoursFact: 12.0,
-          );
-          groupsDao.insert2(
-              org: org1,
-              name: 'Группа 2',
-              schedule: schedule,
-          );
-          final org2 = await orgsDao
-              .insert2(name: 'Детсад №2', inn: '5001101025');
-          final group21 = await groupsDao.insert2(
-              org: org2,
-              name: 'Группа 1',
-              schedule: schedule,
-          );
-          settingsDao.setActiveGroup(org2, group21);
+          if (await settingsDao.getActivePeriod() == null) {
+            settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
+          }
         });
       }
-      customStatement('PRAGMA foreign_keys = ON');
-      if (await settingsDao.getActivePeriod() == null)
-        settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
     }
   );
 }
@@ -683,8 +632,16 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   }
 
   /// Активная группа
-  Stream<Group> watchActiveGroup(Org org) =>
-      (select(db.groups)..where((group) => group.id?.equals(org?.activeGroupId))).watchSingle();
+  Stream<GroupView> watchActiveGroup(Org org) =>
+      db._activeGroup(org?.id).map((row) =>
+          GroupView(
+            id: row.id,
+            orgId: row.orgId,
+            name: row.name,
+            schedule: Schedule(id: row.scheduleId, code: row.scheduleCode),
+            personCount: row.personCount,
+          )
+      ).watchSingle();
 
   /// Установка активной группы
   Future setActiveGroup(Org org, Group group) async =>
