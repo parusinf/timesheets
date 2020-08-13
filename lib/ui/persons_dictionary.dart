@@ -1,0 +1,84 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:timesheets/core.dart';
+import 'package:timesheets/db/db.dart';
+import 'package:timesheets/ui/person_edit.dart';
+
+/// Словарь персон
+class PersonsDictionary extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text(L10n.of(context).persons),
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.add),
+          tooltip: L10n.of(context).personInserting,
+          onPressed: () => push(context, PersonEdit()),
+        ),
+      ],
+    ),
+    body: SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(padding),
+        child: StreamBuilder<List<PersonView>>(
+          stream: Provider.of<Bloc>(context).db.personsDao.watch(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data.length > 0) {
+                return ListView.builder(
+                  itemBuilder: (context, index) => _PersonCard(snapshot.data, index),
+                  itemCount: snapshot.data == null ? 0 : snapshot.data.length,
+                );
+              } else {
+                return centerMessage(context, L10n.of(context).addPerson);
+              }
+            } else {
+              return centerMessage(context, L10n.of(context).dataLoading);
+            }
+          }
+        ),
+      ),
+    ),
+  );
+}
+
+/// Карточка персоны
+class _PersonCard extends StatelessWidget {
+  final List<PersonView> persons;
+  final int index;
+  final PersonView entry;
+
+  _PersonCard(this.persons, this.index) : entry = persons[index];
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, dividerHeight),
+    child: Dismissible(
+      confirmDismiss: (direction) async => entry.groupCount == 0,
+      background: Material(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      key: UniqueKey(),
+      onDismissed: (direction) {
+        persons.removeAt(index);
+        Provider.of<Bloc>(context, listen: false).deletePerson(entry);
+      },
+      child: Material(
+        color: Colors.lightGreen.withOpacity(passiveColorOpacity),
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: InkWell(
+          onTap: () => Navigator.pop(context, entry),
+          onDoubleTap: () => push(context, PersonEdit(person: entry)),
+          child: ListTile(
+            title: Text(entry.family),
+            subtitle: Text('${entry.name} ${entry.middleName ?? ''}'),
+            trailing: text('${entry.groupCount}', color: Colors.black26),
+          ),
+        ),
+      ),
+    ),
+  );
+}

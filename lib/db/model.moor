@@ -1,0 +1,301 @@
+-- Организации
+CREATE TABLE orgs (
+  -- Идентификатор организации
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Наименование организации
+  name               TEXT NOT NULL,
+  -- ИНН
+  inn                TEXT,
+  -- Активная группа
+  activeGroupId      INT
+);
+CREATE UNIQUE INDEX orgs_index ON orgs (name, inn);
+
+-- Графики
+CREATE TABLE schedules (
+  -- Идентификатор графика
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Код графика в виде "пн,ср 1ч;вт,чт 2ч"
+  code               TEXT NOT NULL
+);
+CREATE UNIQUE INDEX schedules_index ON schedules (code);
+
+-- Дни графиков
+CREATE TABLE schedule_days (
+  -- Идертификатор дня недели графика
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Идентификатор графика
+  scheduleId         INT NOT NULL REFERENCES schedules (id) ON DELETE CASCADE,
+  -- Номер дня начинается с нуля
+  dayNumber          INT NOT NULL,
+  -- Норма часов
+  hoursNorm          REAL NOT NULL
+);
+CREATE UNIQUE INDEX schedule_days_index ON schedule_days (scheduleId, dayNumber);
+
+-- Группы
+CREATE TABLE "groups" (
+  -- Идентификатор группы
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Идентификатор организации
+  orgId     INT NOT NULL REFERENCES orgs (id),
+  -- Наименование группы
+  name               TEXT NOT NULL,
+  -- Идентификатор графика
+  scheduleId         INT NOT NULL REFERENCES schedules (id)
+);
+CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name, scheduleId);
+CREATE INDEX groups_schedule_index ON "groups" (scheduleId);
+
+-- Персоны
+CREATE TABLE persons (
+  -- Идентификатор персоны
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Фамилия
+  family             TEXT NOT NULL,
+  -- Имя
+  name               TEXT NOT NULL,
+  -- Отчество
+  middleName         TEXT,
+  -- Дата рождения
+  birthday           DATE
+);
+CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName, birthday);
+
+-- Связи групп с персонами
+CREATE TABLE group_person_links (
+  -- Идентификатор связи персоны с группой
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Идентификатор группы
+  groupId            INT NOT NULL REFERENCES "groups" (id),
+  -- Идентификатор персоны
+  personId           INT NOT NULL REFERENCES persons (id)
+);
+CREATE UNIQUE INDEX group_person_links_index ON group_person_links (groupId, personId);
+
+-- Посещаемость персон в группах
+CREATE TABLE attendances (
+  -- Идентификатор посещаемости
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Идентификатор связи персоны с группой
+  groupPersonLinkId  INT NOT NULL REFERENCES group_person_links (id) ON DELETE CASCADE,
+  -- Дата посещения
+  date               DATE NOT NULL,
+  -- Количество часов
+  hoursFact          REAL NOT NULL
+);
+CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonLinkId, date);
+
+-- Настройки
+CREATE TABLE settings (
+  -- Идентификатор настройки
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Наименование настройки
+  name               TEXT NOT NULL,
+  -- Текстовое значение
+  textValue          TEXT,
+  -- Целочисленное значение
+  intValue           INT,
+  -- Значение даты
+  dateValue          DATE
+);
+CREATE UNIQUE INDEX settings_index ON settings (name);
+
+-- Дни графика
+_daysInSchedule:
+SELECT *
+  FROM schedule_days
+ WHERE scheduleId = :scheduleId;
+
+-- Первая организация в алфавитном порядке
+_firstOrg:
+SELECT *
+  FROM orgs
+ WHERE name =
+       (
+         SELECT MIN(name)
+           FROM orgs
+       );
+
+-- Предыдущая организация перед заданной
+_previousOrg:
+SELECT *
+  FROM orgs
+ WHERE name =
+       (
+         SELECT MAX(name)
+           FROM orgs
+          WHERE name < :orgName
+       );
+
+-- Первый график в алфавитном порядке
+_firstSchedule:
+SELECT *
+  FROM schedules
+ WHERE code =
+       (
+         SELECT MIN(code)
+           FROM schedules
+       );
+
+-- Предыдущий график перед заданным
+_previousSchedule:
+SELECT *
+  FROM schedules
+ WHERE code =
+       (
+         SELECT MAX(code)
+           FROM schedules
+          WHERE code < :scheduleCode
+       );
+
+-- Первая группа организации в алфавитном порядке
+_firstGroup:
+SELECT *
+  FROM "groups"
+ WHERE orgId = :orgId
+   AND name =
+       (
+         SELECT MIN(name)
+           FROM "groups"
+          WHERE orgId = :orgId
+       );
+
+-- Предыдущая группа перед заданной
+_previousGroup:
+SELECT *
+  FROM "groups"
+ WHERE orgId = :orgId
+   AND name =
+       (
+         SELECT MAX(name)
+           FROM "groups"
+          WHERE name < :groupName
+       );
+
+-- Список огранизаций с количеством групп
+_orgsView:
+SELECT O.id,
+       O.name,
+       O.inn,
+       O.activeGroupId,
+       CAST((SELECT COUNT(*) FROM "groups" WHERE orgId = O.id) AS INT) AS groupCount
+  FROM orgs O
+ ORDER BY
+       O.name,
+       O.inn;
+
+-- Список графиков с количеством групп
+_schedulesView:
+SELECT S.id,
+       S.code,
+       CAST((SELECT COUNT(*) FROM "groups" WHERE scheduleId = S.id) AS INT) AS groupCount
+  FROM schedules S
+ ORDER BY
+       S.code;
+
+-- Список групп огранизации с графиками и количеством персон
+_groupsView:
+SELECT G.id,
+       G.orgId,
+       G.name,
+       G.scheduleId,
+       S.code AS scheduleCode,
+       CAST((SELECT COUNT(*) FROM group_person_links WHERE groupId = G.id) AS INT) AS personCount
+  FROM "groups" G
+ INNER JOIN schedules S ON S.id = G.scheduleId
+ WHERE G.orgId = :orgId
+ ORDER BY
+       G.name,
+       S.code;
+
+-- Список персон с количеством групп
+_personsView:
+SELECT P.id,
+       P.family,
+       P.name,
+       P.middleName,
+       P.birthday,
+       CAST((SELECT COUNT(*) FROM group_person_links WHERE personId = P.id) AS INT) AS groupCount
+  FROM persons P
+ ORDER BY
+       P.family,
+       P.name,
+       P.middleName,
+       P.birthday;
+
+-- Список персон в группе
+_groupPersons:
+SELECT L.id AS groupPersonLinkId,
+       L.personId,
+       P.family,
+       P.name,
+       P.middleName,
+       P.birthday,
+       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonLinkId = L.id) AS INT) AS attendanceCount
+  FROM group_person_links L
+ INNER JOIN persons P ON P.id = L.personId
+ WHERE L.groupId = :groupId
+ ORDER BY
+       P.family,
+       P.name,
+       P.middleName,
+       P.birthday;
+
+-- Посещаемость персон в группе за период
+_attendancesView:
+SELECT T.*
+  FROM group_person_links L
+ INNER JOIN attendances T ON T.groupPersonLinkId = L.id
+ WHERE L.groupId = :groupId
+   AND T.date >= :period_begin
+   AND T.date <= :period_end;
+
+-- Активная огранизации
+_activeOrg:
+SELECT O.*
+  FROM settings S
+ INNER JOIN orgs O ON O.id = S.intValue
+ WHERE S.name = 'activeOrg';
+
+-- Установка активной огранизации
+_setActiveOrg:
+UPDATE settings SET intValue = :id WHERE name = 'activeOrg';
+
+-- Активный график
+_activeSchedule:
+SELECT SCH.*
+  FROM settings S
+ INNER JOIN schedules SCH ON SCH.id = S.intValue
+ WHERE S.name = 'activeSchedule';
+
+-- Установка активного графика
+_setActiveSchedule:
+UPDATE settings SET intValue = :id WHERE name = 'activeSchedule';
+
+-- Активная группа
+_activeGroup:
+SELECT G.id,
+       G.orgId,
+       G.name,
+       G.scheduleId,
+       S.code AS scheduleCode,
+       CAST((SELECT COUNT(*) FROM group_person_links WHERE groupId = G.id) AS INT) AS personCount
+  FROM orgs O
+ INNER JOIN "groups" G ON G.id = O.activeGroupId
+ INNER JOIN schedules S ON S.id = G.scheduleId
+ WHERE O.id = :orgId;
+
+-- Установка активной группы
+_setActiveGroup:
+UPDATE orgs SET activeGroupId = :activeGroupId WHERE id = :orgId;
+
+-- Активный период
+_activePeriod:
+SELECT S.dateValue
+  FROM settings S
+ WHERE S.name = 'activePeriod';
+
+-- Установка активного периода
+_setActivePeriod:
+UPDATE settings SET dateValue = :activePeriod WHERE name = 'activePeriod';
