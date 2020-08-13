@@ -99,7 +99,7 @@ class _GroupPersonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         child: ListTile(
           title: Text(entry.family),
-          subtitle: Text(entry.name),
+          subtitle: Text('${entry.name} ${entry.middleName ?? ''}'),
           trailing: text('${entry.attendanceCount}', color: Colors.black26),
         ),
       ),

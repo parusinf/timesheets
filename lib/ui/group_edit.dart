@@ -97,8 +97,8 @@ class _GroupEditState extends State<GroupEdit> {
 
   /// Выбор графика из словаря
   Future _selectSchedule(BuildContext context) async {
-    schedule = await push(context, SchedulesDictionary());
-    _scheduleEdit.text = schedule?.code ?? bloc.activeSchedule?.value?.code ?? '';
+    schedule = await push(context, SchedulesDictionary()) ?? bloc.activeSchedule?.value;
+    _scheduleEdit.text = schedule?.code ?? '';
   }
 
   /// Обработка формы
