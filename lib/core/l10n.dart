@@ -52,6 +52,7 @@ class L10n {
       'uniquePerson': 'Уже есть такая персона',
       'uniqueSchedule': 'Уже есть такой график',
       'withoutInn': 'Без ИНН',
+      'groupPersons': 'Персоны в группе',
     }
   };
 
@@ -95,6 +96,7 @@ class L10n {
   get uniquePerson => _l10n[locale.languageCode]['uniquePerson'];
   get uniqueSchedule => _l10n[locale.languageCode]['uniqueSchedule'];
   get withoutInn => _l10n[locale.languageCode]['withoutInn'];
+  get groupPersons => _l10n[locale.languageCode]['groupPersons'];
 }
 
 class L10nDelegate extends LocalizationsDelegate<L10n> {

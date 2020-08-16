@@ -73,7 +73,7 @@ class _GroupEditState extends State<GroupEdit> {
     if (widget.actionType == DataActionType.Update) {
       items.addAll(<Widget>[
         horizontalSpace(),
-        listHeater(context, Icons.person, l10n.persons.toUpperCase(),
+        listHeater(context, Icons.person, l10n.groupPersons.toUpperCase(),
             _addPersonToGroup),
         Flexible(
           child: StreamBuilder<List<GroupPersonView>>(
