@@ -6,10 +6,8 @@ import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/db/schedule_helper.dart';
-import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/home_drawer.dart';
 import 'package:timesheets/ui/org_edit.dart';
-import 'package:timesheets/ui/group_edit.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
@@ -58,13 +56,13 @@ class HomePageState extends State<HomePage> {
                 // Групп нет
                 return IconButton(
                   icon: Icon(Icons.group),
-                  onPressed: () => push(context, GroupEdit()),
+                  onPressed: () => addGroup(context),
                 );
               } else {
-                // Персон в группе нет
+                // Синхронизация с сервером
                 return IconButton(
-                  icon: Icon(Icons.person_add),
-                  onPressed: () => push(context, GroupPersonsDictionary(groupView: bloc.activeGroup.value)),
+                  icon: Icon(Icons.refresh, color: Colors.transparent),
+                  onPressed: () => {},
                 );
               }
             }

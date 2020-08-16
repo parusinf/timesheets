@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:timesheets/core/l10n.dart';
+import 'package:timesheets/ui/group_edit.dart';
 
 const lineColor = Colors.black12;
 const activeColorOpacity = 0.3;
@@ -113,3 +114,13 @@ Widget listHeater(BuildContext context, IconData icon, String title, Function() 
 /// Переход на страницу
 Future<T> push<T extends Object>(BuildContext context, Widget page) async =>
     await Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+
+/// Добавление группы
+Future addGroup(BuildContext context) async {
+  // Добавление группы
+  final groupView = await push(context, GroupEdit());
+  // Исправление группы для добавляения в неё персон
+  if (groupView != null) {
+    push(context, GroupEdit(groupView: groupView));
+  }
+}

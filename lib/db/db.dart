@@ -355,7 +355,7 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
   GroupsDao(Db db) : super(db);
   
   /// Добавление группы
-  Future<Group> insert2({
+  Future<GroupView> insert2({
     @required Org org,
     @required String name,
     @required Schedule schedule,
@@ -367,11 +367,11 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
           scheduleId: Value(schedule.id),
         )
     );
-    return Group(
+    return GroupView(
       id: id,
       orgId: org.id,
       name: name,
-      scheduleId: schedule.id,
+      schedule: schedule,
     );
   }
 

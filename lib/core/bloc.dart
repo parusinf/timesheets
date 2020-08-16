@@ -213,14 +213,14 @@ class Bloc {
   }
 
   /// Добавление группы
-  Future<Group> insertGroup({@required String name, @required Schedule schedule}) async {
-    final group = await db.groupsDao.insert2(
+  Future<GroupView> insertGroup({@required String name, @required Schedule schedule}) async {
+    final groupView = await db.groupsDao.insert2(
       org: activeOrg.value,
       name: name,
       schedule: schedule,
     );
-    setActiveGroup(group);
-    return group;
+    setActiveGroup(groupView);
+    return groupView;
   }
 
   /// Исправление группы
