@@ -81,7 +81,7 @@ class GroupView extends Group {
 
 /// Персона группы
 class GroupPersonView extends Person {
-  final int groupPersonLinkId;
+  final int groupPersonId;
   final int attendanceCount;
 
   GroupPersonView({
@@ -90,7 +90,9 @@ class GroupPersonView extends Person {
     @required String name,
     String middleName,
     DateTime birthday,
-    @required this.groupPersonLinkId,
+    DateTime beginDate,
+    DateTime endDate,
+    @required this.groupPersonId,
     this.attendanceCount = 0,
   }) : super(
     id: id,
@@ -117,8 +119,8 @@ class GroupPeriod {
     ScheduleDays,     // Дни графиков
     Groups,           // Группы
     Persons,          // Персоны
-    GroupPersonLinks, // Связи групп с персонами
-    Attendances,       // Табели
+    GroupPersons,     // Персоны в группе
+    Attendances,      // Табели
     Settings,         // Настройки
   ],
   daos: [
@@ -127,7 +129,7 @@ class GroupPeriod {
     ScheduleDaysDao,
     GroupsDao,
     PersonsDao,
-    GroupPersonLinksDao,
+    GroupPersonsDao,
     AttendancesDao,
     SettingsDao
   ]
@@ -155,9 +157,7 @@ class Db extends _$Db {
               createDays: true
           );
           settingsDao.setActiveSchedule(schedule);
-          if (await settingsDao.getActivePeriod() == null) {
-            settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
-          }
+          settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
         });
       }
     }
@@ -469,15 +469,15 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
       ).watch();
 }
 
-// Связи групп с персонами -----------------------------------------------------
-@UseDao(tables: [GroupPersonLinks])
-class GroupPersonLinksDao extends DatabaseAccessor<Db> with _$GroupPersonLinksDaoMixin {
-  GroupPersonLinksDao(Db db) : super(db);
+// Персоны в группе -----------------------------------------------------
+@UseDao(tables: [GroupPersons])
+class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
+  GroupPersonsDao(Db db) : super(db);
 
-  /// Добавление связи группы с персоной
+  /// Добавление персоны в группе
   Future<GroupPersonView> insert2(Group group, Person person) async {
-    final id = await into(db.groupPersonLinks).insert(
-        GroupPersonLinksCompanion(
+    final id = await into(db.groupPersons).insert(
+        GroupPersonsCompanion(
           groupId: Value(group.id),
           personId: Value(person.id),
         )
@@ -488,28 +488,28 @@ class GroupPersonLinksDao extends DatabaseAccessor<Db> with _$GroupPersonLinksDa
       name: person.name,
       middleName: person.middleName,
       birthday: person.birthday,
-      groupPersonLinkId: id,
+      groupPersonId: id,
     );
   }
 
-  /// Удаление связи персоны с группой
+  /// Удаление персоны из группы
   Future<bool> delete2(GroupPersonView groupPerson) async =>
-      (await delete(db.groupPersonLinks).delete(
-          GroupPersonLinksCompanion(
-            id: Value(groupPerson.groupPersonLinkId),
+      (await delete(db.groupPersons).delete(
+          GroupPersonsCompanion(
+            id: Value(groupPerson.groupPersonId),
           )
       )) > 0 ? true : false;
 
-  /// Отслеживание связей персон с группой
+  /// Отслеживание персон в группе
   Stream<List<GroupPersonView>> watch(Group group) =>
-      db._groupPersons(group?.id).map((row) =>
+      db._personsInGroup(group?.id).map((row) =>
           GroupPersonView(
             id: row.personId,
             family: row.family,
             name: row.name,
             middleName: row.middleName,
             birthday: row.birthday,
-            groupPersonLinkId: row.groupPersonLinkId,
+            groupPersonId: row.groupPersonId,
             attendanceCount: row.attendanceCount,
           )
       ).watch();
@@ -528,14 +528,14 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
   }) async {
     final id = await into(db.attendances).insert(
         AttendancesCompanion(
-          groupPersonLinkId: Value(groupPerson.groupPersonLinkId),
+          groupPersonId: Value(groupPerson.groupPersonId),
           date: Value(date),
           hoursFact: Value(hoursFact),
         )
     );
     return Attendance(
         id: id,
-        groupPersonLinkId: groupPerson.groupPersonLinkId,
+        groupPersonId: groupPerson.groupPersonId,
         date: date,
         hoursFact: hoursFact
     );
@@ -550,7 +550,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
       db._attendancesView(gp.group.id, DateTime(gp.period.year, gp.period.month, 1), gp.period).map((row) =>
         Attendance(
           id: row.id,
-          groupPersonLinkId: row.groupPersonLinkId,
+          groupPersonId: row.groupPersonId,
           date: row.date,
           hoursFact: row.hoursFact,
         )

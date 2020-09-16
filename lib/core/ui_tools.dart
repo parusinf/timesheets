@@ -24,7 +24,7 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
       case 'schedules': message = L10n.of(context).uniqueSchedule; break;
       case 'groups': message = L10n.of(context).uniqueGroup; break;
       case 'persons': message = L10n.of(context).uniquePerson; break;
-      case 'group_person_links': message = L10n.of(context).uniqueGroupPerson; break;
+      case 'group_persons': message = L10n.of(context).uniqueGroupPerson; break;
     }
   } else {
     message = message.replaceFirst('Invalid argument(s): ', '');

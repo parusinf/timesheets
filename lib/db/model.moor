@@ -62,29 +62,33 @@ CREATE TABLE persons (
 );
 CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName, birthday);
 
--- Связи групп с персонами
-CREATE TABLE group_person_links (
+-- Персоны в группе
+CREATE TABLE group_persons (
   -- Идентификатор связи персоны с группой
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор группы
   groupId            INT NOT NULL REFERENCES "groups" (id),
   -- Идентификатор персоны
-  personId           INT NOT NULL REFERENCES persons (id)
+  personId           INT NOT NULL REFERENCES persons (id),
+  -- Дата начала посещения группы
+  beginDate          DATE,
+  -- Дата окончания посещения группы
+  endDate            DATE
 );
-CREATE UNIQUE INDEX group_person_links_index ON group_person_links (groupId, personId);
+CREATE UNIQUE INDEX group_persons_index ON group_persons (groupId, personId);
 
 -- Посещаемость персон в группах
 CREATE TABLE attendances (
   -- Идентификатор посещаемости
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор связи персоны с группой
-  groupPersonLinkId  INT NOT NULL REFERENCES group_person_links (id) ON DELETE CASCADE,
+  groupPersonId  INT NOT NULL REFERENCES group_persons (id) ON DELETE CASCADE,
   -- Дата посещения
   date               DATE NOT NULL,
   -- Количество часов
   hoursFact          REAL NOT NULL
 );
-CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonLinkId, date);
+CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonId, date);
 
 -- Настройки
 CREATE TABLE settings (
@@ -201,7 +205,7 @@ SELECT G.id,
        G.name,
        G.scheduleId,
        S.code AS scheduleCode,
-       CAST((SELECT COUNT(*) FROM group_person_links WHERE groupId = G.id) AS INT) AS personCount
+       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount
   FROM "groups" G
  INNER JOIN schedules S ON S.id = G.scheduleId
  WHERE G.orgId = :orgId
@@ -216,7 +220,7 @@ SELECT P.id,
        P.name,
        P.middleName,
        P.birthday,
-       CAST((SELECT COUNT(*) FROM group_person_links WHERE personId = P.id) AS INT) AS groupCount
+       CAST((SELECT COUNT(*) FROM group_persons WHERE personId = P.id) AS INT) AS groupCount
   FROM persons P
  ORDER BY
        P.family,
@@ -225,15 +229,17 @@ SELECT P.id,
        P.birthday;
 
 -- Список персон в группе
-_groupPersons:
-SELECT L.id AS groupPersonLinkId,
+_personsInGroup:
+SELECT L.id AS groupPersonId,
        L.personId,
        P.family,
        P.name,
        P.middleName,
        P.birthday,
-       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonLinkId = L.id) AS INT) AS attendanceCount
-  FROM group_person_links L
+       L.beginDate,
+       L.endDate,
+       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount
+  FROM group_persons L
  INNER JOIN persons P ON P.id = L.personId
  WHERE L.groupId = :groupId
  ORDER BY
@@ -245,11 +251,13 @@ SELECT L.id AS groupPersonLinkId,
 -- Посещаемость персон в группе за период
 _attendancesView:
 SELECT T.*
-  FROM group_person_links L
- INNER JOIN attendances T ON T.groupPersonLinkId = L.id
+  FROM group_persons L
+ INNER JOIN attendances T ON T.groupPersonId = L.id
  WHERE L.groupId = :groupId
-   AND T.date >= :period_begin
-   AND T.date <= :period_end;
+   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)
+   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)
+   AND T.date >= :periodBegin
+   AND T.date <= :periodEnd;
 
 -- Активная огранизации
 _activeOrg:
@@ -280,7 +288,7 @@ SELECT G.id,
        G.name,
        G.scheduleId,
        S.code AS scheduleCode,
-       CAST((SELECT COUNT(*) FROM group_person_links WHERE groupId = G.id) AS INT) AS personCount
+       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount
   FROM orgs O
  INNER JOIN "groups" G ON G.id = O.activeGroupId
  INNER JOIN schedules S ON S.id = G.scheduleId

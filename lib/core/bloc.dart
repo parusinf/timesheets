@@ -130,7 +130,7 @@ class Bloc {
     ).listen(activeGroups.add);
 
     // Отслеживание персон в активной группе
-    Rx.concat([activeGroup.switchMap(db.groupPersonLinksDao.watch)])
+    Rx.concat([activeGroup.switchMap(db.groupPersonsDao.watch)])
         .listen(groupPersons.add);
   }
 
@@ -260,11 +260,11 @@ class Bloc {
 
   /// Добавление персоны в группу
   Future<GroupPersonView> addPersonToGroup(Group group, Person person) async =>
-      await db.groupPersonLinksDao.insert2(group, person);
+      await db.groupPersonsDao.insert2(group, person);
 
   /// Удаление персоны из группы
   Future<bool> deletePersonFromGroup(GroupPersonView groupPerson) async =>
-      await db.groupPersonLinksDao.delete2(groupPerson);
+      await db.groupPersonsDao.delete2(groupPerson);
   
   // Посещаемость --------------------------------------------------------------
   /// Добавление посещаемости

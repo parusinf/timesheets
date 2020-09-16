@@ -238,7 +238,7 @@ class HomePageState extends State<HomePage> {
   /// Создание строки таблицы
   Widget _createTableRow(BuildContext context, int index) {
     final personAttendances = _groupAttendances.where(
-            (attendance) => attendance.groupPersonLinkId == _groupPersons[index].groupPersonLinkId);
+            (attendance) => attendance.groupPersonId == _groupPersons[index].groupPersonId);
     final dates = personAttendances.map((attendance) => attendance.date).toList();
     final period = bloc.activePeriod.value;
     final rowCells = List<Widget>();
