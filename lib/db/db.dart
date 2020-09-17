@@ -80,26 +80,23 @@ class GroupView extends Group {
 }
 
 /// Персона группы
-class GroupPersonView extends Person {
-  final int groupPersonId;
+class GroupPersonView extends GroupPerson {
+  final Person person;
   final int attendanceCount;
 
   GroupPersonView({
     @required int id,
-    @required String family,
-    @required String name,
-    String middleName,
-    DateTime birthday,
+    @required int groupId,
+    @required this.person,
     DateTime beginDate,
     DateTime endDate,
-    @required this.groupPersonId,
     this.attendanceCount = 0,
   }) : super(
     id: id,
-    family: family,
-    name: name,
-    middleName: middleName,
-    birthday: birthday,
+    groupId: groupId,
+    personId: person.id,
+    beginDate: beginDate,
+    endDate: endDate,
   );
 }
 
@@ -474,45 +471,72 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
 class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
   GroupPersonsDao(Db db) : super(db);
 
-  /// Добавление персоны в группе
-  Future<GroupPersonView> insert2(Group group, Person person) async {
+  /// Добавление персоны в группу
+  Future<GroupPersonView> insert2(Group group, Person person, DateTime beginDate, DateTime endDate) async {
     final id = await into(db.groupPersons).insert(
         GroupPersonsCompanion(
           groupId: Value(group.id),
           personId: Value(person.id),
+          beginDate: Value(beginDate),
+          endDate: Value(endDate),
         )
     );
     return GroupPersonView(
-      id: person.id,
-      family: person.family,
-      name: person.name,
-      middleName: person.middleName,
-      birthday: person.birthday,
-      groupPersonId: id,
+      id: id,
+      groupId: group.id,
+      person: person,
+      beginDate: beginDate,
+      endDate: endDate,
     );
   }
+
+  /// Исправление персоны в группе
+  Future<bool> update2(GroupPersonView groupPerson) async =>
+      await update(db.groupPersons).replace(groupPerson);
 
   /// Удаление персоны из группы
   Future<bool> delete2(GroupPersonView groupPerson) async =>
       (await delete(db.groupPersons).delete(
-          GroupPersonsCompanion(
-            id: Value(groupPerson.groupPersonId),
-          )
+          GroupPersonsCompanion(id: Value(groupPerson.id))
       )) > 0 ? true : false;
 
   /// Отслеживание персон в группе
   Stream<List<GroupPersonView>> watch(Group group) =>
-      db._personsInGroup(group?.id).map((row) =>
-          GroupPersonView(
-            id: row.personId,
-            family: row.family,
-            name: row.name,
-            middleName: row.middleName,
-            birthday: row.birthday,
-            groupPersonId: row.groupPersonId,
-            attendanceCount: row.attendanceCount,
-          )
-      ).watch();
+      db._personsInGroup(group?.id).map((row) => GroupPersonView(
+        id: row.id,
+        groupId: row.groupId,
+        person: Person(
+          id: row.personId,
+          family: row.family,
+          name: row.name,
+          middleName: row.middleName,
+          birthday: row.birthday,
+        ),
+        beginDate: row.beginDate,
+        endDate: row.endDate,
+        attendanceCount: row.attendanceCount,
+      )).watch();
+
+  /// Отслеживание персон в группе за период
+  Stream<List<GroupPersonView>> watchGroupPeriod(GroupPeriod groupPeriod) =>
+      db._personsInGroupPeriod(
+        groupPeriod?.group?.id,
+        DateTime(groupPeriod.period.year, groupPeriod.period.month, 1),
+        groupPeriod.period,
+      ).map((row) => GroupPersonView(
+        id: row.id,
+        groupId: row.groupId,
+        person: Person(
+          id: row.personId,
+          family: row.family,
+          name: row.name,
+          middleName: row.middleName,
+          birthday: row.birthday,
+        ),
+        beginDate: row.beginDate,
+        endDate: row.endDate,
+        attendanceCount: row.attendanceCount,
+      )).watch();
 }
 
 // Посещаемость персон в группе ----------------------------------------------
@@ -528,14 +552,14 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
   }) async {
     final id = await into(db.attendances).insert(
         AttendancesCompanion(
-          groupPersonId: Value(groupPerson.groupPersonId),
+          groupPersonId: Value(groupPerson.id),
           date: Value(date),
           hoursFact: Value(hoursFact),
         )
     );
     return Attendance(
         id: id,
-        groupPersonId: groupPerson.groupPersonId,
+        groupPersonId: groupPerson.id,
         date: date,
         hoursFact: hoursFact
     );
@@ -546,15 +570,17 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
       (await delete(db.attendances).delete(attendance)) > 0 ? true : false;
 
   /// Получение посещаемости персоны в группе за период
-  Stream<List<Attendance>> watch(GroupPeriod gp) =>
-      db._attendancesView(gp.group.id, DateTime(gp.period.year, gp.period.month, 1), gp.period).map((row) =>
-        Attendance(
-          id: row.id,
-          groupPersonId: row.groupPersonId,
-          date: row.date,
-          hoursFact: row.hoursFact,
-        )
-      ).watch();
+  Stream<List<Attendance>> watch(GroupPeriod groupPeriod) =>
+      db._attendancesView(
+        groupPeriod.group.id,
+        DateTime(groupPeriod.period.year, groupPeriod.period.month, 1),
+        groupPeriod.period
+      ).map((row) => Attendance(
+        id: row.id,
+        groupPersonId: row.groupPersonId,
+        date: row.date,
+        hoursFact: row.hoursFact,
+      )).watch();
 }
 
 // Настройки -------------------------------------------------------------------

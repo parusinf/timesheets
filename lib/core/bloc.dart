@@ -58,6 +58,9 @@ class Bloc {
   // Персоны активной группы
   final groupPersons = BehaviorSubject<List<GroupPersonView>>();
 
+  // Персоны активной группы активного периода
+  final groupPeriodPersons = BehaviorSubject<List<GroupPersonView>>();
+
   // Группы активной организации
   Stream<List<GroupView>> groups;
 
@@ -132,6 +135,10 @@ class Bloc {
     // Отслеживание персон в активной группе
     Rx.concat([activeGroup.switchMap(db.groupPersonsDao.watch)])
         .listen(groupPersons.add);
+
+    // Отслеживание персон в активной группе в активном периоде
+    Rx.concat([activeGroupPeriod.switchMap(db.groupPersonsDao.watchGroupPeriod)])
+        .listen(groupPeriodPersons.add);
   }
 
   /// Освобождение ресурсов
@@ -146,6 +153,7 @@ class Bloc {
     activeGroups.close();
     scheduleDays.close();
     groupPersons.close();
+    groupPeriodPersons.close();
     db.close();
   }
 
@@ -258,12 +266,21 @@ class Bloc {
   Future<bool> deletePerson(Person person) async =>
       await db.personsDao.delete2(person);
 
+  // Персоны в группе ----------------------------------------------------------
   /// Добавление персоны в группу
-  Future<GroupPersonView> addPersonToGroup(Group group, Person person) async =>
-      await db.groupPersonsDao.insert2(group, person);
+  Future<GroupPersonView> insertGroupPerson({
+    @required Group group,
+    @required Person person,
+    DateTime beginDate,
+    DateTime endDate
+  }) async => await db.groupPersonsDao.insert2(group, person, beginDate, endDate);
+
+  /// Исправление персоны в группе
+  Future<bool> updateGroupPerson(GroupPerson groupPerson) async =>
+      await db.groupPersonsDao.update2(groupPerson);
 
   /// Удаление персоны из группы
-  Future<bool> deletePersonFromGroup(GroupPersonView groupPerson) async =>
+  Future<bool> deleteGroupPerson(GroupPersonView groupPerson) async =>
       await db.groupPersonsDao.delete2(groupPerson);
   
   // Посещаемость --------------------------------------------------------------

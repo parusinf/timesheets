@@ -102,15 +102,15 @@ class _OrgEditState extends State<OrgEdit> {
         switch (widget.actionType) {
           case DataActionType.Insert:
             await bloc.insertOrg(
-              name: stringValue(_nameEdit.text),
-              inn: stringValue(_innEdit.text),
+              name: trim(_nameEdit.text),
+              inn: trim(_innEdit.text),
             );
             break;
           case DataActionType.Update:
             await bloc.updateOrg(Org(
               id: widget.org.id,
-              name: stringValue(_nameEdit.text),
-              inn: stringValue(_innEdit.text),
+              name: trim(_nameEdit.text),
+              inn: trim(_innEdit.text),
               activeGroupId: widget.org.activeGroupId,
             ));
             break;

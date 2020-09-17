@@ -20,7 +20,7 @@ class HomePageState extends State<HomePage> {
   get bloc => Provider.of<Bloc>(context, listen: false);
   get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<GroupPersonView> _groupPersons;
+  List<GroupPersonView> _groupPeriodPersons;
   List<Attendance> _groupAttendances;
   static const fixedColumnWidth = 134.0;
   static const rowHeight = 56.0;
@@ -43,7 +43,7 @@ class HomePageState extends State<HomePage> {
       ),
       actions: <Widget>[
         StreamBuilder<List<GroupPersonView>>(
-          stream: bloc.groupPersons,
+          stream: bloc.groupPeriodPersons,
           builder: (context, snapshot) {
             if (bloc.activeOrg.value == null) {
               // Организаций нет
@@ -61,7 +61,7 @@ class HomePageState extends State<HomePage> {
               } else {
                 // Синхронизация с сервером
                 return IconButton(
-                  icon: Icon(Icons.refresh, color: Colors.transparent),
+                  icon: Icon(Icons.send, color: Colors.transparent),
                   onPressed: () => {},
                 );
               }
@@ -72,7 +72,7 @@ class HomePageState extends State<HomePage> {
     ),
     drawer: HomeDrawer(),
     body: StreamBuilder<List<GroupPersonView>>(
-      stream: bloc.groupPersons,
+      stream: bloc.groupPeriodPersons,
       builder: (context, snapshot) {
         // Организаций нет
         if (bloc.activeOrg.value == null) {
@@ -84,39 +84,29 @@ class HomePageState extends State<HomePage> {
           } else {
             // Персоны группы загрузились
             if (snapshot.hasData) {
-              _groupPersons = snapshot.data;
-              // Персон нет
-              if (_groupPersons.length == 0) {
-                return centerMessage(context, l10n.addPersonToGroup);
-              } else {
-                return StreamBuilder<List<Attendance>>(
+              _groupPeriodPersons = snapshot.data;
+              return StreamBuilder<List<Attendance>>(
                   stream: bloc.attendances,
                   builder: (context, snapshot) {
                     // Посещаемость загрузилась
                     if (snapshot.hasData) {
                       _groupAttendances = snapshot.data;
-                      // Персон нет
-                      if (_groupPersons.length == 0) {
-                        return centerMessage(context, l10n.noPersons);
-                      } else {
-                        return HorizontalDataTable(
-                          leftHandSideColumnWidth: fixedColumnWidth,
-                          rightHandSideColumnWidth: columnWidth * bloc.activePeriod.value.day,
-                          isFixedHeader: true,
-                          headerWidgets: _createTitleRow(),
-                          leftSideItemBuilder: _createFixedColumn,
-                          rightSideItemBuilder: _createTableRow,
-                          itemCount: _groupPersons.length,
-                          rowSeparatorWidget: divider(),
-                        );
-                      }
+                      return HorizontalDataTable(
+                        leftHandSideColumnWidth: fixedColumnWidth,
+                        rightHandSideColumnWidth: columnWidth * bloc.activePeriod.value.day,
+                        isFixedHeader: true,
+                        headerWidgets: _createTitleRow(),
+                        leftSideItemBuilder: _createFixedColumn,
+                        rightSideItemBuilder: _createTableRow,
+                        itemCount: _groupPeriodPersons.length,
+                        rowSeparatorWidget: divider(),
+                      );
                       // Посещаемость загружаются
                     } else {
                       return centerMessage(context, l10n.dataLoading);
                     }
                   }
-                );
-              }
+              );
             // Персоны группы загружаются
             } else {
               return centerMessage(context, l10n.dataLoading);
@@ -227,8 +217,8 @@ class HomePageState extends State<HomePage> {
 
   /// Создание фиксированной колонки
   Widget _createFixedColumn(BuildContext context, int index) => _createFixedCell(
-    _groupPersons[index].family,
-    _groupPersons[index].name,
+    _groupPeriodPersons[index].person.family,
+    _groupPeriodPersons[index].person.name,
     width: fixedColumnWidth,
     alignment: Alignment.centerLeft,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,7 +228,7 @@ class HomePageState extends State<HomePage> {
   /// Создание строки таблицы
   Widget _createTableRow(BuildContext context, int index) {
     final personAttendances = _groupAttendances.where(
-            (attendance) => attendance.groupPersonId == _groupPersons[index].groupPersonId);
+            (attendance) => attendance.groupPersonId == _groupPeriodPersons[index].id);
     final dates = personAttendances.map((attendance) => attendance.date).toList();
     final period = bloc.activePeriod.value;
     final rowCells = List<Widget>();
@@ -263,7 +253,7 @@ class HomePageState extends State<HomePage> {
         if (hoursNorm > 0.0) {
           rowCells.add(
             InkWell(
-              onTap: () => _insertAttendance(_groupPersons[index], date, hoursNorm),
+              onTap: () => _insertAttendance(_groupPeriodPersons[index], date, hoursNorm),
               child: _createCell(doubleToString(hoursNorm), color: Colors.black12),
             ),
           );

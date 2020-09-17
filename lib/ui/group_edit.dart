@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/schedules_dictionary.dart';
-import 'package:timesheets/ui/persons_dictionary.dart';
+import 'package:timesheets/ui/group_person_edit.dart';
 
 /// Форма редактирования группы
 class GroupEdit extends StatefulWidget {
@@ -67,14 +67,15 @@ class _GroupEditState extends State<GroupEdit> {
           labelText: l10n.schedule,
         ),
         validator: _validateSchedule,
-        onTap: () => _selectSchedule(context),
+        onTap: () => widget.actionType == DataActionType.Insert
+            ? _selectSchedule(context) : {},
       ),
     ];
     if (widget.actionType == DataActionType.Update) {
       items.addAll(<Widget>[
         horizontalSpace(),
         listHeater(context, Icons.person, l10n.groupPersons.toUpperCase(),
-            _addPersonToGroup),
+            _addGroupPerson),
         Flexible(
           child: StreamBuilder<List<GroupPersonView>>(
             stream: bloc.groupPersons,
@@ -129,7 +130,7 @@ class _GroupEditState extends State<GroupEdit> {
         switch (widget.actionType) {
           case DataActionType.Insert:
             final groupView = await bloc.insertGroup(
-                name: stringValue(_nameEdit.text),
+                name: trim(_nameEdit.text),
                 schedule: schedule,
             );
             Navigator.of(context).pop(groupView);
@@ -138,7 +139,7 @@ class _GroupEditState extends State<GroupEdit> {
             await bloc.updateGroup(Group(
                 id: widget.groupView.id,
                 orgId: widget.groupView.orgId,
-                name: stringValue(_nameEdit.text),
+                name: trim(_nameEdit.text),
                 scheduleId: schedule.id
             ));
             Navigator.of(context).pop();
@@ -162,18 +163,15 @@ class _GroupEditState extends State<GroupEdit> {
   /// Проверка графика
   String _validateSchedule(String value) {
     if (isEmpty(value)) {
-      return l10n.noSchedule;
+      return l10n.selectSchedule;
     }
     return null;
   }
 
   /// Добавление персоны в группу
-  Future _addPersonToGroup() async {
+  Future _addGroupPerson() async {
     try {
-      final person = await push(context, PersonsDictionary());
-      if (person != null) {
-        await bloc.addPersonToGroup(bloc.activeGroup.value, person);
-      }
+      await push(context, GroupPersonEdit());
     } catch(e) {
       showMessage(_scaffoldKey, e.toString());
     }
@@ -200,15 +198,19 @@ class _GroupPersonCard extends StatelessWidget {
       key: UniqueKey(),
       onDismissed: (direction) {
         groupPersons.removeAt(index);
-        Provider.of<Bloc>(context, listen: false).deletePersonFromGroup(entry);
+        Provider.of<Bloc>(context, listen: false).deleteGroupPerson(entry);
       },
       child: Material(
         color: Colors.lightGreen.withOpacity(passiveColorOpacity),
         borderRadius: BorderRadius.circular(borderRadius),
-        child: ListTile(
-          title: Text(entry.family),
-          subtitle: Text('${entry.name} ${entry.middleName ?? ''}'),
-          trailing: text('${entry.attendanceCount}', color: Colors.black26),
+        child: InkWell(
+          onTap: () => push(context, GroupPersonEdit(groupPerson: entry)),
+          onDoubleTap: () => push(context, GroupPersonEdit(groupPerson: entry)),
+          child: ListTile(
+            title: Text(fio(entry.person)),
+            subtitle: Text(datesToString(L10n.of(context), entry.beginDate, entry.endDate)),
+            trailing: text('${entry.attendanceCount}', color: Colors.black26),
+          ),
         ),
       ),
     ),

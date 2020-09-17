@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
+import 'package:timesheets/db/db.dart';
 import 'package:timesheets/db/schedule_helper.dart';
+import 'package:timesheets/core/l10n.dart';
 
 /// Тип действия с данными
 enum DataActionType {
@@ -20,7 +22,7 @@ bool isEmpty(String value) => value == null || value.trim().isEmpty;
 bool isNotEmpty(String value) => !isEmpty(value);
 
 /// Преобразование строки в дату
-DateTime dateValue(String value) {
+DateTime stringToDate(String value) {
   DateTime result = isNotEmpty(value) ? DateTime.tryParse(value.trim()) : null;
   if (result == null) {
     final _parseFormat = RegExp(r'^(\d\d)\.(\d\d)\.(\d\d\d\d)$');
@@ -35,16 +37,16 @@ DateTime dateValue(String value) {
   return result;
 }
 
-/// Преобразование строки
-String stringValue(String value) =>
+/// Удаление концевых пробелов из строки
+String trim(String value) =>
     isNotEmpty(value) ? value.trim() : null;
 
 /// Преобразование строки в число
-double doubleValue(String value) =>
+double stringToDouble(String value) =>
     isNotEmpty(value) ? double.tryParse(value.trim()) : null;
 
 /// Преобразование строки в целое
-int intValue(String value) =>
+int stringToInt(String value) =>
     isNotEmpty(value) ? int.tryParse(value.trim()) : null;
 
 /// Преобразование числа с плавающей точкой в строку
@@ -63,6 +65,17 @@ String periodToString(DateTime period) {
   return s.toUpperCase().substring(0, s.length - 3);
 }
 
+/// Преобразование диапазона дат в строку
+String datesToString(L10n l10n, DateTime beginDate, DateTime endDate) {
+  final begin = dateToString(beginDate);
+  final end = dateToString(endDate);
+  return begin != null
+      ? end != null
+          ? '${l10n.from} $begin ${l10n.to} $end' : '${l10n.from} $begin'
+      : end != null
+          ? '${l10n.to} $end' : '';
+}
+
 /// Преобразование даты периода в строку
 String abbrWeekday(DateTime date) {
   final s = DateFormat(DateFormat.ABBR_WEEKDAY).format(date);
@@ -75,3 +88,6 @@ bool isHoliday(DateTime date) {
   final weekdayIndex = abbrWeekdays.indexOf(weekday);
   return [5,6].contains(weekdayIndex);
 }
+
+String fio(Person person) => person != null
+    ? '${person.family} ${person.name} ${person.middleName ?? ''}' : '';

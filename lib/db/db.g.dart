@@ -2438,31 +2438,61 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {
     return customSelect(
-        'SELECT L.id AS groupPersonId,\n       L.personId,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       L.beginDate,\n       L.endDate,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
         variables: [Variable.withInt(groupId)],
         readsFrom: {groupPersons, persons, attendances}).map((QueryRow row) {
       return PersonsInGroupResult(
-        groupPersonId: row.readInt('groupPersonId'),
+        id: row.readInt('id'),
+        groupId: row.readInt('groupId'),
         personId: row.readInt('personId'),
+        beginDate: row.readDateTime('beginDate'),
+        endDate: row.readDateTime('endDate'),
         family: row.readString('family'),
         name: row.readString('name'),
         middleName: row.readString('middleName'),
         birthday: row.readDateTime('birthday'),
+        attendanceCount: row.readInt('attendanceCount'),
+      );
+    });
+  }
+
+  Selectable<PersonsInGroupPeriodResult> _personsInGroupPeriod(
+      int groupId, DateTime periodBegin, DateTime periodEnd) {
+    return customSelect(
+        'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        variables: [
+          Variable.withInt(groupId),
+          Variable.withDateTime(periodBegin),
+          Variable.withDateTime(periodEnd)
+        ],
+        readsFrom: {
+          groupPersons,
+          persons,
+          attendances
+        }).map((QueryRow row) {
+      return PersonsInGroupPeriodResult(
+        id: row.readInt('id'),
+        groupId: row.readInt('groupId'),
+        personId: row.readInt('personId'),
         beginDate: row.readDateTime('beginDate'),
         endDate: row.readDateTime('endDate'),
+        family: row.readString('family'),
+        name: row.readString('name'),
+        middleName: row.readString('middleName'),
+        birthday: row.readDateTime('birthday'),
         attendanceCount: row.readInt('attendanceCount'),
       );
     });
   }
 
   Selectable<Attendance> _attendancesView(
-      int groupId, DateTime periodEnd, DateTime periodBegin) {
+      int groupId, DateTime periodBegin, DateTime periodEnd) {
     return customSelect(
-        'SELECT T.*\n  FROM group_persons L\n INNER JOIN attendances T ON T.groupPersonId = L.id\n WHERE L.groupId = :groupId\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND T.date >= :periodBegin\n   AND T.date <= :periodEnd',
+        'SELECT T.*\n  FROM group_persons L\n INNER JOIN attendances T ON T.groupPersonId = L.id\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n   AND T.date >= :periodBegin\n   AND T.date <= :periodEnd',
         variables: [
           Variable.withInt(groupId),
-          Variable.withDateTime(periodEnd),
-          Variable.withDateTime(periodBegin)
+          Variable.withDateTime(periodBegin),
+          Variable.withDateTime(periodEnd)
         ],
         readsFrom: {
           groupPersons,
@@ -2649,24 +2679,51 @@ class PersonsViewResult {
 }
 
 class PersonsInGroupResult {
-  final int groupPersonId;
+  final int id;
+  final int groupId;
   final int personId;
+  final DateTime beginDate;
+  final DateTime endDate;
   final String family;
   final String name;
   final String middleName;
   final DateTime birthday;
-  final DateTime beginDate;
-  final DateTime endDate;
   final int attendanceCount;
   PersonsInGroupResult({
-    this.groupPersonId,
+    this.id,
+    this.groupId,
     this.personId,
+    this.beginDate,
+    this.endDate,
     this.family,
     this.name,
     this.middleName,
     this.birthday,
+    this.attendanceCount,
+  });
+}
+
+class PersonsInGroupPeriodResult {
+  final int id;
+  final int groupId;
+  final int personId;
+  final DateTime beginDate;
+  final DateTime endDate;
+  final String family;
+  final String name;
+  final String middleName;
+  final DateTime birthday;
+  final int attendanceCount;
+  PersonsInGroupPeriodResult({
+    this.id,
+    this.groupId,
+    this.personId,
     this.beginDate,
     this.endDate,
+    this.family,
+    this.name,
+    this.middleName,
+    this.birthday,
     this.attendanceCount,
   });
 }

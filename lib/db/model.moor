@@ -70,9 +70,9 @@ CREATE TABLE group_persons (
   groupId            INT NOT NULL REFERENCES "groups" (id),
   -- Идентификатор персоны
   personId           INT NOT NULL REFERENCES persons (id),
-  -- Дата начала посещения группы
+  -- Дата поступления в группу
   beginDate          DATE,
-  -- Дата окончания посещения группы
+  -- Дата дата выбытия из группы
   endDate            DATE
 );
 CREATE UNIQUE INDEX group_persons_index ON group_persons (groupId, personId);
@@ -230,18 +230,42 @@ SELECT P.id,
 
 -- Список персон в группе
 _personsInGroup:
-SELECT L.id AS groupPersonId,
+SELECT L.id,
+       L.groupId,
        L.personId,
+       L.beginDate,
+       L.endDate,
        P.family,
        P.name,
        P.middleName,
        P.birthday,
-       L.beginDate,
-       L.endDate,
        CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount
   FROM group_persons L
  INNER JOIN persons P ON P.id = L.personId
  WHERE L.groupId = :groupId
+ ORDER BY
+       P.family,
+       P.name,
+       P.middleName,
+       P.birthday;
+
+-- Список персон в группе за период
+_personsInGroupPeriod:
+SELECT L.id,
+       L.groupId,
+       L.personId,
+       L.beginDate,
+       L.endDate,
+       P.family,
+       P.name,
+       P.middleName,
+       P.birthday,
+       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount
+  FROM group_persons L
+ INNER JOIN persons P ON P.id = L.personId
+ WHERE L.groupId = :groupId
+   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)
+   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)
  ORDER BY
        P.family,
        P.name,
@@ -254,8 +278,8 @@ SELECT T.*
   FROM group_persons L
  INNER JOIN attendances T ON T.groupPersonId = L.id
  WHERE L.groupId = :groupId
-   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)
    AND (L.endDate IS NULL OR L.endDate >= :periodBegin)
+   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)
    AND T.date >= :periodBegin
    AND T.date <= :periodEnd;
 

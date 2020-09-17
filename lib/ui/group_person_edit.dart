@@ -4,45 +4,45 @@ import 'package:provider/provider.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
+import 'package:timesheets/ui/persons_dictionary.dart';
 
-/// Форма редактирования персоны
-class PersonEdit extends StatefulWidget {
-  final Person person;
+/// Форма редактирования персоны в группе
+class GroupPersonEdit extends StatefulWidget {
+  final GroupPersonView groupPerson;
   final DataActionType actionType;
-  const PersonEdit({Key key, this.person})
-      : this.actionType = person == null ? DataActionType.Insert : DataActionType.Update,
+  const GroupPersonEdit({Key key, this.groupPerson})
+      : this.actionType = groupPerson == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override
-  _PersonEditState createState() => _PersonEditState();
+  _GroupPersonEditState createState() => _GroupPersonEditState();
 }
 
-/// Состояние формы редактирования персоны
-class _PersonEditState extends State<PersonEdit> {
+/// Состояние формы редактирования персоны в группе
+class _GroupPersonEditState extends State<GroupPersonEdit> {
   get bloc => Provider.of<Bloc>(context, listen: false);
   get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
-  final _familyEdit = TextEditingController();
-  final _nameEdit = TextEditingController();
-  final _middleNameEdit = TextEditingController();
-  final _birthdayEdit = TextEditingController();
+  final _personEdit = TextEditingController();
+  final _beginDateEdit = TextEditingController();
+  final _endDateEdit = TextEditingController();
+  Person person;
   bool _autoValidate = false;
 
   @override
   void initState() {
-    _familyEdit.text = widget.person?.family;
-    _nameEdit.text = widget.person?.name;
-    _middleNameEdit.text = widget.person?.middleName;
-    _birthdayEdit.text = dateToString(widget.person?.birthday);
+    person = widget.groupPerson?.person;
+    _personEdit.text = fio(person);
+    _beginDateEdit.text = dateToString(widget.groupPerson?.beginDate);
+    _endDateEdit.text = dateToString(widget.groupPerson?.endDate);
     super.initState();
   }
 
   @override
   void dispose() {
-    _familyEdit.dispose();
-    _nameEdit.dispose();
-    _middleNameEdit.dispose();
-    _birthdayEdit.dispose();
+    _personEdit.dispose();
+    _beginDateEdit.dispose();
+    _endDateEdit.dispose();
     super.dispose();
   }
 
@@ -51,8 +51,7 @@ class _PersonEditState extends State<PersonEdit> {
     key: _scaffoldKey,
     appBar: AppBar(
       title: Text(widget.actionType == DataActionType.Insert
-          ? l10n.personInserting
-          : l10n.personUpdating
+          ? l10n.insertingIntoGroup : l10n.datesUpdating
       ),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
@@ -67,46 +66,41 @@ class _PersonEditState extends State<PersonEdit> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: <Widget>[
-              // Фамилия
+              // Персона
               TextFormField(
-                controller: _familyEdit,
+                controller: _personEdit,
+                readOnly: true,
                 textCapitalization: TextCapitalization.words,
                 autofocus: widget.actionType == DataActionType.Insert ? true : false,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.person),
-                  labelText: l10n.personFamily,
+                  labelText: l10n.person,
                 ),
-                validator: _validateFamily,
+                validator: _validatePerson,
+                onTap: () => widget.actionType == DataActionType.Insert
+                    ? _selectPerson(context) : {},
               ),
               horizontalSpace(),
-              // Имя
+              // Дата поступления в группу
               TextFormField(
-                controller: _nameEdit,
-                textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.person),
-                  labelText: l10n.personName,
-                ),
-                validator: _validateName,
-              ),
-              horizontalSpace(),
-              // Отчество
-              TextFormField(
-                controller: _middleNameEdit,
-                textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.person),
-                  labelText: l10n.personMiddleName,
-                ),
-              ),
-              horizontalSpace(),
-              // Дата рождения
-              TextFormField(
-                controller: _birthdayEdit,
+                controller: _beginDateEdit,
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.event),
-                  labelText: l10n.personBirthday,
+                  labelText: l10n.beginDate,
+                ),
+                validator: _validateDate,
+                inputFormatters: DateFormatters.formatters,
+                maxLength: 10,
+              ),
+              horizontalSpace(),
+              // Дата дата выбытия из группы
+              TextFormField(
+                controller: _endDateEdit,
+                keyboardType: TextInputType.numberWithOptions(),
+                decoration: InputDecoration(
+                  icon: const Icon(Icons.event),
+                  labelText: l10n.endDate,
                 ),
                 validator: _validateDate,
                 inputFormatters: DateFormatters.formatters,
@@ -119,6 +113,12 @@ class _PersonEditState extends State<PersonEdit> {
     ),
   );
 
+  /// Выбор персоны из словаря
+  Future _selectPerson(BuildContext context) async {
+    person = await push(context, PersonsDictionary());
+    _personEdit.text = person != null ? fio(person) : _personEdit.text;
+  }
+
   /// Обработка формы
   Future _handleSubmitted() async {
     final form = _formKey.currentState;
@@ -128,20 +128,20 @@ class _PersonEditState extends State<PersonEdit> {
       try {
         switch (widget.actionType) {
           case DataActionType.Insert:
-            await bloc.insertPerson(
-              family: trim(_familyEdit.text),
-              name: trim(_nameEdit.text),
-              middleName: trim(_middleNameEdit.text),
-              birthday: stringToDate(_birthdayEdit.text),
+            await bloc.insertGroupPerson(
+              group: bloc.activeGroup.value,
+              person: person,
+              beginDate: stringToDate(_beginDateEdit.text),
+              endDate: stringToDate(_endDateEdit.text),
             );
             break;
           case DataActionType.Update:
-            await bloc.updatePerson(Person(
-              id: widget.person.id,
-              family: trim(_familyEdit.text),
-              name: trim(_nameEdit.text),
-              middleName: trim(_middleNameEdit.text),
-              birthday: stringToDate(_birthdayEdit.text),
+            await bloc.updateGroupPerson(GroupPersonView(
+              id: widget.groupPerson.id,
+              groupId: widget.groupPerson.groupId,
+              person: widget.groupPerson.person,
+              beginDate: stringToDate(_beginDateEdit.text),
+              endDate: stringToDate(_endDateEdit.text),
             ));
             break;
           case DataActionType.Delete: break;
@@ -153,18 +153,10 @@ class _PersonEditState extends State<PersonEdit> {
     }
   }
 
-  /// Проверка фамилии
-  String _validateFamily(String value) {
+  /// Проверка персоны
+  String _validatePerson(String value) {
     if (isEmpty(value)) {
-      return l10n.noPersonFamily;
-    }
-    return null;
-  }
-
-  /// Проверка имени
-  String _validateName(String value) {
-    if (isEmpty(value)) {
-      return l10n.noPersonName;
+      return l10n.selectPerson;
     }
     return null;
   }
