@@ -67,8 +67,7 @@ class _GroupEditState extends State<GroupEdit> {
           labelText: l10n.schedule,
         ),
         validator: _validateSchedule,
-        onTap: () => widget.actionType == DataActionType.Insert
-            ? _selectSchedule(context) : {},
+        onTap: () => _selectSchedule(context),
       ),
     ];
     if (widget.actionType == DataActionType.Update) {
