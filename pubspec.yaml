@@ -23,7 +23,6 @@ dependencies:
   horizontal_data_table:
   flutter_markdown:
   url_launcher:
-  http:
 
 dev_dependencies:
   flutter_test:

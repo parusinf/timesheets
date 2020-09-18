@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:timesheets/core.dart';
 
 /// Справка
@@ -27,26 +26,42 @@ class HelpPageState extends State<HelpPage> {
         IconButton(icon: const Icon(Icons.ondemand_video), onPressed: _launchURL),
       ],
     ),
-    body: FutureBuilder(
-      future: http.get('https://raw.githubusercontent.com/parusinf/timesheets/master/README.md?token=ACOJLSZNAWIIOMQRL5XYP3K7MSOXA'),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          http.Response response = snapshot.data;
-          return Markdown(data: response.body);
-        }
-        else {
-          return Center(child: CircularProgressIndicator());
-        }
-      },
-    ),
+    body: Markdown(data: _fetchHelp()),
   );
 
   Future _launchURL() async {
-    const url = 'https://youtu.be/jGygPdV9smU';
+    const url = 'https://youtu.be/-TV0l17MW18';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       showMessage(_scaffoldKey, 'Видео не запускается');
     }
+  }
+
+  String _fetchHelp() {
+    return '''
+# Табели посещаемости
+
+## О программе
+Программа предназначена для мобильной регистрации посещаемости персон в группах организаций по графикам посещения. Программа может использоваться для регистрации посещаемости:
+
+1. Детей в группах детских садов.
+2. Учеников в группах дополнительного образования.
+3. Спортсменов в спортивных секциях.
+
+## Использование
+
+[Видео-демонстрация](https://youtu.be/jGygPdV9smU)
+
+## Релиз
+
+2020.9.18
+
+## Автор
+
+Павел Никитин
+
+[pavel@parusinf.ru](mailto:pavel@parusinf.ru)
+''';
   }
 }
