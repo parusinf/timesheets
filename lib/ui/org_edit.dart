@@ -60,6 +60,7 @@ class _OrgEditState extends State<OrgEdit> {
           padding: const EdgeInsets.symmetric(horizontal: padding),
           child: Column(
             children: <Widget>[
+              horizontalSpace(height: dividerHeight),
               // Наименование организации
               TextFormField(
                 controller: _nameEdit,

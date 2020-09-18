@@ -66,6 +66,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: <Widget>[
+              horizontalSpace(height: dividerHeight),
               // Персона
               TextFormField(
                 controller: _personEdit,
