@@ -45,7 +45,6 @@ class _GroupEditState extends State<GroupEdit> {
   @override
   Widget build(BuildContext context) {
     final items = <Widget>[
-      horizontalSpace(),
       // Наименование группы
       TextFormField(
         controller: _nameEdit,
