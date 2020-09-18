@@ -149,11 +149,6 @@ class Db extends _$Db {
       customStatement('PRAGMA foreign_keys = ON');
       if (details.wasCreated) {
         transaction(() async {
-          final schedule = await schedulesDao.insert2(
-              code: 'пн,вт,ср,чт,пт 12ч',
-              createDays: true
-          );
-          settingsDao.setActiveSchedule(schedule);
           settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
         });
       }
