@@ -20,7 +20,7 @@ class PersonsDictionary extends StatelessWidget {
     ),
     body: SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(padding),
+        padding: const EdgeInsets.all(padding1),
         child: StreamBuilder<List<PersonView>>(
           stream: Provider.of<Bloc>(context).db.personsDao.watch(),
           builder: (context, snapshot) {

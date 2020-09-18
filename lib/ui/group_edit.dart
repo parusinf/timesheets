@@ -74,7 +74,7 @@ class _GroupEditState extends State<GroupEdit> {
       items.addAll(<Widget>[
         horizontalSpace(),
         listHeater(context, Icons.person, l10n.groupPersons.toUpperCase(),
-            _addGroupPerson),
+            onAddPressed: _addGroupPerson),
         Flexible(
           child: StreamBuilder<List<GroupPersonView>>(
             stream: bloc.groupPersons,
@@ -103,7 +103,7 @@ class _GroupEditState extends State<GroupEdit> {
         key: _formKey,
         autovalidate: _autoValidate,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: padding),
+          padding: const EdgeInsets.symmetric(horizontal: padding1),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: items,

@@ -57,7 +57,7 @@ class _OrgEditState extends State<OrgEdit> {
       child: Scrollbar(
         child: SingleChildScrollView(
           dragStartBehavior: DragStartBehavior.down,
-          padding: const EdgeInsets.symmetric(horizontal: padding),
+          padding: const EdgeInsets.symmetric(horizontal: padding1),
           child: Column(
             children: <Widget>[
               horizontalSpace(height: dividerHeight),

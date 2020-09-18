@@ -9,7 +9,8 @@ const activeColorOpacity = 0.3;
 const passiveColorOpacity = 0.1;
 const borderRadius = 8.0;
 const dividerHeight = 8.0;
-const padding = 16.0;
+const padding1 = 16.0;
+const padding2 = 8.0;
 const horizontalSpaceHeight = 20.0;
 
 /// Сообщение в снакбаре
@@ -94,21 +95,23 @@ class _DateDMYFormatter extends TextInputFormatter {
 }
 
 /// Заголовок списка с кнопкой добавления
-Widget listHeater(BuildContext context, IconData icon, String title, Function() onPressed) {
+Widget listHeater(BuildContext context, IconData icon, String title, {Function() onAddPressed, Function() onHeaderTap}) {
   final items = <Widget>[
     Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 16.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(0.0, padding2, padding2, padding2),
       child: Icon(icon, color: Colors.black54)
     ),
     text(title.toUpperCase()),
   ];
-  if (onPressed != null) {
+  if (onAddPressed != null) {
     items.addAll(<Widget>[
       const Spacer(),
-      IconButton(icon: const Icon(Icons.add), color: Colors.black54, onPressed: onPressed),
+      IconButton(icon: const Icon(Icons.add), color: Colors.black54, onPressed: onAddPressed),
     ]);
   }
-  return Row(children: items);
+  return onHeaderTap != null
+    ? InkWell(onTap: onHeaderTap, child: Row(children: items))
+    : Row(children: items);
 }
 
 /// Переход на страницу

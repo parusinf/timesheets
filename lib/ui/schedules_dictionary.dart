@@ -19,7 +19,7 @@ class SchedulesDictionary extends StatelessWidget {
     ),
     body: SafeArea(
       child: Padding(
-      padding: const EdgeInsets.all(padding),
+      padding: const EdgeInsets.all(padding1),
       child: StreamBuilder<List<ActiveSchedule>>(
           stream: Provider.of<Bloc>(context).activeSchedules,
           builder: (context, snapshot) => ListView.builder(

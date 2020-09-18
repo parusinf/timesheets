@@ -4,6 +4,7 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/group_edit.dart';
 import 'package:timesheets/ui/org_edit.dart';
+import 'package:timesheets/ui/help_page.dart';
 
 /// Дроувер домашнего экрана
 class HomeDrawer extends StatefulWidget {
@@ -22,12 +23,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
     builder: (context, orientation) => Drawer(
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: padding),
+          padding: const EdgeInsets.symmetric(horizontal: padding1),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               // Список организаций
-              listHeater(context, Icons.business, l10n.orgs, () => push(context, OrgEdit())),
+              listHeater(context, Icons.business, l10n.orgs, onAddPressed: () => push(context, OrgEdit())),
               Flexible(
                 child: StreamBuilder<List<ActiveOrg>>(
                   stream: bloc.activeOrgs,
@@ -44,7 +45,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
               StreamBuilder<Org>(
                   stream: bloc.activeOrg,
                   builder: (context, snapshot) => snapshot.hasData
-                      ? listHeater(context, Icons.group, l10n.groups, () => addGroup(context))
+                      ? listHeater(context, Icons.group, l10n.groups, onAddPressed: () => addGroup(context))
                       : Spacer()
               ),
               StreamBuilder<List<ActiveOrg>>(
@@ -53,6 +54,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       ? _groupList(orientation, snapshot.data.length)
                       : Text('')
               ),
+              Spacer(),
+              listHeater(context, Icons.help, l10n.help, onHeaderTap: () => push(context, HelpPage())),
             ],
           ),
         ),
@@ -63,7 +66,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
   /// Список групп
   Widget _groupList(Orientation orientation, int orgsCount) => Flexible(
     flex: orientation == Orientation.portrait
-        ? orgsCount < 2 ? 7 : 3
+        ? orgsCount < 2 ? 7 : 2
         : 2,
     child: StreamBuilder<List<ActiveGroup>>(
       stream: bloc.activeGroups,
