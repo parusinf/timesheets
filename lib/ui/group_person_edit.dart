@@ -51,7 +51,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
     key: _scaffoldKey,
     appBar: AppBar(
       title: Text(widget.actionType == DataActionType.Insert
-          ? l10n.insertingIntoGroup : l10n.datesUpdating
+          ? l10n.insertingIntoGroup : l10n.bindingUpdating
       ),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
@@ -77,8 +77,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
                   labelText: l10n.person,
                 ),
                 validator: _validatePerson,
-                onTap: () => widget.actionType == DataActionType.Insert
-                    ? _selectPerson(context) : {},
+                onTap: () => _selectPerson(context),
               ),
               horizontalSpace(),
               // Дата поступления в группу
@@ -93,7 +92,6 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
                 inputFormatters: DateFormatters.formatters,
                 maxLength: 10,
               ),
-              horizontalSpace(),
               // Дата дата выбытия из группы
               TextFormField(
                 controller: _endDateEdit,
@@ -139,7 +137,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
             await bloc.updateGroupPerson(GroupPersonView(
               id: widget.groupPerson.id,
               groupId: widget.groupPerson.groupId,
-              person: widget.groupPerson.person,
+              person: person,
               beginDate: stringToDate(_beginDateEdit.text),
               endDate: stringToDate(_endDateEdit.text),
             ));

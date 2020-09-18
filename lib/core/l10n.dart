@@ -17,8 +17,8 @@ class L10n {
       'addPerson': 'Добавьте персону',
       'addPersonToGroup': 'Добавьте персону в группу',
       'beginDate': 'Дата поступления в группу',
+      'bindingUpdating': 'Исправление привязки',
       'dataLoading': 'Загрузка данных',
-      'datesUpdating': 'Исправление дат',
       'endDate': 'Дата выбытия из группы',
       'from': 'с',
       'groupInserting': 'Добавление группы',
@@ -69,8 +69,8 @@ class L10n {
   get addPerson => _l10n[locale.languageCode]['addPerson'];
   get addPersonToGroup => _l10n[locale.languageCode]['addPersonToGroup'];
   get beginDate => _l10n[locale.languageCode]['beginDate'];
+  get bindingUpdating => _l10n[locale.languageCode]['bindingUpdating'];
   get dataLoading => _l10n[locale.languageCode]['dataLoading'];
-  get datesUpdating => _l10n[locale.languageCode]['datesUpdating'];
   get endDate => _l10n[locale.languageCode]['endDate'];
   get from => _l10n[locale.languageCode]['from'];
   get groupInserting => _l10n[locale.languageCode]['groupInserting'];
