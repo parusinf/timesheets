@@ -10,7 +10,7 @@ const passiveColorOpacity = 0.1;
 const borderRadius = 8.0;
 const dividerHeight = 8.0;
 const padding = 16.0;
-const horizontalSpaceHeight = 8.0;
+const horizontalSpaceHeight = 20.0;
 
 /// Сообщение в снакбаре
 void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
