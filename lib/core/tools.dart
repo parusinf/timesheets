@@ -73,7 +73,7 @@ String datesToString(L10n l10n, DateTime beginDate, DateTime endDate) {
       ? end != null
           ? '${l10n.from} $begin ${l10n.to} $end' : '${l10n.from} $begin'
       : end != null
-          ? '${l10n.to} $end' : '';
+          ? '${l10n.to} $end' : l10n.withoutTime;
 }
 
 /// Преобразование даты периода в строку
