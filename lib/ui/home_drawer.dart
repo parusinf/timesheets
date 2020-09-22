@@ -66,8 +66,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
   /// Список групп
   Widget _groupList(Orientation orientation, int orgsCount) => Flexible(
     flex: orientation == Orientation.portrait
-        ? orgsCount < 2 ? 7 : 2
-        : 2,
+        ? orgsCount < 2 ? 5 : 2
+        : 1,
     child: StreamBuilder<List<ActiveGroup>>(
       stream: bloc.activeGroups,
       builder: (context, snapshot) =>
@@ -110,20 +110,25 @@ class _OrgCard extends StatelessWidget {
           onTap: () {
             Provider.of<Bloc>(context, listen: false).setActiveOrg(entry.orgView);
           },
-          onDoubleTap: () => push(context, OrgEdit(org: entry.orgView)),
+          onDoubleTap: () => _edit(context),
           child: ListTile(
             title: Text(entry.orgView.name),
-            subtitle: Text(isNotEmpty(entry.orgView.inn)
+            subtitle: Text('${isNotEmpty(entry.orgView.inn)
                 ? entry.orgView.inn
-                : L10n.of(context).withoutInn
+                : L10n.of(context).withoutInn}'
             ),
-            trailing: text('${entry.orgView.groupCount}',
-                color: entry.isActive ? Colors.black54 : Colors.black26),
+            trailing: IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () => _edit(context),
+            ),
           ),
         ),
       ),
     ),
   );
+
+  _edit(BuildContext context) =>
+      push(context, OrgEdit(org: entry.orgView));
 }
 
 /// Карточка группы
@@ -159,13 +164,13 @@ class _GroupCard extends StatelessWidget {
                 .setActiveGroup(entry.groupView);
             Navigator.pop(context);
           },
-          onDoubleTap: () => _updateGroup(context, entry.groupView),
+          onDoubleTap: () => _edit(context),
           child: ListTile(
             title: Text(entry.groupView.name),
             subtitle: Text(entry.groupView.schedule.code),
-            trailing: Text('${entry.groupView.personCount}',
-              style: Theme.of(context).textTheme.bodyText2.copyWith(
-                color: entry.isActive ? Colors.black54 : Colors.black26),
+            trailing: IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () => _edit(context),
             ),
           ),
         ),
@@ -174,8 +179,8 @@ class _GroupCard extends StatelessWidget {
   );
 
   /// Исправление группы
-  Future _updateGroup(BuildContext context, GroupView groupView) async {
-    Provider.of<Bloc>(context, listen: false).setActiveGroup(groupView);
-    push(context, GroupEdit(groupView: groupView));
+  _edit(BuildContext context) async {
+    Provider.of<Bloc>(context, listen: false).setActiveGroup(entry.groupView);
+    push(context, GroupEdit(groupView: entry.groupView));
   }
 }

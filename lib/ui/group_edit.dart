@@ -203,15 +203,21 @@ class _GroupPersonCard extends StatelessWidget {
         color: Colors.lightGreen.withOpacity(passiveColorOpacity),
         borderRadius: BorderRadius.circular(borderRadius),
         child: InkWell(
-          onTap: () => push(context, GroupPersonEdit(groupPerson: entry)),
-          onDoubleTap: () => push(context, GroupPersonEdit(groupPerson: entry)),
+          onTap: () => _edit(context),
+          onDoubleTap: () => _edit(context),
           child: ListTile(
             title: Text(fio(entry.person)),
             subtitle: Text(datesToString(L10n.of(context), entry.beginDate, entry.endDate)),
-            trailing: text('${entry.attendanceCount}', color: Colors.black26),
+            trailing: IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () => _edit(context),
+            ),
           ),
         ),
       ),
     ),
   );
+
+  _edit(BuildContext context) =>
+      push(context, GroupPersonEdit(groupPerson: entry));
 }

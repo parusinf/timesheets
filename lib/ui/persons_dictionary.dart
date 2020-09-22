@@ -71,14 +71,20 @@ class _PersonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         child: InkWell(
           onTap: () => Navigator.pop(context, entry),
-          onDoubleTap: () => push(context, PersonEdit(person: entry)),
+          onDoubleTap: () => _edit(context),
           child: ListTile(
             title: Text(entry.family),
             subtitle: Text('${entry.name} ${entry.middleName ?? ''}'),
-            trailing: text('${entry.groupCount}', color: Colors.black26),
+            trailing: IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () => _edit(context),
+            ),
           ),
         ),
       ),
     ),
   );
+
+  _edit(BuildContext context) =>
+      push(context, PersonEdit(person: entry));
 }

@@ -64,19 +64,21 @@ class _ScheduleCard extends StatelessWidget {
             Provider.of<Bloc>(context, listen: false).setActiveSchedule(entry.scheduleView);
             Navigator.pop(context, entry.scheduleView);
           },
-          onDoubleTap: () {
-            Provider.of<Bloc>(context, listen: false).setActiveSchedule(entry.scheduleView);
-            push(context, ScheduleEdit(schedule: entry.scheduleView));
-          },
+          onDoubleTap: () => _edit(context),
           child: ListTile(
             title: Text(entry.scheduleView.code),
-            trailing: Text('${entry.scheduleView.groupCount}',
-              style: Theme.of(context).textTheme.bodyText2.copyWith(
-                  color: entry.isActive ? Colors.black54 : Colors.black26),
+            trailing: IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () => _edit(context),
             ),
           ),
         ),
       ),
     ),
   );
+
+  _edit(BuildContext context) {
+    Provider.of<Bloc>(context, listen: false).setActiveSchedule(entry.scheduleView);
+    push(context, ScheduleEdit(schedule: entry.scheduleView));
+  }
 }
