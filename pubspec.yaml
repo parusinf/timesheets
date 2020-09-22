@@ -1,7 +1,7 @@
 name: timesheets
 description: Табели посещаемости в группах по графикам
 
-version: 2020.9.18
+version: 2020.9.22
 
 environment:
   sdk: ">=2.8.2 <3.0.0"
