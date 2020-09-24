@@ -4,11 +4,22 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/db/schedule_helper.dart';
 
+/// Добавление графика
+Future addSchedule(BuildContext context) async =>
+    push(context, ScheduleEdit(null));
+
+/// Исправление графика
+Future editSchedule(BuildContext context, Schedule schedule) async {
+  final bloc = Provider.of<Bloc>(context, listen: false);
+  bloc.setActiveSchedule(schedule);
+  push(context, ScheduleEdit(schedule));
+}
+
 /// Форма редактирования графика
 class ScheduleEdit extends StatefulWidget {
   final Schedule schedule;
   final DataActionType actionType;
-  const ScheduleEdit({Key key, this.schedule})
+  const ScheduleEdit(this.schedule, {Key key})
       : this.actionType = schedule == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override

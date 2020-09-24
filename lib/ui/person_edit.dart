@@ -5,11 +5,19 @@ import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
+/// Добавление персоны
+Future addPerson(BuildContext context) async =>
+    push(context, PersonEdit(null));
+
+/// Исправление персоны
+Future editPerson(BuildContext context, Person person) async =>
+    push(context, PersonEdit(person));
+
 /// Форма редактирования персоны
 class PersonEdit extends StatefulWidget {
   final Person person;
   final DataActionType actionType;
-  const PersonEdit({Key key, this.person})
+  const PersonEdit(this.person, {Key key})
       : this.actionType = person == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override

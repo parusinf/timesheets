@@ -14,7 +14,7 @@ class PersonsDictionary extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.add),
           tooltip: L10n.of(context).personInserting,
-          onPressed: () => push(context, PersonEdit()),
+          onPressed: () => addPerson(context),
         ),
       ],
     ),
@@ -28,10 +28,10 @@ class PersonsDictionary extends StatelessWidget {
               if (snapshot.data.length > 0) {
                 return ListView.builder(
                   itemBuilder: (context, index) => _PersonCard(snapshot.data, index),
-                  itemCount: snapshot.data == null ? 0 : snapshot.data.length,
+                  itemCount: snapshot.data.length,
                 );
               } else {
-                return centerMessage(context, L10n.of(context).addPerson);
+                return centerButton(L10n.of(context).addPerson, onPressed: () => addPerson(context));
               }
             } else {
               return centerMessage(context, L10n.of(context).dataLoading);
@@ -71,20 +71,17 @@ class _PersonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         child: InkWell(
           onTap: () => Navigator.pop(context, entry),
-          onDoubleTap: () => _edit(context),
+          onDoubleTap: () => editPerson(context, entry),
           child: ListTile(
             title: Text(entry.family),
             subtitle: Text('${entry.name} ${entry.middleName ?? ''}'),
             trailing: IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () => _edit(context),
+              onPressed: () => editPerson(context, entry),
             ),
           ),
         ),
       ),
     ),
   );
-
-  _edit(BuildContext context) =>
-      push(context, PersonEdit(person: entry));
 }

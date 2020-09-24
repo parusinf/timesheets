@@ -4,11 +4,19 @@ import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
+/// Добавление организации
+Future addOrg(BuildContext context) async =>
+    push(context, OrgEdit(null));
+
+/// Исправление организации
+Future editOrg(BuildContext context, Org org) async =>
+    push(context, OrgEdit(org));
+
 /// Форма редактирования организации
 class OrgEdit extends StatefulWidget {
   final Org org;
   final DataActionType actionType;
-  const OrgEdit({Key key, this.org})
+  const OrgEdit(this.org, {Key key})
       : this.actionType = org == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override
@@ -101,10 +109,11 @@ class _OrgEditState extends State<OrgEdit> {
       try {
         switch (widget.actionType) {
           case DataActionType.Insert:
-            await bloc.insertOrg(
+            final org = await bloc.insertOrg(
               name: trim(_nameEdit.text),
               inn: trim(_innEdit.text),
             );
+            Navigator.of(context).pop(org);
             break;
           case DataActionType.Update:
             await bloc.updateOrg(Org(
@@ -113,10 +122,10 @@ class _OrgEditState extends State<OrgEdit> {
               inn: trim(_innEdit.text),
               activeGroupId: widget.org.activeGroupId,
             ));
+            Navigator.of(context).pop();
             break;
           case DataActionType.Delete: break;
         }
-        Navigator.of(context).pop();
       } catch(e) {
         showMessage(_scaffoldKey, e.toString());
       }

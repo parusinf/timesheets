@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:timesheets/core/l10n.dart';
-import 'package:timesheets/ui/group_edit.dart';
 
 const lineColor = Colors.black12;
 const activeColorOpacity = 0.3;
@@ -45,6 +44,14 @@ Widget text(
 /// Сообщение в центре страницы серым цветом
 Widget centerMessage(BuildContext context, String message) =>
     Center(child: text(message));
+
+Widget centerButton(String label, {Function() onPressed}) =>
+    Center(
+      child: RaisedButton(
+        onPressed: onPressed,
+        child: text(label, color: Colors.black87, fontSize: 16.0),
+      ),
+    );
 
 /// Горизонтальный разделитель пространства между контролами
 Widget horizontalSpace({height = horizontalSpaceHeight}) => SizedBox(height: height);
@@ -117,13 +124,3 @@ Widget listHeater(BuildContext context, IconData icon, String title, {Function()
 /// Переход на страницу
 Future<T> push<T extends Object>(BuildContext context, Widget page) async =>
     await Navigator.push(context, MaterialPageRoute(builder: (context) => page));
-
-/// Добавление группы
-Future addGroup(BuildContext context) async {
-  // Добавление группы
-  final groupView = await push(context, GroupEdit());
-  // Исправление группы для добавляения в неё персон
-  if (groupView != null) {
-    push(context, GroupEdit(groupView: groupView));
-  }
-}

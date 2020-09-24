@@ -5,11 +5,25 @@ import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/schedules_dictionary.dart';
 import 'package:timesheets/ui/group_person_edit.dart';
 
+/// Добавление группы
+Future addGroup(BuildContext context) async {
+  // Добавление группы
+  final groupView = await push(context, GroupEdit(null));
+  // Исправление группы для добавляения в неё персон
+  if (groupView != null) {
+    push(context, GroupEdit(groupView));
+  }
+}
+
+/// Исправление группы
+Future editGroup(BuildContext context, GroupView groupView) async =>
+    push(context, GroupEdit(groupView));
+
 /// Форма редактирования группы
 class GroupEdit extends StatefulWidget {
   final GroupView groupView;
   final DataActionType actionType;
-  const GroupEdit({Key key, this.groupView})
+  const GroupEdit(this.groupView, {Key key})
       : this.actionType = groupView == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override
@@ -74,16 +88,24 @@ class _GroupEditState extends State<GroupEdit> {
       items.addAll(<Widget>[
         horizontalSpace(),
         listHeater(context, Icons.person, l10n.groupPersons.toUpperCase(),
-            onAddPressed: _addGroupPerson),
+            onAddPressed: () => addGroupPerson(context)),
         Flexible(
           child: StreamBuilder<List<GroupPersonView>>(
             stream: bloc.groupPersons,
-            builder: (context, snapshot) =>
-                ListView.builder(
-                  itemBuilder: (context, index) =>
-                      _GroupPersonCard(snapshot.data, index),
-                  itemCount: snapshot.data?.length ?? 0,
-                ),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data.length > 0) {
+                  return ListView.builder(
+                    itemBuilder: (context, index) => _GroupPersonCard(snapshot.data, index),
+                    itemCount: snapshot.data.length,
+                  );
+                } else {
+                  return centerButton(L10n.of(context).addPersonToGroup, onPressed: () => addGroupPerson(context));
+                }
+              } else {
+                return centerMessage(context, L10n.of(context).dataLoading);
+              }
+            }
           ),
         ),
       ]);
@@ -166,15 +188,6 @@ class _GroupEditState extends State<GroupEdit> {
     }
     return null;
   }
-
-  /// Добавление персоны в группу
-  Future _addGroupPerson() async {
-    try {
-      await push(context, GroupPersonEdit());
-    } catch(e) {
-      showMessage(_scaffoldKey, e.toString());
-    }
-  }
 }
 
 /// Карточка персоны в группе
@@ -203,21 +216,18 @@ class _GroupPersonCard extends StatelessWidget {
         color: Colors.lightGreen.withOpacity(passiveColorOpacity),
         borderRadius: BorderRadius.circular(borderRadius),
         child: InkWell(
-          onTap: () => _edit(context),
-          onDoubleTap: () => _edit(context),
+          onTap: () => editGroupPerson(context, entry),
+          onDoubleTap: () => editGroupPerson(context, entry),
           child: ListTile(
             title: Text(fio(entry.person)),
             subtitle: Text(datesToString(L10n.of(context), entry.beginDate, entry.endDate)),
             trailing: IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () => _edit(context),
+              onPressed: () => editGroupPerson(context, entry),
             ),
           ),
         ),
       ),
     ),
   );
-
-  _edit(BuildContext context) =>
-      push(context, GroupPersonEdit(groupPerson: entry));
 }

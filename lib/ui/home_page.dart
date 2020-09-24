@@ -8,6 +8,7 @@ import 'package:timesheets/db/db.dart';
 import 'package:timesheets/db/schedule_helper.dart';
 import 'package:timesheets/ui/home_drawer.dart';
 import 'package:timesheets/ui/org_edit.dart';
+import 'package:timesheets/ui/group_edit.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
@@ -43,30 +44,30 @@ class HomePageState extends State<HomePage> {
       ),
       actions: <Widget>[
         StreamBuilder<List<GroupPersonView>>(
-          stream: bloc.groupPeriodPersons,
-          builder: (context, snapshot) {
-            if (bloc.activeOrg.value == null) {
-              // Организаций нет
-              return IconButton(
-                icon: Icon(Icons.business),
-                onPressed: () => push(context, OrgEdit()),
-              );
-            } else {
-              if (bloc.activeGroup.value == null) {
-                // Групп нет
+            stream: bloc.groupPeriodPersons,
+            builder: (context, snapshot) {
+              if (bloc.activeOrg.value == null) {
+                // Организаций нет
                 return IconButton(
-                  icon: Icon(Icons.group),
-                  onPressed: () => addGroup(context),
+                  icon: Icon(Icons.add),
+                  onPressed: () => addOrg(context),
                 );
               } else {
-                // Синхронизация с сервером
-                return IconButton(
-                  icon: Icon(Icons.send, color: Colors.transparent),
-                  onPressed: () => {},
-                );
+                if (bloc.activeGroup.value == null) {
+                  // Групп нет
+                  return IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () => addGroup(context),
+                  );
+                } else {
+                  // Синхронизация с сервером
+                  return IconButton(
+                    icon: Icon(Icons.send, color: Colors.transparent),
+                    onPressed: () => {},
+                  );
+                }
               }
             }
-          }
         ),
       ],
     ),
@@ -74,13 +75,13 @@ class HomePageState extends State<HomePage> {
     body: StreamBuilder<List<GroupPersonView>>(
       stream: bloc.groupPeriodPersons,
       builder: (context, snapshot) {
-        // Организаций нет
+        // Добавить организацию
         if (bloc.activeOrg.value == null) {
-          return centerMessage(context, l10n.addOrg);
+          return centerButton(l10n.addOrg, onPressed: () => addOrg(context));
         } else {
-          // Групп нет
+          // Добавить группу
           if (bloc.activeGroup.value == null) {
-            return centerMessage(context, l10n.addGroup);
+            return centerButton(l10n.addGroup, onPressed: () => addGroup(context));
           } else {
             // Персоны группы загрузились
             if (snapshot.hasData) {
@@ -101,7 +102,7 @@ class HomePageState extends State<HomePage> {
                         itemCount: _groupPeriodPersons.length,
                         rowSeparatorWidget: divider(),
                       );
-                      // Посещаемость загружаются
+                    // Посещаемость загружаются
                     } else {
                       return centerMessage(context, l10n.dataLoading);
                     }

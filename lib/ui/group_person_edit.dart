@@ -6,11 +6,19 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/persons_dictionary.dart';
 
+/// Добавление персоны
+Future addGroupPerson(BuildContext context) async =>
+    push(context, GroupPersonEdit(null));
+
+/// Исправление персоны
+Future editGroupPerson(BuildContext context, GroupPersonView groupPerson) async =>
+    push(context, GroupPersonEdit(groupPerson));
+
 /// Форма редактирования персоны в группе
 class GroupPersonEdit extends StatefulWidget {
   final GroupPersonView groupPerson;
   final DataActionType actionType;
-  const GroupPersonEdit({Key key, this.groupPerson})
+  const GroupPersonEdit(this.groupPerson, {Key key})
       : this.actionType = groupPerson == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override

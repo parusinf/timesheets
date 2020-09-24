@@ -13,7 +13,7 @@ class SchedulesDictionary extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.add),
           tooltip: L10n.of(context).scheduleInserting,
-          onPressed: () => push(context,  ScheduleEdit()),
+          onPressed: () => addSchedule(context),
         ),
       ],
     ),
@@ -22,10 +22,20 @@ class SchedulesDictionary extends StatelessWidget {
       padding: const EdgeInsets.all(padding1),
       child: StreamBuilder<List<ActiveSchedule>>(
           stream: Provider.of<Bloc>(context).activeSchedules,
-          builder: (context, snapshot) => ListView.builder(
-            itemBuilder: (context, index) => _ScheduleCard(snapshot.data, index),
-            itemCount: snapshot.data == null ? 0 : snapshot.data.length,
-          ),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data.length > 0) {
+                return ListView.builder(
+                  itemBuilder: (context, index) => _ScheduleCard(snapshot.data, index),
+                  itemCount: snapshot.data.length,
+                );
+              } else {
+                return centerButton(L10n.of(context).addSchedule, onPressed: () => addSchedule(context));
+              }
+            } else {
+              return centerMessage(context, L10n.of(context).dataLoading);
+            }
+          }
         ),
       ),
     ),
@@ -64,21 +74,16 @@ class _ScheduleCard extends StatelessWidget {
             Provider.of<Bloc>(context, listen: false).setActiveSchedule(entry.scheduleView);
             Navigator.pop(context, entry.scheduleView);
           },
-          onDoubleTap: () => _edit(context),
+          onDoubleTap: () => editSchedule(context, entry.scheduleView),
           child: ListTile(
             title: Text(entry.scheduleView.code),
             trailing: IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () => _edit(context),
+              onPressed: () => editSchedule(context, entry.scheduleView),
             ),
           ),
         ),
       ),
     ),
   );
-
-  _edit(BuildContext context) {
-    Provider.of<Bloc>(context, listen: false).setActiveSchedule(entry.scheduleView);
-    push(context, ScheduleEdit(schedule: entry.scheduleView));
-  }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
-import 'package:timesheets/ui/group_edit.dart';
 import 'package:timesheets/ui/org_edit.dart';
+import 'package:timesheets/ui/group_edit.dart';
 import 'package:timesheets/ui/help_page.dart';
 
 /// Дроувер домашнего экрана
@@ -28,7 +28,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               // Список организаций
-              listHeater(context, Icons.business, l10n.orgs, onAddPressed: () => push(context, OrgEdit())),
+              listHeater(context, Icons.business, l10n.orgs,
+                  onAddPressed: () => addOrg(context)),
               Flexible(
                 child: StreamBuilder<List<ActiveOrg>>(
                   stream: bloc.activeOrgs,
@@ -45,7 +46,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
               StreamBuilder<Org>(
                   stream: bloc.activeOrg,
                   builder: (context, snapshot) => snapshot.hasData
-                      ? listHeater(context, Icons.group, l10n.groups, onAddPressed: () => addGroup(context))
+                      ? listHeater(context, Icons.group, l10n.groups,
+                            onAddPressed: () => addGroup(context))
                       : Spacer()
               ),
               StreamBuilder<List<ActiveOrg>>(
@@ -55,7 +57,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       : Text('')
               ),
               Spacer(),
-              listHeater(context, Icons.help, l10n.help, onHeaderTap: () => push(context, HelpPage())),
+              listHeater(context, Icons.help, l10n.help,
+                  onHeaderTap: () => push(context, HelpPage())),
             ],
           ),
         ),
@@ -110,7 +113,7 @@ class _OrgCard extends StatelessWidget {
           onTap: () {
             Provider.of<Bloc>(context, listen: false).setActiveOrg(entry.orgView);
           },
-          onDoubleTap: () => _edit(context),
+          onDoubleTap: () => editOrg(context, entry.orgView),
           child: ListTile(
             title: Text(entry.orgView.name),
             subtitle: Text('${isNotEmpty(entry.orgView.inn)
@@ -119,16 +122,13 @@ class _OrgCard extends StatelessWidget {
             ),
             trailing: IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () => _edit(context),
+              onPressed: () => editOrg(context, entry.orgView),
             ),
           ),
         ),
       ),
     ),
   );
-
-  _edit(BuildContext context) =>
-      push(context, OrgEdit(org: entry.orgView));
 }
 
 /// Карточка группы
@@ -164,23 +164,17 @@ class _GroupCard extends StatelessWidget {
                 .setActiveGroup(entry.groupView);
             Navigator.pop(context);
           },
-          onDoubleTap: () => _edit(context),
+          onDoubleTap: () => editGroup(context, entry.groupView),
           child: ListTile(
             title: Text(entry.groupView.name),
             subtitle: Text(entry.groupView.schedule.code),
             trailing: IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () => _edit(context),
+              onPressed: () => editGroup(context, entry.groupView),
             ),
           ),
         ),
       ),
     ),
   );
-
-  /// Исправление группы
-  _edit(BuildContext context) async {
-    Provider.of<Bloc>(context, listen: false).setActiveGroup(entry.groupView);
-    push(context, GroupEdit(groupView: entry.groupView));
-  }
 }
