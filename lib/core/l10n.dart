@@ -12,11 +12,11 @@ class L10n {
 
   static const Map<String, Map<String, String>> _l10n = {
     'ru': {
-      'addGroup': 'Добавить группу',
-      'addOrg': 'Добавить организацию',
-      'addPerson': 'Добавить персону',
-      'addPersonToGroup': 'Добавить персону в группу',
-      'addSchedule': 'Добавить график',
+      'addGroup': 'Добавьте группу',
+      'addOrg': 'Добавьте организацию',
+      'addPerson': 'Добавьте персону',
+      'addPersonToGroup': 'Добавьте персону в группу',
+      'addSchedule': 'Добавьте график',
       'beginDate': 'Дата поступления в группу',
       'bindingUpdating': 'Исправление привязки',
       'dataLoading': 'Загрузка данных',
