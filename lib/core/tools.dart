@@ -89,5 +89,13 @@ bool isHoliday(DateTime date) {
   return [5,6].contains(weekdayIndex);
 }
 
+/// Фамилия Имя Отчество
 String fio(Person person) => person != null
     ? '${person.family} ${person.name} ${person.middleName ?? ''}' : '';
+
+/// Заглавная первая буква в строке
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1)}";
+  }
+}
