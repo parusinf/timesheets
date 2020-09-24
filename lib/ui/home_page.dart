@@ -139,22 +139,31 @@ class HomePageState extends State<HomePage> {
             ),
       ),
     ];
+
     for (int day = 1; day <= period.day; day++) {
       final period = bloc.activePeriod.value;
       final date = DateTime(period.year, period.month, day);
+
+      // Количество присутствующих персон на дату
+      final hoursNorm = _getHoursNorm(date);
+      final dateCountStr = hoursNorm > 0.0
+          ? _groupAttendances.where(
+                (attendance) => attendance.date == date).toList().length.toString()
+          : '';
+
       rowCells.add(
         StreamBuilder<DateTime>(
           stream: bloc.activePeriod,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return _createFixedCell(
-                day.toString(),
-                abbrWeekday(date),
+                '${abbrWeekday(date).capitalize()} ${day.toString()}',
+                dateCountStr,
                 width: columnWidth,
                 alignment: Alignment.center,
                 borderStyle: BorderStyle.solid,
                 titleColor: isHoliday(date) ? Colors.red : Colors.black87,
-                subtitleColor: isHoliday(date) ? Colors.red : Colors.black54,
+                subtitleColor: Colors.black54,
               );
             } else {
               return Text('');
@@ -238,8 +247,7 @@ class HomePageState extends State<HomePage> {
       final date = DateTime(period.year, period.month, day);
       // Есть посещаемость в этот день, её можно удалить
       if (dates.contains(date)) {
-        final attendance = personAttendances.firstWhere((
-            attendance) => attendance.date == date);
+        final attendance = personAttendances.firstWhere((attendance) => attendance.date == date);
         rowCells.add(
           InkWell(
             onTap: () => _deleteAttendance(attendance),
@@ -248,7 +256,7 @@ class HomePageState extends State<HomePage> {
                 fontWeight: FontWeight.bold),
           ),
         );
-        // Посещаемости нет, её можно добавить
+      // Посещаемости нет, её можно добавить
       } else {
         final hoursNorm = _getHoursNorm(date);
         if (hoursNorm > 0.0) {
