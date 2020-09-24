@@ -139,18 +139,14 @@ class HomePageState extends State<HomePage> {
             ),
       ),
     ];
-
     for (int day = 1; day <= period.day; day++) {
-      final period = bloc.activePeriod.value;
       final date = DateTime(period.year, period.month, day);
-
-      // Количество присутствующих персон на дату
       final hoursNorm = _getHoursNorm(date);
+      // Количество присутствующих персон на дату
       final dateCountStr = hoursNorm > 0.0
           ? _groupAttendances.where(
                 (attendance) => attendance.date == date).toList().length.toString()
           : '';
-
       rowCells.add(
         StreamBuilder<DateTime>(
           stream: bloc.activePeriod,
