@@ -23,18 +23,24 @@ class HelpPageState extends State<HelpPage> {
     appBar: AppBar(
       title: Text(l10n.help),
       actions: <Widget>[
-        IconButton(icon: const Icon(Icons.ondemand_video), onPressed: _launchURL),
+        IconButton(
+          icon: const Icon(Icons.ondemand_video),
+          onPressed: () => _launchURL('https://youtu.be/-TV0l17MW18'),
+        ),
+        IconButton(
+          icon: const Icon(Icons.chat),
+          onPressed: () => _launchURL('https://chat.whatsapp.com/LU9rBpRadmE1Xw53TZ3VOl'),
+        ),
       ],
     ),
     body: Markdown(data: _fetchHelp()),
   );
 
-  Future _launchURL() async {
-    const url = 'https://youtu.be/-TV0l17MW18';
+  Future _launchURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      showMessage(_scaffoldKey, 'Видео не запускается');
+      showMessage(_scaffoldKey, 'Ссылка не запускается');
     }
   }
 
@@ -63,7 +69,7 @@ class HelpPageState extends State<HelpPage> {
 
 ## Релиз
 
-2020.9.22
+2020.9.24
 
 ## Автор
 
