@@ -40,7 +40,7 @@ Future unloadFile(
         // Есть посещаемость в этот день
         if (dates.contains(date)) {
           final attendance = personAttendances.firstWhere((attendance) => attendance.date == date);
-          buffer.write(attendance.hoursFact.toString());
+          buffer.write(doubleToString(attendance.hoursFact));
         }
         buffer.write(';');
       }
