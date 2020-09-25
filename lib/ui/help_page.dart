@@ -67,9 +67,9 @@ class HelpPageState extends State<HelpPage> {
 ### Демо
 [Видео-демонстрация](https://youtu.be/jGygPdV9smU)
 
-## Релиз
+## Выпуск
 
-2020.9.24
+2020.9.25
 
 ## Автор
 
