@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:timesheets/core.dart';
+import 'package:timesheets/core/unload_file.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/db/schedule_helper.dart';
 import 'package:timesheets/ui/home_drawer.dart';
@@ -62,8 +63,8 @@ class HomePageState extends State<HomePage> {
                 } else {
                   // Синхронизация с сервером
                   return IconButton(
-                    icon: Icon(Icons.send, color: Colors.transparent),
-                    onPressed: () => {},
+                    icon: Icon(Icons.file_upload),
+                    onPressed: _unloadFile,
                   );
                 }
               }
@@ -117,6 +118,20 @@ class HomePageState extends State<HomePage> {
       }
     ),
   );
+
+  /// Выгрузка посещаемости группы за период в CSV файл
+  Future _unloadFile() async {
+    try {
+      await unloadFile(
+        bloc.activeGroup.value,
+        bloc.activePeriod.value,
+        _groupPeriodPersons,
+        _groupAttendances,
+      );
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
+  }
 
   /// Создание строки заголовка таблицы
   List<Widget> _createTitleRow() {

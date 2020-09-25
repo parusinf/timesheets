@@ -23,6 +23,8 @@ dependencies:
   horizontal_data_table:
   flutter_markdown:
   url_launcher:
+  permission_handler:
+  flutter_share_content:
 
 dev_dependencies:
   flutter_test:
