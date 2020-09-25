@@ -48,7 +48,7 @@ Future unloadFile(
     }
 
     // Запись файла
-    final filename = '${group.name}~${org.name}.csv'.replaceAll(' ', '_');
+    final filename = '${group.name}.${org.name}.csv'.replaceAll(' ', '_');
     final dbFolder = await getExternalStorageDirectory();
     final file = File(p.join(dbFolder.path, filename));
     file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
