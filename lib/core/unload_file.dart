@@ -53,7 +53,7 @@ Future unloadFile(
     final file = File(p.join(dbFolder.path, filename));
     file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
 
-    // Запуск файла
+    // Отправка файла
     FlutterShareContent.shareContent(imageUrl: file.path, msg: 'Табель посещаемости');
   }
 }
