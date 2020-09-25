@@ -91,7 +91,7 @@ bool isHoliday(DateTime date) {
 
 /// Фамилия Имя Отчество
 String fio(Person person) => person != null
-    ? '${person.family} ${person.name} ${person.middleName ?? ''}' : '';
+    ? '${person.family} ${person.name} ${person.middleName ?? ''}'.trim() : '';
 
 /// Заглавная первая буква в строке
 extension StringExtension on String {
