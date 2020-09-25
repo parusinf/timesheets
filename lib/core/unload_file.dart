@@ -9,6 +9,7 @@ import 'package:timesheets/core/cp1251.dart';
 
 /// Выгрузка посещаемости группы за период в CSV файл
 Future unloadFile(
+  Org org,
   GroupView group,
   DateTime period,
   List<GroupPersonView> groupPersons,
@@ -47,7 +48,7 @@ Future unloadFile(
     }
 
     // Запись файла
-    final filename = '${group.name}.csv'.replaceAll(' ', '_');
+    final filename = '${group.name}~${org.name}.csv'.replaceAll(' ', '_');
     final dbFolder = await getExternalStorageDirectory();
     final file = File(p.join(dbFolder.path, filename));
     file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
