@@ -160,8 +160,7 @@ class _GroupCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         child: InkWell(
           onTap: () {
-            Provider.of<Bloc>(context, listen: false)
-                .setActiveGroup(entry.groupView);
+            Provider.of<Bloc>(context, listen: false).setActiveGroup(entry.groupView);
             Navigator.pop(context);
           },
           onDoubleTap: () => editGroup(context, entry.groupView),
