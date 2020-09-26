@@ -144,7 +144,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
             await bloc.updateGroupPerson(GroupPersonView(
               id: widget.groupPerson.id,
               groupId: widget.groupPerson.groupId,
-              person: person,
+              person: person ?? widget.groupPerson.person,
               beginDate: stringToDate(_beginDateEdit.text),
               endDate: stringToDate(_endDateEdit.text),
             ));
