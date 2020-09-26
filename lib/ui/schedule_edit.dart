@@ -55,10 +55,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(widget.actionType == DataActionType.Insert
-          ? l10n.scheduleInserting
-          : l10n.scheduleUpdating
-      ),
+      title: Text(l10n.schedule),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],

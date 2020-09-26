@@ -745,11 +745,13 @@ class Group extends DataClass implements Insertable<Group> {
   final int orgId;
   final String name;
   final int scheduleId;
+  final int meals;
   Group(
       {@required this.id,
       @required this.orgId,
       @required this.name,
-      @required this.scheduleId});
+      @required this.scheduleId,
+      this.meals});
   factory Group.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -761,6 +763,7 @@ class Group extends DataClass implements Insertable<Group> {
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       scheduleId:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}scheduleId']),
+      meals: intType.mapFromDatabaseResponse(data['${effectivePrefix}meals']),
     );
   }
   @override
@@ -778,6 +781,9 @@ class Group extends DataClass implements Insertable<Group> {
     if (!nullToAbsent || scheduleId != null) {
       map['scheduleId'] = Variable<int>(scheduleId);
     }
+    if (!nullToAbsent || meals != null) {
+      map['meals'] = Variable<int>(meals);
+    }
     return map;
   }
 
@@ -790,6 +796,8 @@ class Group extends DataClass implements Insertable<Group> {
       scheduleId: scheduleId == null && nullToAbsent
           ? const Value.absent()
           : Value(scheduleId),
+      meals:
+          meals == null && nullToAbsent ? const Value.absent() : Value(meals),
     );
   }
 
@@ -801,6 +809,7 @@ class Group extends DataClass implements Insertable<Group> {
       orgId: serializer.fromJson<int>(json['orgId']),
       name: serializer.fromJson<String>(json['name']),
       scheduleId: serializer.fromJson<int>(json['scheduleId']),
+      meals: serializer.fromJson<int>(json['meals']),
     );
   }
   @override
@@ -811,14 +820,17 @@ class Group extends DataClass implements Insertable<Group> {
       'orgId': serializer.toJson<int>(orgId),
       'name': serializer.toJson<String>(name),
       'scheduleId': serializer.toJson<int>(scheduleId),
+      'meals': serializer.toJson<int>(meals),
     };
   }
 
-  Group copyWith({int id, int orgId, String name, int scheduleId}) => Group(
+  Group copyWith({int id, int orgId, String name, int scheduleId, int meals}) =>
+      Group(
         id: id ?? this.id,
         orgId: orgId ?? this.orgId,
         name: name ?? this.name,
         scheduleId: scheduleId ?? this.scheduleId,
+        meals: meals ?? this.meals,
       );
   @override
   String toString() {
@@ -826,14 +838,17 @@ class Group extends DataClass implements Insertable<Group> {
           ..write('id: $id, ')
           ..write('orgId: $orgId, ')
           ..write('name: $name, ')
-          ..write('scheduleId: $scheduleId')
+          ..write('scheduleId: $scheduleId, ')
+          ..write('meals: $meals')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(id.hashCode,
-      $mrjc(orgId.hashCode, $mrjc(name.hashCode, scheduleId.hashCode))));
+  int get hashCode => $mrjf($mrjc(
+      id.hashCode,
+      $mrjc(orgId.hashCode,
+          $mrjc(name.hashCode, $mrjc(scheduleId.hashCode, meals.hashCode)))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -841,7 +856,8 @@ class Group extends DataClass implements Insertable<Group> {
           other.id == this.id &&
           other.orgId == this.orgId &&
           other.name == this.name &&
-          other.scheduleId == this.scheduleId);
+          other.scheduleId == this.scheduleId &&
+          other.meals == this.meals);
 }
 
 class GroupsCompanion extends UpdateCompanion<Group> {
@@ -849,17 +865,20 @@ class GroupsCompanion extends UpdateCompanion<Group> {
   final Value<int> orgId;
   final Value<String> name;
   final Value<int> scheduleId;
+  final Value<int> meals;
   const GroupsCompanion({
     this.id = const Value.absent(),
     this.orgId = const Value.absent(),
     this.name = const Value.absent(),
     this.scheduleId = const Value.absent(),
+    this.meals = const Value.absent(),
   });
   GroupsCompanion.insert({
     this.id = const Value.absent(),
     @required int orgId,
     @required String name,
     @required int scheduleId,
+    this.meals = const Value.absent(),
   })  : orgId = Value(orgId),
         name = Value(name),
         scheduleId = Value(scheduleId);
@@ -868,12 +887,14 @@ class GroupsCompanion extends UpdateCompanion<Group> {
     Expression<int> orgId,
     Expression<String> name,
     Expression<int> scheduleId,
+    Expression<int> meals,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (orgId != null) 'orgId': orgId,
       if (name != null) 'name': name,
       if (scheduleId != null) 'scheduleId': scheduleId,
+      if (meals != null) 'meals': meals,
     });
   }
 
@@ -881,12 +902,14 @@ class GroupsCompanion extends UpdateCompanion<Group> {
       {Value<int> id,
       Value<int> orgId,
       Value<String> name,
-      Value<int> scheduleId}) {
+      Value<int> scheduleId,
+      Value<int> meals}) {
     return GroupsCompanion(
       id: id ?? this.id,
       orgId: orgId ?? this.orgId,
       name: name ?? this.name,
       scheduleId: scheduleId ?? this.scheduleId,
+      meals: meals ?? this.meals,
     );
   }
 
@@ -905,6 +928,9 @@ class GroupsCompanion extends UpdateCompanion<Group> {
     if (scheduleId.present) {
       map['scheduleId'] = Variable<int>(scheduleId.value);
     }
+    if (meals.present) {
+      map['meals'] = Variable<int>(meals.value);
+    }
     return map;
   }
 
@@ -914,7 +940,8 @@ class GroupsCompanion extends UpdateCompanion<Group> {
           ..write('id: $id, ')
           ..write('orgId: $orgId, ')
           ..write('name: $name, ')
-          ..write('scheduleId: $scheduleId')
+          ..write('scheduleId: $scheduleId, ')
+          ..write('meals: $meals')
           ..write(')'))
         .toString();
   }
@@ -958,8 +985,16 @@ class Groups extends Table with TableInfo<Groups, Group> {
         $customConstraints: 'NOT NULL REFERENCES schedules (id)');
   }
 
+  final VerificationMeta _mealsMeta = const VerificationMeta('meals');
+  GeneratedIntColumn _meals;
+  GeneratedIntColumn get meals => _meals ??= _constructMeals();
+  GeneratedIntColumn _constructMeals() {
+    return GeneratedIntColumn('meals', $tableName, true,
+        $customConstraints: '');
+  }
+
   @override
-  List<GeneratedColumn> get $columns => [id, orgId, name, scheduleId];
+  List<GeneratedColumn> get $columns => [id, orgId, name, scheduleId, meals];
   @override
   Groups get asDslTable => this;
   @override
@@ -994,6 +1029,10 @@ class Groups extends Table with TableInfo<Groups, Group> {
     } else if (isInserting) {
       context.missing(_scheduleIdMeta);
     }
+    if (data.containsKey('meals')) {
+      context.handle(
+          _mealsMeta, meals.isAcceptableOrUnknown(data['meals'], _mealsMeta));
+    }
     return context;
   }
 
@@ -1020,12 +1059,16 @@ class Person extends DataClass implements Insertable<Person> {
   final String name;
   final String middleName;
   final DateTime birthday;
+  final String phone;
+  final String phone2;
   Person(
       {@required this.id,
       @required this.family,
       @required this.name,
       this.middleName,
-      this.birthday});
+      this.birthday,
+      this.phone,
+      this.phone2});
   factory Person.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -1041,6 +1084,10 @@ class Person extends DataClass implements Insertable<Person> {
           .mapFromDatabaseResponse(data['${effectivePrefix}middleName']),
       birthday: dateTimeType
           .mapFromDatabaseResponse(data['${effectivePrefix}birthday']),
+      phone:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}phone']),
+      phone2:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}phone2']),
     );
   }
   @override
@@ -1061,6 +1108,12 @@ class Person extends DataClass implements Insertable<Person> {
     if (!nullToAbsent || birthday != null) {
       map['birthday'] = Variable<DateTime>(birthday);
     }
+    if (!nullToAbsent || phone != null) {
+      map['phone'] = Variable<String>(phone);
+    }
+    if (!nullToAbsent || phone2 != null) {
+      map['phone2'] = Variable<String>(phone2);
+    }
     return map;
   }
 
@@ -1076,6 +1129,10 @@ class Person extends DataClass implements Insertable<Person> {
       birthday: birthday == null && nullToAbsent
           ? const Value.absent()
           : Value(birthday),
+      phone:
+          phone == null && nullToAbsent ? const Value.absent() : Value(phone),
+      phone2:
+          phone2 == null && nullToAbsent ? const Value.absent() : Value(phone2),
     );
   }
 
@@ -1088,6 +1145,8 @@ class Person extends DataClass implements Insertable<Person> {
       name: serializer.fromJson<String>(json['name']),
       middleName: serializer.fromJson<String>(json['middleName']),
       birthday: serializer.fromJson<DateTime>(json['birthday']),
+      phone: serializer.fromJson<String>(json['phone']),
+      phone2: serializer.fromJson<String>(json['phone2']),
     );
   }
   @override
@@ -1099,6 +1158,8 @@ class Person extends DataClass implements Insertable<Person> {
       'name': serializer.toJson<String>(name),
       'middleName': serializer.toJson<String>(middleName),
       'birthday': serializer.toJson<DateTime>(birthday),
+      'phone': serializer.toJson<String>(phone),
+      'phone2': serializer.toJson<String>(phone2),
     };
   }
 
@@ -1107,13 +1168,17 @@ class Person extends DataClass implements Insertable<Person> {
           String family,
           String name,
           String middleName,
-          DateTime birthday}) =>
+          DateTime birthday,
+          String phone,
+          String phone2}) =>
       Person(
         id: id ?? this.id,
         family: family ?? this.family,
         name: name ?? this.name,
         middleName: middleName ?? this.middleName,
         birthday: birthday ?? this.birthday,
+        phone: phone ?? this.phone,
+        phone2: phone2 ?? this.phone2,
       );
   @override
   String toString() {
@@ -1122,7 +1187,9 @@ class Person extends DataClass implements Insertable<Person> {
           ..write('family: $family, ')
           ..write('name: $name, ')
           ..write('middleName: $middleName, ')
-          ..write('birthday: $birthday')
+          ..write('birthday: $birthday, ')
+          ..write('phone: $phone, ')
+          ..write('phone2: $phone2')
           ..write(')'))
         .toString();
   }
@@ -1133,7 +1200,11 @@ class Person extends DataClass implements Insertable<Person> {
       $mrjc(
           family.hashCode,
           $mrjc(
-              name.hashCode, $mrjc(middleName.hashCode, birthday.hashCode)))));
+              name.hashCode,
+              $mrjc(
+                  middleName.hashCode,
+                  $mrjc(birthday.hashCode,
+                      $mrjc(phone.hashCode, phone2.hashCode)))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -1142,7 +1213,9 @@ class Person extends DataClass implements Insertable<Person> {
           other.family == this.family &&
           other.name == this.name &&
           other.middleName == this.middleName &&
-          other.birthday == this.birthday);
+          other.birthday == this.birthday &&
+          other.phone == this.phone &&
+          other.phone2 == this.phone2);
 }
 
 class PersonsCompanion extends UpdateCompanion<Person> {
@@ -1151,12 +1224,16 @@ class PersonsCompanion extends UpdateCompanion<Person> {
   final Value<String> name;
   final Value<String> middleName;
   final Value<DateTime> birthday;
+  final Value<String> phone;
+  final Value<String> phone2;
   const PersonsCompanion({
     this.id = const Value.absent(),
     this.family = const Value.absent(),
     this.name = const Value.absent(),
     this.middleName = const Value.absent(),
     this.birthday = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.phone2 = const Value.absent(),
   });
   PersonsCompanion.insert({
     this.id = const Value.absent(),
@@ -1164,6 +1241,8 @@ class PersonsCompanion extends UpdateCompanion<Person> {
     @required String name,
     this.middleName = const Value.absent(),
     this.birthday = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.phone2 = const Value.absent(),
   })  : family = Value(family),
         name = Value(name);
   static Insertable<Person> custom({
@@ -1172,6 +1251,8 @@ class PersonsCompanion extends UpdateCompanion<Person> {
     Expression<String> name,
     Expression<String> middleName,
     Expression<DateTime> birthday,
+    Expression<String> phone,
+    Expression<String> phone2,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1179,6 +1260,8 @@ class PersonsCompanion extends UpdateCompanion<Person> {
       if (name != null) 'name': name,
       if (middleName != null) 'middleName': middleName,
       if (birthday != null) 'birthday': birthday,
+      if (phone != null) 'phone': phone,
+      if (phone2 != null) 'phone2': phone2,
     });
   }
 
@@ -1187,13 +1270,17 @@ class PersonsCompanion extends UpdateCompanion<Person> {
       Value<String> family,
       Value<String> name,
       Value<String> middleName,
-      Value<DateTime> birthday}) {
+      Value<DateTime> birthday,
+      Value<String> phone,
+      Value<String> phone2}) {
     return PersonsCompanion(
       id: id ?? this.id,
       family: family ?? this.family,
       name: name ?? this.name,
       middleName: middleName ?? this.middleName,
       birthday: birthday ?? this.birthday,
+      phone: phone ?? this.phone,
+      phone2: phone2 ?? this.phone2,
     );
   }
 
@@ -1215,6 +1302,12 @@ class PersonsCompanion extends UpdateCompanion<Person> {
     if (birthday.present) {
       map['birthday'] = Variable<DateTime>(birthday.value);
     }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (phone2.present) {
+      map['phone2'] = Variable<String>(phone2.value);
+    }
     return map;
   }
 
@@ -1225,7 +1318,9 @@ class PersonsCompanion extends UpdateCompanion<Person> {
           ..write('family: $family, ')
           ..write('name: $name, ')
           ..write('middleName: $middleName, ')
-          ..write('birthday: $birthday')
+          ..write('birthday: $birthday, ')
+          ..write('phone: $phone, ')
+          ..write('phone2: $phone2')
           ..write(')'))
         .toString();
   }
@@ -1277,9 +1372,25 @@ class Persons extends Table with TableInfo<Persons, Person> {
         $customConstraints: '');
   }
 
+  final VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  GeneratedTextColumn _phone;
+  GeneratedTextColumn get phone => _phone ??= _constructPhone();
+  GeneratedTextColumn _constructPhone() {
+    return GeneratedTextColumn('phone', $tableName, true,
+        $customConstraints: '');
+  }
+
+  final VerificationMeta _phone2Meta = const VerificationMeta('phone2');
+  GeneratedTextColumn _phone2;
+  GeneratedTextColumn get phone2 => _phone2 ??= _constructPhone2();
+  GeneratedTextColumn _constructPhone2() {
+    return GeneratedTextColumn('phone2', $tableName, true,
+        $customConstraints: '');
+  }
+
   @override
   List<GeneratedColumn> get $columns =>
-      [id, family, name, middleName, birthday];
+      [id, family, name, middleName, birthday, phone, phone2];
   @override
   Persons get asDslTable => this;
   @override
@@ -1315,6 +1426,14 @@ class Persons extends Table with TableInfo<Persons, Person> {
     if (data.containsKey('birthday')) {
       context.handle(_birthdayMeta,
           birthday.isAcceptableOrUnknown(data['birthday'], _birthdayMeta));
+    }
+    if (data.containsKey('phone')) {
+      context.handle(
+          _phoneMeta, phone.isAcceptableOrUnknown(data['phone'], _phoneMeta));
+    }
+    if (data.containsKey('phone2')) {
+      context.handle(_phone2Meta,
+          phone2.isAcceptableOrUnknown(data['phone2'], _phone2Meta));
     }
     return context;
   }
@@ -2406,7 +2525,7 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<GroupsViewResult> _groupsView(int orgId) {
     return customSelect(
-        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE G.orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
+        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       G.meals,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE G.orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
         variables: [Variable.withInt(orgId)],
         readsFrom: {groups, schedules, groupPersons}).map((QueryRow row) {
       return GroupsViewResult(
@@ -2415,6 +2534,7 @@ abstract class _$Db extends GeneratedDatabase {
         name: row.readString('name'),
         scheduleId: row.readInt('scheduleId'),
         scheduleCode: row.readString('scheduleCode'),
+        meals: row.readInt('meals'),
         personCount: row.readInt('personCount'),
       );
     });
@@ -2422,7 +2542,7 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<PersonsViewResult> _personsView() {
     return customSelect(
-        'SELECT P.id,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE personId = P.id) AS INT) AS groupCount\n  FROM persons P\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        'SELECT P.id,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE personId = P.id) AS INT) AS groupCount\n  FROM persons P\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
         variables: [],
         readsFrom: {persons, groupPersons}).map((QueryRow row) {
       return PersonsViewResult(
@@ -2431,6 +2551,8 @@ abstract class _$Db extends GeneratedDatabase {
         name: row.readString('name'),
         middleName: row.readString('middleName'),
         birthday: row.readDateTime('birthday'),
+        phone: row.readString('phone'),
+        phone2: row.readString('phone2'),
         groupCount: row.readInt('groupCount'),
       );
     });
@@ -2438,7 +2560,7 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {
     return customSelect(
-        'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
         variables: [Variable.withInt(groupId)],
         readsFrom: {groupPersons, persons, attendances}).map((QueryRow row) {
       return PersonsInGroupResult(
@@ -2451,6 +2573,8 @@ abstract class _$Db extends GeneratedDatabase {
         name: row.readString('name'),
         middleName: row.readString('middleName'),
         birthday: row.readDateTime('birthday'),
+        phone: row.readString('phone'),
+        phone2: row.readString('phone2'),
         attendanceCount: row.readInt('attendanceCount'),
       );
     });
@@ -2459,7 +2583,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<PersonsInGroupPeriodResult> _personsInGroupPeriod(
       int groupId, DateTime periodBegin, DateTime periodEnd) {
     return customSelect(
-        'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
         variables: [
           Variable.withInt(groupId),
           Variable.withDateTime(periodBegin),
@@ -2480,6 +2604,8 @@ abstract class _$Db extends GeneratedDatabase {
         name: row.readString('name'),
         middleName: row.readString('middleName'),
         birthday: row.readDateTime('birthday'),
+        phone: row.readString('phone'),
+        phone2: row.readString('phone2'),
         attendanceCount: row.readInt('attendanceCount'),
       );
     });
@@ -2534,7 +2660,7 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<ActiveGroupResult> _activeGroup(int orgId) {
     return customSelect(
-        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM orgs O\n INNER JOIN "groups" G ON G.id = O.activeGroupId\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE O.id = :orgId',
+        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       G.meals,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM orgs O\n INNER JOIN "groups" G ON G.id = O.activeGroupId\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE O.id = :orgId',
         variables: [Variable.withInt(orgId)],
         readsFrom: {groups, schedules, groupPersons, orgs}).map((QueryRow row) {
       return ActiveGroupResult(
@@ -2543,6 +2669,7 @@ abstract class _$Db extends GeneratedDatabase {
         name: row.readString('name'),
         scheduleId: row.readInt('scheduleId'),
         scheduleCode: row.readString('scheduleCode'),
+        meals: row.readInt('meals'),
         personCount: row.readInt('personCount'),
       );
     });
@@ -2650,6 +2777,7 @@ class GroupsViewResult {
   final String name;
   final int scheduleId;
   final String scheduleCode;
+  final int meals;
   final int personCount;
   GroupsViewResult({
     this.id,
@@ -2657,6 +2785,7 @@ class GroupsViewResult {
     this.name,
     this.scheduleId,
     this.scheduleCode,
+    this.meals,
     this.personCount,
   });
 }
@@ -2667,6 +2796,8 @@ class PersonsViewResult {
   final String name;
   final String middleName;
   final DateTime birthday;
+  final String phone;
+  final String phone2;
   final int groupCount;
   PersonsViewResult({
     this.id,
@@ -2674,6 +2805,8 @@ class PersonsViewResult {
     this.name,
     this.middleName,
     this.birthday,
+    this.phone,
+    this.phone2,
     this.groupCount,
   });
 }
@@ -2688,6 +2821,8 @@ class PersonsInGroupResult {
   final String name;
   final String middleName;
   final DateTime birthday;
+  final String phone;
+  final String phone2;
   final int attendanceCount;
   PersonsInGroupResult({
     this.id,
@@ -2699,6 +2834,8 @@ class PersonsInGroupResult {
     this.name,
     this.middleName,
     this.birthday,
+    this.phone,
+    this.phone2,
     this.attendanceCount,
   });
 }
@@ -2713,6 +2850,8 @@ class PersonsInGroupPeriodResult {
   final String name;
   final String middleName;
   final DateTime birthday;
+  final String phone;
+  final String phone2;
   final int attendanceCount;
   PersonsInGroupPeriodResult({
     this.id,
@@ -2724,6 +2863,8 @@ class PersonsInGroupPeriodResult {
     this.name,
     this.middleName,
     this.birthday,
+    this.phone,
+    this.phone2,
     this.attendanceCount,
   });
 }
@@ -2734,6 +2875,7 @@ class ActiveGroupResult {
   final String name;
   final int scheduleId;
   final String scheduleCode;
+  final int meals;
   final int personCount;
   ActiveGroupResult({
     this.id,
@@ -2741,6 +2883,7 @@ class ActiveGroupResult {
     this.name,
     this.scheduleId,
     this.scheduleCode,
+    this.meals,
     this.personCount,
   });
 }

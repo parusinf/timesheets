@@ -34,6 +34,8 @@ class _PersonEditState extends State<PersonEdit> {
   final _nameEdit = TextEditingController();
   final _middleNameEdit = TextEditingController();
   final _birthdayEdit = TextEditingController();
+  final _phoneEdit = TextEditingController();
+  final _phone2Edit = TextEditingController();
   bool _autoValidate = false;
 
   @override
@@ -42,6 +44,8 @@ class _PersonEditState extends State<PersonEdit> {
     _nameEdit.text = widget.person?.name;
     _middleNameEdit.text = widget.person?.middleName;
     _birthdayEdit.text = dateToString(widget.person?.birthday);
+    _phoneEdit.text = widget.person?.phone;
+    _phone2Edit.text = widget.person?.phone2;
     super.initState();
   }
 
@@ -51,6 +55,8 @@ class _PersonEditState extends State<PersonEdit> {
     _nameEdit.dispose();
     _middleNameEdit.dispose();
     _birthdayEdit.dispose();
+    _phoneEdit.dispose();
+    _phone2Edit.dispose();
     super.dispose();
   }
 
@@ -58,10 +64,7 @@ class _PersonEditState extends State<PersonEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(widget.actionType == DataActionType.Insert
-          ? l10n.personInserting
-          : l10n.personUpdating
-      ),
+      title: Text(l10n.person),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],
@@ -121,6 +124,42 @@ class _PersonEditState extends State<PersonEdit> {
                 inputFormatters: DateFormatters.formatters,
                 maxLength: 10,
               ),
+              // Телефон
+              TextFormField(
+                controller: _phoneEdit,
+                keyboardType: TextInputType.numberWithOptions(),
+                decoration: InputDecoration(
+                  icon: const Icon(Icons.phone),
+                  labelText: l10n.phone,
+                  prefixText: l10n.countryPhoneCode,
+                  suffix: IconButton(
+                    icon: const Icon(Icons.phone_in_talk),
+                    onPressed: () => _callPerson(_phoneEdit.text),
+                    color: Colors.green,
+                  ),
+                ),
+                validator: _validatePhone,
+                inputFormatters: PhoneFormatters.formatters,
+                maxLength: phoneLength,
+              ),
+              // Телефон 2
+              TextFormField(
+                controller: _phone2Edit,
+                keyboardType: TextInputType.numberWithOptions(),
+                decoration: InputDecoration(
+                  icon: const Icon(Icons.phone),
+                  labelText: l10n.phone,
+                  prefixText: l10n.countryPhoneCode,
+                  suffix: IconButton(
+                    icon: const Icon(Icons.phone_in_talk),
+                    onPressed: () => _callPerson(_phone2Edit.text),
+                    color: Colors.green,
+                  ),
+                ),
+                validator: _validatePhone,
+                inputFormatters: PhoneFormatters.formatters,
+                maxLength: phoneLength,
+              ),
             ],
           ),
         ),
@@ -142,6 +181,8 @@ class _PersonEditState extends State<PersonEdit> {
               name: trim(_nameEdit.text),
               middleName: trim(_middleNameEdit.text),
               birthday: stringToDate(_birthdayEdit.text),
+              phone: trim(_phoneEdit.text),
+              phone2: trim(_phone2Edit.text),
             );
             break;
           case DataActionType.Update:
@@ -151,6 +192,8 @@ class _PersonEditState extends State<PersonEdit> {
               name: trim(_nameEdit.text),
               middleName: trim(_middleNameEdit.text),
               birthday: stringToDate(_birthdayEdit.text),
+              phone: trim(_phoneEdit.text),
+              phone2: trim(_phone2Edit.text),
             ));
             break;
           case DataActionType.Delete: break;
@@ -159,6 +202,15 @@ class _PersonEditState extends State<PersonEdit> {
       } catch(e) {
         showMessage(_scaffoldKey, e.toString());
       }
+    }
+  }
+
+  /// Звонок персоне
+  Future _callPerson(String phone) async {
+    if (phone.isNotEmpty && phone.length == phoneLength) {
+      launchUrl(_scaffoldKey, 'tel:${l10n.countryPhoneCode}$phone');
+    } else {
+      showMessage(_scaffoldKey, l10n.invalidPhone);
     }
   }
 
@@ -182,6 +234,14 @@ class _PersonEditState extends State<PersonEdit> {
   String _validateDate(String value) {
     if (value.isNotEmpty && stringToDate(value) == null) {
       return l10n.invalidDate;
+    }
+    return null;
+  }
+
+  /// Проверка телефона
+  String _validatePhone(String value) {
+    if (value.isNotEmpty && value.length != phoneLength) {
+      return l10n.invalidPhone;
     }
     return null;
   }

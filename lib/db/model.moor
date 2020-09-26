@@ -42,7 +42,9 @@ CREATE TABLE "groups" (
   -- Наименование группы
   name               TEXT NOT NULL,
   -- Идентификатор графика
-  scheduleId         INT NOT NULL REFERENCES schedules (id)
+  scheduleId         INT NOT NULL REFERENCES schedules (id),
+  -- Питание: null - нет, 1 - 2 года и младше, 2 - от 3 лет
+  meals              INT
 );
 CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name, scheduleId);
 CREATE INDEX groups_schedule_index ON "groups" (scheduleId);
@@ -58,7 +60,12 @@ CREATE TABLE persons (
   -- Отчество
   middleName         TEXT,
   -- Дата рождения
-  birthday           DATE
+  birthday           DATE,
+  -- Телефон
+  phone              TEXT,
+  -- Телефон 2
+  phone2             TEXT
+
 );
 CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName, birthday);
 
@@ -205,6 +212,7 @@ SELECT G.id,
        G.name,
        G.scheduleId,
        S.code AS scheduleCode,
+       G.meals,
        CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount
   FROM "groups" G
  INNER JOIN schedules S ON S.id = G.scheduleId
@@ -220,6 +228,8 @@ SELECT P.id,
        P.name,
        P.middleName,
        P.birthday,
+       P.phone,
+       P.phone2,
        CAST((SELECT COUNT(*) FROM group_persons WHERE personId = P.id) AS INT) AS groupCount
   FROM persons P
  ORDER BY
@@ -239,6 +249,8 @@ SELECT L.id,
        P.name,
        P.middleName,
        P.birthday,
+       P.phone,
+       P.phone2,
        CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount
   FROM group_persons L
  INNER JOIN persons P ON P.id = L.personId
@@ -260,6 +272,8 @@ SELECT L.id,
        P.name,
        P.middleName,
        P.birthday,
+       P.phone,
+       P.phone2,
        CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount
   FROM group_persons L
  INNER JOIN persons P ON P.id = L.personId
@@ -312,6 +326,7 @@ SELECT G.id,
        G.name,
        G.scheduleId,
        S.code AS scheduleCode,
+       G.meals,
        CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount
   FROM orgs O
  INNER JOIN "groups" G ON G.id = O.activeGroupId

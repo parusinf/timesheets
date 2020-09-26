@@ -58,9 +58,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(widget.actionType == DataActionType.Insert
-          ? l10n.insertingIntoGroup : l10n.bindingUpdating
-      ),
+      title: Text(l10n.binding),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],

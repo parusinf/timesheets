@@ -50,6 +50,8 @@ class PersonView extends Person {
     @required String name,
     String middleName,
     DateTime birthday,
+    String phone,
+    String phone2,
     this.groupCount = 0,
   }) : super(
     id: id,
@@ -57,6 +59,8 @@ class PersonView extends Person {
     name: name,
     middleName: middleName,
     birthday: birthday,
+    phone: phone,
+    phone2: phone2,
   );
 }
 
@@ -70,12 +74,14 @@ class GroupView extends Group {
     @required int orgId,
     @required String name,
     @required this.schedule,
+    int meals,
     this.personCount = 0,
   }) : super(
     id: id,
     orgId: orgId,
     name: name,
     scheduleId: schedule.id,
+    meals: meals,
   );
 }
 
@@ -137,11 +143,18 @@ class Db extends _$Db {
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   /// Формирование графика и группы по умолчанию
   @override
   MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from == 1) {
+        await m.addColumn(groups, groups.meals);
+        await m.addColumn(persons, persons.phone);
+        await m.addColumn(persons, persons.phone2);
+      }
+    },
     onCreate: (Migrator m) {
       return m.createAll();
     },
@@ -351,12 +364,14 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
     @required Org org,
     @required String name,
     @required Schedule schedule,
+    int meals,
   }) async {
     final id = await into(db.groups).insert(
         GroupsCompanion(
           orgId: Value(org.id),
           name: Value(name),
           scheduleId: Value(schedule.id),
+          meals: Value(meals),
         )
     );
     return GroupView(
@@ -364,6 +379,7 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
       orgId: org.id,
       name: name,
       schedule: schedule,
+      meals: meals,
     );
   }
 
@@ -383,6 +399,7 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
             orgId: row.orgId,
             name: row.name,
             schedule: Schedule(id: row.scheduleId, code: row.scheduleCode),
+            meals: row.meals,
             personCount: row.personCount,
           )
       ).watch();
@@ -395,6 +412,7 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
           orgId: row.orgId,
           name: row.name,
           scheduleId: row.scheduleId,
+          meals: row.meals,
         )
     ).getSingle() ?? _getFirstGroup(org);
 
@@ -406,6 +424,7 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
             orgId: row.orgId,
             name: row.name,
             scheduleId: row.scheduleId,
+            meals: row.meals,
           )
       ).getSingle();
 }
@@ -421,6 +440,8 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
     @required String name,
     String middleName,
     DateTime birthday,
+    String phone,
+    String phone2,
   }) async {
     final id = await into(db.persons).insert(
         PersonsCompanion(
@@ -428,6 +449,8 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
           name: Value(name),
           middleName: Value(middleName),
           birthday: birthday != null ? Value(birthday) : Value.absent(),
+          phone: Value(phone),
+          phone2: Value(phone2),
         )
     );
     return Person(
@@ -436,6 +459,8 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
       name: name,
       middleName: middleName,
       birthday: birthday,
+      phone: phone,
+      phone2: phone2,
     );
   }
 
@@ -456,6 +481,8 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
             name: row.name,
             middleName: row.middleName,
             birthday: row.birthday,
+            phone: row.phone,
+            phone2: row.phone2,
             groupCount: row.groupCount,
           )
       ).watch();
@@ -506,6 +533,8 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
           name: row.name,
           middleName: row.middleName,
           birthday: row.birthday,
+          phone: row.phone,
+          phone2: row.phone2,
         ),
         beginDate: row.beginDate,
         endDate: row.endDate,
@@ -527,6 +556,8 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
           name: row.name,
           middleName: row.middleName,
           birthday: row.birthday,
+          phone: row.phone,
+          phone2: row.phone2,
         ),
         beginDate: row.beginDate,
         endDate: row.endDate,
@@ -660,6 +691,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
             orgId: row.orgId,
             name: row.name,
             schedule: Schedule(id: row.scheduleId, code: row.scheduleCode),
+            meals: row.meals,
             personCount: row.personCount,
           )
       ).watchSingle();

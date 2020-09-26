@@ -13,7 +13,6 @@ class PersonsDictionary extends StatelessWidget {
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.add),
-          tooltip: L10n.of(context).personInserting,
           onPressed: () => addPerson(context),
         ),
       ],

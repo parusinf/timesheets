@@ -115,10 +115,7 @@ class _GroupEditState extends State<GroupEdit> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(widget.actionType == DataActionType.Insert
-            ? l10n.groupInserting
-            : l10n.groupUpdating
-        ),
+        title: Text(l10n.group),
         actions: <Widget>[
           IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
         ],
@@ -163,7 +160,7 @@ class _GroupEditState extends State<GroupEdit> {
                 id: widget.groupView.id,
                 orgId: widget.groupView.orgId,
                 name: trim(_nameEdit.text),
-                scheduleId: schedule.id
+                scheduleId: schedule.id,
             ));
             Navigator.of(context).pop();
             break;

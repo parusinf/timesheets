@@ -12,7 +12,6 @@ class SchedulesDictionary extends StatelessWidget {
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.add),
-          tooltip: L10n.of(context).scheduleInserting,
           onPressed: () => addSchedule(context),
         ),
       ],

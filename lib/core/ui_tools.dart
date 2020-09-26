@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:timesheets/core/l10n.dart';
 
 const lineColor = Colors.black12;
@@ -11,6 +12,7 @@ const dividerHeight = 8.0;
 const padding1 = 16.0;
 const padding2 = 8.0;
 const horizontalSpaceHeight = 20.0;
+const phoneLength = 15;
 
 /// Сообщение в снакбаре
 void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
@@ -59,19 +61,19 @@ Widget horizontalSpace({height = horizontalSpaceHeight}) => SizedBox(height: hei
 /// Горизонтальная линия
 Widget divider() => const Divider(color: lineColor, height: 0.5);
 
+/// Форматировщики целых чисел
+class IntFormatters {
+  static final formatters = <TextInputFormatter>[
+    WhitelistingTextInputFormatter.digitsOnly,
+  ];
+}
+
 /// Форматировщики даты
 class DateFormatters {
   static final _dateDMYFormatter = _DateDMYFormatter();
   static final formatters = <TextInputFormatter>[
     WhitelistingTextInputFormatter.digitsOnly,
     _dateDMYFormatter,
-  ];
-}
-
-/// Форматировщики целых чисел
-class IntFormatters {
-  static final formatters = <TextInputFormatter>[
-    WhitelistingTextInputFormatter.digitsOnly,
   ];
 }
 
@@ -90,6 +92,49 @@ class _DateDMYFormatter extends TextInputFormatter {
     if (newTextLength >= 5) {
       newText.write(newValue.text.substring(2, usedSubstringIndex = 4) + '.');
       if (newValue.selection.end >= 4) selectionIndex++;
+    }
+    if (newTextLength >= usedSubstringIndex) {
+      newText.write(newValue.text.substring(usedSubstringIndex));
+    }
+    return TextEditingValue(
+      text: newText.toString(),
+      selection: TextSelection.collapsed(offset: selectionIndex),
+    );
+  }
+}
+
+/// Форматировщики телефона
+class PhoneFormatters {
+  static final _phoneFormatter = _PhoneFormatter();
+  static final formatters = <TextInputFormatter>[
+    WhitelistingTextInputFormatter.digitsOnly,
+    _phoneFormatter,
+  ];
+}
+
+/// Форматировщик телефона в формате (###) ###-#### ##
+class _PhoneFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    final newTextLength = newValue.text.length;
+    final newText = StringBuffer();
+    var selectionIndex = newValue.selection.end;
+    var usedSubstringIndex = 0;
+    if (newTextLength >= 1) {
+      newText.write('(');
+      if (newValue.selection.end >= 1) selectionIndex++;
+    }
+    if (newTextLength >= 4) {
+      newText.write(newValue.text.substring(0, usedSubstringIndex = 3) + ') ');
+      if (newValue.selection.end >= 3) selectionIndex += 2;
+    }
+    if (newTextLength >= 7) {
+      newText.write(newValue.text.substring(3, usedSubstringIndex = 6) + '-');
+      if (newValue.selection.end >= 6) selectionIndex++;
+    }
+    if (newTextLength >= 9) {
+      newText.write(newValue.text.substring(6, usedSubstringIndex = 8) + '-');
+      if (newValue.selection.end >= 8) selectionIndex++;
     }
     if (newTextLength >= usedSubstringIndex) {
       newText.write(newValue.text.substring(usedSubstringIndex));
@@ -124,3 +169,12 @@ Widget listHeater(BuildContext context, IconData icon, String title, {Function()
 /// Переход на страницу
 Future<T> push<T extends Object>(BuildContext context, Widget page) async =>
     await Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+
+/// Вызов ссылки
+Future launchUrl(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    showMessage(scaffoldKey, L10n.of(scaffoldKey.currentContext).linkNotStart);
+  }
+}

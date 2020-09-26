@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
 
@@ -25,24 +24,16 @@ class HelpPageState extends State<HelpPage> {
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.ondemand_video),
-          onPressed: () => _launchURL('https://youtu.be/-TV0l17MW18'),
+          onPressed: () => launchUrl(_scaffoldKey, 'https://youtu.be/-TV0l17MW18'),
         ),
         IconButton(
           icon: const Icon(Icons.chat),
-          onPressed: () => _launchURL('https://chat.whatsapp.com/LU9rBpRadmE1Xw53TZ3VOl'),
+          onPressed: () => launchUrl(_scaffoldKey, 'https://chat.whatsapp.com/LU9rBpRadmE1Xw53TZ3VOl'),
         ),
       ],
     ),
     body: Markdown(data: _fetchHelp()),
   );
-
-  Future _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      showMessage(_scaffoldKey, 'Ссылка не запускается');
-    }
-  }
 
   String _fetchHelp() {
     return '''

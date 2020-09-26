@@ -221,11 +221,12 @@ class Bloc {
   }
 
   /// Добавление группы
-  Future<GroupView> insertGroup({@required String name, @required Schedule schedule}) async {
+  Future<GroupView> insertGroup({@required String name, @required Schedule schedule, int meals}) async {
     final groupView = await db.groupsDao.insert2(
       org: activeOrg.value,
       name: name,
       schedule: schedule,
+      meals: meals,
     );
     setActiveGroup(groupView);
     return groupView;
@@ -253,11 +254,15 @@ class Bloc {
     @required String name,
     String middleName,
     DateTime birthday,
+    String phone,
+    String phone2,
   }) async => await db.personsDao.insert2(
     family: family,
     name: name,
     middleName: middleName,
     birthday: birthday,
+    phone: phone,
+    phone2: phone2,
   );
 
   /// Исправление персоны
