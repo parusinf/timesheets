@@ -10,6 +10,7 @@ import 'package:timesheets/db/schedule_helper.dart';
 import 'package:timesheets/ui/home_drawer.dart';
 import 'package:timesheets/ui/org_edit.dart';
 import 'package:timesheets/ui/group_edit.dart';
+import 'package:timesheets/ui/person_edit.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
@@ -218,22 +219,26 @@ class HomePageState extends State<HomePage> {
     subtitleColor = Colors.black54,
     leftPadding = 0.0,
     borderStyle = BorderStyle.none,
-  }) => Container(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: crossAxisAlignment,
-      children: <Widget>[
-        text(title, fontSize: 16.0, color: titleColor),
-        horizontalSpace(height: dividerHeight),
-        text(subtitle, fontSize: 14.0, color: subtitleColor),
-      ],
-    ),
-    width: width,
-    height: rowHeight,
-    alignment: alignment,
-    padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
-    decoration: BoxDecoration(
-      border: Border(left: BorderSide(color: lineColor, width: 0.5, style: borderStyle)),
+    Function() onTap,
+  }) => InkWell(
+    onTap: onTap ?? () => {},
+    child: Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: crossAxisAlignment,
+        children: <Widget>[
+          text(title, fontSize: 16.0, color: titleColor),
+          horizontalSpace(height: dividerHeight),
+          text(subtitle, fontSize: 14.0, color: subtitleColor),
+        ],
+      ),
+      width: width,
+      height: rowHeight,
+      alignment: alignment,
+      padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
+      decoration: BoxDecoration(
+        border: Border(left: BorderSide(color: lineColor, width: 0.5, style: borderStyle)),
+      ),
     ),
   );
 
@@ -245,6 +250,7 @@ class HomePageState extends State<HomePage> {
     alignment: Alignment.centerLeft,
     crossAxisAlignment: CrossAxisAlignment.start,
     leftPadding: leftPadding,
+    onTap: () => editPerson(context, _groupPeriodPersons[index].person),
   );
 
   /// Создание строки таблицы
