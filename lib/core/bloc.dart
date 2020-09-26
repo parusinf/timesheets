@@ -175,8 +175,10 @@ class Bloc {
   }
 
   /// Исправление организации
-  Future<bool> updateOrg(Org org) async =>
-    await db.orgsDao.update2(org);
+  Future<bool> updateOrg(Org org) async {
+    setActiveOrg(org);
+    return await db.orgsDao.update2(org);
+  }
 
   /// Удаление организации
   Future<bool> deleteOrg(Org org) async {

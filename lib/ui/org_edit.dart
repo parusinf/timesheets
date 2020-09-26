@@ -9,8 +9,10 @@ Future addOrg(BuildContext context) async =>
     push(context, OrgEdit(null));
 
 /// Исправление организации
-Future editOrg(BuildContext context, Org org) async =>
-    push(context, OrgEdit(org));
+Future editOrg(BuildContext context, Org org) async {
+  await push(context, OrgEdit(org));
+  Navigator.pop(context);
+}
 
 /// Форма редактирования организации
 class OrgEdit extends StatefulWidget {
