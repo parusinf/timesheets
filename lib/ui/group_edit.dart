@@ -69,7 +69,7 @@ class _GroupEditState extends State<GroupEdit> {
         textCapitalization: TextCapitalization.words,
         decoration: InputDecoration(
           icon: const Icon(Icons.group),
-          labelText: l10n.groupName,
+          labelText: l10n.name,
         ),
         validator: _validateName,
       ),

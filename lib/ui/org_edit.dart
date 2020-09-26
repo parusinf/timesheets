@@ -75,7 +75,7 @@ class _OrgEditState extends State<OrgEdit> {
                 autofocus: widget.actionType == DataActionType.Insert ? true : false,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.business),
-                  labelText: l10n.orgName,
+                  labelText: l10n.name,
                 ),
                 validator: _validateName,
               ),

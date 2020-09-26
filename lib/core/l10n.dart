@@ -24,7 +24,6 @@ class L10n {
       'endDate': 'Дата выбытия',
       'from': 'с',
       'group': 'Группа',
-      'groupName': 'Наименование группы',
       'groupPersons': 'Персоны в группе',
       'groupUpdating': 'Исправление группы',
       'groups': 'Группы',
@@ -35,12 +34,12 @@ class L10n {
       'invalidHoursNorm': 'Некорректная норма часов',
       'invalidPhone': 'Формат телефона (###) ###-##-##',
       'linkNotStart': 'Ссылка не запускается',
+      'name': 'Наименование',
       'noHoursNorm': 'Нет нормы часов',
       'noName': 'Нет наименования',
       'noPersonFamily': 'Нет фамилии',
       'noPersonName': 'Нет имени',
       'org': 'Организация',
-      'orgName': 'Наименование организации',
       'orgs': 'Организации',
       'person': 'Персона',
       'personBirthday': 'Дата рождения',
@@ -77,7 +76,6 @@ class L10n {
   get endDate => _l10n[locale.languageCode]['endDate'];
   get from => _l10n[locale.languageCode]['from'];
   get group => _l10n[locale.languageCode]['group'];
-  get groupName => _l10n[locale.languageCode]['groupName'];
   get groupPersons => _l10n[locale.languageCode]['groupPersons'];
   get groups => _l10n[locale.languageCode]['groups'];
   get help => _l10n[locale.languageCode]['help'];
@@ -87,12 +85,12 @@ class L10n {
   get invalidHoursNorm => _l10n[locale.languageCode]['invalidHoursNorm'];
   get invalidPhone => _l10n[locale.languageCode]['invalidPhone'];
   get linkNotStart => _l10n[locale.languageCode]['linkNotStart'];
+  get name => _l10n[locale.languageCode]['name'];
   get noHoursNorm => _l10n[locale.languageCode]['noHoursNorm'];
   get noName => _l10n[locale.languageCode]['noName'];
   get noPersonFamily => _l10n[locale.languageCode]['noPersonFamily'];
   get noPersonName => _l10n[locale.languageCode]['noPersonName'];
   get org => _l10n[locale.languageCode]['org'];
-  get orgName => _l10n[locale.languageCode]['orgName'];
   get orgs => _l10n[locale.languageCode]['orgs'];
   get person => _l10n[locale.languageCode]['person'];
   get personBirthday => _l10n[locale.languageCode]['personBirthday'];
