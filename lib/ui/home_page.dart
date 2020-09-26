@@ -228,7 +228,7 @@ class HomePageState extends State<HomePage> {
         crossAxisAlignment: crossAxisAlignment,
         children: <Widget>[
           text(title, fontSize: 16.0, color: titleColor),
-          horizontalSpace(height: dividerHeight),
+          horizontalSpace(height: padding3),
           text(subtitle, fontSize: 14.0, color: subtitleColor),
         ],
       ),

@@ -11,6 +11,7 @@ const borderRadius = 8.0;
 const dividerHeight = 8.0;
 const padding1 = 16.0;
 const padding2 = 8.0;
+const padding3 = 6.0;
 const horizontalSpaceHeight = 20.0;
 const phoneLength = 15;
 
