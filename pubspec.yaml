@@ -15,7 +15,7 @@ dependencies:
   intl:
   sqflite:
   moor:
-  moor_ffi:
+  sqlite3_flutter_libs:
   path_provider:
   rxdart:
   provider:
@@ -27,9 +27,6 @@ dependencies:
   flutter_share_content:
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  test:
   moor_generator:
   build_runner:
 

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:moor/moor.dart';
-import 'package:moor_ffi/moor_ffi.dart';
+import 'package:moor/ffi.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:timesheets/core/tools.dart';
