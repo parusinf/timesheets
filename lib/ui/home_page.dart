@@ -41,7 +41,7 @@ class HomePageState extends State<HomePage> {
             : StreamBuilder<Org>(
                 stream: bloc.activeOrg,
                 builder: (context, snapshot) => snapshot.hasData
-                    ? Text(snapshot.data.name) : Text(l10n.title)
+                    ? Text(snapshot.data.name) : Text(l10n.timesheets)
               ),
       ),
       actions: <Widget>[

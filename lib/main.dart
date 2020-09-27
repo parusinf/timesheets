@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     dispose: (_, bloc) => bloc.close(),
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
-      onGenerateTitle: (BuildContext context) => L10n.of(context).title,
+      onGenerateTitle: (BuildContext context) => L10n.of(context).timesheets,
       localizationsDelegates: [
         const L10nDelegate(),
         GlobalMaterialLocalizations.delegate,
