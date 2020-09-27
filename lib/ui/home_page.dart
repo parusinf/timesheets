@@ -37,7 +37,10 @@ class HomePageState extends State<HomePage> {
       title: StreamBuilder<Group>(
         stream: bloc.activeGroup,
         builder: (context, snapshot) => snapshot.hasData
-            ? Text(snapshot.data.name)
+            ? InkWell(
+                onTap: () => editGroup(context, bloc.activeGroup.value),
+                child: Text(snapshot.data.name)
+              )
             : StreamBuilder<Org>(
                 stream: bloc.activeOrg,
                 builder: (context, snapshot) => snapshot.hasData

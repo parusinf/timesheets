@@ -16,10 +16,8 @@ Future addGroup(BuildContext context) async {
 }
 
 /// Исправление группы
-Future editGroup(BuildContext context, GroupView groupView) async {
+Future editGroup(BuildContext context, GroupView groupView) async =>
   await push(context, GroupEdit(groupView));
-  Navigator.pop(context);
-}
 
 /// Форма редактирования группы
 class GroupEdit extends StatefulWidget {

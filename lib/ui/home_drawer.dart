@@ -163,13 +163,19 @@ class _GroupCard extends StatelessWidget {
             Provider.of<Bloc>(context, listen: false).setActiveGroup(entry.groupView);
             Navigator.pop(context);
           },
-          onDoubleTap: () => editGroup(context, entry.groupView),
+          onDoubleTap: () async {
+            await editGroup(context, entry.groupView);
+            Navigator.pop(context);
+          },
           child: ListTile(
             title: Text(entry.groupView.name),
             subtitle: Text(entry.groupView.schedule.code),
             trailing: IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () => editGroup(context, entry.groupView),
+              onPressed: () async {
+                await editGroup(context, entry.groupView);
+                Navigator.pop(context);
+              },
             ),
           ),
         ),
