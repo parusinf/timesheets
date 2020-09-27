@@ -47,7 +47,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   stream: bloc.activeOrg,
                   builder: (context, snapshot) => snapshot.hasData
                       ? listHeater(context, Icons.group, l10n.groups,
-                            onAddPressed: () => addGroup(context))
+                          onAddPressed: () async {
+                            await addGroup(context);
+                            Navigator.pop(context);
+                          }
+                        )
                       : Spacer()
               ),
               StreamBuilder<List<ActiveOrg>>(
