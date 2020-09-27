@@ -7,11 +7,11 @@ import 'package:timesheets/db/db.dart';
 
 /// Добавление персоны
 Future addPerson(BuildContext context) async =>
-    push(context, PersonEdit(null));
+    await push(context, PersonEdit(null));
 
 /// Исправление персоны
 Future editPerson(BuildContext context, Person person) async =>
-    push(context, PersonEdit(person));
+    await push(context, PersonEdit(person));
 
 /// Форма редактирования персоны
 class PersonEdit extends StatefulWidget {

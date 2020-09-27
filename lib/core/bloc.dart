@@ -196,19 +196,21 @@ class Bloc {
   /// Добавление графика
   Future<Schedule> insertSchedule({@required String code}) async {
     final schedule = await db.schedulesDao.insert2(code: code);
-    setActiveSchedule(schedule);
+    await setActiveSchedule(schedule);
     return schedule;
   }
 
   /// Исправление графика
-  Future<bool> updateSchedule(Schedule schedule) async =>
-      await db.schedulesDao.update2(schedule);
+  Future<bool> updateSchedule(Schedule schedule) async {
+    await setActiveSchedule(schedule);
+    return await db.schedulesDao.update2(schedule);
+  }
 
   /// Удаление графика
   Future<bool> deleteSchedule(Schedule schedule) async {
     final result = db.schedulesDao.delete2(schedule);
     final previousSchedule = await db.schedulesDao.getPreviousSchedule(schedule);
-    setActiveSchedule(previousSchedule);
+    await setActiveSchedule(previousSchedule);
     return result;
   }
 
@@ -218,7 +220,7 @@ class Bloc {
     db.settingsDao.setActiveGroup(activeOrg.value, group);
     if (group != null) {
       final schedule = await db.schedulesDao.getSchedule(group.scheduleId);
-      setActiveSchedule(schedule);
+      await setActiveSchedule(schedule);
     }
   }
 
@@ -230,13 +232,13 @@ class Bloc {
       schedule: schedule,
       meals: meals,
     );
-    setActiveGroup(groupView);
+    await setActiveGroup(groupView);
     return groupView;
   }
 
   /// Исправление группы
   Future<bool> updateGroup(Group group) async {
-    setActiveGroup(group);
+    await setActiveGroup(group);
     return await db.groupsDao.update2(group);
   }
 
@@ -245,7 +247,7 @@ class Bloc {
     final result = db.groupsDao.delete2(group);
     final previousGroup = await db.groupsDao.getPreviousGroup(
         activeOrg.value, group);
-    setActiveGroup(previousGroup);
+    await setActiveGroup(previousGroup);
     return result;
   }
 

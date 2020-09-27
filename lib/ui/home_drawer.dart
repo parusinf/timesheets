@@ -113,7 +113,10 @@ class _OrgCard extends StatelessWidget {
           onTap: () {
             Provider.of<Bloc>(context, listen: false).setActiveOrg(entry.orgView);
           },
-          onDoubleTap: () => editOrg(context, entry.orgView),
+          onDoubleTap: () async {
+            await editOrg(context, entry.orgView);
+            Navigator.pop(context);
+            },
           child: ListTile(
             title: Text(entry.orgView.name),
             subtitle: Text('${isNotEmpty(entry.orgView.inn)
@@ -122,7 +125,10 @@ class _OrgCard extends StatelessWidget {
             ),
             trailing: IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () => editOrg(context, entry.orgView),
+              onPressed: () async {
+                await editOrg(context, entry.orgView);
+                Navigator.pop(context);
+              },
             ),
           ),
         ),
