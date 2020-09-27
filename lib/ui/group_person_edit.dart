@@ -72,7 +72,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: <Widget>[
-              horizontalSpace(height: dividerHeight),
+              divider(height: padding2),
               // Персона
               TextFormField(
                 controller: _personEdit,
@@ -86,7 +86,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
                 validator: _validatePerson,
                 onTap: () => _selectPerson(context),
               ),
-              horizontalSpace(),
+              divider(),
               // Дата поступления в группу
               TextFormField(
                 controller: _beginDateEdit,

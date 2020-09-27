@@ -78,7 +78,7 @@ class _PersonEditState extends State<PersonEdit> {
           padding: const EdgeInsets.symmetric(horizontal: padding1),
           child: Column(
             children: <Widget>[
-              horizontalSpace(height: dividerHeight),
+              divider(height: padding2),
               // Фамилия
               TextFormField(
                 controller: _familyEdit,
@@ -90,7 +90,7 @@ class _PersonEditState extends State<PersonEdit> {
                 ),
                 validator: _validateFamily,
               ),
-              horizontalSpace(),
+              divider(),
               // Имя
               TextFormField(
                 controller: _nameEdit,
@@ -101,7 +101,7 @@ class _PersonEditState extends State<PersonEdit> {
                 ),
                 validator: _validateName,
               ),
-              horizontalSpace(),
+              divider(),
               // Отчество
               TextFormField(
                 controller: _middleNameEdit,
@@ -111,7 +111,7 @@ class _PersonEditState extends State<PersonEdit> {
                   labelText: l10n.personMiddleName,
                 ),
               ),
-              horizontalSpace(),
+              divider(),
               // Дата рождения
               TextFormField(
                 controller: _birthdayEdit,

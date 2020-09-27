@@ -102,7 +102,7 @@ class HomePageState extends State<HomePage> {
                         leftSideItemBuilder: _createFixedColumn,
                         rightSideItemBuilder: _createTableRow,
                         itemCount: _groupPeriodPersons.length,
-                        rowSeparatorWidget: divider(),
+                        rowSeparatorWidget: dividerLine(),
                       );
                     // Посещаемость загружаются
                     } else {
@@ -228,7 +228,7 @@ class HomePageState extends State<HomePage> {
         crossAxisAlignment: crossAxisAlignment,
         children: <Widget>[
           text(title, fontSize: 16.0, color: titleColor),
-          horizontalSpace(height: padding3),
+          divider(height: padding3),
           text(subtitle, fontSize: 14.0, color: subtitleColor),
         ],
       ),

@@ -91,7 +91,7 @@ class _OrgCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, dividerHeight),
+    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
     child: Dismissible(
       confirmDismiss: (direction) async => entry.orgView.groupCount == 0,
       background: Material(
@@ -140,7 +140,7 @@ class _GroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, dividerHeight),
+    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
     child: Dismissible(
       confirmDismiss: (direction) async => entry.groupView.personCount == 0,
       background: Material(

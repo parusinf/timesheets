@@ -61,7 +61,7 @@ class _GroupEditState extends State<GroupEdit> {
   @override
   Widget build(BuildContext context) {
     final items = <Widget>[
-      horizontalSpace(height: dividerHeight),
+      divider(height: padding2),
       // Наименование группы
       TextFormField(
         controller: _nameEdit,
@@ -73,7 +73,7 @@ class _GroupEditState extends State<GroupEdit> {
         ),
         validator: _validateName,
       ),
-      horizontalSpace(),
+      divider(),
       // График
       TextFormField(
         controller: _scheduleEdit,
@@ -88,7 +88,7 @@ class _GroupEditState extends State<GroupEdit> {
     ];
     if (widget.actionType == DataActionType.Update) {
       items.addAll(<Widget>[
-        horizontalSpace(),
+        divider(),
         listHeater(context, Icons.person, l10n.groupPersons.toUpperCase(),
             onAddPressed: () => addGroupPerson(context)),
         Flexible(
@@ -198,7 +198,7 @@ class _GroupPersonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, dividerHeight),
+    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
     child: Dismissible(
       confirmDismiss: (direction) async => entry.attendanceCount == 0,
       background: Material(

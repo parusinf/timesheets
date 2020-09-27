@@ -50,7 +50,7 @@ class _ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, dividerHeight),
+    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
     child: Dismissible(
       confirmDismiss: (direction) async => entry.scheduleView.groupCount == 0,
       background: Material(

@@ -8,11 +8,10 @@ const lineColor = Colors.black12;
 const activeColorOpacity = 0.3;
 const passiveColorOpacity = 0.1;
 const borderRadius = 8.0;
-const dividerHeight = 8.0;
 const padding1 = 16.0;
 const padding2 = 8.0;
 const padding3 = 6.0;
-const horizontalSpaceHeight = 20.0;
+const dividerHeight = 20.0;
 const phoneLength = 15;
 
 /// Сообщение в снакбаре
@@ -56,11 +55,11 @@ Widget centerButton(String label, {Function() onPressed}) =>
       ),
     );
 
-/// Горизонтальный разделитель пространства между контролами
-Widget horizontalSpace({height = horizontalSpaceHeight}) => SizedBox(height: height);
+/// Разделитель между контролами формы
+Widget divider({height = dividerHeight}) => SizedBox(height: height);
 
 /// Горизонтальная линия
-Widget divider() => const Divider(color: lineColor, height: 0.5);
+Widget dividerLine() => const Divider(color: lineColor, height: 0.5);
 
 /// Форматировщики целых чисел
 class IntFormatters {

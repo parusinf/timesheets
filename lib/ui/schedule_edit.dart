@@ -64,7 +64,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
       key: _formKey,
       autovalidate: _autoValidate,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(padding1, dividerHeight, padding1, 0.0),
+        padding: const EdgeInsets.fromLTRB(padding1, padding2, padding1, 0.0),
         child: StreamBuilder<List<ScheduleDay>>(
           stream: bloc.scheduleDays,
           builder: (context, snapshot) => ListView.builder(
