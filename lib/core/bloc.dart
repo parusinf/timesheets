@@ -42,7 +42,7 @@ class Bloc {
 
   // Активная группа и период
   final activeGroupPeriod = BehaviorSubject<GroupPeriod>();
-  
+
   // Организации с признаком активности
   final activeOrgs = BehaviorSubject<List<ActiveOrg>>();
 
@@ -165,7 +165,7 @@ class Bloc {
   // Организации ---------------------------------------------------------------
   /// Установка активной организации
   Future setActiveOrg(Org org) async =>
-    await db.settingsDao.setActiveOrg(org);
+      await db.settingsDao.setActiveOrg(org);
 
   /// Добавление организации
   Future<Org> insertOrg({@required String name, String inn}) async {
@@ -196,31 +196,29 @@ class Bloc {
   /// Добавление графика
   Future<Schedule> insertSchedule({@required String code}) async {
     final schedule = await db.schedulesDao.insert2(code: code);
-    await setActiveSchedule(schedule);
+    setActiveSchedule(schedule);
     return schedule;
   }
 
   /// Исправление графика
-  Future<bool> updateSchedule(Schedule schedule) async {
-    await setActiveSchedule(schedule);
-    return await db.schedulesDao.update2(schedule);
-  }
+  Future<bool> updateSchedule(Schedule schedule) async =>
+      await db.schedulesDao.update2(schedule);
 
   /// Удаление графика
   Future<bool> deleteSchedule(Schedule schedule) async {
     final result = db.schedulesDao.delete2(schedule);
     final previousSchedule = await db.schedulesDao.getPreviousSchedule(schedule);
-    await setActiveSchedule(previousSchedule);
+    setActiveSchedule(previousSchedule);
     return result;
   }
 
   // Группы --------------------------------------------------------------------
-  /// Установка активной группы и установка активным её графика 
+  /// Установка активной группы и установка активным её графика
   Future setActiveGroup(Group group) async {
     db.settingsDao.setActiveGroup(activeOrg.value, group);
     if (group != null) {
       final schedule = await db.schedulesDao.getSchedule(group.scheduleId);
-      await setActiveSchedule(schedule);
+      setActiveSchedule(schedule);
     }
   }
 
@@ -232,13 +230,13 @@ class Bloc {
       schedule: schedule,
       meals: meals,
     );
-    await setActiveGroup(groupView);
+    setActiveGroup(groupView);
     return groupView;
   }
 
   /// Исправление группы
   Future<bool> updateGroup(Group group) async {
-    await setActiveGroup(group);
+    setActiveGroup(group);
     return await db.groupsDao.update2(group);
   }
 
@@ -247,7 +245,7 @@ class Bloc {
     final result = db.groupsDao.delete2(group);
     final previousGroup = await db.groupsDao.getPreviousGroup(
         activeOrg.value, group);
-    await setActiveGroup(previousGroup);
+    setActiveGroup(previousGroup);
     return result;
   }
 
@@ -293,7 +291,7 @@ class Bloc {
   /// Удаление персоны из группы
   Future<bool> deleteGroupPerson(GroupPersonView groupPerson) async =>
       await db.groupPersonsDao.delete2(groupPerson);
-  
+
   // Посещаемость --------------------------------------------------------------
   /// Добавление посещаемости
   Future<Attendance> insertAttendance({

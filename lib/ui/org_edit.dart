@@ -6,11 +6,11 @@ import 'package:timesheets/db/db.dart';
 
 /// Добавление организации
 Future addOrg(BuildContext context) async =>
-    await push(context, OrgEdit(null));
+    push(context, OrgEdit(null));
 
 /// Исправление организации
 Future editOrg(BuildContext context, Org org) async =>
-    await push(context, OrgEdit(org));
+    push(context, OrgEdit(org));
 
 /// Форма редактирования организации
 class OrgEdit extends StatefulWidget {

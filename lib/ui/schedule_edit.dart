@@ -6,11 +6,13 @@ import 'package:timesheets/db/schedule_helper.dart';
 
 /// Добавление графика
 Future addSchedule(BuildContext context) async =>
-    await push(context, ScheduleEdit(null));
+    push(context, ScheduleEdit(null));
 
 /// Исправление графика
 Future editSchedule(BuildContext context, Schedule schedule) async {
-  await push(context, ScheduleEdit(schedule));
+  final bloc = Provider.of<Bloc>(context, listen: false);
+  bloc.setActiveSchedule(schedule);
+  push(context, ScheduleEdit(schedule));
 }
 
 /// Форма редактирования графика
