@@ -124,13 +124,13 @@ class _PersonEditState extends State<PersonEdit> {
                 inputFormatters: DateFormatters.formatters,
                 maxLength: 10,
               ),
-              // Телефон
+              // Телефон 1
               TextFormField(
                 controller: _phoneEdit,
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.phone),
-                  labelText: l10n.phone,
+                  labelText: '${l10n.phone} 1',
                   prefixText: l10n.countryPhoneCode,
                   suffix: IconButton(
                     icon: const Icon(Icons.phone_in_talk),
@@ -148,7 +148,7 @@ class _PersonEditState extends State<PersonEdit> {
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.phone),
-                  labelText: l10n.phone,
+                  labelText: '${l10n.phone} 2',
                   prefixText: l10n.countryPhoneCode,
                   suffix: IconButton(
                     icon: const Icon(Icons.phone_in_talk),

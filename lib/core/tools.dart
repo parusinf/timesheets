@@ -39,7 +39,7 @@ DateTime stringToDate(String value) {
 
 /// Удаление концевых пробелов из строки
 String trim(String value) =>
-    isNotEmpty(value) ? value.trim() : null;
+    isNotEmpty(value) ? value.trim() : '';
 
 /// Преобразование строки в число
 double stringToDouble(String value) =>
@@ -57,7 +57,7 @@ String doubleToString(double number) {
 
 /// Преобразование даты в строку
 String dateToString(DateTime date) =>
-    date != null ? DateFormat('dd.MM.yyyy').format(date) : null;
+    date != null ? DateFormat('dd.MM.yyyy').format(date) : '';
 
 /// Преобразование даты периода в строку
 String periodToString(DateTime period) {
@@ -69,10 +69,10 @@ String periodToString(DateTime period) {
 String datesToString(L10n l10n, DateTime beginDate, DateTime endDate) {
   final begin = dateToString(beginDate);
   final end = dateToString(endDate);
-  return begin != null
-      ? end != null
+  return begin != ''
+      ? end != ''
           ? '${l10n.from} $begin ${l10n.to} $end' : '${l10n.from} $begin'
-      : end != null
+      : end != ''
           ? '${l10n.to} $end' : l10n.withoutTime;
 }
 

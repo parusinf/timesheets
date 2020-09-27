@@ -6,9 +6,11 @@ import 'package:flutter_share_content/flutter_share_content.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core/tools.dart';
 import 'package:timesheets/core/cp1251.dart';
+import 'package:timesheets/core/l10n.dart';
 
 /// Выгрузка посещаемости группы за период в CSV файл
 Future unloadFile(
+  L10n l10n,
   Org org,
   GroupView group,
   DateTime period,
@@ -18,8 +20,19 @@ Future unloadFile(
   if (await Permission.storage.request().isGranted) {
     var buffer = new StringBuffer();
 
-    // Заголовок
-    buffer.write('${periodToString(period)};');
+    // Организация
+    buffer.write('${org.name};${trim(org.inn)};\n');
+
+    // Группа
+    buffer.write('${group.name};${group.schedule.code};${group.meals ?? 0};\n');
+
+    // Период
+    buffer.write('${periodToString(period)};\n');
+
+    // Заголовок табеля
+    buffer.write('${l10n.personFamily};${l10n.personName};${l10n.personMiddleName};');
+    buffer.write('${l10n.personBirthday};${l10n.phone} 1;${l10n.phone} 2;');
+    buffer.write('${l10n.beginDate};${l10n.endDate};');
     for (int day = 1; day <= period.day; day++) {
       buffer.write('$day;');
     }
@@ -27,12 +40,15 @@ Future unloadFile(
 
     // Цикл по персонам в группе
     for (final groupPerson in groupPersons) {
+      final person = groupPerson.person;
       final personAttendances = attendances.where(
-              (attendance) => attendance.groupPersonId == groupPerson.person.id);
+              (attendance) => attendance.groupPersonId == groupPerson.id);
       final dates = personAttendances.map((attendance) => attendance.date).toList();
 
-      // ФИО
-      buffer.write('${personFullName(groupPerson.person)};');
+      // Персона в группе
+      buffer.write('${person.family};${person.name};${trim(person.middleName)};');
+      buffer.write('${dateToString(person.birthday)};${trim(person.phone)};${trim(person.phone2)};');
+      buffer.write('${dateToString(groupPerson.beginDate)};${dateToString(groupPerson.endDate)};');
 
       // Цикл по дням текущего периода
       for (int day = 1; day <= period.day; day++) {

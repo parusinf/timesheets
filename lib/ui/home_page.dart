@@ -123,6 +123,7 @@ class HomePageState extends State<HomePage> {
   Future _unloadFile() async {
     try {
       await unloadFile(
+        l10n,
         bloc.activeOrg.value,
         bloc.activeGroup.value,
         bloc.activePeriod.value,
