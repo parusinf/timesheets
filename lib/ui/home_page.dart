@@ -232,7 +232,6 @@ class HomePageState extends State<HomePage> {
           ? Wrap(
               children: <Widget>[
                 Row(children: [text(title, fontSize: 16.0, color: titleColor), Spacer()]),
-                divider(height: padding3),
                 text(subtitle, fontSize: 14.0, color: subtitleColor),
               ],
             )
