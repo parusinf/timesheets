@@ -149,13 +149,7 @@ class _PhoneFormatter extends TextInputFormatter {
 
 /// Заголовок списка с кнопкой добавления
 Widget listHeater(BuildContext context, IconData icon, String title, {Function() onAddPressed, Function() onHeaderTap}) {
-  final items = <Widget>[
-    Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, padding2, padding2, padding2),
-      child: Icon(icon, color: Colors.black54)
-    ),
-    text(title.toUpperCase()),
-  ];
+  final items = formElement(context, icon, text(title.toUpperCase())).children;
   if (onAddPressed != null) {
     items.addAll(<Widget>[
       const Spacer(),
@@ -165,6 +159,19 @@ Widget listHeater(BuildContext context, IconData icon, String title, {Function()
   return onHeaderTap != null
     ? InkWell(onTap: onHeaderTap, child: Row(children: items))
     : Row(children: items);
+}
+
+/// Элемент формы
+Row formElement(BuildContext context, IconData icon, Widget widget) {
+  return Row(
+    children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.fromLTRB(0.0, padding2, padding1, padding2),
+        child: Icon(icon, color: Colors.black54)
+      ),
+      widget,
+    ]
+  );
 }
 
 /// Переход на страницу

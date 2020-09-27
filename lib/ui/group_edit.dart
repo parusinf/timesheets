@@ -38,15 +38,17 @@ class _GroupEditState extends State<GroupEdit> {
   final _formKey = GlobalKey<FormState>();
   final _nameEdit = TextEditingController();
   final _scheduleEdit = TextEditingController();
-  Schedule schedule;
+  Schedule _schedule;
+  int _meals;
   bool _autoValidate = false;
 
   @override
   void initState() {
     super.initState();
     _nameEdit.text = widget.groupView?.name;
-    schedule = widget.groupView?.schedule ?? bloc.activeSchedule.value;
-    _scheduleEdit.text = schedule?.code;
+    _schedule = widget.groupView?.schedule ?? bloc.activeSchedule.value;
+    _scheduleEdit.text = _schedule?.code;
+    _meals = widget.groupView?.meals ?? 0; // 0 - Без питания, 1 - До 2 лет, 2 - От 3 лет
   }
 
   @override
@@ -82,6 +84,45 @@ class _GroupEditState extends State<GroupEdit> {
         ),
         validator: _validateSchedule,
         onTap: () => _selectSchedule(context),
+      ),
+      divider(),
+      // Питание
+      formElement(
+        context,
+        Icons.restaurant,
+        Wrap(
+          children: [
+            ChoiceChip(
+              label: Text(l10n.meals0),
+              selected: _meals == 0,
+              onSelected: (value) {
+                setState(() {
+                  _meals = value ? 0 : -1;
+                });
+              },
+            ),
+            const SizedBox(width: padding2),
+            ChoiceChip(
+              label: Text(l10n.meals1),
+              selected: _meals == 1,
+              onSelected: (value) {
+                setState(() {
+                  _meals = value ? 1 : -1;
+                });
+              },
+            ),
+            const SizedBox(width: padding2),
+            ChoiceChip(
+              label: Text(l10n.meals2),
+              selected: _meals == 2,
+              onSelected: (value) {
+                setState(() {
+                  _meals = value ? 2 : -1;
+                });
+              },
+            ),
+          ],
+        ),
       ),
     ];
     if (widget.actionType == DataActionType.Update) {
@@ -134,8 +175,8 @@ class _GroupEditState extends State<GroupEdit> {
 
   /// Выбор графика из словаря
   Future _selectSchedule(BuildContext context) async {
-    schedule = await push(context, SchedulesDictionary()) ?? bloc.activeSchedule?.value;
-    _scheduleEdit.text = schedule?.code ?? '';
+    _schedule = await push(context, SchedulesDictionary()) ?? bloc.activeSchedule?.value;
+    _scheduleEdit.text = _schedule?.code ?? '';
   }
 
   /// Обработка формы
@@ -148,17 +189,19 @@ class _GroupEditState extends State<GroupEdit> {
         switch (widget.actionType) {
           case DataActionType.Insert:
             final groupView = await bloc.insertGroup(
-                name: trim(_nameEdit.text),
-                schedule: schedule,
+              name: trim(_nameEdit.text),
+              schedule: _schedule,
+              meals: _meals,
             );
             Navigator.of(context).pop(groupView);
             break;
           case DataActionType.Update:
             await bloc.updateGroup(Group(
-                id: widget.groupView.id,
-                orgId: widget.groupView.orgId,
-                name: trim(_nameEdit.text),
-                scheduleId: schedule.id,
+              id: widget.groupView.id,
+              orgId: widget.groupView.orgId,
+              name: trim(_nameEdit.text),
+              scheduleId: _schedule?.id ?? widget.groupView.schedule,
+              meals: _meals,
             ));
             Navigator.of(context).pop();
             break;

@@ -34,6 +34,9 @@ class L10n {
       'invalidHoursNorm': 'Некорректная норма часов',
       'invalidPhone': 'Формат телефона (###) ###-##-##',
       'linkNotStart': 'Ссылка не запускается',
+      'meals0': 'Без питания',
+      'meals1': 'До 2 лет',
+      'meals2': 'От 3 лет',
       'name': 'Наименование',
       'noHoursNorm': 'Нет нормы часов',
       'noName': 'Нет наименования',
@@ -85,6 +88,9 @@ class L10n {
   get invalidHoursNorm => _l10n[locale.languageCode]['invalidHoursNorm'];
   get invalidPhone => _l10n[locale.languageCode]['invalidPhone'];
   get linkNotStart => _l10n[locale.languageCode]['linkNotStart'];
+  get meals0 => _l10n[locale.languageCode]['meals0'];
+  get meals1 => _l10n[locale.languageCode]['meals1'];
+  get meals2 => _l10n[locale.languageCode]['meals2'];
   get name => _l10n[locale.languageCode]['name'];
   get noHoursNorm => _l10n[locale.languageCode]['noHoursNorm'];
   get noName => _l10n[locale.languageCode]['noName'];
