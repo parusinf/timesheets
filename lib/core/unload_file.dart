@@ -32,7 +32,7 @@ Future unloadFile(
       final dates = personAttendances.map((attendance) => attendance.date).toList();
 
       // ФИО
-      buffer.write('${fio(groupPerson.person)};');
+      buffer.write('${personFullName(groupPerson.person)};');
 
       // Цикл по дням текущего периода
       for (int day = 1; day <= period.day; day++) {

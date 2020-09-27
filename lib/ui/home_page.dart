@@ -180,6 +180,7 @@ class HomePageState extends State<HomePage> {
                 borderStyle: BorderStyle.solid,
                 titleColor: isHoliday(date) ? Colors.red : Colors.black87,
                 subtitleColor: Colors.black54,
+                wrap: false,
               );
             } else {
               return Text('');
@@ -223,18 +224,27 @@ class HomePageState extends State<HomePage> {
     leftPadding = 0.0,
     borderStyle = BorderStyle.none,
     Function() onTap,
+    wrap = true,
   }) => InkWell(
     onTap: onTap ?? () => {},
     child: Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: crossAxisAlignment,
-        children: <Widget>[
-          text(title, fontSize: 16.0, color: titleColor),
-          divider(height: padding3),
-          text(subtitle, fontSize: 14.0, color: subtitleColor),
-        ],
-      ),
+      child: wrap
+          ? Wrap(
+              children: <Widget>[
+                Row(children: [text(title, fontSize: 16.0, color: titleColor), Spacer()]),
+                divider(height: padding3),
+                text(subtitle, fontSize: 14.0, color: subtitleColor),
+              ],
+            )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: crossAxisAlignment,
+              children: <Widget>[
+                text(title, fontSize: 16.0, color: titleColor),
+                divider(height: padding3),
+                text(subtitle, fontSize: 14.0, color: subtitleColor),
+              ],
+            ),
       width: width,
       height: rowHeight,
       alignment: alignment,
@@ -246,15 +256,18 @@ class HomePageState extends State<HomePage> {
   );
 
   /// Создание фиксированной колонки
-  Widget _createFixedColumn(BuildContext context, int index) => _createFixedCell(
-    _groupPeriodPersons[index].person.family,
-    _groupPeriodPersons[index].person.name,
-    width: fixedColumnWidth,
-    alignment: Alignment.centerLeft,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    leftPadding: leftPadding,
-    onTap: () => editPerson(context, _groupPeriodPersons[index].person),
-  );
+  Widget _createFixedColumn(BuildContext context, int index) {
+    final person = _groupPeriodPersons[index].person;
+    return _createFixedCell(
+      person.family,
+      personName(person),
+      width: fixedColumnWidth,
+      alignment: Alignment.centerLeft,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      leftPadding: leftPadding,
+      onTap: () => editPerson(context, person),
+    );
+  }
 
   /// Создание строки таблицы
   Widget _createTableRow(BuildContext context, int index) {

@@ -40,7 +40,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
   @override
   void initState() {
     person = widget.groupPerson?.person;
-    _personEdit.text = fio(person);
+    _personEdit.text = personFullName(person);
     _beginDateEdit.text = dateToString(widget.groupPerson?.beginDate);
     _endDateEdit.text = dateToString(widget.groupPerson?.endDate);
     super.initState();
@@ -121,7 +121,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
   /// Выбор персоны из словаря
   Future _selectPerson(BuildContext context) async {
     person = await push(context, PersonsDictionary());
-    _personEdit.text = person != null ? fio(person) : _personEdit.text;
+    _personEdit.text = person != null ? personFullName(person) : _personEdit.text;
   }
 
   /// Обработка формы

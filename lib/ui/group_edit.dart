@@ -216,7 +216,7 @@ class _GroupPersonCard extends StatelessWidget {
           onTap: () => editGroupPerson(context, entry),
           onDoubleTap: () => editGroupPerson(context, entry),
           child: ListTile(
-            title: Text(fio(entry.person)),
+            title: Text(personFullName(entry.person)),
             subtitle: Text(datesToString(L10n.of(context), entry.beginDate, entry.endDate)),
             trailing: IconButton(
               icon: Icon(Icons.edit),

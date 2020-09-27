@@ -73,7 +73,7 @@ class _PersonCard extends StatelessWidget {
           onDoubleTap: () => editPerson(context, entry),
           child: ListTile(
             title: Text(entry.family),
-            subtitle: Text('${entry.name} ${entry.middleName ?? ''}'),
+            subtitle: Text(personName(entry)),
             trailing: IconButton(
               icon: Icon(Icons.edit),
               onPressed: () => editPerson(context, entry),
