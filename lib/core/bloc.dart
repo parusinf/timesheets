@@ -236,7 +236,7 @@ class Bloc {
 
   /// Исправление группы
   Future<bool> updateGroup(Group group) async {
-    setActiveGroup(group);
+    await setActiveGroup(group);
     return db.groupsDao.update2(group);
   }
 
