@@ -160,12 +160,12 @@ class Bloc {
   // Активный период -----------------------------------------------------------
   /// Установка активного периода
   Future setActivePeriod(DateTime period) async =>
-      await db.settingsDao.setActivePeriod(period);
+      db.settingsDao.setActivePeriod(period);
 
   // Организации ---------------------------------------------------------------
   /// Установка активной организации
   Future setActiveOrg(Org org) async =>
-      await db.settingsDao.setActiveOrg(org);
+      db.settingsDao.setActiveOrg(org);
 
   /// Добавление организации
   Future<Org> insertOrg({@required String name, String inn}) async {
@@ -177,7 +177,7 @@ class Bloc {
   /// Исправление организации
   Future<bool> updateOrg(Org org) async {
     setActiveOrg(org);
-    return await db.orgsDao.update2(org);
+    return db.orgsDao.update2(org);
   }
 
   /// Удаление организации
@@ -191,7 +191,7 @@ class Bloc {
   // Графики -------------------------------------------------------------------
   /// Установка активного графика
   Future setActiveSchedule(Schedule schedule) async =>
-      await db.settingsDao.setActiveSchedule(schedule);
+      db.settingsDao.setActiveSchedule(schedule);
 
   /// Добавление графика
   Future<Schedule> insertSchedule({@required String code}) async {
@@ -202,7 +202,7 @@ class Bloc {
 
   /// Исправление графика
   Future<bool> updateSchedule(Schedule schedule) async =>
-      await db.schedulesDao.update2(schedule);
+      db.schedulesDao.update2(schedule);
 
   /// Удаление графика
   Future<bool> deleteSchedule(Schedule schedule) async {
@@ -237,7 +237,7 @@ class Bloc {
   /// Исправление группы
   Future<bool> updateGroup(Group group) async {
     setActiveGroup(group);
-    return await db.groupsDao.update2(group);
+    return db.groupsDao.update2(group);
   }
 
   /// Удаление группы
@@ -258,7 +258,7 @@ class Bloc {
     DateTime birthday,
     String phone,
     String phone2,
-  }) async => await db.personsDao.insert2(
+  }) async => db.personsDao.insert2(
     family: family,
     name: name,
     middleName: middleName,
@@ -269,11 +269,11 @@ class Bloc {
 
   /// Исправление персоны
   Future<bool> updatePerson(Person person) async =>
-      await db.personsDao.update2(person);
+      db.personsDao.update2(person);
 
   /// Удаление персоны
   Future<bool> deletePerson(Person person) async =>
-      await db.personsDao.delete2(person);
+      db.personsDao.delete2(person);
 
   // Персоны в группе ----------------------------------------------------------
   /// Добавление персоны в группу
@@ -282,15 +282,16 @@ class Bloc {
     @required Person person,
     DateTime beginDate,
     DateTime endDate
-  }) async => await db.groupPersonsDao.insert2(group, person, beginDate, endDate);
+  }) async =>
+      db.groupPersonsDao.insert2(group, person, beginDate, endDate);
 
   /// Исправление персоны в группе
   Future<bool> updateGroupPerson(GroupPerson groupPerson) async =>
-      await db.groupPersonsDao.update2(groupPerson);
+      db.groupPersonsDao.update2(groupPerson);
 
   /// Удаление персоны из группы
   Future<bool> deleteGroupPerson(GroupPersonView groupPerson) async =>
-      await db.groupPersonsDao.delete2(groupPerson);
+      db.groupPersonsDao.delete2(groupPerson);
 
   // Посещаемость --------------------------------------------------------------
   /// Добавление посещаемости
@@ -298,7 +299,7 @@ class Bloc {
     @required GroupPersonView groupPerson,
     @required DateTime date,
     @required double hoursFact,
-  }) async => await db.attendancesDao.insert2(
+  }) async => db.attendancesDao.insert2(
     groupPerson: groupPerson,
     date: date,
     hoursFact: hoursFact,
@@ -306,5 +307,5 @@ class Bloc {
 
   /// Удаление посещаемости
   Future<bool> deleteAttendance(Attendance attendance) async =>
-      await db.attendancesDao.delete2(attendance);
+      db.attendancesDao.delete2(attendance);
 }
