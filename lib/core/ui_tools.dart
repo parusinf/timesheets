@@ -58,9 +58,6 @@ Widget centerButton(String label, {Function() onPressed}) =>
 /// Разделитель между контролами формы
 Widget divider({height = dividerHeight}) => SizedBox(height: height);
 
-/// Горизонтальная линия
-Widget dividerLine() => const Divider(color: lineColor, height: 0.5);
-
 /// Форматировщики целых чисел
 class IntFormatters {
   static final formatters = <TextInputFormatter>[

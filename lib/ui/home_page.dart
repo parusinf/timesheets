@@ -102,7 +102,7 @@ class HomePageState extends State<HomePage> {
                         leftSideItemBuilder: _createFixedColumn,
                         rightSideItemBuilder: _createTableRow,
                         itemCount: _groupPeriodPersons.length,
-                        rowSeparatorWidget: dividerLine(),
+                        rowSeparatorWidget: const Divider(color: lineColor, height: 0.5),
                       );
                     // Посещаемость загружаются
                     } else {
