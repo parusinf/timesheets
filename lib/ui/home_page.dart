@@ -267,8 +267,9 @@ class HomePageState extends State<HomePage> {
 
   /// Создание строки таблицы
   Widget _createTableRow(BuildContext context, int index) {
+    final groupPerson = _groupPeriodPersons[index];
     final personAttendances = _groupAttendances.where(
-            (attendance) => attendance.groupPersonId == _groupPeriodPersons[index].id);
+            (attendance) => attendance.groupPersonId == groupPerson.id);
     final dates = personAttendances.map((attendance) => attendance.date).toList();
     final period = bloc.activePeriod.value;
     final rowCells = List<Widget>();
@@ -282,8 +283,10 @@ class HomePageState extends State<HomePage> {
           InkWell(
             onTap: () => _deleteAttendance(attendance),
             child: _createCell(
-                doubleToString(attendance.hoursFact), color: Colors.green,
-                fontWeight: FontWeight.bold),
+              doubleToString(attendance.hoursFact),
+              color: isBirthday(date, groupPerson.person.birthday) ? Colors.red : Colors.green,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         );
       // Посещаемости нет, её можно добавить
@@ -292,8 +295,11 @@ class HomePageState extends State<HomePage> {
         if (hoursNorm > 0.0) {
           rowCells.add(
             InkWell(
-              onTap: () => _insertAttendance(_groupPeriodPersons[index], date, hoursNorm),
-              child: _createCell(doubleToString(hoursNorm), color: Colors.black12),
+              onTap: () => _insertAttendance(groupPerson, date, hoursNorm),
+              child: _createCell(
+                doubleToString(hoursNorm),
+                color: isBirthday(date, groupPerson.person.birthday) ? Colors.red[200] : Colors.black12,
+              ),
             ),
           );
         } else {

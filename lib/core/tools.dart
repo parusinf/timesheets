@@ -89,6 +89,10 @@ bool isHoliday(DateTime date) {
   return [5,6].contains(weekdayIndex);
 }
 
+/// Дата является днём рождения
+bool isBirthday(DateTime date, DateTime birthday) =>
+    date?.day == birthday?.day && date?.month == birthday?.month;
+
 /// Фамилия Имя Отчество
 String personFullName(Person person) => person != null
     ? '${person.family} ${personName(person)}' : '';
