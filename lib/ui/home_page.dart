@@ -11,6 +11,7 @@ import 'package:timesheets/ui/home_drawer.dart';
 import 'package:timesheets/ui/org_edit.dart';
 import 'package:timesheets/ui/group_edit.dart';
 import 'package:timesheets/ui/person_edit.dart';
+import 'package:timesheets/ui/help_page.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
@@ -39,40 +40,35 @@ class HomePageState extends State<HomePage> {
         builder: (context, snapshot) => snapshot.hasData
             ? InkWell(
                 onTap: () => editGroup(context, bloc.activeGroup.value),
-                child: Text(snapshot.data.name)
+                child: text(snapshot.data.name),
               )
             : StreamBuilder<Org>(
                 stream: bloc.activeOrg,
                 builder: (context, snapshot) => snapshot.hasData
-                    ? Text(snapshot.data.name) : Text(l10n.timesheets)
+                    ? InkWell(
+                        onTap: () => editOrg(context, bloc.activeOrg.value),
+                        child: text(snapshot.data.name),
+                      )
+                    : InkWell(
+                        onTap: () => push(context, HelpPage()),
+                        child: text(l10n.timesheets),
+                      )
               ),
       ),
       actions: <Widget>[
+        // Выгрузка в файл
         StreamBuilder<List<GroupPersonView>>(
-            stream: bloc.groupPeriodPersons,
-            builder: (context, snapshot) {
-              if (bloc.activeOrg.value == null) {
-                // Организаций нет
-                return IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () => addOrg(context),
-                );
-              } else {
-                if (bloc.activeGroup.value == null) {
-                  // Групп нет
-                  return IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () => addGroup(context),
-                  );
-                } else {
-                  // Синхронизация с сервером
-                  return IconButton(
-                    icon: Icon(Icons.file_upload),
-                    onPressed: _unloadFile,
-                  );
-                }
-              }
+          stream: bloc.groupPeriodPersons,
+          builder: (context, snapshot) {
+            if (bloc.activeGroup.value != null && snapshot.hasData && snapshot.data.length > 0) {
+              return IconButton(
+                icon: Icon(Icons.file_upload),
+                onPressed: _unloadFile,
+              );
+            } else {
+              return Text('');
             }
+          }
         ),
       ],
     ),
@@ -195,12 +191,12 @@ class HomePageState extends State<HomePage> {
   /// Создание ячейки таблицы
   Widget _createCell(
     String title, {
-    double width = columnWidth,
+    width: columnWidth,
     alignment: Alignment.center,
-    leftPadding = 0.0,
-    borderStyle = BorderStyle.solid,
-    color = Colors.lightBlue,
-    fontWeight = FontWeight.normal,
+    leftPadding: 0.0,
+    borderStyle: BorderStyle.solid,
+    color: Colors.lightBlue,
+    fontWeight: FontWeight.normal,
   }) => Container(
     child: text(title, color: color, fontWeight: fontWeight),
     width: width,
@@ -216,13 +212,13 @@ class HomePageState extends State<HomePage> {
   Widget _createFixedCell(
     String title,
     String subtitle, {
-    double width = columnWidth,
+    double width: columnWidth,
     alignment: Alignment.center,
-    crossAxisAlignment = CrossAxisAlignment.center,
-    titleColor = Colors.black87,
-    subtitleColor = Colors.black54,
-    leftPadding = 0.0,
-    borderStyle = BorderStyle.none,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    titleColor: Colors.black87,
+    subtitleColor: Colors.black54,
+    leftPadding: 0.0,
+    borderStyle: BorderStyle.none,
     Function() onTap,
     wrap = true,
   }) => InkWell(
@@ -231,8 +227,8 @@ class HomePageState extends State<HomePage> {
       child: wrap
           ? Wrap(
               children: <Widget>[
-                Row(children: [text(title, fontSize: 16.0, color: titleColor), Spacer()]),
-                text(subtitle, fontSize: 14.0, color: subtitleColor),
+                text(title, fontSize: 16.0, color: titleColor, fontWeight: FontWeight.bold),
+                text(subtitle, fontSize: 16.0, color: subtitleColor),
               ],
             )
           : Column(
@@ -258,7 +254,7 @@ class HomePageState extends State<HomePage> {
   Widget _createFixedColumn(BuildContext context, int index) {
     final person = _groupPeriodPersons[index].person;
     return _createFixedCell(
-      person.family,
+      '${person.family} ',
       personName(person),
       width: fixedColumnWidth,
       alignment: Alignment.centerLeft,
