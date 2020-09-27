@@ -36,12 +36,16 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
 }
 
 /// Текст
-Widget text(
-    String text, {
-      color: Colors.black54,
-      fontSize: 14.0,
-      fontWeight = FontWeight.normal,
-    }) => Text(text, style: TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight));
+Widget text(String text, {
+  Color color,
+  double fontSize,
+  FontWeight fontWeight,
+  spacer: false,
+}) {
+  return Text(text,
+    style: TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight),
+  );
+}
 
 /// Сообщение в центре страницы серым цветом
 Widget centerMessage(BuildContext context, String message) =>
