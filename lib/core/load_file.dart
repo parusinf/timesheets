@@ -17,7 +17,7 @@ Future loadFile(BuildContext context) async {
   }
   final file = File(result.files.single.path);
   final content = decodeCp1251(file.readAsBytesSync()).split('\n');
-  if (content.length < 5) {
+  if (content.length < 4) {
     throw l10n.fileFormatError;
   }
   final bloc = Provider.of<Bloc>(context, listen: false);

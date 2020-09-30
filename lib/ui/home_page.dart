@@ -61,7 +61,7 @@ class HomePageState extends State<HomePage> {
         StreamBuilder<List<GroupPersonView>>(
           stream: bloc.groupPeriodPersons,
           builder: (context, snapshot) {
-            if (bloc.activeGroup.value != null && snapshot.hasData && snapshot.data.length > 0) {
+            if (bloc.activeGroup.value != null && snapshot.hasData) {
               return IconButton(
                 icon: Icon(Icons.file_upload),
                 onPressed: _unloadFile,
