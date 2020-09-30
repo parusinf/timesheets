@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:timesheets/core/l10n.dart';
+import 'package:timesheets/core/tools.dart';
 
 const lineColor = Colors.black12;
 const activeColorOpacity = 0.3;
@@ -185,4 +187,25 @@ Future launchUrl(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
   } else {
     showMessage(scaffoldKey, L10n.of(scaffoldKey.currentContext).linkNotStart);
   }
+}
+
+/// Преобразование строки периода в дату
+DateTime stringToPeriod(BuildContext context, String period) {
+  final l10n = L10n.of(context);
+  final monthList = dateTimeSymbolMap()[l10n.locale.languageCode].STANDALONEMONTHS
+      .map((month) => month.toLowerCase()).toList();
+  final parts = period.split(' ');
+  final month = monthList.indexOf(parts[0].toLowerCase()) + 1;
+  final year = stringToInt(parts[1]);
+  return lastDayOfMonth(DateTime(year, month, 1));
+}
+
+/// Преобразование диапазона дат в строку
+String datesToString(BuildContext context, DateTime beginDate, DateTime endDate) {
+  final l10n = L10n.of(context);
+  final begin = dateToString(beginDate);
+  final end = dateToString(endDate);
+  return begin != ''
+      ? end != '' ? '${l10n.from} $begin ${l10n.to} $end' : '${l10n.from} $begin'
+      : end != '' ? '${l10n.to} $end' : l10n.withoutTime;
 }

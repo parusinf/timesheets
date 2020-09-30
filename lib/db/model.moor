@@ -9,7 +9,7 @@ CREATE TABLE orgs (
   -- Активная группа
   activeGroupId      INT
 );
-CREATE UNIQUE INDEX orgs_index ON orgs (name, inn);
+CREATE UNIQUE INDEX orgs_index ON orgs (name);
 
 -- Графики
 CREATE TABLE schedules (
@@ -237,6 +237,21 @@ SELECT P.id,
        P.name,
        P.middleName,
        P.birthday;
+
+-- Поиск персоны
+_findPerson:
+SELECT P.id,
+       P.family,
+       P.name,
+       P.middleName,
+       P.birthday,
+       P.phone,
+       P.phone2
+  FROM persons P
+ WHERE P.family = :family
+   AND P.name = :name
+   AND (:middleName IS NULL OR :middleName = '' OR P.middleName = :middleName)
+   AND (:birthday IS NULL OR P.birthday = :birthday);
 
 -- Список персон в группе
 _personsInGroup:

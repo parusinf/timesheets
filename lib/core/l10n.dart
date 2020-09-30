@@ -22,6 +22,8 @@ class L10n {
       'countryPhoneCode': '+7 ',
       'dataLoading': 'Загрузка данных',
       'endDate': 'Дата выбытия',
+      'fileFormatError': 'Ошибка в формате файла',
+      'fileNotSelected': 'Файл не выбран',
       'from': 'с',
       'group': 'Группа',
       'groupPersons': 'Персоны в группе',
@@ -77,6 +79,8 @@ class L10n {
   get countryPhoneCode => _l10n[locale.languageCode]['countryPhoneCode'];
   get dataLoading => _l10n[locale.languageCode]['dataLoading'];
   get endDate => _l10n[locale.languageCode]['endDate'];
+  get fileFormatError => _l10n[locale.languageCode]['fileFormatError'];
+  get fileNotSelected => _l10n[locale.languageCode]['fileNotSelected'];
   get from => _l10n[locale.languageCode]['from'];
   get group => _l10n[locale.languageCode]['group'];
   get groupPersons => _l10n[locale.languageCode]['groupPersons'];

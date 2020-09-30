@@ -1,7 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/db/schedule_helper.dart';
-import 'package:timesheets/core/l10n.dart';
 
 /// Тип действия с данными
 enum DataActionType {
@@ -63,17 +62,6 @@ String dateToString(DateTime date) =>
 String periodToString(DateTime period) {
   final s = DateFormat(DateFormat.YEAR_MONTH).format(period);
   return s.toUpperCase().substring(0, s.length - 3);
-}
-
-/// Преобразование диапазона дат в строку
-String datesToString(L10n l10n, DateTime beginDate, DateTime endDate) {
-  final begin = dateToString(beginDate);
-  final end = dateToString(endDate);
-  return begin != ''
-      ? end != ''
-          ? '${l10n.from} $begin ${l10n.to} $end' : '${l10n.from} $begin'
-      : end != ''
-          ? '${l10n.to} $end' : l10n.withoutTime;
 }
 
 /// Преобразование даты периода в строку

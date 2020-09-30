@@ -159,7 +159,7 @@ class Db extends _$Db {
       return m.createAll();
     },
     beforeOpen: (details) async {
-      customStatement('PRAGMA foreign_keys = ON');
+      await customStatement('PRAGMA foreign_keys = ON');
       if (details.wasCreated) {
         transaction(() async {
           settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
@@ -187,10 +187,31 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
     String inn,
   }) async {
     final id = await into(db.orgs).insert(
-        OrgsCompanion(
-          name: Value(name),
-          inn: Value(inn),
-        )
+      OrgsCompanion(
+        name: Value(name),
+        inn: Value(inn),
+      ),
+    );
+    return Org(
+      id: id,
+      name: name,
+      inn: inn,
+    );
+  }
+
+  /// Добавление или исправление по списку колонок
+  Future<Org> upsert({
+    @required String name,
+    String inn,
+    List<Column> target,
+  }) async {
+    final orgCompanion = OrgsCompanion(
+      name: Value(name),
+      inn: Value(inn),
+    );
+    final id = await into(db.orgs).insert(
+      orgCompanion,
+      onConflict: DoUpdate((old) => orgCompanion, target: target),
     );
     return Org(
       id: id,
@@ -219,7 +240,7 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
       ).watch();
 
   /// Предыдущая организация перед заданной
-  Future<Org> getPreviousOrg(Org org) async =>
+  Future<Org> getPrevious(Org org) async =>
     await db._previousOrg(org.name).map((row) =>
         Org(
           id: row.id,
@@ -227,10 +248,10 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
           inn: row.inn,
           activeGroupId: row.activeGroupId,
         )
-    ).getSingle() ?? _getFirstOrg();
+    ).getSingle() ?? _getFirst();
 
   /// Первая организация в алфавитном порядке
-  Future<Org> _getFirstOrg() async =>
+  Future<Org> _getFirst() async =>
       await db._firstOrg().map((row) =>
           Org(
             id: row.id,
@@ -239,6 +260,10 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
             activeGroupId: row.activeGroupId,
           )
       ).getSingle();
+
+  /// Поиск организации
+  Future<Org> find(String name) async =>
+      await (select(db.orgs)..where((e) => e.name.equals(name))).getSingle();
 }
 
 // Графики ---------------------------------------------------------------------
@@ -286,16 +311,16 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
       ).watch();
 
   /// Предыдущий график перед заданным
-  Future<Schedule> getPreviousSchedule(Schedule schedule) async =>
+  Future<Schedule> getPrevious(Schedule schedule) async =>
       await db._previousSchedule(schedule.code).map((row) =>
           Schedule(
             id: row.id,
             code: row.code,
           )
-      ).getSingle() ?? _getFirstSchedule();
+      ).getSingle() ?? _getFirst();
 
   /// Первая организация в алфавитном порядке
-  Future<Schedule> _getFirstSchedule() async =>
+  Future<Schedule> _getFirst() async =>
       await db._firstSchedule().map((row) =>
           Schedule(
             id: row.id,
@@ -304,8 +329,12 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
       ).getSingle();
 
   /// Получение графика
-  Future<Schedule> getSchedule(int id) async =>
+  Future<Schedule> get(int id) async =>
       await (select(db.schedules)..where((schedule) => schedule.id?.equals(id))).getSingle();
+
+  /// Поиск графика
+  Future<Schedule> find(String code) async =>
+      await (select(db.schedules)..where((schedule) => schedule.code.equals(code))).getSingle();
 }
 
 // Дни графиков ----------------------------------------------------------------
@@ -365,14 +394,15 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
     @required String name,
     @required Schedule schedule,
     int meals,
+    bool upsert,
   }) async {
     final id = await into(db.groups).insert(
-        GroupsCompanion(
-          orgId: Value(org.id),
-          name: Value(name),
-          scheduleId: Value(schedule.id),
-          meals: Value(meals),
-        )
+      GroupsCompanion(
+        orgId: Value(org.id),
+        name: Value(name),
+        scheduleId: Value(schedule.id),
+        meals: Value(meals),
+      ),
     );
     return GroupView(
       id: id,
@@ -405,7 +435,7 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
       ).watch();
 
   /// Предыдущая группа перед заданной
-  Future<Group> getPreviousGroup(Org org, Group group) async =>
+  Future<Group> getPrevious(Org org, Group group) async =>
     await db._previousGroup(org.id, group.name).map((row) =>
         Group(
           id: row.id,
@@ -414,10 +444,10 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
           scheduleId: row.scheduleId,
           meals: row.meals,
         )
-    ).getSingle() ?? _getFirstGroup(org);
+    ).getSingle() ?? _getFirst(org);
 
   /// Первая группа организации в алфавитном порядке
-  Future<Group> _getFirstGroup(Org org) async =>
+  Future<Group> _getFirst(Org org) async =>
       await db._firstGroup(org.id).map((row) =>
           Group(
             id: row.id,
@@ -427,6 +457,14 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
             meals: row.meals,
           )
       ).getSingle();
+
+  /// Поиск группы
+  Future<Group> find(String name, Org org, Schedule schedule) async =>
+      await (select(db.groups)..where((e) =>
+        e.name.equals(name) &
+        e.orgId.equals(org.id) &
+        e.scheduleId.equals(schedule.id)
+      )).getSingle();
 }
 
 // Персоны ---------------------------------------------------------------------
@@ -486,6 +524,23 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
             groupCount: row.groupCount,
           )
       ).watch();
+
+  /// Поиск персоны
+  Future<Person> find(
+    String family,
+    String name,
+    String middleName,
+    DateTime birthday,
+  ) async =>
+      await (db._findPerson(family, name, middleName, birthday).map((row) => Person(
+        id: row.id,
+        family: row.family,
+        name: row.name,
+        middleName: row.middleName,
+        birthday: row.birthday,
+        phone: row.phone,
+        phone2: row.phone2,
+      ))).getSingle();
 }
 
 // Персоны в группе -----------------------------------------------------
@@ -494,7 +549,7 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
   GroupPersonsDao(Db db) : super(db);
 
   /// Добавление персоны в группу
-  Future<GroupPersonView> insert2(Group group, Person person, DateTime beginDate, DateTime endDate) async {
+  Future<GroupPerson> insert2(Group group, Person person, DateTime beginDate, DateTime endDate) async {
     final id = await into(db.groupPersons).insert(
         GroupPersonsCompanion(
           groupId: Value(group.id),
@@ -503,21 +558,21 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
           endDate: Value(endDate),
         )
     );
-    return GroupPersonView(
+    return GroupPerson(
       id: id,
       groupId: group.id,
-      person: person,
+      personId: person.id,
       beginDate: beginDate,
       endDate: endDate,
     );
   }
 
   /// Исправление персоны в группе
-  Future<bool> update2(GroupPersonView groupPerson) async =>
+  Future<bool> update2(GroupPerson groupPerson) async =>
       await update(db.groupPersons).replace(groupPerson);
 
   /// Удаление персоны из группы
-  Future<bool> delete2(GroupPersonView groupPerson) async =>
+  Future<bool> delete2(GroupPerson groupPerson) async =>
       (await delete(db.groupPersons).delete(
           GroupPersonsCompanion(id: Value(groupPerson.id))
       )) > 0 ? true : false;
@@ -563,6 +618,13 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
         endDate: row.endDate,
         attendanceCount: row.attendanceCount,
       )).watch();
+
+  /// Поиск персоны в группе
+  Future<GroupPerson> find(Group group, Person person) async =>
+      await (select(db.groupPersons)..where((e) =>
+        e.groupId.equals(group.id) &
+        e.personId.equals(person.id)
+      )).getSingle();
 }
 
 // Посещаемость персон в группе ----------------------------------------------
@@ -572,7 +634,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
 
   /// Добавление посещаемости
   Future<Attendance> insert2({
-    @required GroupPersonView groupPerson,
+    @required GroupPerson groupPerson,
     @required DateTime date,
     @required double hoursFact,
   }) async {
@@ -591,6 +653,10 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
     );
   }
 
+  /// Исправление посещаемости
+  Future<bool> update2(Attendance attendance) async =>
+      await update(db.attendances).replace(attendance);
+
   /// Удаление посещаемости
   Future<bool> delete2(Attendance attendance) async =>
       (await delete(db.attendances).delete(attendance)) > 0 ? true : false;
@@ -607,6 +673,13 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
         date: row.date,
         hoursFact: row.hoursFact,
       )).watch();
+
+  /// Поиск посещаемости
+  Future<Attendance> find(GroupPerson groupPerson, DateTime date) async =>
+      await (select(db.attendances)..where((e) =>
+        e.groupPersonId.equals(groupPerson.id) &
+        e.date.equals(date)
+      )).getSingle();
 }
 
 // Настройки -------------------------------------------------------------------

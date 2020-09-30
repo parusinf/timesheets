@@ -2384,8 +2384,8 @@ abstract class _$Db extends GeneratedDatabase {
   Orgs _orgs;
   Orgs get orgs => _orgs ??= Orgs(this);
   Index _orgsIndex;
-  Index get orgsIndex => _orgsIndex ??= Index(
-      'orgs_index', 'CREATE UNIQUE INDEX orgs_index ON orgs (name, inn);');
+  Index get orgsIndex => _orgsIndex ??=
+      Index('orgs_index', 'CREATE UNIQUE INDEX orgs_index ON orgs (name);');
   Schedules _schedules;
   Schedules get schedules => _schedules ??= Schedules(this);
   Index _schedulesIndex;
@@ -2556,6 +2556,21 @@ abstract class _$Db extends GeneratedDatabase {
         groupCount: row.readInt('groupCount'),
       );
     });
+  }
+
+  Selectable<Person> _findPerson(
+      String family, String name, String middleName, DateTime birthday) {
+    return customSelect(
+        'SELECT P.id,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2\n  FROM persons P\n WHERE P.family = :family\n   AND P.name = :name\n   AND (:middleName IS NULL OR :middleName = \'\' OR P.middleName = :middleName)\n   AND (:birthday IS NULL OR P.birthday = :birthday)',
+        variables: [
+          Variable.withString(family),
+          Variable.withString(name),
+          Variable.withString(middleName),
+          Variable.withDateTime(birthday)
+        ],
+        readsFrom: {
+          persons
+        }).map(persons.mapFromRow);
   }
 
   Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {

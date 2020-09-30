@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -10,7 +11,7 @@ import 'package:timesheets/core/l10n.dart';
 
 /// Выгрузка посещаемости группы за период в CSV файл
 Future unloadFile(
-  L10n l10n,
+  BuildContext context,
   Org org,
   GroupView group,
   DateTime period,
@@ -18,7 +19,8 @@ Future unloadFile(
   List<Attendance> attendances
 ) async {
   if (await Permission.storage.request().isGranted) {
-    var buffer = new StringBuffer();
+    final l10n = L10n.of(context);
+    final buffer = new StringBuffer();
 
     // Организация
     buffer.write('${org.name};${trim(org.inn)};\n');
@@ -65,8 +67,8 @@ Future unloadFile(
 
     // Запись файла
     final filename = '${group.name}.${org.name}.csv'.replaceAll(' ', '_');
-    final dbFolder = await getExternalStorageDirectory();
-    final file = File(p.join(dbFolder.path, filename));
+    final directory = await getExternalStorageDirectory();
+    final file = File(p.join(directory.path, filename));
     file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
 
     // Отправка файла

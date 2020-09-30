@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 const List cp1251 = [
   '\u0000', '\u0001', '\u0002', '\u0003', '\u0004', '\u0005', '\u0006', '\u0007',
   '\u0008', '\u0009', '\n',     '\u000B', '\u000C', '\r',     '\u000E', '\u000F',
@@ -40,4 +42,13 @@ List<int> encodeCp1251(String string) {
     bytes.add(cp1251.indexOf(string[i]));
   }
   return bytes;
+}
+
+// Декодирование строки из cp1251
+String decodeCp1251(Uint8List bytes) {
+  final buffer = StringBuffer();
+  for(int i = 0; i < bytes.length; i++) {
+    buffer.write(cp1251[bytes[i]]);
+  }
+  return buffer.toString();
 }

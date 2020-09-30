@@ -5,6 +5,7 @@ import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/core/unload_file.dart';
+import 'package:timesheets/core/load_file.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/db/schedule_helper.dart';
 import 'package:timesheets/ui/home_drawer.dart';
@@ -26,7 +27,7 @@ class HomePageState extends State<HomePage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<GroupPersonView> _groupPeriodPersons;
   List<Attendance> _groupAttendances;
-  static const fixedColumnWidth = 134.0;
+  static const fixedColumnWidth = 140.0;
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
   static const leftPadding = 12.0;
@@ -69,6 +70,10 @@ class HomePageState extends State<HomePage> {
               return Text('');
             }
           }
+        ),
+        IconButton(
+          icon: Icon(Icons.file_download),
+          onPressed: _loadFile,
         ),
       ],
     ),
@@ -123,13 +128,22 @@ class HomePageState extends State<HomePage> {
   Future _unloadFile() async {
     try {
       await unloadFile(
-        l10n,
+        context,
         bloc.activeOrg.value,
         bloc.activeGroup.value,
         bloc.activePeriod.value,
         _groupPeriodPersons,
         _groupAttendances,
       );
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
+  }
+
+  /// Выгрузка посещаемости группы за период в CSV файл
+  Future _loadFile() async {
+    try {
+      await loadFile(context);
     } catch(e) {
       showMessage(_scaffoldKey, e.toString());
     }

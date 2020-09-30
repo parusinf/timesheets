@@ -1,7 +1,7 @@
 name: timesheets
 description: Табели посещаемости в группах по графикам
 
-version: 2020.9.27
+version: 2020.9.30
 
 environment:
   sdk: ">=2.8.2 <3.0.0"
@@ -25,6 +25,7 @@ dependencies:
   url_launcher:
   permission_handler:
   flutter_share_content:
+  file_picker:
 
 dev_dependencies:
   moor_generator:
