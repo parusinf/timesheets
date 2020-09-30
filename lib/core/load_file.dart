@@ -5,8 +5,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
-/// Загрузка посещаемости группы за период из CSV файла
-Future loadFile(BuildContext context) async {
+/// Выбор CSV файла и загрузка посещаемости группы за период
+Future chooseAndLoadFile(BuildContext context) async {
   final l10n = L10n.of(context);
   FilePickerResult result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
@@ -15,7 +15,13 @@ Future loadFile(BuildContext context) async {
   if (result == null) {
     throw l10n.fileNotSelected;
   }
-  final file = File(result.files.single.path);
+  await loadFile(context, result.files.single.path);
+}
+
+/// Заргузка CSV файла
+Future loadFile(BuildContext context, String fileName) async {
+  final l10n = L10n.of(context);
+  final file = File(fileName);
   final content = decodeCp1251(file.readAsBytesSync()).split('\n');
   if (content.length < 4) {
     throw l10n.fileFormatError;

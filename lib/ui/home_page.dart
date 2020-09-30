@@ -16,6 +16,8 @@ import 'package:timesheets/ui/help_page.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
+  final String fileName;
+  const HomePage(this.fileName, {Key key}): super(key: key);
   @override
   HomePageState createState() => HomePageState();
 }
@@ -31,6 +33,14 @@ class HomePageState extends State<HomePage> {
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
   static const leftPadding = 12.0;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.fileName != null) {
+      loadFile(context, widget.fileName);
+    }
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -73,7 +83,7 @@ class HomePageState extends State<HomePage> {
         ),
         IconButton(
           icon: Icon(Icons.file_download),
-          onPressed: _loadFile,
+          onPressed: _chooseAndLoadFile,
         ),
       ],
     ),
@@ -141,9 +151,9 @@ class HomePageState extends State<HomePage> {
   }
 
   /// Выгрузка посещаемости группы за период в CSV файл
-  Future _loadFile() async {
+  Future _chooseAndLoadFile() async {
     try {
-      await loadFile(context);
+      await chooseAndLoadFile(context);
     } catch(e) {
       showMessage(_scaffoldKey, e.toString());
     }

@@ -66,9 +66,21 @@ class L10n {
       'uniqueSchedule': 'Уже есть такой график',
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
+      'unknown': 'Неизвестно',
+      'failedToGetLatestLink': 'Не удалось получить последнюю ссылку',
+      'failedToGetInitialLink': 'Не удалось получить начальную ссылку',
+      'failedToParseInitialLink': 'Не удалось разобрать начальную ссылку',
+      'failedToGetInitialUri': 'Не удалось получить начальный Uri',
+      'failedToParseInitialUri': 'Не удалось разобрать начальный Uri',
     }
   };
 
+  get failedToParseInitialUri => _l10n[locale.languageCode]['failedToParseInitialUri'];
+  get failedToGetInitialUri => _l10n[locale.languageCode]['failedToGetInitialUri'];
+  get failedToParseInitialLink => _l10n[locale.languageCode]['failedToParseInitialLink'];
+  get failedToGetInitialLink => _l10n[locale.languageCode]['failedToGetInitialLink'];
+  get failedToGetLatestLink => _l10n[locale.languageCode]['failedToGetLatestLink'];
+  get unknown => _l10n[locale.languageCode]['unknown'];
   get addGroup => _l10n[locale.languageCode]['addGroup'];
   get addOrg => _l10n[locale.languageCode]['addOrg'];
   get addPerson => _l10n[locale.languageCode]['addPerson'];

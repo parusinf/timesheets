@@ -17,24 +17,24 @@ const dividerHeight = 20.0;
 const phoneLength = 15;
 
 /// Сообщение в снакбаре
-void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String originalMessage) {
+void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
   final context = scaffoldKey.currentContext;
-  String message = originalMessage;
+  String newMessage = message;
   final uniqueRegexp = RegExp(r'UNIQUE constraint failed: ([a-z_]+)\.');
-  if (uniqueRegexp.hasMatch(originalMessage)) {
-    final tableName = uniqueRegexp.firstMatch(originalMessage)[1];
+  if (uniqueRegexp.hasMatch(message)) {
+    final tableName = uniqueRegexp.firstMatch(message)[1];
     switch (tableName) {
-      case 'orgs': message = L10n.of(context).uniqueOrg; break;
-      case 'schedules': message = L10n.of(context).uniqueSchedule; break;
-      case 'groups': message = L10n.of(context).uniqueGroup; break;
-      case 'persons': message = L10n.of(context).uniquePerson; break;
-      case 'group_persons': message = L10n.of(context).uniqueGroupPerson; break;
+      case 'orgs': newMessage = L10n.of(context).uniqueOrg; break;
+      case 'schedules': newMessage = L10n.of(context).uniqueSchedule; break;
+      case 'groups': newMessage = L10n.of(context).uniqueGroup; break;
+      case 'persons': newMessage = L10n.of(context).uniquePerson; break;
+      case 'group_persons': newMessage = L10n.of(context).uniqueGroupPerson; break;
     }
   } else {
-    message = message.replaceFirst('Invalid argument(s): ', '');
+    newMessage = newMessage.replaceFirst('Invalid argument(s): ', '');
   }
   scaffoldKey.currentState.hideCurrentSnackBar();
-  scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
+  scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(newMessage)));
 }
 
 /// Текст

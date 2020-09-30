@@ -26,6 +26,7 @@ dependencies:
   permission_handler:
   flutter_share_content:
   file_picker:
+  flutter_handle_file:
 
 dev_dependencies:
   moor_generator:
@@ -41,3 +42,9 @@ flutter:
   assets:
     - assets/
     - assets/icons/
+
+flutter_handle_file:
+  bundle_identifier: $(PRODUCT_BUNDLE_IDENTIFIER)
+  bundle_type_name: Comma-Separated Values
+  extensions:
+    - csv: application/csv

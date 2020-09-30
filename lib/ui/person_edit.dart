@@ -40,13 +40,13 @@ class _PersonEditState extends State<PersonEdit> {
 
   @override
   void initState() {
+    super.initState();
     _familyEdit.text = widget.person?.family;
     _nameEdit.text = widget.person?.name;
     _middleNameEdit.text = widget.person?.middleName;
     _birthdayEdit.text = dateToString(widget.person?.birthday);
     _phoneEdit.text = widget.person?.phone;
     _phone2Edit.text = widget.person?.phone2;
-    super.initState();
   }
 
   @override

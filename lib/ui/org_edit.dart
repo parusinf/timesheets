@@ -35,9 +35,9 @@ class _OrgEditState extends State<OrgEdit> {
 
   @override
   void initState() {
+    super.initState();
     _nameEdit.text = widget.org?.name;
     _innEdit.text = widget.org?.inn;
-    super.initState();
   }
 
   @override
