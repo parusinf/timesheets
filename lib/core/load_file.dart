@@ -30,8 +30,8 @@ Future loadFile(BuildContext context, String fileName) async {
 
   // Организация
   final orgColumns = content[0].split(';');
-  final orgName = orgColumns[0];
-  final orgInn = orgColumns[1];
+  final orgName = trim(orgColumns[0]);
+  final orgInn = trim(orgColumns[1]);
   if (orgName == null) {
     throw l10n.fileFormatError;
   }
@@ -39,7 +39,7 @@ Future loadFile(BuildContext context, String fileName) async {
   if (org == null) {
     org = await bloc.insertOrg(name: orgName, inn: orgInn);
   } else {
-    if (org.inn != orgInn) {
+    if (needUpdate(org.inn, orgInn)) {
       bloc.db.orgsDao.update2(Org(
           id: org.id,
           name: org.name,
@@ -50,8 +50,8 @@ Future loadFile(BuildContext context, String fileName) async {
 
   // Группа
   final groupColumns = content[1].split(';');
-  final groupName = groupColumns[0];
-  final scheduleCode = groupColumns[1];
+  final groupName = trim(groupColumns[0]);
+  final scheduleCode = trim(groupColumns[1]);
   final groupMeals = stringToInt(groupColumns[2]);
   if (groupName == null || scheduleCode == null || groupMeals == null) {
     throw l10n.fileFormatError;
@@ -87,12 +87,12 @@ Future loadFile(BuildContext context, String fileName) async {
     }
     // Персона
     final personColumns = content[i].split(';');
-    final personFamily = personColumns[0];
-    final personName = personColumns[1];
-    final personMiddleName = personColumns[2];
+    final personFamily = trim(personColumns[0]);
+    final personName = trim(personColumns[1]);
+    final personMiddleName = trim(personColumns[2]);
     final personBirthday = stringToDate(personColumns[3]);
-    final personPhone = personColumns[4];
-    final personPhone2 = personColumns[5];
+    final personPhone = trim(personColumns[4]);
+    final personPhone2 = trim(personColumns[5]);
     if (personFamily == null || personName == null) {
       throw l10n.fileFormatError;
     }
@@ -108,15 +108,16 @@ Future loadFile(BuildContext context, String fileName) async {
         phone2: personPhone2,
       );
     } else {
-      if (person.phone != personPhone || person.phone2 != personPhone2) {
+      if (needUpdate(person.phone, personPhone) ||
+          needUpdate(person.phone2, personPhone2)) {
         bloc.db.personsDao.update2(Person(
           id: person.id,
           family: person.family,
           name: person.name,
           middleName: person.middleName,
           birthday: person.birthday,
-          phone: personPhone,
-          phone2: personPhone2,
+          phone: needUpdate(person.phone, personPhone) ? personPhone : person.phone,
+          phone2: needUpdate(person.phone2, personPhone2) ? personPhone2 : person.phone2,
         ));
       }
     }
@@ -133,13 +134,14 @@ Future loadFile(BuildContext context, String fileName) async {
         endDate: groupPersonEndDate,
       );
     } else {
-      if (groupPerson.beginDate != groupPersonBeginDate || groupPerson.endDate != groupPersonEndDate) {
+      if (needUpdate(groupPerson.beginDate, groupPersonBeginDate) ||
+          needUpdate(groupPerson.endDate, groupPersonEndDate)) {
         bloc.db.groupPersonsDao.update2(GroupPerson(
           id: groupPerson.id,
           groupId: groupPerson.groupId,
           personId: groupPerson.personId,
-          beginDate: groupPersonBeginDate,
-          endDate: groupPersonEndDate,
+          beginDate: needUpdate(groupPerson.beginDate, groupPersonBeginDate) ? groupPersonBeginDate : groupPerson.beginDate,
+          endDate: needUpdate(groupPerson.endDate, groupPersonEndDate) ? groupPersonEndDate : groupPerson.endDate,
         ));
       }
     }

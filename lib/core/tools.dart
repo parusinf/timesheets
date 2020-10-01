@@ -96,3 +96,8 @@ extension StringExtension on String {
     return "${this[0].toUpperCase()}${this.substring(1)}";
   }
 }
+
+/// Нуждается в исправлении
+bool needUpdate(oldValue, newValue) =>
+    trim(oldValue) == '' && trim(newValue) != '' ||
+    trim(oldValue) != '' && trim(newValue) != '' && trim(oldValue) != trim(newValue);
