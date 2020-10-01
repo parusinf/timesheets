@@ -195,8 +195,14 @@ DateTime stringToPeriod(BuildContext context, String period) {
   final monthList = dateTimeSymbolMap()[l10n.locale.languageCode].STANDALONEMONTHS
       .map((month) => month.toLowerCase()).toList();
   final parts = period.split(' ');
+  if (parts.length != 2) {
+    return null;
+  }
   final month = monthList.indexOf(parts[0].toLowerCase()) + 1;
   final year = stringToInt(parts[1]);
+  if (month == 0 || year == null) {
+    return null;
+  }
   return lastDayOfMonth(DateTime(year, month, 1));
 }
 

@@ -28,8 +28,15 @@ Future loadFile(BuildContext context, String fileName) async {
   }
   final bloc = Provider.of<Bloc>(context, listen: false);
 
+  // Период
+  final period = stringToPeriod(context, content[0].split(';')[0]);
+  if (period == null) {
+    throw l10n.fileFormatError;
+  }
+  bloc.setActivePeriod(period);
+
   // Организация
-  final orgColumns = content[0].split(';');
+  final orgColumns = content[1].split(';');
   final orgName = trim(orgColumns[0]);
   final orgInn = trim(orgColumns[1]);
   if (orgName == null) {
@@ -49,7 +56,7 @@ Future loadFile(BuildContext context, String fileName) async {
   }
 
   // Группа
-  final groupColumns = content[1].split(';');
+  final groupColumns = content[2].split(';');
   final groupName = trim(groupColumns[0]);
   final scheduleCode = trim(groupColumns[1]);
   final groupMeals = stringToInt(groupColumns[2]);
@@ -75,10 +82,6 @@ Future loadFile(BuildContext context, String fileName) async {
       ));
     }
   }
-
-  // Период
-  final period = stringToPeriod(context, content[2].split(';')[0]);
-  bloc.setActivePeriod(period);
 
   // Персоны
   for (int i = 4; i < content.length; i++) {

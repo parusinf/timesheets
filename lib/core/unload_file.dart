@@ -22,14 +22,14 @@ Future unloadFile(
     final l10n = L10n.of(context);
     final buffer = new StringBuffer();
 
+    // Период
+    buffer.write('${periodToString(period)};\n');
+
     // Организация
     buffer.write('${org.name};${trim(org.inn)};\n');
 
     // Группа
     buffer.write('${group.name};${group.schedule.code};${group.meals ?? 0};\n');
-
-    // Период
-    buffer.write('${periodToString(period)};\n');
 
     // Заголовок табеля
     buffer.write('${l10n.personFamily};${l10n.personName};${l10n.personMiddleName};');
@@ -66,7 +66,7 @@ Future unloadFile(
     }
 
     // Запись файла
-    final filename = '${group.name}.${org.name}.csv'.replaceAll(' ', '_');
+    final filename = '${group.name}.csv'.replaceAll(' ', '_');
     final directory = await getExternalStorageDirectory();
     final file = File(p.join(directory.path, filename));
     file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
