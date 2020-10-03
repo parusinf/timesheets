@@ -108,3 +108,8 @@ bool needStringUpdate(String oldValue, String newValue) =>
 bool needDateUpdate(DateTime oldValue, DateTime newValue) =>
     oldValue == null && newValue != null ||
         oldValue != null && newValue != null && oldValue != newValue;
+
+String uriToString(Uri uri) {
+  final encoded = uri?.path?.replaceFirst('/external_files', externalFiles);
+  return encoded != null ? Uri.decodeFull(encoded) : null;
+}

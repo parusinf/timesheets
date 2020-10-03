@@ -128,7 +128,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         primarySwatch: Colors.lightBlue,
         typography: Typography.material2018(),
       ),
-      home: HomePage(_latestUri?.path?.replaceFirst('/external_files', externalFiles)),
+      home: HomePage(uriToString(_latestUri)),
     ),
   );
 }
