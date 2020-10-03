@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
@@ -21,6 +22,9 @@ Future chooseAndLoadFile(BuildContext context) async {
 /// Заргузка CSV файла
 Future loadFile(BuildContext context, String fileName) async {
   final l10n = L10n.of(context);
+  if (!(await Permission.storage.request().isGranted)) {
+    throw l10n.permissionDenied;
+  }
   final file = File(fileName);
   final content = decodeCp1251(file.readAsBytesSync()).split('\n');
   if (content.length < 4) {
@@ -46,7 +50,7 @@ Future loadFile(BuildContext context, String fileName) async {
   if (org == null) {
     org = await bloc.insertOrg(name: orgName, inn: orgInn);
   } else {
-    if (needUpdate(org.inn, orgInn)) {
+    if (needStringUpdate(org.inn, orgInn)) {
       bloc.db.orgsDao.update2(Org(
           id: org.id,
           name: org.name,
@@ -111,16 +115,16 @@ Future loadFile(BuildContext context, String fileName) async {
         phone2: personPhone2,
       );
     } else {
-      if (needUpdate(person.phone, personPhone) ||
-          needUpdate(person.phone2, personPhone2)) {
+      if (needStringUpdate(person.phone, personPhone) ||
+          needStringUpdate(person.phone2, personPhone2)) {
         bloc.db.personsDao.update2(Person(
           id: person.id,
           family: person.family,
           name: person.name,
           middleName: person.middleName,
           birthday: person.birthday,
-          phone: needUpdate(person.phone, personPhone) ? personPhone : person.phone,
-          phone2: needUpdate(person.phone2, personPhone2) ? personPhone2 : person.phone2,
+          phone: needStringUpdate(person.phone, personPhone) ? personPhone : person.phone,
+          phone2: needStringUpdate(person.phone2, personPhone2) ? personPhone2 : person.phone2,
         ));
       }
     }
@@ -137,14 +141,14 @@ Future loadFile(BuildContext context, String fileName) async {
         endDate: groupPersonEndDate,
       );
     } else {
-      if (needUpdate(groupPerson.beginDate, groupPersonBeginDate) ||
-          needUpdate(groupPerson.endDate, groupPersonEndDate)) {
+      if (needDateUpdate(groupPerson.beginDate, groupPersonBeginDate) ||
+          needDateUpdate(groupPerson.endDate, groupPersonEndDate)) {
         bloc.db.groupPersonsDao.update2(GroupPerson(
           id: groupPerson.id,
           groupId: groupPerson.groupId,
           personId: groupPerson.personId,
-          beginDate: needUpdate(groupPerson.beginDate, groupPersonBeginDate) ? groupPersonBeginDate : groupPerson.beginDate,
-          endDate: needUpdate(groupPerson.endDate, groupPersonEndDate) ? groupPersonEndDate : groupPerson.endDate,
+          beginDate: needDateUpdate(groupPerson.beginDate, groupPersonBeginDate) ? groupPersonBeginDate : groupPerson.beginDate,
+          endDate: needDateUpdate(groupPerson.endDate, groupPersonEndDate) ? groupPersonEndDate : groupPerson.endDate,
         ));
       }
     }

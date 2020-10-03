@@ -2,6 +2,8 @@ import 'package:intl/intl.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/db/schedule_helper.dart';
 
+const externalFiles = '/storage/emulated/0';
+
 /// Тип действия с данными
 enum DataActionType {
   Insert,
@@ -97,7 +99,12 @@ extension StringExtension on String {
   }
 }
 
-/// Нуждается в исправлении
-bool needUpdate(oldValue, newValue) =>
+/// Строка нуждается в исправлении
+bool needStringUpdate(String oldValue, String newValue) =>
     trim(oldValue) == '' && trim(newValue) != '' ||
-    trim(oldValue) != '' && trim(newValue) != '' && trim(oldValue) != trim(newValue);
+        trim(oldValue) != '' && trim(newValue) != '' && trim(oldValue) != trim(newValue);
+
+/// Дата нуждается в исправлении
+bool needDateUpdate(DateTime oldValue, DateTime newValue) =>
+    oldValue == null && newValue != null ||
+        oldValue != null && newValue != null && oldValue != newValue;

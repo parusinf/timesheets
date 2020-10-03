@@ -2,13 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_handle_file/flutter_handle_file.dart';
+import 'package:uni_links/uni_links.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/ui/home_page.dart';
 import 'package:timesheets/core.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,13 +20,14 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => new _MyAppState();
 }
 
+enum UniLinksType { string, uri }
+
 class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   get l10n => L10n.of(context);
-  String _latestFile;
   Uri _latestUri;
-  StreamSubscription _subLink;
-  StreamSubscription _subUri;
+  StreamSubscription _sub;
+  UniLinksType _type = UniLinksType.string;
 
   @override
   initState() {
@@ -37,71 +37,73 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
   @override
   dispose() {
-    if (_subLink != null) _subLink.cancel();
-    if (_subUri != null) _subUri.cancel();
+    if (_sub != null) _sub.cancel();
     super.dispose();
   }
 
-  /// Инициализация состояния платформы
   initPlatformState() async {
-    // Присоединяем слушателя к потоку ссылок [String]
-    _subLink = getFilesStream().listen(
-      (String file) {
-        if (!mounted) return;
-        setState(() {
-          _latestFile = file;
-        });
-      },
-      onError: (err) {
-        if (!mounted) return;
-        showMessage(_scaffoldKey, '${l10n.failedToGetLatestLink}: $err');
-      }
-    );
-
-    // Присоединяем слушателя к потоку ссылок [Uri]
-    _subUri = getUriFilesStream().listen(
-      (Uri uri) {
-        if (!mounted) return;
-        setState(() {
-          _latestUri = uri;
-        });
-      },
-      onError: (err) {
-        if (!mounted) return;
-        setState(() {
-          _latestUri = null;
-        });
-      }
-    );
-
-    // Получаем последнюю ссылку
-    String initialFile;
-    try {
-      initialFile = await getInitialFile();
-    } on PlatformException {
-      initialFile = null;
-      showMessage(_scaffoldKey, l10n.failedToGetInitialLink);
-    } on FormatException {
-      initialFile = null;
-      showMessage(_scaffoldKey, l10n.failedToParseInitialLink);
+    if (_type == UniLinksType.string) {
+      await initPlatformStateForStringUniLinks();
+    } else {
+      await initPlatformStateForUriUniLinks();
     }
+  }
 
-    // Получаем последний Uri
+  initPlatformStateForStringUniLinks() async {
+    _sub = getLinksStream().listen((String link) {
+      if (!mounted) return;
+      setState(() {
+        _latestUri = null;
+        try {
+          if (link != null) _latestUri = Uri.parse(link);
+        } on FormatException {}
+      });
+    }, onError: (err) {
+      if (!mounted) return;
+      setState(() {
+        _latestUri = null;
+      });
+    });
+    String initialLink;
+    Uri initialUri;
+    try {
+      initialLink = await getInitialLink();
+      if (initialLink != null) initialUri = Uri.parse(initialLink);
+    } on PlatformException {
+      initialLink = l10n.failedToGetInitialLink;
+      initialUri = null;
+    } on FormatException {
+      initialLink = l10n.failedToParseInitialLink;
+      initialUri = null;
+    }
+    if (!mounted) return;
+    setState(() {
+      _latestUri = initialUri;
+    });
+  }
+
+  initPlatformStateForUriUniLinks() async {
+    _sub = getUriLinksStream().listen((Uri uri) {
+      if (!mounted) return;
+      setState(() {
+        _latestUri = uri;
+      });
+    }, onError: (err) {
+      if (!mounted) return;
+      setState(() {
+        _latestUri = null;
+      });
+    });
     Uri initialUri;
     try {
       initialUri = await getInitialUri();
     } on PlatformException {
       initialUri = null;
-      showMessage(_scaffoldKey, l10n.failedToGetInitialUri);
     } on FormatException {
       initialUri = null;
-      showMessage(_scaffoldKey, l10n.failedToParseInitialUri);
     }
-
     if (!mounted) return;
-
     setState(() {
-      _latestFile = initialFile;
       _latestUri = initialUri;
     });
   }
@@ -126,7 +128,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         primarySwatch: Colors.lightBlue,
         typography: Typography.material2018(),
       ),
-      home: HomePage(_latestFile ?? _latestUri?.path),
+      home: HomePage(_latestUri?.path?.replaceFirst('/external_files', externalFiles)),
     ),
   );
 }

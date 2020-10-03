@@ -22,6 +22,8 @@ class L10n {
       'countryPhoneCode': '+7 ',
       'dataLoading': 'Загрузка данных',
       'endDate': 'Дата выбытия',
+      'failedToGetInitialLink': 'Не удалось получить начальную ссылку',
+      'failedToParseInitialLink': 'Не удалось разобрать начальную ссылку',
       'fileFormatError': 'Ошибка в формате файла',
       'fileNotSelected': 'Файл не выбран',
       'from': 'с',
@@ -46,6 +48,7 @@ class L10n {
       'noPersonName': 'Нет имени',
       'org': 'Организация',
       'orgs': 'Организации',
+      'permissionDenied': 'Разрешение не получено',
       'person': 'Персона',
       'personBirthday': 'Дата рождения',
       'personFamily': 'Фамилия',
@@ -64,23 +67,12 @@ class L10n {
       'uniqueOrg': 'Уже есть такая организация',
       'uniquePerson': 'Уже есть такая персона',
       'uniqueSchedule': 'Уже есть такой график',
+      'unknown': 'Неизвестно',
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
-      'unknown': 'Неизвестно',
-      'failedToGetLatestLink': 'Не удалось получить последнюю ссылку',
-      'failedToGetInitialLink': 'Не удалось получить начальную ссылку',
-      'failedToParseInitialLink': 'Не удалось разобрать начальную ссылку',
-      'failedToGetInitialUri': 'Не удалось получить начальный Uri',
-      'failedToParseInitialUri': 'Не удалось разобрать начальный Uri',
     }
   };
 
-  get failedToParseInitialUri => _l10n[locale.languageCode]['failedToParseInitialUri'];
-  get failedToGetInitialUri => _l10n[locale.languageCode]['failedToGetInitialUri'];
-  get failedToParseInitialLink => _l10n[locale.languageCode]['failedToParseInitialLink'];
-  get failedToGetInitialLink => _l10n[locale.languageCode]['failedToGetInitialLink'];
-  get failedToGetLatestLink => _l10n[locale.languageCode]['failedToGetLatestLink'];
-  get unknown => _l10n[locale.languageCode]['unknown'];
   get addGroup => _l10n[locale.languageCode]['addGroup'];
   get addOrg => _l10n[locale.languageCode]['addOrg'];
   get addPerson => _l10n[locale.languageCode]['addPerson'];
@@ -91,6 +83,8 @@ class L10n {
   get countryPhoneCode => _l10n[locale.languageCode]['countryPhoneCode'];
   get dataLoading => _l10n[locale.languageCode]['dataLoading'];
   get endDate => _l10n[locale.languageCode]['endDate'];
+  get failedToGetInitialLink => _l10n[locale.languageCode]['failedToGetInitialLink'];
+  get failedToParseInitialLink => _l10n[locale.languageCode]['failedToParseInitialLink'];
   get fileFormatError => _l10n[locale.languageCode]['fileFormatError'];
   get fileNotSelected => _l10n[locale.languageCode]['fileNotSelected'];
   get from => _l10n[locale.languageCode]['from'];
@@ -114,6 +108,7 @@ class L10n {
   get noPersonName => _l10n[locale.languageCode]['noPersonName'];
   get org => _l10n[locale.languageCode]['org'];
   get orgs => _l10n[locale.languageCode]['orgs'];
+  get permissionDenied => _l10n[locale.languageCode]['permissionDenied'];
   get person => _l10n[locale.languageCode]['person'];
   get personBirthday => _l10n[locale.languageCode]['personBirthday'];
   get personFamily => _l10n[locale.languageCode]['personFamily'];
@@ -132,6 +127,7 @@ class L10n {
   get uniqueOrg => _l10n[locale.languageCode]['uniqueOrg'];
   get uniquePerson => _l10n[locale.languageCode]['uniquePerson'];
   get uniqueSchedule => _l10n[locale.languageCode]['uniqueSchedule'];
+  get unknown => _l10n[locale.languageCode]['unknown'];
   get withoutInn => _l10n[locale.languageCode]['withoutInn'];
   get withoutTime => _l10n[locale.languageCode]['withoutTime'];
 }

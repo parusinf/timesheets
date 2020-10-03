@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
@@ -37,9 +38,13 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    if (widget.fileName != null) {
-      loadFile(context, widget.fileName);
-    }
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(Duration(milliseconds: 500), () {
+        if (widget.fileName != null) {
+          _loadFile(fileName: widget.fileName);
+        }
+      });
+    });
   }
 
   @override
@@ -83,7 +88,7 @@ class HomePageState extends State<HomePage> {
         ),
         IconButton(
           icon: Icon(Icons.file_download),
-          onPressed: _chooseAndLoadFile,
+          onPressed: _loadFile,
         ),
       ],
     ),
@@ -150,10 +155,14 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  /// Выгрузка посещаемости группы за период в CSV файл
-  Future _chooseAndLoadFile() async {
+  /// Загрузка посещаемости группы за период из CSV файла
+  Future _loadFile({String fileName}) async {
     try {
-      await chooseAndLoadFile(context);
+      if (fileName == null) {
+        await chooseAndLoadFile(context);
+      } else {
+        await loadFile(context, fileName);
+      }
     } catch(e) {
       showMessage(_scaffoldKey, e.toString());
     }
@@ -316,7 +325,10 @@ class HomePageState extends State<HomePage> {
       // Посещаемости нет, её можно добавить
       } else {
         final hoursNorm = _getHoursNorm(date);
-        if (hoursNorm > 0.0) {
+        if (hoursNorm > 0.0 &&
+            (groupPerson.beginDate == null || groupPerson.beginDate.compareTo(date) <= 0) &&
+            (groupPerson.endDate == null || groupPerson.endDate.compareTo(date) >= 0))
+        {
           rowCells.add(
             InkWell(
               onTap: () => _insertAttendance(groupPerson, date, hoursNorm),
