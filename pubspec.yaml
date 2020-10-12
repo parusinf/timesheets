@@ -30,7 +30,7 @@ dependencies:
 
 dev_dependencies:
   moor_generator:
-  build_runner:
+  build_runner: ^1.10.1
 
 flutter_icons:
   android: "ic_launcher"
