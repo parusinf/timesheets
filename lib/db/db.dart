@@ -154,7 +154,7 @@ class Db extends _$Db {
         await m.addColumn(persons, persons.phone);
         await m.addColumn(persons, persons.phone2);
       }
-      if (from == 1 || from == 2) {
+      if (from <= 2) {
         await customStatement('DROP INDEX groups_index');
         await customStatement('CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name)');
       }
