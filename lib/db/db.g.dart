@@ -2401,7 +2401,7 @@ abstract class _$Db extends GeneratedDatabase {
   Groups get groups => _groups ??= Groups(this);
   Index _groupsIndex;
   Index get groupsIndex => _groupsIndex ??= Index('groups_index',
-      'CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name, scheduleId);');
+      'CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name);');
   Index _groupsScheduleIndex;
   Index get groupsScheduleIndex => _groupsScheduleIndex ??= Index(
       'groups_schedule_index',

@@ -143,7 +143,7 @@ class Db extends _$Db {
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   /// Формирование графика и группы по умолчанию
   @override
@@ -153,6 +153,10 @@ class Db extends _$Db {
         await m.addColumn(groups, groups.meals);
         await m.addColumn(persons, persons.phone);
         await m.addColumn(persons, persons.phone2);
+      }
+      if (from == 1 || from == 2) {
+        await customStatement('DROP INDEX groups_index');
+        await customStatement('CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name)');
       }
     },
     onCreate: (Migrator m) {

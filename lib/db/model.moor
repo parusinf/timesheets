@@ -46,7 +46,7 @@ CREATE TABLE "groups" (
   -- Питание: null - нет, 1 - 2 года и младше, 2 - от 3 лет
   meals              INT
 );
-CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name, scheduleId);
+CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name);
 CREATE INDEX groups_schedule_index ON "groups" (scheduleId);
 
 -- Персоны
