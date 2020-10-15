@@ -35,7 +35,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
   final _beginDateEdit = TextEditingController();
   final _endDateEdit = TextEditingController();
   Person person;
-  bool _autoValidate = false;
+  var _autovalidateMode = AutovalidateMode.disabled;
 
   @override
   void initState() {
@@ -65,7 +65,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
     ),
     body: Form(
       key: _formKey,
-      autovalidate: _autoValidate,
+      autovalidateMode: _autovalidateMode,
       child: Scrollbar(
         child: SingleChildScrollView(
           dragStartBehavior: DragStartBehavior.down,
@@ -128,7 +128,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
   Future _handleSubmitted() async {
     final form = _formKey.currentState;
     if (!form.validate()) {
-      _autoValidate = true;
+      _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
         switch (widget.actionType) {

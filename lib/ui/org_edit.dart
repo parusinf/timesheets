@@ -31,7 +31,7 @@ class _OrgEditState extends State<OrgEdit> {
   final _formKey = GlobalKey<FormState>();
   final _nameEdit = TextEditingController();
   final _innEdit = TextEditingController();
-  bool _autoValidate = false;
+  var _autovalidateMode = AutovalidateMode.disabled;
 
   @override
   void initState() {
@@ -58,7 +58,7 @@ class _OrgEditState extends State<OrgEdit> {
     ),
     body: Form(
       key: _formKey,
-      autovalidate: _autoValidate,
+      autovalidateMode: _autovalidateMode,
       child: Scrollbar(
         child: SingleChildScrollView(
           dragStartBehavior: DragStartBehavior.down,
@@ -101,7 +101,7 @@ class _OrgEditState extends State<OrgEdit> {
   Future _handleSubmitted() async {
     final form = _formKey.currentState;
     if (!form.validate()) {
-      _autoValidate = true;
+      _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
         switch (widget.actionType) {

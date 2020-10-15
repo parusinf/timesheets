@@ -29,8 +29,8 @@ dependencies:
   uni_links:
 
 dev_dependencies:
-  moor_generator:
-  build_runner: ^1.10.1
+  moor_generator: ^3.3.1
+  build_runner: ^1.10.2
 
 flutter_icons:
   android: "ic_launcher"
@@ -42,9 +42,3 @@ flutter:
   assets:
     - assets/
     - assets/icons/
-
-flutter_handle_file:
-  bundle_identifier: $(PRODUCT_BUNDLE_IDENTIFIER)
-  bundle_type_name: Comma-Separated Values
-  extensions:
-    - csv: application/csv

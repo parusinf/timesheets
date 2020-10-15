@@ -36,7 +36,7 @@ class _PersonEditState extends State<PersonEdit> {
   final _birthdayEdit = TextEditingController();
   final _phoneEdit = TextEditingController();
   final _phone2Edit = TextEditingController();
-  bool _autoValidate = false;
+  var _autovalidateMode = AutovalidateMode.disabled;
 
   @override
   void initState() {
@@ -71,7 +71,7 @@ class _PersonEditState extends State<PersonEdit> {
     ),
     body: Form(
       key: _formKey,
-      autovalidate: _autoValidate,
+      autovalidateMode: _autovalidateMode,
       child: Scrollbar(
         child: SingleChildScrollView(
           dragStartBehavior: DragStartBehavior.down,
@@ -171,7 +171,7 @@ class _PersonEditState extends State<PersonEdit> {
   Future _handleSubmitted() async {
     final form = _formKey.currentState;
     if (!form.validate()) {
-      _autoValidate = true;
+      _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
         switch (widget.actionType) {

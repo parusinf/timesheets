@@ -67,7 +67,7 @@ Widget divider({height = dividerHeight}) => SizedBox(height: height);
 /// Форматировщики целых чисел
 class IntFormatters {
   static final formatters = <TextInputFormatter>[
-    WhitelistingTextInputFormatter.digitsOnly,
+    FilteringTextInputFormatter.digitsOnly
   ];
 }
 
@@ -75,7 +75,7 @@ class IntFormatters {
 class DateFormatters {
   static final _dateDMYFormatter = _DateDMYFormatter();
   static final formatters = <TextInputFormatter>[
-    WhitelistingTextInputFormatter.digitsOnly,
+    FilteringTextInputFormatter.digitsOnly,
     _dateDMYFormatter,
   ];
 }
@@ -110,7 +110,7 @@ class _DateDMYFormatter extends TextInputFormatter {
 class PhoneFormatters {
   static final _phoneFormatter = _PhoneFormatter();
   static final formatters = <TextInputFormatter>[
-    WhitelistingTextInputFormatter.digitsOnly,
+    FilteringTextInputFormatter.digitsOnly,
     _phoneFormatter,
   ];
 }

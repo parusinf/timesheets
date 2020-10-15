@@ -40,7 +40,7 @@ class _GroupEditState extends State<GroupEdit> {
   final _scheduleEdit = TextEditingController();
   Schedule _schedule;
   int _meals;
-  bool _autoValidate = false;
+  var _autovalidateMode = AutovalidateMode.disabled;
 
   @override
   void initState() {
@@ -161,7 +161,7 @@ class _GroupEditState extends State<GroupEdit> {
       ),
       body: Form(
         key: _formKey,
-        autovalidate: _autoValidate,
+        autovalidateMode: _autovalidateMode,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: padding1),
           child: Column(
@@ -183,7 +183,7 @@ class _GroupEditState extends State<GroupEdit> {
   Future _handleSubmitted() async {
     final form = _formKey.currentState;
     if (!form.validate()) {
-      _autoValidate = true;
+      _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
         switch (widget.actionType) {

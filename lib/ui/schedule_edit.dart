@@ -32,7 +32,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
-  bool _autoValidate = false;
+  var _autovalidateMode = AutovalidateMode.disabled;
 
   @override
   void initState() {
@@ -62,7 +62,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
     ),
     body: Form(
       key: _formKey,
-      autovalidate: _autoValidate,
+      autovalidateMode: _autovalidateMode,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(padding1, padding2, padding1, 0.0),
         child: StreamBuilder<List<ScheduleDay>>(
@@ -95,7 +95,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   Future _handleSubmitted() async {
     final form = _formKey.currentState;
     if (!form.validate()) {
-      _autoValidate = true;
+      _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
         final hours = <double>[];
