@@ -4,6 +4,7 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/org_edit.dart';
 import 'package:timesheets/ui/group_edit.dart';
+import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/help_page.dart';
 
 /// Дроувер домашнего экрана
@@ -181,9 +182,9 @@ class _GroupCard extends StatelessWidget {
             title: Text(entry.groupView.name),
             subtitle: Text(entry.groupView.schedule.code),
             trailing: IconButton(
-              icon: Icon(Icons.edit),
+              icon: Icon(Icons.group_add),
               onPressed: () async {
-                await editGroup(context, entry.groupView);
+                await push(context, GroupPersonsDictionary());
                 Navigator.pop(context);
               },
             ),

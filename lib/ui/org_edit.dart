@@ -76,8 +76,8 @@ class _OrgEditState extends State<OrgEdit> {
                   labelText: l10n.name,
                 ),
                 validator: _validateName,
+                maxLength: 20,
               ),
-              divider(),
               // ИНН
               TextFormField(
                 controller: _innEdit,

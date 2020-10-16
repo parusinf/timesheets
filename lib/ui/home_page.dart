@@ -12,6 +12,7 @@ import 'package:timesheets/db/schedule_helper.dart';
 import 'package:timesheets/ui/home_drawer.dart';
 import 'package:timesheets/ui/org_edit.dart';
 import 'package:timesheets/ui/group_edit.dart';
+import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/person_edit.dart';
 import 'package:timesheets/ui/help_page.dart';
 
@@ -55,7 +56,9 @@ class HomePageState extends State<HomePage> {
         stream: bloc.activeGroup,
         builder: (context, snapshot) => snapshot.hasData
             ? InkWell(
-                onTap: () => editGroup(context, bloc.activeGroup.value),
+                onTap: () async {
+                  await push(context, GroupPersonsDictionary());
+                },
                 child: text(snapshot.data.name),
               )
             : StreamBuilder<Org>(
