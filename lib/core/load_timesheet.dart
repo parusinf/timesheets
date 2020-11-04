@@ -167,12 +167,8 @@ Future loadTimesheet(BuildContext context, String fileName) async {
         );
       } else {
         if (attendance != null) {
-          if (!attendanceSpecified) {
-            await bloc.deleteAttendance(attendance);
-          } else {
-            if (attendanceSpecified && attendance.hoursFact != hoursFact) {
-              await bloc.db.attendancesDao.update2(attendance);
-            }
+          if (attendanceSpecified && attendance.hoursFact != hoursFact) {
+            await bloc.db.attendancesDao.update2(attendance);
           }
         }
       }
