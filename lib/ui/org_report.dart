@@ -42,22 +42,6 @@ class OrgReportState extends State<OrgReport> {
           )
           : text(''),
       ),
-      actions: <Widget>[
-        // Выгрузка отчёта в файл
-        StreamBuilder<List<GroupPersonView>>(
-            stream: bloc.groupPeriodPersons,
-            builder: (context, snapshot) {
-              if (bloc.activeGroup.value != null && snapshot.hasData) {
-                return IconButton(
-                  icon: Icon(Icons.file_upload),
-                  onPressed: () => {},
-                );
-              } else {
-                return Text('');
-              }
-            }
-        ),
-      ],
     ),
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
