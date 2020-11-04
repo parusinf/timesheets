@@ -2540,6 +2540,18 @@ abstract class _$Db extends GeneratedDatabase {
     });
   }
 
+  Selectable<OrgMealsResult> _orgMeals(int orgId) {
+    return customSelect(
+        'SELECT G.orgId,\n       G.meals\n  FROM "groups" G\n WHERE G.orgId = :orgId\n GROUP BY\n       G.orgId,\n       G.meals\n ORDER BY\n       G.orgId,\n       G.meals',
+        variables: [Variable.withInt(orgId)],
+        readsFrom: {groups}).map((QueryRow row) {
+      return OrgMealsResult(
+        orgId: row.readInt('orgId'),
+        meals: row.readInt('meals'),
+      );
+    });
+  }
+
   Selectable<PersonsViewResult> _personsView() {
     return customSelect(
         'SELECT P.id,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE personId = P.id) AS INT) AS groupCount\n  FROM persons P\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
@@ -2626,7 +2638,7 @@ abstract class _$Db extends GeneratedDatabase {
     });
   }
 
-  Selectable<Attendance> _attendancesView(
+  Selectable<Attendance> _groupPersonAttendances(
       int groupId, DateTime periodBegin, DateTime periodEnd) {
     return customSelect(
         'SELECT T.*\n  FROM group_persons L\n INNER JOIN attendances T ON T.groupPersonId = L.id\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n   AND T.date >= :periodBegin\n   AND T.date <= :periodEnd',
@@ -2639,6 +2651,31 @@ abstract class _$Db extends GeneratedDatabase {
           groupPersons,
           attendances
         }).map(attendances.mapFromRow);
+  }
+
+  Selectable<OrgAttendancesResult> _orgAttendances(
+      int orgId, DateTime periodBegin, DateTime periodEnd) {
+    return customSelect(
+        'SELECT L.groupId,\n       G.meals,\n       T.*\n  FROM "groups" G\n INNER JOIN group_persons L ON L.groupId = G.id\n INNER JOIN attendances T ON T.groupPersonId = L.id\n WHERE G.orgId = :orgId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n   AND T.date >= :periodBegin\n   AND T.date <= :periodEnd',
+        variables: [
+          Variable.withInt(orgId),
+          Variable.withDateTime(periodBegin),
+          Variable.withDateTime(periodEnd)
+        ],
+        readsFrom: {
+          groupPersons,
+          groups,
+          attendances
+        }).map((QueryRow row) {
+      return OrgAttendancesResult(
+        groupId: row.readInt('groupId'),
+        meals: row.readInt('meals'),
+        id: row.readInt('id'),
+        groupPersonId: row.readInt('groupPersonId'),
+        date: row.readDateTime('date'),
+        hoursFact: row.readDouble('hoursFact'),
+      );
+    });
   }
 
   Selectable<Org> _activeOrg() {
@@ -2805,6 +2842,15 @@ class GroupsViewResult {
   });
 }
 
+class OrgMealsResult {
+  final int orgId;
+  final int meals;
+  OrgMealsResult({
+    this.orgId,
+    this.meals,
+  });
+}
+
 class PersonsViewResult {
   final int id;
   final String family;
@@ -2881,6 +2927,23 @@ class PersonsInGroupPeriodResult {
     this.phone,
     this.phone2,
     this.attendanceCount,
+  });
+}
+
+class OrgAttendancesResult {
+  final int groupId;
+  final int meals;
+  final int id;
+  final int groupPersonId;
+  final DateTime date;
+  final double hoursFact;
+  OrgAttendancesResult({
+    this.groupId,
+    this.meals,
+    this.id,
+    this.groupPersonId,
+    this.date,
+    this.hoursFact,
   });
 }
 

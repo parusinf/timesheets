@@ -43,6 +43,9 @@ class Bloc {
   // Активная группа и период
   final activeGroupPeriod = BehaviorSubject<GroupPeriod>();
 
+  // Активная организация и период
+  final activeOrgPeriod = BehaviorSubject<OrgPeriod>();
+
   // Организации с признаком активности
   final activeOrgs = BehaviorSubject<List<ActiveOrg>>();
 
@@ -64,8 +67,14 @@ class Bloc {
   // Группы активной организации
   Stream<List<GroupView>> groups;
 
+  // Питания активной организации
+  final meals = BehaviorSubject<List<GroupView>>();
+
   // Посещаемость персон активной группы в активном периоде
   Stream<List<Attendance>> attendances;
+
+  // Посещаемость активной организации в активном периоде
+  Stream<List<AttendanceView>> orgAttendances;
 
   /// Конструктор блока
   Bloc() : db = Db() {
@@ -92,15 +101,29 @@ class Bloc {
     // Отслеживание групп в активной организации
     groups = activeOrg.switchMap(db.groupsDao.watch);
 
+    // Отслеживание питания в активной организации
+    Rx.concat([activeOrg.switchMap(db.groupsDao.watchMeals)])
+        .listen(meals.add);
+
     // Отслеживание активной группы и периода
     Rx.combineLatest2<Group, DateTime, GroupPeriod>(
         activeGroup,
         activePeriod,
-        (group, period) => GroupPeriod(group, period)
+        (group, period) => GroupPeriod(group, period),
     ).listen(activeGroupPeriod.add);
 
-    // Отслеживание групп в активной организации
+    // Отслеживание активной организации и периода
+    Rx.combineLatest2<Org, DateTime, OrgPeriod>(
+        activeOrg,
+        activePeriod,
+        (org, period) => OrgPeriod(org, period),
+    ).listen(activeOrgPeriod.add);
+
+    // Отслеживание посещаемости персон в группе за период
     attendances = activeGroupPeriod.switchMap(db.attendancesDao.watch);
+
+    // Отслеживание посещаемости в организации за период
+    orgAttendances = activeOrgPeriod.switchMap(db.attendancesDao.watchOrgPeriod);
 
     // Формирование признака активности организаций
     Rx.combineLatest2<List<Org>, Org, List<ActiveOrg>>(
@@ -148,12 +171,14 @@ class Bloc {
     activeGroup.close();
     activePeriod.close();
     activeGroupPeriod.close();
+    activeOrgPeriod.close();
     activeOrgs.close();
     activeSchedules.close();
     activeGroups.close();
     scheduleDays.close();
     groupPersons.close();
     groupPeriodPersons.close();
+    meals.close();
     db.close();
   }
 

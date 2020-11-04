@@ -221,6 +221,19 @@ SELECT G.id,
        G.name,
        S.code;
 
+-- Список питаний огранизации
+_orgMeals:
+SELECT G.orgId,
+       G.meals
+  FROM "groups" G
+ WHERE G.orgId = :orgId
+ GROUP BY
+       G.orgId,
+       G.meals
+ ORDER BY
+       G.orgId,
+       G.meals;
+
 -- Список персон с количеством групп
 _personsView:
 SELECT P.id,
@@ -302,11 +315,25 @@ SELECT L.id,
        P.birthday;
 
 -- Посещаемость персон в группе за период
-_attendancesView:
+_groupPersonAttendances:
 SELECT T.*
   FROM group_persons L
  INNER JOIN attendances T ON T.groupPersonId = L.id
  WHERE L.groupId = :groupId
+   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)
+   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)
+   AND T.date >= :periodBegin
+   AND T.date <= :periodEnd;
+
+-- Посещаемость в организации за период
+_orgAttendances:
+SELECT L.groupId,
+       G.meals,
+       T.*
+  FROM "groups" G
+ INNER JOIN group_persons L ON L.groupId = G.id
+ INNER JOIN attendances T ON T.groupPersonId = L.id
+ WHERE G.orgId = :orgId
    AND (L.endDate IS NULL OR L.endDate >= :periodBegin)
    AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)
    AND T.date >= :periodBegin

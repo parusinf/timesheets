@@ -215,3 +215,14 @@ String datesToString(BuildContext context, DateTime beginDate, DateTime endDate)
       ? end != '' ? '${l10n.from} $begin ${l10n.to} $end' : '${l10n.from} $begin'
       : end != '' ? '${l10n.to} $end' : l10n.withoutTime;
 }
+
+/// Наименование питания по индексу
+String mealsName(BuildContext context, int index) {
+  final l10n = L10n.of(context);
+  switch (index) {
+    case 0: return l10n.meals0;
+    case 1: return l10n.meals1;
+    case 2: return l10n.meals2;
+    default: return null;
+  }
+}

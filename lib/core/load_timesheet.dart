@@ -7,7 +7,7 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
 /// Выбор CSV файла и загрузка посещаемости группы за период
-Future chooseAndLoadFile(BuildContext context) async {
+Future chooseAndLoadTimesheet(BuildContext context) async {
   final l10n = L10n.of(context);
   FilePickerResult result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
@@ -16,11 +16,11 @@ Future chooseAndLoadFile(BuildContext context) async {
   if (result == null) {
     throw l10n.fileNotSelected;
   }
-  await loadFile(context, result.files.single.path);
+  await loadTimesheet(context, result.files.single.path);
 }
 
 /// Заргузка CSV файла
-Future loadFile(BuildContext context, String fileName) async {
+Future loadTimesheet(BuildContext context, String fileName) async {
   final l10n = L10n.of(context);
   if (!(await Permission.storage.request().isGranted)) {
     throw l10n.permissionDenied;

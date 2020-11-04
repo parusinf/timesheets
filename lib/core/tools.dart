@@ -8,7 +8,7 @@ const externalFiles = '/storage/emulated/0';
 enum DataActionType {
   Insert,
   Update,
-  Delete
+  Delete,
 }
 
 /// Последний день месяца

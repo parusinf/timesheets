@@ -107,7 +107,7 @@ class _GroupEditState extends State<GroupEdit> {
               Wrap(
                 children: [
                   ChoiceChip(
-                    label: Text(l10n.meals0),
+                    label: Text(mealsName(context, 0)),
                     selected: _meals == 0,
                     onSelected: (value) {
                       setState(() {
@@ -117,7 +117,7 @@ class _GroupEditState extends State<GroupEdit> {
                   ),
                   const SizedBox(width: padding2),
                   ChoiceChip(
-                    label: Text(l10n.meals1),
+                    label: Text(mealsName(context, 1)),
                     selected: _meals == 1,
                     onSelected: (value) {
                       setState(() {
@@ -127,7 +127,7 @@ class _GroupEditState extends State<GroupEdit> {
                   ),
                   const SizedBox(width: padding2),
                   ChoiceChip(
-                    label: Text(l10n.meals2),
+                    label: Text(mealsName(context, 2)),
                     selected: _meals == 2,
                     onSelected: (value) {
                       setState(() {

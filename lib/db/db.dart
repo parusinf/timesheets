@@ -80,7 +80,7 @@ class GroupView extends Group {
     id: id,
     orgId: orgId,
     name: name,
-    scheduleId: schedule.id,
+    scheduleId: schedule?.id,
     meals: meals,
   );
 }
@@ -106,11 +106,38 @@ class GroupPersonView extends GroupPerson {
   );
 }
 
+/// Представление посещаемости
+class AttendanceView extends Attendance {
+  final int groupId;
+  final int meals;
+
+  AttendanceView({
+    @required int id,
+    @required int groupPersonId,
+    @required DateTime date,
+    @required double hoursFact,
+    @required this.groupId,
+    @required this.meals,
+  }) : super(
+    id: id,
+    groupPersonId: groupPersonId,
+    date: date,
+    hoursFact: hoursFact,
+  );
+}
+
 /// Группа и период
 class GroupPeriod {
   Group group;
   DateTime period;
   GroupPeriod(this.group, this.period);
+}
+
+/// Организация и период
+class OrgPeriod {
+  Org org;
+  DateTime period;
+  OrgPeriod(this.org, this.period);
 }
 
 /// База данных
@@ -438,6 +465,19 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
           )
       ).watch();
 
+  /// Отслеживание питаний организации
+  Stream<List<GroupView>> watchMeals(Org org) =>
+      db._orgMeals(org?.id).map((row) =>
+          GroupView(
+            id: 0,
+            orgId: 0,
+            name: null,
+            schedule: null,
+            meals: row.meals,
+            personCount: 0,
+          )
+      ).watch();
+
   /// Предыдущая группа перед заданной
   Future<Group> getPrevious(Org org, Group group) async =>
     await db._previousGroup(org.id, group.name).map((row) =>
@@ -665,17 +705,32 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
   Future<bool> delete2(Attendance attendance) async =>
       (await delete(db.attendances).delete(attendance)) > 0 ? true : false;
 
-  /// Получение посещаемости персоны в группе за период
+  /// Отслеживание посещаемости персон в группе за период
   Stream<List<Attendance>> watch(GroupPeriod groupPeriod) =>
-      db._attendancesView(
+      db._groupPersonAttendances(
         groupPeriod.group.id,
         DateTime(groupPeriod.period.year, groupPeriod.period.month, 1),
-        groupPeriod.period
+        groupPeriod.period,
       ).map((row) => Attendance(
         id: row.id,
         groupPersonId: row.groupPersonId,
         date: row.date,
         hoursFact: row.hoursFact,
+      )).watch();
+
+  /// Отслеживание посещаемости персон в группе за период
+  Stream<List<AttendanceView>> watchOrgPeriod(OrgPeriod orgPeriod) =>
+      db._orgAttendances(
+        orgPeriod.org.id,
+        DateTime(orgPeriod.period.year, orgPeriod.period.month, 1),
+        orgPeriod.period,
+      ).map((row) => AttendanceView(
+        id: row.id,
+        groupPersonId: row.groupPersonId,
+        date: row.date,
+        hoursFact: row.hoursFact,
+        groupId: row.groupId,
+        meals: row.meals,
       )).watch();
 
   /// Поиск посещаемости

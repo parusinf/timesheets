@@ -6,6 +6,7 @@ import 'package:timesheets/ui/org_edit.dart';
 import 'package:timesheets/ui/group_edit.dart';
 import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/help_page.dart';
+import 'package:timesheets/ui/org_report.dart';
 
 /// Дроувер домашнего экрана
 class HomeDrawer extends StatefulWidget {
@@ -129,9 +130,9 @@ class _OrgCard extends StatelessWidget {
                 : L10n.of(context).withoutInn}'
             ),
             trailing: IconButton(
-              icon: Icon(Icons.edit),
+              icon: Icon(Icons.article),
               onPressed: () async {
-                await editOrg(context, entry.orgView);
+                await push(context, OrgReport());
                 Navigator.pop(context);
               },
             ),

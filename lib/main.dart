@@ -128,7 +128,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         primarySwatch: Colors.lightBlue,
         typography: Typography.material2018(),
       ),
-      home: HomePage(uriToString(_latestUri)),
+      home: HomePage(fileName: uriToString(_latestUri)),
     ),
   );
 }

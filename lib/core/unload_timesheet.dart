@@ -10,7 +10,7 @@ import 'package:timesheets/core/cp1251.dart';
 import 'package:timesheets/core/l10n.dart';
 
 /// Выгрузка посещаемости группы за период в CSV файл
-Future unloadFile(
+Future unloadTimesheet(
   BuildContext context,
   Org org,
   GroupView group,
