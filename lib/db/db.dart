@@ -644,8 +644,8 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
   Stream<List<GroupPersonView>> watchGroupPeriod(GroupPeriod groupPeriod) =>
       db._personsInGroupPeriod(
         groupPeriod?.group?.id,
-        DateTime(groupPeriod.period.year, groupPeriod.period.month, 1),
-        groupPeriod.period,
+        DateTime(groupPeriod?.period?.year, groupPeriod?.period?.month, 1),
+        groupPeriod?.period,
       ).map((row) => GroupPersonView(
         id: row.id,
         groupId: row.groupId,
@@ -708,9 +708,9 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
   /// Отслеживание посещаемости персон в группе за период
   Stream<List<Attendance>> watch(GroupPeriod groupPeriod) =>
       db._groupPersonAttendances(
-        groupPeriod.group.id,
-        DateTime(groupPeriod.period.year, groupPeriod.period.month, 1),
-        groupPeriod.period,
+        groupPeriod?.group?.id,
+        DateTime(groupPeriod?.period?.year, groupPeriod?.period?.month, 1),
+        groupPeriod?.period,
       ).map((row) => Attendance(
         id: row.id,
         groupPersonId: row.groupPersonId,
@@ -721,9 +721,9 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
   /// Отслеживание посещаемости персон в группе за период
   Stream<List<AttendanceView>> watchOrgPeriod(OrgPeriod orgPeriod) =>
       db._orgAttendances(
-        orgPeriod.org.id,
-        DateTime(orgPeriod.period.year, orgPeriod.period.month, 1),
-        orgPeriod.period,
+        orgPeriod?.org?.id,
+        DateTime(orgPeriod?.period?.year, orgPeriod?.period?.month, 1),
+        orgPeriod?.period,
       ).map((row) => AttendanceView(
         id: row.id,
         groupPersonId: row.groupPersonId,
