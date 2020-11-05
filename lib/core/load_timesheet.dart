@@ -9,6 +9,9 @@ import 'package:timesheets/db/db.dart';
 /// Выбор CSV файла и загрузка посещаемости группы за период
 Future chooseAndLoadTimesheet(BuildContext context) async {
   final l10n = L10n.of(context);
+  if (!(await Permission.storage.request().isGranted)) {
+    throw l10n.permissionDenied;
+  }
   FilePickerResult result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['csv'],
