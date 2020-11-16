@@ -24,7 +24,7 @@ class HelpPageState extends State<HelpPage> {
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.ondemand_video),
-          onPressed: () => launchUrl(_scaffoldKey, 'https://youtu.be/-TV0l17MW18'),
+          onPressed: () => launchUrl(_scaffoldKey, 'https://youtu.be/vvLaug6BrWo'),
         ),
         IconButton(
           icon: const Icon(Icons.chat),
@@ -47,6 +47,8 @@ class HelpPageState extends State<HelpPage> {
 2. Учеников в группах дополнительного образования.
 3. Спортсменов в спортивных секциях.
 
+Обменивайтесь табелями между телефонами и учётной системой через Telegram или почту.
+
 ## Использование
 
 ### Жесты
@@ -60,7 +62,7 @@ class HelpPageState extends State<HelpPage> {
 
 ## Выпуск
 
-2020.11.6
+2020.11.15
 
 ## Автор
 
