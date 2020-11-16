@@ -193,7 +193,7 @@ class Db extends _$Db {
       await customStatement('PRAGMA foreign_keys = ON');
       if (details.wasCreated) {
         transaction(() async {
-          settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
+          await settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
         });
       }
     }
