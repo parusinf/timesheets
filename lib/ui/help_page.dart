@@ -62,13 +62,13 @@ class HelpPageState extends State<HelpPage> {
 
 ## Выпуск
 
-2020.11.15
+2020.11.22
 
 ## Автор
 
 Павел Никитин
 
-[parusinf@gmail.com](mailto:parusinf@gmail.com)
+[pavel@parusinf.ru](mailto:pavel@parusinf.ru)
 ''';
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
@@ -9,31 +10,112 @@ import 'package:timesheets/ui/group_person_edit.dart';
 class GroupPersonsDictionary extends StatefulWidget {
   const GroupPersonsDictionary({Key key}): super(key: key);
   @override
-  GroupPersonsDictionaryState createState() => GroupPersonsDictionaryState();
+  _GroupPersonsDictionaryState createState() => _GroupPersonsDictionaryState();
 }
 
-class GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
+class _GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
   get bloc => Provider.of<Bloc>(context, listen: false);
   get l10n => L10n.of(context);
+  final searchQueryEdit = TextEditingController();
+  bool isSearching = false;
+  String searchQuery = '';
+
+  void _startSearch() {
+    ModalRoute.of(context)
+        .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+    setState(() {
+      isSearching = true;
+    });
+  }
+
+  void _stopSearching() {
+    _clearSearchQuery();
+    setState(() {
+      isSearching = false;
+    });
+  }
+
+  void _clearSearchQuery() {
+    setState(() {
+      searchQueryEdit.clear();
+      updateSearchQuery('');
+    });
+  }
+
+  Widget _buildTitle(BuildContext context) {
+    var horizontalTitleAlignment = Platform.isIOS
+        ? CrossAxisAlignment.center : CrossAxisAlignment.start;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: horizontalTitleAlignment,
+        children: <Widget>[
+          StreamBuilder<Group>(
+            stream: bloc.activeGroup,
+            builder: (context, snapshot) => snapshot.hasData
+                ? InkWell(
+                  onTap: () => editGroup(context, bloc.activeGroup.value),
+                  child: text(snapshot.data.name),
+                )
+                : text('')
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchField() {
+    return TextField(
+      controller: searchQueryEdit,
+      autofocus: true,
+      decoration: InputDecoration(
+        hintText: l10n.person,
+        border: InputBorder.none,
+        hintStyle: const TextStyle(color: Colors.white54),
+      ),
+      style: const TextStyle(color: Colors.white, fontSize: 16.0),
+      onChanged: updateSearchQuery,
+    );
+  }
+
+  void updateSearchQuery(String newQuery) {
+    setState(() {
+      searchQuery = newQuery;
+    });
+  }
+
+  List<Widget> _buildActions() {
+    return <Widget>[
+      if (isSearching)
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            if (searchQueryEdit == null || searchQueryEdit.text.isEmpty) {
+              Navigator.pop(context);
+              return;
+            }
+            _clearSearchQuery();
+          },
+        ),
+      if (!isSearching)
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: _startSearch,
+        ),
+      IconButton(
+        icon: const Icon(Icons.person_add),
+        onPressed: () => addGroupPerson(context),
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: StreamBuilder<Group>(
-        stream: bloc.activeGroup,
-        builder: (context, snapshot) => snapshot.hasData
-          ? InkWell(
-            onTap: () => editGroup(context, bloc.activeGroup.value),
-            child: text(snapshot.data.name),
-          )
-          : text('')
-      ),
-      actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.person_add),
-          onPressed: () => addGroupPerson(context),
-        ),
-      ],
+      leading: isSearching ? const BackButton() : null,
+      title: isSearching ? _buildSearchField() : _buildTitle(context),
+      actions: _buildActions(),
     ),
     body: SafeArea(
       child: Padding(
@@ -42,10 +124,14 @@ class GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
             stream: bloc.groupPersons,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                if (snapshot.data.length > 0) {
+                final list = snapshot.data.where((groupPerson) => personFullName(groupPerson.person)
+                    .toLowerCase()
+                    .contains(searchQuery.toLowerCase()))
+                  .toList();
+                if (list.length > 0) {
                   return ListView.builder(
-                    itemBuilder: (context, index) => _GroupPersonCard(snapshot.data, index),
-                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) => _GroupPersonCard(list, index),
+                    itemCount: list.length,
                   );
                 } else {
                   return centerButton(L10n.of(context).addPersonToGroup, onPressed: () => addGroupPerson(context));
