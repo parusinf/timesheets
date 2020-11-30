@@ -39,11 +39,11 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
 
   @override
   void initState() {
+    super.initState();
     person = widget.groupPerson?.person;
     _personEdit.text = personFullName(person);
     _beginDateEdit.text = dateToString(widget.groupPerson?.beginDate);
     _endDateEdit.text = dateToString(widget.groupPerson?.endDate);
-    super.initState();
   }
 
   @override
