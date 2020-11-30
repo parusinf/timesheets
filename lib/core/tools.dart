@@ -1,8 +1,8 @@
 import 'package:intl/intl.dart';
 import 'package:timesheets/db/db.dart';
-import 'package:timesheets/db/schedule_helper.dart';
 
 const externalFiles = '/storage/emulated/0';
+const List<String> abbrWeekdays = ['пн','вт','ср','чт','пт','сб','вс'];
 
 /// Тип действия с данными
 enum DataActionType {

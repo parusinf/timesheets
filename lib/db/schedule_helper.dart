@@ -97,6 +97,5 @@ _createOneWeekDays(List<double> hours, int offset) {
   return hoursMap;
 }
 
-const List<String> abbrWeekdays = ['пн','вт','ср','чт','пт','сб','вс'];
 const String _inWeekStr = 'чз/нед';
 const String _hourStr = 'ч';
