@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>aps-environment</key>
+    <string>production</string>
+    <key>NSContactsUsageDescription</key>
+    <string>The application uses a plugin flutter_file_picker for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>The application uses a plugin flutter_file_picker for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>The application uses a plugin flutter_file_picker for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>The application uses a plugin flutter_file_picker for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+    <key>NSMotionUsageDescription</key>
+    <string>The application uses a plugin flutter_file_picker for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>The application uses a plugin flutter_file_picker for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>The application uses a plugin flutter_file_picker for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
