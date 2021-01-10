@@ -71,7 +71,7 @@ Future unloadTimesheet(
 
   // Запись файла
   final filename = '${group.name}.csv'.replaceAll(' ', '_');
-  final directory = await getExternalStorageDirectory();
+  final directory = await getTemporaryDirectory();
   final file = File(p.join(directory.path, filename));
   file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
 
