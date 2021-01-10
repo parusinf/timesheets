@@ -62,7 +62,7 @@ class HelpPageState extends State<HelpPage> {
 
 ## Выпуск
 
-2021.1.9
+2021.1.10
 
 ## Автор
 

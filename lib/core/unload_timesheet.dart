@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_share_content/flutter_share_content.dart';
+import 'package:share/share.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core/tools.dart';
 import 'package:timesheets/core/cp1251.dart';
@@ -24,9 +24,10 @@ Future unloadTimesheet(
   }
 
   final buffer = new StringBuffer();
+  final periodString = periodToString(period);
 
   // Период
-  buffer.write('${periodToString(period)};\n');
+  buffer.write('$periodString;\n');
 
   // Организация
   buffer.write('${org.name};${trim(org.inn)};\n');
@@ -75,5 +76,5 @@ Future unloadTimesheet(
   file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
 
   // Отправка файла
-  FlutterShareContent.shareContent(imageUrl: file.path);
+  Share.shareFiles([file.path], text: '${l10n.timesheet} ${group.name} $periodString');
 }

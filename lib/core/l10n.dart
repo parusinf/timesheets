@@ -61,6 +61,7 @@ class L10n {
       'schedules': 'Графики',
       'selectPerson': 'Выберите персону',
       'selectSchedule': 'Выберите график',
+      'timesheet': 'Табель посещаемости',
       'timesheets': 'Табели посещаемости',
       'to': 'по',
       'uniqueGroup': 'Уже есть такая группа',
@@ -122,6 +123,7 @@ class L10n {
   get schedules => _l10n[locale.languageCode]['schedules'];
   get selectPerson => _l10n[locale.languageCode]['selectPerson'];
   get selectSchedule => _l10n[locale.languageCode]['selectSchedule'];
+  get timesheet => _l10n[locale.languageCode]['timesheet'];
   get timesheets => _l10n[locale.languageCode]['timesheets'];
   get to => _l10n[locale.languageCode]['to'];
   get uniqueGroup => _l10n[locale.languageCode]['uniqueGroup'];

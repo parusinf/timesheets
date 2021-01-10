@@ -1,7 +1,7 @@
 name: timesheets
-description: Табели посещаемости в группах по графикам
+description: Табели посещаемости в детсадах и доп.образовании
 
-version: 2021.1.9
+version: 2021.1.10
 
 environment:
   sdk: ">=2.8.2 <3.0.0"
@@ -24,7 +24,7 @@ dependencies:
   flutter_markdown:
   url_launcher:
   permission_handler:
-  flutter_share_content:
+  share:
   file_picker:
   uni_links:
 

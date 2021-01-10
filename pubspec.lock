@@ -235,13 +235,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.11"
-  flutter_share_content:
-    dependency: "direct main"
-    description:
-      name: flutter_share_content
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.1+1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -541,6 +534,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.24.1"
+  share:
+    dependency: "direct main"
+    description:
+      name: share
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.5+4"
   shelf:
     dependency: transitive
     description:
