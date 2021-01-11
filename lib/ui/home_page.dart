@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/core/unload.dart';
 import 'package:timesheets/core/load.dart';
@@ -35,39 +33,119 @@ class HomePageState extends State<HomePage> {
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
   static const leftPadding = 12.0;
-  StreamSubscription _intentDataStreamSubscription;
 
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) => Scaffold(
+    key: _scaffoldKey,
+    appBar: _createAppBar(),
+    drawer: HomeDrawer(),
+    body: StreamBuilder<String>(
+      stream: bloc.content,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          _loadContent(snapshot.data);
+        }
+        return _createBody();
+      },
+    ),
+  );
 
-    // Для обмена или открытия URL-адресов/текста, поступающих извне приложения, пока приложение находится в памяти
-    _intentDataStreamSubscription =
-        ReceiveSharingIntent.getTextStream().listen((String value) {
-          _loadFromContent(content: value);
-        }, onError: (err) {
-          print("getLinkStream error: $err");
-        });
-
-    // Для обмена или открытия URL-адресов/текста, поступающих извне приложения, когда приложение закрыто
-    // Отложенная загрузка переданного контента
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(Duration(milliseconds: 500), () {
-        ReceiveSharingIntent.getInitialText().then((String value) {
-          _loadFromContent(content: value);
-        });
-      });
-    });
+  Widget _createAppBar() {
+    return AppBar(
+      title: StreamBuilder<Group>(
+        stream: bloc.activeGroup,
+        builder: (context, snapshot) => snapshot.hasData
+            ? InkWell(
+              onTap: () async {
+                await push(context, GroupPersonsDictionary());
+              },
+              child: text(snapshot.data.name),
+            )
+            : StreamBuilder<Org>(
+            stream: bloc.activeOrg,
+            builder: (context, snapshot) => snapshot.hasData
+                ? InkWell(
+                  onTap: () => editOrg(context, bloc.activeOrg.value),
+                  child: text(snapshot.data.name),
+                )
+                : InkWell(
+                  onTap: () => push(context, HelpPage()),
+                  child: text(l10n.timesheets),
+                )
+        ),
+      ),
+      actions: <Widget>[
+        // Выгрузка в файл
+        StreamBuilder<List<GroupPersonView>>(
+            stream: bloc.groupPeriodPersons,
+            builder: (context, snapshot) {
+              if (bloc.activeGroup.value != null && snapshot.hasData) {
+                return IconButton(
+                  icon: Icon(Icons.file_upload),
+                  onPressed: _unloadToFile,
+                );
+              } else {
+                return Text('');
+              }
+            }
+        ),
+        IconButton(
+          icon: Icon(Icons.file_download),
+          onPressed: _pickAndLoadFromFile,
+        ),
+      ],
+    );
   }
 
-  @override
-  void dispose() {
-    _intentDataStreamSubscription.cancel();
-    super.dispose();
+  Widget _createBody() {
+    return StreamBuilder<List<GroupPersonView>>(
+        stream: bloc.groupPeriodPersons,
+        builder: (context, snapshot) {
+          // Добавить организацию
+          if (bloc.activeOrg.value == null) {
+            return centerButton(l10n.addOrg, onPressed: () => addOrg(context));
+          } else {
+            // Добавить группу
+            if (bloc.activeGroup.value == null) {
+              return centerButton(l10n.addGroup, onPressed: () => addGroup(context));
+            } else {
+              // Персоны группы загрузились
+              if (snapshot.hasData) {
+                _groupPeriodPersons = snapshot.data;
+                return StreamBuilder<List<Attendance>>(
+                    stream: bloc.attendances,
+                    builder: (context, snapshot) {
+                      // Посещаемость загрузилась
+                      if (snapshot.hasData) {
+                        _groupAttendances = snapshot.data;
+                        return HorizontalDataTable(
+                          leftHandSideColumnWidth: fixedColumnWidth,
+                          rightHandSideColumnWidth: columnWidth * bloc.activePeriod.value.day,
+                          isFixedHeader: true,
+                          headerWidgets: _createTitleRow(),
+                          leftSideItemBuilder: _createFixedColumn,
+                          rightSideItemBuilder: _createTableRow,
+                          itemCount: _groupPeriodPersons.length,
+                          rowSeparatorWidget: const Divider(color: lineColor, height: 0.5),
+                        );
+                        // Посещаемость загружаются
+                      } else {
+                        return centerMessage(context, l10n.dataLoading);
+                      }
+                    }
+                );
+                // Персоны группы загружаются
+              } else {
+                return centerMessage(context, l10n.dataLoading);
+              }
+            }
+          }
+        }
+    );
   }
 
   /// Загрузка из переданного контента
-  Future _loadFromContent({String content}) async {
+  Future _loadContent(String content) async {
     try {
       if (content != null) {
         if (content.contains('content://')) {
@@ -106,100 +184,6 @@ class HomePageState extends State<HomePage> {
       showMessage(_scaffoldKey, e.toString());
     }
   }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    key: _scaffoldKey,
-    appBar: AppBar(
-      title: StreamBuilder<Group>(
-        stream: bloc.activeGroup,
-        builder: (context, snapshot) => snapshot.hasData
-            ? InkWell(
-                onTap: () async {
-                  await push(context, GroupPersonsDictionary());
-                },
-                child: text(snapshot.data.name),
-              )
-            : StreamBuilder<Org>(
-                stream: bloc.activeOrg,
-                builder: (context, snapshot) => snapshot.hasData
-                    ? InkWell(
-                        onTap: () => editOrg(context, bloc.activeOrg.value),
-                        child: text(snapshot.data.name),
-                      )
-                    : InkWell(
-                        onTap: () => push(context, HelpPage()),
-                        child: text(l10n.timesheets),
-                      )
-              ),
-      ),
-      actions: <Widget>[
-        // Выгрузка в файл
-        StreamBuilder<List<GroupPersonView>>(
-          stream: bloc.groupPeriodPersons,
-          builder: (context, snapshot) {
-            if (bloc.activeGroup.value != null && snapshot.hasData) {
-              return IconButton(
-                icon: Icon(Icons.file_upload),
-                onPressed: _unloadToFile,
-              );
-            } else {
-              return Text('');
-            }
-          }
-        ),
-        IconButton(
-          icon: Icon(Icons.file_download),
-          onPressed: _pickAndLoadFromFile,
-        ),
-      ],
-    ),
-    drawer: HomeDrawer(),
-    body: StreamBuilder<List<GroupPersonView>>(
-      stream: bloc.groupPeriodPersons,
-      builder: (context, snapshot) {
-        // Добавить организацию
-        if (bloc.activeOrg.value == null) {
-          return centerButton(l10n.addOrg, onPressed: () => addOrg(context));
-        } else {
-          // Добавить группу
-          if (bloc.activeGroup.value == null) {
-            return centerButton(l10n.addGroup, onPressed: () => addGroup(context));
-          } else {
-            // Персоны группы загрузились
-            if (snapshot.hasData) {
-              _groupPeriodPersons = snapshot.data;
-              return StreamBuilder<List<Attendance>>(
-                  stream: bloc.attendances,
-                  builder: (context, snapshot) {
-                    // Посещаемость загрузилась
-                    if (snapshot.hasData) {
-                      _groupAttendances = snapshot.data;
-                      return HorizontalDataTable(
-                        leftHandSideColumnWidth: fixedColumnWidth,
-                        rightHandSideColumnWidth: columnWidth * bloc.activePeriod.value.day,
-                        isFixedHeader: true,
-                        headerWidgets: _createTitleRow(),
-                        leftSideItemBuilder: _createFixedColumn,
-                        rightSideItemBuilder: _createTableRow,
-                        itemCount: _groupPeriodPersons.length,
-                        rowSeparatorWidget: const Divider(color: lineColor, height: 0.5),
-                      );
-                    // Посещаемость загружаются
-                    } else {
-                      return centerMessage(context, l10n.dataLoading);
-                    }
-                  }
-              );
-            // Персоны группы загружаются
-            } else {
-              return centerMessage(context, l10n.dataLoading);
-            }
-          }
-        }
-      }
-    ),
-  );
 
   /// Создание строки заголовка таблицы
   List<Widget> _createTitleRow() {

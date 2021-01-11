@@ -24,6 +24,10 @@ Future pickAndLoadFromFile(BuildContext context) async {
 
 /// Заргузка CSV файла
 Future loadFromFile(BuildContext context, String fileName) async {
+  final l10n = L10n.of(context);
+  if (!(await Permission.storage.request().isGranted)) {
+    throw l10n.permissionDenied;
+  }
   final file = File(fileName);
   final content = decodeCp1251(file.readAsBytesSync());
   await parseContent(context, content);

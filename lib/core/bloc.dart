@@ -1,6 +1,8 @@
-import 'package:timesheets/db/db.dart';
+import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:moor/moor.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:timesheets/db/db.dart';
 
 /// Организация с признаком активности
 class ActiveOrg {
@@ -25,6 +27,13 @@ class ActiveGroup {
 
 /// Компонент бизнес логики (блок) приложения
 class Bloc {
+  // Отслеживание контента
+  static const eventChannel = const EventChannel('receive_content/events');
+  static const methodChannel = const MethodChannel('receive_content/channel');
+  StreamController<String> _contentController = StreamController();
+  Stream<String> get content => _contentController.stream;
+  Sink<String> get contentSink => _contentController.sink;
+
   // База данных
   final Db db;
 
@@ -76,8 +85,14 @@ class Bloc {
   // Посещаемость активной организации в активном периоде
   Stream<List<AttendanceView>> orgAttendances;
 
-  /// Конструктор блока
+  /// Конструктор
   Bloc() : db = Db() {
+    // Получение контента, переданного при запуске приложения
+    startUri().then(_onRedirected);
+    
+    // Отслеживание контента во время работы приложения
+    eventChannel.receiveBroadcastStream().listen((d) => _onRedirected(d));
+
     // Отслеживание активной организации из настройки
     Rx.concat([db.settingsDao.watchActiveOrg()])
         .listen(activeOrg.add);
@@ -164,8 +179,23 @@ class Bloc {
         .listen(groupPeriodPersons.add);
   }
 
+  /// Перенаправление контента в поток БЛоКа
+  _onRedirected(String uri) {
+    contentSink.add(uri);
+  }
+
+  /// Получение контента при запуске приложения
+  Future<String> startUri() async {
+    try {
+      return methodChannel.invokeMethod('initialLink');
+    } on PlatformException catch (e) {
+      return "Failed to Invoke: '${e.message}'.";
+    }
+  }
+
   /// Освобождение ресурсов
   void close() {
+    _contentController.close();
     activeOrg.close();
     activeSchedule.close();
     activeGroup.close();

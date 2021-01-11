@@ -16,8 +16,8 @@
                 <key>CFBundleURLSchemes</key>
                 <array>
                     <string>ShareMedia</string>
-                    <string>content</string>
                     <string>file</string>
+                    <string>content</string>
                 </array>
             </dict>
             <dict/>
@@ -33,25 +33,25 @@
         </array>
 
     <key>NSContactsUsageDescription</key>
-        <string>The application uses a plugin for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+        <string>The app uses a plugin for itself functionality and does not transmit this data.</string>
 
     <key>NSCalendarsUsageDescription</key>
-        <string>The application uses a plugin for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+        <string>The app uses a plugin for itself functionality and does not transmit this data.</string>
 
     <key>NSPhotoLibraryUsageDescription</key>
-        <string>The application uses a plugin for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+        <string>The app uses a plugin for itself functionality and does not transmit this data.</string>
 
     <key>NSAppleMusicUsageDescription</key>
-        <string>The application uses a plugin for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+        <string>The app uses a plugin for itself functionality and does not transmit this data.</string>
 
     <key>NSMotionUsageDescription</key>
-        <string>The application uses a plugin for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+        <string>The app uses a plugin for itself functionality and does not transmit this data.</string>
 
     <key>NSSpeechRecognitionUsageDescription</key>
-        <string>The application uses a plugin for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+        <string>The app uses a plugin for itself functionality and does not transmit this data.</string>
 
     <key>NSLocationWhenInUseUsageDescription</key>
-        <string>The application uses a plugin for the exchange of timesheets through the mail or Telegrams that requests this permission. The app does not transmit this data.</string>
+        <string>The app uses a plugin for itself functionality and does not transmit this data.</string>
 
 	<key>CFBundleDevelopmentRegion</key>
 	    <string>$(DEVELOPMENT_LANGUAGE)</string>
@@ -115,7 +115,7 @@
                     <string>Owner</string>
                 <key>LSItemContentTypes</key>
                     <array>
-                        <string>$(PRODUCT_BUNDLE_IDENTIFIER).csv</string>
+                        <string>$(PRODUCT_BUNDLE_IDENTIFIER).ttm</string>
                     </array>
             </dict>
         </array>
@@ -124,28 +124,32 @@
         <array>
             <dict>
                 <key>UTTypeConformsTo</key>
-                <array>
-                    <string>public.data</string>
-                </array>
-                <key>UTTypeDescription</key>
-                <string>Comma-Separated Values</string>
-                <key>UTTypeIdentifier</key>
-                <string>$(PRODUCT_BUNDLE_IDENTIFIER).ttm</string>
-                <key>UTTypeSize64IconFile</key>
-                <string></string>
-                <key>UTTypeTagSpecification</key>
-                <dict>
-                    <key>public.filename-extension</key>
                     <array>
-                        <string>csv</string>
+                        <string>public.data</string>
                     </array>
-                    <key>public.mime-type</key>
-                    <string>application/csv</string>
-                </dict>
+
+                <key>UTTypeDescription</key>
+                    <string>Comma-Separated Values</string>
+
+                <key>UTTypeIdentifier</key>
+                    <string>$(PRODUCT_BUNDLE_IDENTIFIER).ttm</string>
+
+                <key>UTTypeSize64IconFile</key>
+                    <string></string>
+
+                <key>UTTypeTagSpecification</key>
+                    <dict>
+                        <key>public.filename-extension</key>
+                        <array>
+                            <string>csv</string>
+                        </array>
+                        <key>public.mime-type</key>
+                            <string>application/csv</string>
+                    </dict>
             </dict>
         </array>
 
 	<key>LSSupportsOpeningDocumentsInPlace</key>
-	    <false/>
+	    <true/>
 </dict>
 </plist>
