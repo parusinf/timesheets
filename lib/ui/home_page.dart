@@ -1,12 +1,14 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:timesheets/core.dart';
-import 'package:timesheets/core/unload_timesheet.dart';
-import 'package:timesheets/core/load_timesheet.dart';
+import 'package:timesheets/core/unload.dart';
+import 'package:timesheets/core/load.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/home_drawer.dart';
 import 'package:timesheets/ui/org_edit.dart';
@@ -17,8 +19,7 @@ import 'package:timesheets/ui/help_page.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
-  final String fileName;
-  const HomePage({this.fileName, Key key}): super(key: key);
+  const HomePage({Key key}): super(key: key);
   @override
   HomePageState createState() => HomePageState();
 }
@@ -34,17 +35,76 @@ class HomePageState extends State<HomePage> {
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
   static const leftPadding = 12.0;
+  StreamSubscription _intentDataStreamSubscription;
 
   @override
   void initState() {
     super.initState();
+
+    // Для обмена или открытия URL-адресов/текста, поступающих извне приложения, пока приложение находится в памяти
+    _intentDataStreamSubscription =
+        ReceiveSharingIntent.getTextStream().listen((String value) {
+          _loadFromContent(content: value);
+        }, onError: (err) {
+          print("getLinkStream error: $err");
+        });
+
+    // Для обмена или открытия URL-адресов/текста, поступающих извне приложения, когда приложение закрыто
+    // Отложенная загрузка переданного контента
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Future.delayed(Duration(milliseconds: 500), () {
-        if (widget.fileName != null) {
-          _loadFile(fileName: widget.fileName);
-        }
+        ReceiveSharingIntent.getInitialText().then((String value) {
+          _loadFromContent(content: value);
+        });
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _intentDataStreamSubscription.cancel();
+    super.dispose();
+  }
+
+  /// Загрузка из переданного контента
+  Future _loadFromContent({String content}) async {
+    try {
+      if (content != null) {
+        if (content.contains('content://')) {
+          final uri = Uri.parse(content);
+          await loadFromFile(context, uriToString(uri));
+        } else {
+          parseContent(context, content);
+        }
+      }
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
+  }
+
+  /// Загрузка из CSV файла
+  Future _pickAndLoadFromFile() async {
+    try {
+      await pickAndLoadFromFile(context);
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
+  }
+
+  /// Выгрузка в CSV файл
+  Future _unloadToFile() async {
+    try {
+      await unloadToFile(
+        context,
+        bloc.activeOrg.value,
+        bloc.activeGroup.value,
+        bloc.activePeriod.value,
+        _groupPeriodPersons,
+        _groupAttendances,
+      );
+    } catch(e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
   }
 
   @override
@@ -81,7 +141,7 @@ class HomePageState extends State<HomePage> {
             if (bloc.activeGroup.value != null && snapshot.hasData) {
               return IconButton(
                 icon: Icon(Icons.file_upload),
-                onPressed: _unloadFile,
+                onPressed: _unloadToFile,
               );
             } else {
               return Text('');
@@ -90,7 +150,7 @@ class HomePageState extends State<HomePage> {
         ),
         IconButton(
           icon: Icon(Icons.file_download),
-          onPressed: _loadFile,
+          onPressed: _pickAndLoadFromFile,
         ),
       ],
     ),
@@ -140,35 +200,6 @@ class HomePageState extends State<HomePage> {
       }
     ),
   );
-
-  /// Выгрузка посещаемости группы за период в CSV файл
-  Future _unloadFile() async {
-    try {
-      await unloadTimesheet(
-        context,
-        bloc.activeOrg.value,
-        bloc.activeGroup.value,
-        bloc.activePeriod.value,
-        _groupPeriodPersons,
-        _groupAttendances,
-      );
-    } catch(e) {
-      showMessage(_scaffoldKey, e.toString());
-    }
-  }
-
-  /// Загрузка посещаемости группы за период из CSV файла
-  Future _loadFile({String fileName}) async {
-    try {
-      if (fileName == null) {
-        await chooseAndLoadTimesheet(context);
-      } else {
-        await loadTimesheet(context, fileName);
-      }
-    } catch(e) {
-      showMessage(_scaffoldKey, e.toString());
-    }
-  }
 
   /// Создание строки заголовка таблицы
   List<Widget> _createTitleRow() {

@@ -26,7 +26,7 @@ dependencies:
   permission_handler:
   share:
   file_picker:
-  uni_links:
+  receive_sharing_intent:
 
 dev_dependencies:
   moor_generator: ^3.3.1

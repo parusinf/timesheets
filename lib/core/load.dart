@@ -6,8 +6,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
-/// Выбор CSV файла и загрузка посещаемости группы за период
-Future chooseAndLoadTimesheet(BuildContext context) async {
+/// Выбор CSV файла и загрузка табеля посещаемости
+Future pickAndLoadFromFile(BuildContext context) async {
   final l10n = L10n.of(context);
   if (!(await Permission.storage.request().isGranted)) {
     throw l10n.permissionDenied;
@@ -19,31 +19,33 @@ Future chooseAndLoadTimesheet(BuildContext context) async {
   if (result == null) {
     throw l10n.fileNotSelected;
   }
-  await loadTimesheet(context, result.files.single.path);
+  await loadFromFile(context, result.files.single.path);
 }
 
 /// Заргузка CSV файла
-Future loadTimesheet(BuildContext context, String fileName) async {
-  final l10n = L10n.of(context);
-  if (!(await Permission.storage.request().isGranted)) {
-    throw l10n.permissionDenied;
-  }
+Future loadFromFile(BuildContext context, String fileName) async {
   final file = File(fileName);
-  final content = decodeCp1251(file.readAsBytesSync()).split('\n');
-  if (content.length < 4) {
+  final content = decodeCp1251(file.readAsBytesSync());
+  await parseContent(context, content);
+}
+
+Future parseContent(BuildContext context, String content) async {
+  final l10n = L10n.of(context);
+  final bloc = Provider.of<Bloc>(context, listen: false);
+  final lines = content.split('\n');
+  if (lines.length < 4) {
     throw l10n.fileFormatError;
   }
-  final bloc = Provider.of<Bloc>(context, listen: false);
 
   // Период
-  final period = stringToPeriod(context, content[0].split(';')[0]);
+  final period = stringToPeriod(context, lines[0].split(';')[0]);
   if (period == null) {
     throw l10n.fileFormatError;
   }
   bloc.setActivePeriod(period);
 
   // Организация
-  final orgColumns = content[1].split(';');
+  final orgColumns = lines[1].split(';');
   final orgName = trim(orgColumns[0]);
   final orgInn = trim(orgColumns[1]);
   if (orgName == null) {
@@ -53,6 +55,7 @@ Future loadTimesheet(BuildContext context, String fileName) async {
   if (org == null) {
     org = await bloc.insertOrg(name: orgName, inn: orgInn);
   } else {
+    bloc.setActiveOrg(org);
     if (needStringUpdate(org.inn, orgInn)) {
       bloc.db.orgsDao.update2(Org(
           id: org.id,
@@ -63,7 +66,7 @@ Future loadTimesheet(BuildContext context, String fileName) async {
   }
 
   // Группа
-  final groupColumns = content[2].split(';');
+  final groupColumns = lines[2].split(';');
   final groupName = trim(groupColumns[0]);
   final scheduleCode = trim(groupColumns[1]);
   final groupMeals = stringToInt(groupColumns[2]);
@@ -79,6 +82,7 @@ Future loadTimesheet(BuildContext context, String fileName) async {
   if (group == null) {
     group = await bloc.insertGroup(name: groupName, schedule: schedule, meals: groupMeals);
   } else {
+    bloc.setActiveGroup(group);
     if (group.meals != groupMeals) {
       bloc.db.groupsDao.update2(Group(
           id: group.id,
@@ -91,12 +95,12 @@ Future loadTimesheet(BuildContext context, String fileName) async {
   }
 
   // Персоны
-  for (int i = 4; i < content.length; i++) {
-    if (trim(content[i]) == '') {
+  for (int i = 4; i < lines.length; i++) {
+    if (trim(lines[i]) == '') {
       break;
     }
     // Персона
-    final personColumns = content[i].split(';');
+    final personColumns = lines[i].split(';');
     final personFamily = trim(personColumns[0]);
     final personName = trim(personColumns[1]);
     final personMiddleName = trim(personColumns[2]);
