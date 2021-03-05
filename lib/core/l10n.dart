@@ -21,6 +21,7 @@ class L10n {
       'binding': 'Прикрепление',
       'countryPhoneCode': '+7 ',
       'dataLoading': 'Загрузка данных',
+      'days': 'Дней',
       'endDate': 'Дата выбытия',
       'failedToGetInitialLink': 'Не удалось получить начальную ссылку',
       'failedToParseInitialLink': 'Не удалось разобрать начальную ссылку',
@@ -84,6 +85,7 @@ class L10n {
   get binding => _l10n[locale.languageCode]['binding'];
   get countryPhoneCode => _l10n[locale.languageCode]['countryPhoneCode'];
   get dataLoading => _l10n[locale.languageCode]['dataLoading'];
+  get days => _l10n[locale.languageCode]['days'];
   get endDate => _l10n[locale.languageCode]['endDate'];
   get failedToGetInitialLink => _l10n[locale.languageCode]['failedToGetInitialLink'];
   get failedToParseInitialLink => _l10n[locale.languageCode]['failedToParseInitialLink'];

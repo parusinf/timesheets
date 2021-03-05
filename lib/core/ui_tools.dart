@@ -33,8 +33,8 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
   } else {
     newMessage = newMessage.replaceFirst('Invalid argument(s): ', '');
   }
-  scaffoldKey.currentState.hideCurrentSnackBar();
-  scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(newMessage)));
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(newMessage)));
 }
 
 /// Текст
@@ -42,7 +42,6 @@ Widget text(String text, {
   Color color,
   double fontSize,
   FontWeight fontWeight,
-  spacer: false,
 }) {
   return Text(text,
     style: TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight),
@@ -55,7 +54,7 @@ Widget centerMessage(BuildContext context, String message) =>
 
 Widget centerButton(String label, {Function() onPressed}) =>
     Center(
-      child: RaisedButton(
+      child: ElevatedButton(
         onPressed: onPressed,
         child: text(label, color: Colors.black87, fontSize: 16.0),
       ),

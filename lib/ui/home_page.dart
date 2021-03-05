@@ -120,7 +120,7 @@ class HomePageState extends State<HomePage> {
                         _groupAttendances = snapshot.data;
                         return HorizontalDataTable(
                           leftHandSideColumnWidth: fixedColumnWidth,
-                          rightHandSideColumnWidth: columnWidth * bloc.activePeriod.value.day,
+                          rightHandSideColumnWidth: columnWidth * (bloc.activePeriod.value.day + 1),
                           isFixedHeader: true,
                           headerWidgets: _createTitleRow(),
                           leftSideItemBuilder: _createFixedColumn,
@@ -200,12 +200,23 @@ class HomePageState extends State<HomePage> {
                       width: fixedColumnWidth,
                       alignment: Alignment.centerLeft,
                       leftPadding: leftPadding,
-                      borderStyle: BorderStyle.none,
+                      color: Colors.lightBlue,
+                      fontSize: 16.0,
                     )
                   : Text('')
             ),
       ),
     ];
+    // Дней посещения персоны за период
+    rowCells.add(
+        _createCell(
+          l10n.days,
+          width: columnWidth,
+          alignment: Alignment.center,
+          fontSize: 16.0,
+        )
+    );
+    // Колонки по дням периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
       final hoursNorm = _getHoursNorm(date);
@@ -246,10 +257,11 @@ class HomePageState extends State<HomePage> {
     alignment: Alignment.center,
     leftPadding: 0.0,
     borderStyle: BorderStyle.solid,
-    color: Colors.lightBlue,
+    color: Colors.black87,
+    fontSize: 14.0,
     fontWeight: FontWeight.normal,
   }) => Container(
-    child: text(title, color: color, fontWeight: fontWeight),
+    child: text(title, color: color, fontSize: fontSize, fontWeight: fontWeight),
     width: width,
     height: rowHeight,
     padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
@@ -272,34 +284,34 @@ class HomePageState extends State<HomePage> {
     borderStyle: BorderStyle.none,
     Function() onTap,
     wrap = true,
-  }) => InkWell(
-    onTap: onTap ?? () => {},
-    child: Container(
-      child: wrap
-          ? Wrap(
-              children: <Widget>[
-                text(title, fontSize: 16.0, color: titleColor, fontWeight: FontWeight.bold),
-                text(subtitle, fontSize: 16.0, color: subtitleColor),
-              ],
-            )
-          : Column(
+  }) {
+    final columnRows = <Widget>[];
+    columnRows.add(text(title, fontSize: 16.0, color: titleColor,
+        fontWeight: wrap ? FontWeight.bold : FontWeight.normal));
+    if (!wrap) columnRows.add(divider(height: padding3));
+    if (subtitle != null) columnRows.add(text(subtitle, fontSize: 16.0, color: subtitleColor));
+
+    return InkWell(
+      onTap: onTap ?? () => {},
+      child: Container(
+        child: wrap
+            ? Wrap(children: columnRows)
+            : Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: crossAxisAlignment,
-              children: <Widget>[
-                text(title, fontSize: 16.0, color: titleColor),
-                divider(height: padding3),
-                text(subtitle, fontSize: 14.0, color: subtitleColor),
-              ],
+              children: columnRows,
             ),
-      width: width,
-      height: rowHeight,
-      alignment: alignment,
-      padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
-      decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: lineColor, width: 0.5, style: borderStyle)),
+        width: width,
+        height: rowHeight,
+        alignment: alignment,
+        padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
+        decoration: BoxDecoration(
+          border: Border(left: BorderSide(
+              color: lineColor, width: 0.5, style: borderStyle)),
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   /// Создание фиксированной колонки
   Widget _createFixedColumn(BuildContext context, int index) {
@@ -322,7 +334,10 @@ class HomePageState extends State<HomePage> {
             (attendance) => attendance.groupPersonId == groupPerson.id);
     final dates = personAttendances.map((attendance) => attendance.date).toList();
     final period = bloc.activePeriod.value;
-    final rowCells = List<Widget>();
+    final rowCells = <Widget>[];
+    // Итог по персоне за период
+    rowCells.add(_createCell(personAttendances.length.toString(),
+        color: Colors.black54, fontSize: 16.0));
     // Цикл по дням текущего периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
