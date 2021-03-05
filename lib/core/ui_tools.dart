@@ -33,8 +33,10 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
   } else {
     newMessage = newMessage.replaceFirst('Invalid argument(s): ', '');
   }
-  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(newMessage)));
+  scaffoldKey.currentState.hideCurrentSnackBar();
+  scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(newMessage)));
+  //ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(newMessage)));
 }
 
 /// Текст
