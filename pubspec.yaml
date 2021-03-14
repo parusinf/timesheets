@@ -21,12 +21,12 @@ dependencies:
   month_picker_dialog:
   horizontal_data_table:
   flutter_markdown:
-  url_launcher:
   permission_handler:
   share:
   file_picker: ^2.1.0
   path_provider: ^1.6.24
   path_provider_windows: 0.0.4
+  url_launcher: ^5.7.10
 
 dev_dependencies:
   moor_generator: ^3.4.0
