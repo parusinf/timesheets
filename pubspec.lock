@@ -423,7 +423,7 @@ packages:
     source: hosted
     version: "1.0.4"
   path_provider_windows:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider_windows
       url: "https://pub.dartlang.org"
