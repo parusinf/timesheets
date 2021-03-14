@@ -16,7 +16,6 @@ dependencies:
   sqflite:
   moor:
   sqlite3_flutter_libs:
-  path_provider:
   rxdart:
   provider:
   month_picker_dialog:
@@ -26,6 +25,7 @@ dependencies:
   permission_handler:
   share:
   file_picker: ^2.1.0
+  path_provider: ^1.6.24
 
 dev_dependencies:
   moor_generator: ^4.1.0
