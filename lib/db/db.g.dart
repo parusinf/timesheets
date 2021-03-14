@@ -2686,7 +2686,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<ScheduleDay> _daysInSchedule(int scheduleId) {
     return customSelect(
         'SELECT *\n  FROM schedule_days\n WHERE scheduleId = :scheduleId',
-        variables: [Variable<int>(scheduleId)],
+        variables: [Variable.withInt(scheduleId)],
         readsFrom: {scheduleDays}).map(scheduleDays.mapFromRow);
   }
 
@@ -2700,7 +2700,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<Org> _previousOrg(String orgName) {
     return customSelect(
         'SELECT *\n  FROM orgs\n WHERE name =\n       (\n         SELECT MAX(name)\n           FROM orgs\n          WHERE name < :orgName\n       )',
-        variables: [Variable<String>(orgName)],
+        variables: [Variable.withString(orgName)],
         readsFrom: {orgs}).map(orgs.mapFromRow);
   }
 
@@ -2714,7 +2714,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<Schedule> _previousSchedule(String scheduleCode) {
     return customSelect(
         'SELECT *\n  FROM schedules\n WHERE code =\n       (\n         SELECT MAX(code)\n           FROM schedules\n          WHERE code < :scheduleCode\n       )',
-        variables: [Variable<String>(scheduleCode)],
+        variables: [Variable.withString(scheduleCode)],
         readsFrom: {schedules}).map(schedules.mapFromRow);
   }
 
@@ -2726,14 +2726,14 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<Group> _firstGroup(int orgId) {
     return customSelect(
         'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MIN(name)\n           FROM "groups"\n          WHERE orgId = :orgId\n       )',
-        variables: [Variable<int>(orgId)],
+        variables: [Variable.withInt(orgId)],
         readsFrom: {groups}).map(groups.mapFromRow);
   }
 
   Selectable<Group> _previousGroup(int orgId, String groupName) {
     return customSelect(
         'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MAX(name)\n           FROM "groups"\n          WHERE name < :groupName\n       )',
-        variables: [Variable<int>(orgId), Variable<String>(groupName)],
+        variables: [Variable.withInt(orgId), Variable.withString(groupName)],
         readsFrom: {groups}).map(groups.mapFromRow);
   }
 
@@ -2768,7 +2768,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<GroupsViewResult> _groupsView(int orgId) {
     return customSelect(
         'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       G.meals,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE G.orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
-        variables: [Variable<int>(orgId)],
+        variables: [Variable.withInt(orgId)],
         readsFrom: {groups, schedules, groupPersons}).map((QueryRow row) {
       return GroupsViewResult(
         id: row.readInt('id'),
@@ -2785,7 +2785,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<OrgMealsResult> _orgMeals(int orgId) {
     return customSelect(
         'SELECT G.orgId,\n       G.meals\n  FROM "groups" G\n WHERE G.orgId = :orgId\n GROUP BY\n       G.orgId,\n       G.meals\n ORDER BY\n       G.orgId,\n       G.meals',
-        variables: [Variable<int>(orgId)],
+        variables: [Variable.withInt(orgId)],
         readsFrom: {groups}).map((QueryRow row) {
       return OrgMealsResult(
         orgId: row.readInt('orgId'),
@@ -2817,10 +2817,10 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT P.id,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2\n  FROM persons P\n WHERE P.family = :family\n   AND P.name = :name\n   AND (:middleName IS NULL OR :middleName = \'\' OR P.middleName = :middleName)\n   AND (:birthday IS NULL OR P.birthday = :birthday)',
         variables: [
-          Variable<String>(family),
-          Variable<String>(name),
-          Variable<String>(middleName),
-          Variable<DateTime>(birthday)
+          Variable.withString(family),
+          Variable.withString(name),
+          Variable.withString(middleName),
+          Variable.withDateTime(birthday)
         ],
         readsFrom: {
           persons
@@ -2830,7 +2830,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {
     return customSelect(
         'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
-        variables: [Variable<int>(groupId)],
+        variables: [Variable.withInt(groupId)],
         readsFrom: {groupPersons, persons, attendances}).map((QueryRow row) {
       return PersonsInGroupResult(
         id: row.readInt('id'),
@@ -2854,9 +2854,9 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
         variables: [
-          Variable<int>(groupId),
-          Variable<DateTime>(periodBegin),
-          Variable<DateTime>(periodEnd)
+          Variable.withInt(groupId),
+          Variable.withDateTime(periodBegin),
+          Variable.withDateTime(periodEnd)
         ],
         readsFrom: {
           groupPersons,
@@ -2885,9 +2885,9 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT T.*\n  FROM group_persons L\n INNER JOIN attendances T ON T.groupPersonId = L.id\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n   AND T.date >= :periodBegin\n   AND T.date <= :periodEnd',
         variables: [
-          Variable<int>(groupId),
-          Variable<DateTime>(periodBegin),
-          Variable<DateTime>(periodEnd)
+          Variable.withInt(groupId),
+          Variable.withDateTime(periodBegin),
+          Variable.withDateTime(periodEnd)
         ],
         readsFrom: {
           groupPersons,
@@ -2900,9 +2900,9 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT L.groupId,\n       G.meals,\n       T.*\n  FROM "groups" G\n INNER JOIN group_persons L ON L.groupId = G.id\n INNER JOIN attendances T ON T.groupPersonId = L.id\n WHERE G.orgId = :orgId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n   AND T.date >= :periodBegin\n   AND T.date <= :periodEnd',
         variables: [
-          Variable<int>(orgId),
-          Variable<DateTime>(periodBegin),
-          Variable<DateTime>(periodEnd)
+          Variable.withInt(orgId),
+          Variable.withDateTime(periodBegin),
+          Variable.withDateTime(periodEnd)
         ],
         readsFrom: {
           groupPersons,
@@ -2930,7 +2930,7 @@ abstract class _$Db extends GeneratedDatabase {
   Future<int> _setActiveOrg(int id) {
     return customUpdate(
       'UPDATE settings SET intValue = :id WHERE name = \'activeOrg\'',
-      variables: [Variable<int>(id)],
+      variables: [Variable.withInt(id)],
       updates: {settings},
       updateKind: UpdateKind.update,
     );
@@ -2946,7 +2946,7 @@ abstract class _$Db extends GeneratedDatabase {
   Future<int> _setActiveSchedule(int id) {
     return customUpdate(
       'UPDATE settings SET intValue = :id WHERE name = \'activeSchedule\'',
-      variables: [Variable<int>(id)],
+      variables: [Variable.withInt(id)],
       updates: {settings},
       updateKind: UpdateKind.update,
     );
@@ -2955,7 +2955,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<ActiveGroupResult> _activeGroup(int orgId) {
     return customSelect(
         'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       G.meals,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM orgs O\n INNER JOIN "groups" G ON G.id = O.activeGroupId\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE O.id = :orgId',
-        variables: [Variable<int>(orgId)],
+        variables: [Variable.withInt(orgId)],
         readsFrom: {groups, schedules, groupPersons, orgs}).map((QueryRow row) {
       return ActiveGroupResult(
         id: row.readInt('id'),
@@ -2972,7 +2972,7 @@ abstract class _$Db extends GeneratedDatabase {
   Future<int> _setActiveGroup(int activeGroupId, int orgId) {
     return customUpdate(
       'UPDATE orgs SET activeGroupId = :activeGroupId WHERE id = :orgId',
-      variables: [Variable<int>(activeGroupId), Variable<int>(orgId)],
+      variables: [Variable.withInt(activeGroupId), Variable.withInt(orgId)],
       updates: {orgs},
       updateKind: UpdateKind.update,
     );
@@ -2990,7 +2990,7 @@ abstract class _$Db extends GeneratedDatabase {
   Future<int> _setActivePeriod(DateTime activePeriod) {
     return customUpdate(
       'UPDATE settings SET dateValue = :activePeriod WHERE name = \'activePeriod\'',
-      variables: [Variable<DateTime>(activePeriod)],
+      variables: [Variable.withDateTime(activePeriod)],
       updates: {settings},
       updateKind: UpdateKind.update,
     );
@@ -3049,11 +3049,11 @@ class OrgsViewResult {
   final int activeGroupId;
   final int groupCount;
   OrgsViewResult({
-    @required this.id,
-    @required this.name,
+    this.id,
+    this.name,
     this.inn,
     this.activeGroupId,
-    @required this.groupCount,
+    this.groupCount,
   });
 }
 
@@ -3062,9 +3062,9 @@ class SchedulesViewResult {
   final String code;
   final int groupCount;
   SchedulesViewResult({
-    @required this.id,
-    @required this.code,
-    @required this.groupCount,
+    this.id,
+    this.code,
+    this.groupCount,
   });
 }
 
@@ -3077,13 +3077,13 @@ class GroupsViewResult {
   final int meals;
   final int personCount;
   GroupsViewResult({
-    @required this.id,
-    @required this.orgId,
-    @required this.name,
-    @required this.scheduleId,
-    @required this.scheduleCode,
+    this.id,
+    this.orgId,
+    this.name,
+    this.scheduleId,
+    this.scheduleCode,
     this.meals,
-    @required this.personCount,
+    this.personCount,
   });
 }
 
@@ -3091,7 +3091,7 @@ class OrgMealsResult {
   final int orgId;
   final int meals;
   OrgMealsResult({
-    @required this.orgId,
+    this.orgId,
     this.meals,
   });
 }
@@ -3106,14 +3106,14 @@ class PersonsViewResult {
   final String phone2;
   final int groupCount;
   PersonsViewResult({
-    @required this.id,
-    @required this.family,
-    @required this.name,
+    this.id,
+    this.family,
+    this.name,
     this.middleName,
     this.birthday,
     this.phone,
     this.phone2,
-    @required this.groupCount,
+    this.groupCount,
   });
 }
 
@@ -3131,18 +3131,18 @@ class PersonsInGroupResult {
   final String phone2;
   final int attendanceCount;
   PersonsInGroupResult({
-    @required this.id,
-    @required this.groupId,
-    @required this.personId,
+    this.id,
+    this.groupId,
+    this.personId,
     this.beginDate,
     this.endDate,
-    @required this.family,
-    @required this.name,
+    this.family,
+    this.name,
     this.middleName,
     this.birthday,
     this.phone,
     this.phone2,
-    @required this.attendanceCount,
+    this.attendanceCount,
   });
 }
 
@@ -3160,18 +3160,18 @@ class PersonsInGroupPeriodResult {
   final String phone2;
   final int attendanceCount;
   PersonsInGroupPeriodResult({
-    @required this.id,
-    @required this.groupId,
-    @required this.personId,
+    this.id,
+    this.groupId,
+    this.personId,
     this.beginDate,
     this.endDate,
-    @required this.family,
-    @required this.name,
+    this.family,
+    this.name,
     this.middleName,
     this.birthday,
     this.phone,
     this.phone2,
-    @required this.attendanceCount,
+    this.attendanceCount,
   });
 }
 
@@ -3183,12 +3183,12 @@ class OrgAttendancesResult {
   final DateTime date;
   final double hoursFact;
   OrgAttendancesResult({
-    @required this.groupId,
+    this.groupId,
     this.meals,
-    @required this.id,
-    @required this.groupPersonId,
-    @required this.date,
-    @required this.hoursFact,
+    this.id,
+    this.groupPersonId,
+    this.date,
+    this.hoursFact,
   });
 }
 
@@ -3201,13 +3201,13 @@ class ActiveGroupResult {
   final int meals;
   final int personCount;
   ActiveGroupResult({
-    @required this.id,
-    @required this.orgId,
-    @required this.name,
-    @required this.scheduleId,
-    @required this.scheduleCode,
+    this.id,
+    this.orgId,
+    this.name,
+    this.scheduleId,
+    this.scheduleCode,
     this.meals,
-    @required this.personCount,
+    this.personCount,
   });
 }
 
