@@ -29,7 +29,7 @@ class HomePageState extends State<HomePage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<GroupPersonView> _groupPeriodPersons;
   List<Attendance> _groupAttendances;
-  static const fixedColumnWidth = 140.0;
+  static const fixedColumnWidth = 150.0;
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
   static const leftPadding = 12.0;
@@ -201,7 +201,7 @@ class HomePageState extends State<HomePage> {
                       alignment: Alignment.centerLeft,
                       leftPadding: leftPadding,
                       color: Colors.lightBlue,
-                      fontSize: 16.0,
+                      fontSize: 14.0,
                     )
                   : Text('')
             ),
@@ -219,12 +219,14 @@ class HomePageState extends State<HomePage> {
     // Колонки по дням периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
-      final hoursNorm = _getHoursNorm(date);
+      final hoursNorm = getHoursNorm(bloc, date);
       // Количество присутствующих персон на дату
-      final dateCountStr = hoursNorm > 0.0
-          ? _groupAttendances.where(
-                (attendance) => attendance.date == date).toList().length.toString()
-          : '';
+      final dateCount = _groupAttendances.where(
+              (attendance) => attendance.date == date).toList().length;
+      final dateCountStr = dateCount > 0.0
+          ? dateCount.toString()
+          : hoursNorm > 0.0 ? '0' : '';
+      // Добавление ячейки в строку
       rowCells.add(
         StreamBuilder<DateTime>(
           stream: bloc.activePeriod,
@@ -236,7 +238,7 @@ class HomePageState extends State<HomePage> {
                 width: columnWidth,
                 alignment: Alignment.center,
                 borderStyle: BorderStyle.solid,
-                titleColor: isHoliday(date) ? Colors.red : Colors.black87,
+                titleColor: isHoliday(bloc, date) ? Colors.red : Colors.black87,
                 subtitleColor: Colors.black54,
                 wrap: false,
               );
@@ -318,7 +320,7 @@ class HomePageState extends State<HomePage> {
     final person = _groupPeriodPersons[index].person;
     return _createFixedCell(
       '${person.family} ',
-      personName(person),
+      personName(person, showMiddleName: false),
       width: fixedColumnWidth,
       alignment: Alignment.centerLeft,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -343,45 +345,44 @@ class HomePageState extends State<HomePage> {
       final date = DateTime(period.year, period.month, day);
       // Есть посещаемость в этот день, её можно удалить
       if (dates.contains(date)) {
-        final attendance = personAttendances.firstWhere((attendance) => attendance.date == date);
+        final attendance = personAttendances.firstWhere(
+                (attendance) => attendance.date == date);
         rowCells.add(
           InkWell(
             onTap: () => _deleteAttendance(attendance),
             child: _createCell(
               doubleToString(attendance.hoursFact),
-              color: isBirthday(date, groupPerson.person.birthday) ? Colors.red : Colors.green,
+              color: isBirthday(date, groupPerson.person.birthday) 
+                  ? Colors.red : Colors.green,
               fontWeight: FontWeight.bold,
             ),
           ),
         );
       // Посещаемости нет, её можно добавить
       } else {
-        final hoursNorm = _getHoursNorm(date);
-        if (hoursNorm > 0.0 &&
+        // Норма часов на дату
+        var hoursNorm = getHoursNorm(bloc, date);
+        final hoursNormStr = (hoursNorm > 0.0 &&
             (groupPerson.beginDate == null || groupPerson.beginDate.compareTo(date) <= 0) &&
             (groupPerson.endDate == null || groupPerson.endDate.compareTo(date) >= 0))
-        {
-          rowCells.add(
-            InkWell(
-              onTap: () => _insertAttendance(groupPerson, date, hoursNorm),
-              child: _createCell(
-                doubleToString(hoursNorm),
-                color: isBirthday(date, groupPerson.person.birthday) ? Colors.red[200] : Colors.black12,
-              ),
-            ),
-          );
-        } else {
-          rowCells.add(_createCell(''));
+            ? doubleToString(hoursNorm) : '';
+        if (hoursNorm == 0.0) {
+          hoursNorm = getFirstHoursNorm(bloc);
         }
+        // Добавление ячейки в строку
+        rowCells.add(
+          InkWell(
+            onTap: () => _insertAttendance(groupPerson, date, hoursNorm),
+            child: _createCell(
+              hoursNormStr,
+              color: isBirthday(date, groupPerson.person.birthday)
+                  ? Colors.red[200] : Colors.black12,
+            ),
+          ),
+        );
       }
     }
     return Row(children: rowCells);
-  }
-
-  /// Получение нормы часов на дату по активному графику
-  double _getHoursNorm(DateTime date) {
-    final weekdayNumber = abbrWeekdays.indexOf(abbrWeekday(date));
-    return bloc.scheduleDays.value[weekdayNumber].hoursNorm;
   }
 
   /// Выбор активного периода

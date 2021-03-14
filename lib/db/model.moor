@@ -22,7 +22,7 @@ CREATE UNIQUE INDEX schedules_index ON schedules (code);
 
 -- Дни графиков
 CREATE TABLE schedule_days (
-  -- Идертификатор дня недели графика
+  -- Идентификатор дня недели графика
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор графика
   scheduleId         INT NOT NULL REFERENCES schedules (id) ON DELETE CASCADE,
@@ -33,12 +33,24 @@ CREATE TABLE schedule_days (
 );
 CREATE UNIQUE INDEX schedule_days_index ON schedule_days (scheduleId, dayNumber);
 
+-- Праздники
+CREATE TABLE holidays (
+  -- Идентификатор праздника
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  -- Праздничный день
+  date               DATE NOT NULL,
+  -- Рабочий день
+  workday            DATE
+);
+CREATE UNIQUE INDEX holidays_index ON holidays (date);
+CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
+
 -- Группы
 CREATE TABLE "groups" (
   -- Идентификатор группы
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор организации
-  orgId     INT NOT NULL REFERENCES orgs (id),
+  orgId              INT NOT NULL REFERENCES orgs (id),
   -- Наименование группы
   name               TEXT NOT NULL,
   -- Идентификатор графика
@@ -160,6 +172,12 @@ SELECT *
           WHERE code < :scheduleCode
        );
 
+-- Рабочие дни
+_holidaysWorkdays:
+SELECT *
+  FROM holidays
+ WHERE workday IS NOT NULL;
+
 -- Первая группа организации в алфавитном порядке
 _firstGroup:
 SELECT *
@@ -184,7 +202,7 @@ SELECT *
           WHERE name < :groupName
        );
 
--- Список огранизаций с количеством групп
+-- Список организаций с количеством групп
 _orgsView:
 SELECT O.id,
        O.name,
@@ -205,7 +223,7 @@ SELECT S.id,
  ORDER BY
        S.code;
 
--- Список групп огранизации с графиками и количеством персон
+-- Список групп организации с графиками и количеством персон
 _groupsView:
 SELECT G.id,
        G.orgId,
@@ -221,7 +239,7 @@ SELECT G.id,
        G.name,
        S.code;
 
--- Список питаний огранизации
+-- Список питаний организации
 _orgMeals:
 SELECT G.orgId,
        G.meals
@@ -339,14 +357,14 @@ SELECT L.groupId,
    AND T.date >= :periodBegin
    AND T.date <= :periodEnd;
 
--- Активная огранизации
+-- Активная организации
 _activeOrg:
 SELECT O.*
   FROM settings S
  INNER JOIN orgs O ON O.id = S.intValue
  WHERE S.name = 'activeOrg';
 
--- Установка активной огранизации
+-- Установка активной организации
 _setActiveOrg:
 UPDATE settings SET intValue = :id WHERE name = 'activeOrg';
 

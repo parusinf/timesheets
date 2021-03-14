@@ -3,8 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:timesheets/core/l10n.dart';
-import 'package:timesheets/core/tools.dart';
+import 'package:timesheets/core.dart';
 
 const lineColor = Colors.black12;
 const activeColorOpacity = 0.3;
@@ -26,6 +25,7 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
     switch (tableName) {
       case 'orgs': newMessage = L10n.of(context).uniqueOrg; break;
       case 'schedules': newMessage = L10n.of(context).uniqueSchedule; break;
+      case 'holidays': newMessage = L10n.of(context).uniqueDay; break;
       case 'groups': newMessage = L10n.of(context).uniqueGroup; break;
       case 'persons': newMessage = L10n.of(context).uniquePerson; break;
       case 'group_persons': newMessage = L10n.of(context).uniqueGroupPerson; break;
@@ -227,3 +227,37 @@ String mealsName(BuildContext context, int index) {
     default: return null;
   }
 }
+
+/// Получение нормы часов на дату по активному графику
+double getHoursNorm(Bloc bloc, DateTime date) {
+  final weekdayNumber = abbrWeekdays.indexOf(abbrWeekday(date));
+  final scheduleDays = bloc.scheduleDays.value;
+  var hoursNorm = scheduleDays[weekdayNumber].hoursNorm;
+  // Обнуление нормы часов по графику для праздничного дня
+  if (isHoliday(bloc, date)) {
+    hoursNorm = 0.0;
+  } else {
+    // Добавление нормы часов для переноса рабочего дня
+    if (isTransWorkday(bloc, date)) {
+      // Поиск нормы часов первого дня графика
+      hoursNorm = getFirstHoursNorm(bloc);
+    }
+  }
+  return hoursNorm;
+}
+
+/// Поиск нормы часов первого дня активного графика
+double getFirstHoursNorm(Bloc bloc) =>
+  (bloc.scheduleDays.value.firstWhere((day) => day.hoursNorm > 0.0)).hoursNorm;
+
+/// Дата является праздничным или выходным днём
+bool isHoliday(Bloc bloc, DateTime date) {
+  final weekday = abbrWeekday(date);
+  final weekdayIndex = abbrWeekdays.indexOf(weekday);
+  return !isTransWorkday(bloc, date) && ([5,6].contains(weekdayIndex) ||
+      bloc.holidaysDateList.value.contains(date));
+}
+
+/// Дата является переносом рабочего дня
+bool isTransWorkday(Bloc bloc, DateTime date) =>
+    bloc.workdaysDateList.value.contains(date);

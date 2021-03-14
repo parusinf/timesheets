@@ -7,6 +7,7 @@ import 'package:timesheets/ui/group_edit.dart';
 import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/help_page.dart';
 import 'package:timesheets/ui/org_report.dart';
+import 'package:timesheets/ui/holidays_dictionary.dart';
 
 /// Дроувер домашнего экрана
 class HomeDrawer extends StatefulWidget {
@@ -63,6 +64,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       : Text('')
               ),
               Spacer(),
+              listHeater(context, Icons.auto_awesome, l10n.holidays,
+                  onHeaderTap: () => push(context, HolidaysDictionary())),
               listHeater(context, Icons.help, l10n.help,
                   onHeaderTap: () => push(context, HelpPage())),
             ],

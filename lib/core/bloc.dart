@@ -64,6 +64,15 @@ class Bloc {
   // Дни активного графика
   final scheduleDays = BehaviorSubject<List<ScheduleDay>>();
 
+  // Праздники
+  final holidays = BehaviorSubject<List<Holiday>>();
+
+  // Праздничные дни
+  final holidaysDateList = BehaviorSubject<List<DateTime>>();
+
+  // Рабочие дни
+  final workdaysDateList = BehaviorSubject<List<DateTime>>();
+
   // Группы с признаком активности
   final activeGroups = BehaviorSubject<List<ActiveGroup>>();
 
@@ -112,6 +121,18 @@ class Bloc {
     // Отслеживание дней активного графика
     Rx.concat([activeSchedule.switchMap(db.scheduleDaysDao.watch)])
         .listen(scheduleDays.add);
+
+    // Отслеживание праздников
+    Rx.concat([db.holidaysDao.watch()])
+        .listen(holidays.add);
+
+    // Отслеживание праздничных дней
+    Rx.concat([db.holidaysDao.watchHolidays()])
+        .listen(holidaysDateList.add);
+
+    // Отслеживание рабочих дней
+    Rx.concat([db.holidaysDao.watchWorkdays()])
+        .listen(workdaysDateList.add);
 
     // Отслеживание групп в активной организации
     groups = activeOrg.switchMap(db.groupsDao.watch);
@@ -206,6 +227,9 @@ class Bloc {
     activeSchedules.close();
     activeGroups.close();
     scheduleDays.close();
+    holidays.close();
+    holidaysDateList.close();
+    workdaysDateList.close();
     groupPersons.close();
     groupPeriodPersons.close();
     meals.close();
@@ -265,6 +289,27 @@ class Bloc {
     final previousSchedule = await db.schedulesDao.getPrevious(schedule);
     setActiveSchedule(previousSchedule);
     return result;
+  }
+
+  // Праздники -----------------------------------------------------------------
+  /// Добавление праздника
+  Future<Holiday> insertHoliday({
+    @required DateTime date,
+    DateTime workday,
+  }) async {
+    return await db.holidaysDao.insert2(
+      date: date,
+      workday: workday,
+    );
+  }
+
+  /// Исправление праздника
+  Future<bool> updateHoliday(Holiday holiday) async =>
+      db.holidaysDao.update2(holiday);
+
+  /// Удаление праздника
+  Future<bool> deleteHoliday(Holiday holiday) async {
+    return await db.holidaysDao.delete2(holiday);
   }
 
   // Группы --------------------------------------------------------------------

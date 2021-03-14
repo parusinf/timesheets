@@ -3,7 +3,7 @@ import 'package:timesheets/core/tools.dart';
 
 /// Формирование списка часов по коду графика
 List<double> parseScheduleCode(String code) {
-  var hours = List<double>();
+  var hours = <double>[];
   if (code.contains(_inWeekStr)) {
     hours = List<double>.generate(14, (i) => 0.0);
   } else {
@@ -22,7 +22,7 @@ List<double> parseScheduleCode(String code) {
 String createScheduleCode(List<double> hours) {
   assert(hours.every((e) => e != null));
   assert(hours.reduce((a, b) => a + b) != 0.0);
-  final parts = List<String>();
+  final parts = <String>[];
   final week = _createOneWeekDays(hours, 0);
   if (hours.length == 7) {
     week.forEach((hour, days) {

@@ -22,7 +22,7 @@ Future pickAndLoadFromFile(BuildContext context) async {
   await loadFromFile(context, result.files.single.path);
 }
 
-/// Заргузка CSV файла
+/// Загрузка CSV файла
 Future loadFromFile(BuildContext context, String fileName) async {
   final l10n = L10n.of(context);
   if (!(await Permission.storage.request().isGranted)) {

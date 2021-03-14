@@ -72,13 +72,6 @@ String abbrWeekday(DateTime date) {
   return s;
 }
 
-/// Дата является выходным днём
-bool isHoliday(DateTime date) {
-  final weekday = abbrWeekday(date);
-  final weekdayIndex = abbrWeekdays.indexOf(weekday);
-  return [5,6].contains(weekdayIndex);
-}
-
 /// Дата является днём рождения
 bool isBirthday(DateTime date, DateTime birthday) =>
     date?.day == birthday?.day && date?.month == birthday?.month;
@@ -88,8 +81,10 @@ String personFullName(Person person) => person != null
     ? '${person.family} ${personName(person)}' : '';
 
 /// Имя Отчество
-String personName(Person person) => person != null
-    ? person.middleName == null ? person.name : '${person.name} ${person.middleName}'
+String personName(Person person, {showMiddleName = true}) => person != null
+    ? (person.middleName == null || !showMiddleName)
+      ? person.name
+      : '${person.name} ${person.middleName}'
     : '';
 
 /// Заглавная первая буква в строке

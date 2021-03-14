@@ -5,7 +5,6 @@ import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
-import 'package:timesheets/db/schedule_helper.dart';
 import 'package:timesheets/ui/org_edit.dart';
 
 /// Отчёт по организации
@@ -23,7 +22,7 @@ class OrgReportState extends State<OrgReport> {
   List<ActiveGroup> _activeGroups;
   List<GroupView> _orgMeals;
   List<AttendanceView> _orgAttendances;
-  static const fixedColumnWidth = 140.0;
+  static const fixedColumnWidth = 150.0;
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
   static const leftPadding = 12.0;
@@ -95,7 +94,7 @@ class OrgReportState extends State<OrgReport> {
                       _orgAttendances = snapshot.data;
                       return HorizontalDataTable(
                         leftHandSideColumnWidth: fixedColumnWidth,
-                        rightHandSideColumnWidth: columnWidth * bloc.activePeriod.value.day,
+                        rightHandSideColumnWidth: columnWidth * (bloc.activePeriod.value.day + 1),
                         isFixedHeader: true,
                         headerWidgets: _createTitleRow(),
                         leftSideItemBuilder: _createFixedColumn,
@@ -128,7 +127,7 @@ class OrgReportState extends State<OrgReport> {
                       _orgAttendances = snapshot.data;
                       return HorizontalDataTable(
                         leftHandSideColumnWidth: fixedColumnWidth,
-                        rightHandSideColumnWidth: columnWidth * bloc.activePeriod.value.day,
+                        rightHandSideColumnWidth: columnWidth * (bloc.activePeriod.value.day + 1),
                         isFixedHeader: true,
                         headerWidgets: _createTitleRow(),
                         leftSideItemBuilder: _createFixedColumn,
@@ -166,20 +165,33 @@ class OrgReportState extends State<OrgReport> {
                       width: fixedColumnWidth,
                       alignment: Alignment.centerLeft,
                       leftPadding: leftPadding,
-                      borderStyle: BorderStyle.none,
+                      color: Colors.lightBlue,
+                      fontSize: 14.0,
                     )
                     : Text('')
             ),
       ),
     ];
+    // Дней посещения персоны за период
+    rowCells.add(
+        _createCell(
+          l10n.days,
+          width: columnWidth,
+          alignment: Alignment.center,
+          fontSize: 16.0,
+        )
+    );
+    // Колонки по дням периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
-      final hoursNorm = _getHoursNorm(date);
+      final hoursNorm = getHoursNorm(bloc, date);
       // Количество присутствующих персон на дату
-      final dateCountStr = hoursNorm > 0.0
-          ? _orgAttendances.where(
-              (attendance) => attendance.date == date).toList().length.toString()
-          : '';
+      final dateCount = _orgAttendances.where(
+              (attendance) => attendance.date == date).toList().length;
+      final dateCountStr = dateCount > 0.0
+          ? dateCount.toString()
+          : hoursNorm > 0.0 ? '0' : '';
+      // Добавление ячейки в строку
       rowCells.add(
         StreamBuilder<DateTime>(
             stream: bloc.activePeriod,
@@ -191,7 +203,7 @@ class OrgReportState extends State<OrgReport> {
                   width: columnWidth,
                   alignment: Alignment.center,
                   borderStyle: BorderStyle.solid,
-                  titleColor: isHoliday(date) ? Colors.red : Colors.black87,
+                  titleColor: isHoliday(bloc, date) ? Colors.red : Colors.black87,
                   subtitleColor: Colors.black54,
                   wrap: false,
                 );
@@ -207,15 +219,16 @@ class OrgReportState extends State<OrgReport> {
 
   /// Создание ячейки таблицы
   Widget _createCell(
-    String title, {
-    width: columnWidth,
-    alignment: Alignment.center,
-    leftPadding: 0.0,
-    borderStyle: BorderStyle.solid,
-    color: Colors.lightBlue,
-    fontWeight: FontWeight.normal,
-  }) => Container(
-    child: text(title, color: color, fontWeight: fontWeight),
+      String title, {
+        width: columnWidth,
+        alignment: Alignment.center,
+        leftPadding: 0.0,
+        borderStyle: BorderStyle.solid,
+        color: Colors.black87,
+        fontSize: 14.0,
+        fontWeight: FontWeight.normal,
+      }) => Container(
+    child: text(title, color: color, fontSize: fontSize, fontWeight: fontWeight),
     width: width,
     height: rowHeight,
     padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
@@ -285,17 +298,24 @@ class OrgReportState extends State<OrgReport> {
   /// Создание строки таблицы
   Widget _createTableRow(BuildContext context, int index) {
     final attendances = _grouping == 0
-        ? _orgAttendances.where((attendance) => attendance.groupId == _activeGroups[index].groupView.id)
-        : _orgAttendances.where((attendance) => attendance.meals == _orgMeals[index].meals);
+        ? _orgAttendances.where(
+            (attendance) => attendance.groupId == _activeGroups[index].groupView.id)
+        : _orgAttendances.where(
+            (attendance) => attendance.meals == _orgMeals[index].meals);
     final period = bloc.activePeriod.value;
-    final rowCells = List<Widget>();
+    final rowCells = <Widget>[];
+    // Итог по персоне за период
+    rowCells.add(_createCell(attendances.length.toString(),
+        color: Colors.black54, fontSize: 16.0));
     // Цикл по дням текущего периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
-      final hoursNorm = _getHoursNorm(date);
-      final dateCountStr = hoursNorm > 0.0
-          ? attendances.where((attendance) => attendance.date == date).toList().length.toString()
-          : '';
+      final hoursNorm = getHoursNorm(bloc, date);
+      final hoursFact = attendances.where(
+              (attendance) => attendance.date == date).toList().length;
+      final dateCountStr = hoursFact > 0.0
+          ? hoursFact.toString()
+          : hoursNorm > 0.0 ? '0' : '';
       rowCells.add(
         _createCell(
           dateCountStr,
@@ -304,12 +324,6 @@ class OrgReportState extends State<OrgReport> {
       );
     }
     return Row(children: rowCells);
-  }
-
-  /// Получение нормы часов на дату по активному графику
-  double _getHoursNorm(DateTime date) {
-    final weekdayNumber = abbrWeekdays.indexOf(abbrWeekday(date));
-    return bloc.scheduleDays.value[weekdayNumber].hoursNorm;
   }
 
   /// Выбор активного периода

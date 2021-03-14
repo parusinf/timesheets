@@ -13,6 +13,7 @@ class L10n {
   static const Map<String, Map<String, String>> _l10n = {
     'ru': {
       'addGroup': 'Добавьте группу',
+      'addHoliday': 'Добавьте праздник',
       'addOrg': 'Добавьте организацию',
       'addPerson': 'Добавьте персону',
       'addPersonToGroup': 'Добавьте персону в группу',
@@ -33,6 +34,8 @@ class L10n {
       'groupUpdating': 'Исправление группы',
       'groups': 'Группы',
       'help': 'Справка',
+      'holiday': 'Праздничный или выходной день',
+      'holidays': 'Праздники',
       'inn': 'ИНН',
       'innLength': 'ИНН должен состоять из 10 цифр',
       'invalidDate': 'Формат даты ДД.ММ.ГГГГ',
@@ -65,6 +68,7 @@ class L10n {
       'timesheet': 'Табель посещаемости',
       'timesheets': 'Табели посещаемости',
       'to': 'по',
+      'uniqueDay': 'Уже есть такой день',
       'uniqueGroup': 'Уже есть такая группа',
       'uniqueGroupPerson': 'Уже есть такая персона в группе',
       'uniqueOrg': 'Уже есть такая организация',
@@ -73,10 +77,12 @@ class L10n {
       'unknown': 'Неизвестно',
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
+      'workday': 'Перенос рабочего дня на',
     }
   };
 
   get addGroup => _l10n[locale.languageCode]['addGroup'];
+  get addHoliday => _l10n[locale.languageCode]['addHoliday'];
   get addOrg => _l10n[locale.languageCode]['addOrg'];
   get addPerson => _l10n[locale.languageCode]['addPerson'];
   get addPersonToGroup => _l10n[locale.languageCode]['addPersonToGroup'];
@@ -96,6 +102,8 @@ class L10n {
   get groupPersons => _l10n[locale.languageCode]['groupPersons'];
   get groups => _l10n[locale.languageCode]['groups'];
   get help => _l10n[locale.languageCode]['help'];
+  get holiday => _l10n[locale.languageCode]['holiday'];
+  get holidays => _l10n[locale.languageCode]['holidays'];
   get inn => _l10n[locale.languageCode]['inn'];
   get innLength => _l10n[locale.languageCode]['innLength'];
   get invalidDate => _l10n[locale.languageCode]['invalidDate'];
@@ -128,6 +136,7 @@ class L10n {
   get timesheet => _l10n[locale.languageCode]['timesheet'];
   get timesheets => _l10n[locale.languageCode]['timesheets'];
   get to => _l10n[locale.languageCode]['to'];
+  get uniqueDay => _l10n[locale.languageCode]['uniqueDay'];
   get uniqueGroup => _l10n[locale.languageCode]['uniqueGroup'];
   get uniqueGroupPerson => _l10n[locale.languageCode]['uniqueGroupPerson'];
   get uniqueOrg => _l10n[locale.languageCode]['uniqueOrg'];
@@ -136,6 +145,8 @@ class L10n {
   get unknown => _l10n[locale.languageCode]['unknown'];
   get withoutInn => _l10n[locale.languageCode]['withoutInn'];
   get withoutTime => _l10n[locale.languageCode]['withoutTime'];
+  get workday => _l10n[locale.languageCode]['workday'];
+
 }
 
 class L10nDelegate extends LocalizationsDelegate<L10n> {

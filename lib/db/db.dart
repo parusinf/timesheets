@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:timesheets/core/tools.dart';
 import 'schedule_helper.dart';
+import 'init_holidays.dart';
 
 part 'db.g.dart';
 
@@ -147,6 +148,7 @@ class OrgPeriod {
     Orgs,             // Организации
     Schedules,        // Графики
     ScheduleDays,     // Дни графиков
+    Holidays,         // Праздники
     Groups,           // Группы
     Persons,          // Персоны
     GroupPersons,     // Персоны в группе
@@ -157,6 +159,7 @@ class OrgPeriod {
     OrgsDao,
     SchedulesDao,
     ScheduleDaysDao,
+    HolidaysDao,
     GroupsDao,
     PersonsDao,
     GroupPersonsDao,
@@ -170,7 +173,7 @@ class Db extends _$Db {
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   /// Формирование графика и группы по умолчанию
   @override
@@ -185,6 +188,17 @@ class Db extends _$Db {
         await customStatement('DROP INDEX groups_index');
         await customStatement('CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name)');
       }
+      if (from <= 3) {
+        await customStatement('''
+CREATE TABLE holidays (
+  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
+  date               DATE NOT NULL,
+  workday            DATE
+);
+CREATE UNIQUE INDEX holidays_index ON holidays (date);
+CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
+        ''');
+      }
     },
     onCreate: (Migrator m) {
       return m.createAll();
@@ -194,6 +208,9 @@ class Db extends _$Db {
       if (details.wasCreated) {
         transaction(() async {
           await settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
+          for (final holiday in initHolidays) {
+            await holidaysDao.insert2(date: holiday.date, workday: holiday.workday);
+          }
         });
       }
     }
@@ -350,7 +367,7 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
           )
       ).getSingle() ?? _getFirst();
 
-  /// Первая организация в алфавитном порядке
+  /// Первый график в алфавитном порядке
   Future<Schedule> _getFirst() async =>
       await db._firstSchedule().map((row) =>
           Schedule(
@@ -412,6 +429,56 @@ class ScheduleDaysDao extends DatabaseAccessor<Db> with _$ScheduleDaysDaoMixin {
               hoursNorm: row.hoursNorm
           )
       ).watch();
+}
+
+// Праздники -------------------------------------------------------------------
+@UseDao(tables: [Holidays])
+class HolidaysDao extends DatabaseAccessor<Db> with _$HolidaysDaoMixin {
+  HolidaysDao(Db db) : super(db);
+
+  /// Добавление праздника
+  Future<Holiday> insert2({
+    @required DateTime date,
+    DateTime workday,
+  }) async {
+    final id = await into(db.holidays).insert(
+        HolidaysCompanion(
+          date: Value(date),
+          workday: Value(workday),
+        )
+    );
+    return Holiday(
+      id: id,
+      date: date,
+      workday: workday,
+    );
+  }
+
+  /// Исправление праздника
+  Future<bool> update2(Holiday holiday) async =>
+      await update(db.holidays).replace(holiday);
+
+  /// Удаление праздника
+  Future<bool> delete2(Holiday holiday) async =>
+      (await delete(db.holidays).delete(holiday)) > 0 ? true : false;
+
+  /// Отслеживание праздников
+  Stream<List<Holiday>> watch() =>
+      (select(db.holidays)
+        ..orderBy([(t) => OrderingTerm.asc(t.date)])
+      ).watch();
+
+  /// Отслеживание праздничных дней
+  Stream<List<DateTime>> watchHolidays() =>
+      (select(db.holidays))
+          .map((row) => row.date)
+          .watch();
+
+  /// Отслеживание рабочих дней
+  Stream<List<DateTime>> watchWorkdays() =>
+      db._holidaysWorkdays()
+          .map((row) => row.workday)
+          .watch();
 }
 
 // Группы ----------------------------------------------------------------------
