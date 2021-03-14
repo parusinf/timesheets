@@ -25,7 +25,7 @@ dependencies:
   url_launcher:
   permission_handler:
   share:
-  file_picker:
+  file_picker: ^2.1.0
 
 dev_dependencies:
   moor_generator: ^4.1.0
