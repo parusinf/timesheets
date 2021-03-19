@@ -175,7 +175,7 @@ class Db extends _$Db {
   @override
   int get schemaVersion => 4;
 
-  /// Формирование графика и группы по умолчанию
+  /// Обновление структуры базы данных
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (Migrator m, int from, int to) async {

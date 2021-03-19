@@ -1,7 +1,7 @@
 name: timesheets
 description: Табели посещаемости в детсадах и доп.образовании
 
-version: 2021.3.15
+version: 2021.3.19
 
 environment:
   sdk: ">=2.8.2 <3.0.0"
@@ -16,20 +16,19 @@ dependencies:
   sqflite:
   moor:
   sqlite3_flutter_libs:
+  path_provider:
   rxdart:
   provider:
   month_picker_dialog:
   horizontal_data_table:
   flutter_markdown:
+  url_launcher:
   permission_handler:
   share:
-  file_picker: ^2.1.0
-  path_provider: ^1.6.24
-  path_provider_windows: 0.0.4
-  url_launcher: ^5.7.10
+  file_picker:
 
 dev_dependencies:
-  moor_generator: ^3.4.0
+  moor_generator: ^3.3.1
   build_runner: ^1.10.2
   flutter_launcher_icons:
 
