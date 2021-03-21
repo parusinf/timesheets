@@ -37,7 +37,7 @@ const List cp1251 = [
 
 // Кодирование строки в cp1251
 List<int> encodeCp1251(String string) {
-  final bytes = List<int>();
+  final bytes = <int>[];
   for(int i = 0; i < string.length; i++) {
     bytes.add(cp1251.indexOf(string[i]));
   }
