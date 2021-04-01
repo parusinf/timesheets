@@ -9,7 +9,7 @@ class HolidaysDictionary extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(L10n.of(context).holidays),
+      title: Text(L10n.holidays),
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.add),
@@ -31,11 +31,11 @@ class HolidaysDictionary extends StatelessWidget {
                     itemCount: snapshot.data.length,
                   );
                 } else {
-                  return centerButton(L10n.of(context).addHoliday,
+                  return centerButton(L10n.addHoliday,
                       onPressed: () => addHoliday(context));
                 }
               } else {
-                return centerMessage(context, L10n.of(context).dataLoading);
+                return centerMessage(context, L10n.dataLoading);
               }
             }
         ),
@@ -76,7 +76,7 @@ class _HolidayCard extends StatelessWidget {
           child: ListTile(
             title: Text(dateToString(holiday.date)),
             subtitle: holiday.workday != null
-                ? Text('${L10n.of(context).workday} ${dateToString(holiday.workday)}')
+                ? Text('${L10n.workday} ${dateToString(holiday.workday)}')
                 : null,
             trailing: IconButton(
               icon: Icon(Icons.edit),

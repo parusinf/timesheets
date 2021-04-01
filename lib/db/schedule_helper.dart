@@ -1,10 +1,10 @@
 import 'dart:collection';
-import 'package:timesheets/core/tools.dart';
+import 'package:timesheets/core.dart';
 
 /// Формирование списка часов по коду графика
 List<double> parseScheduleCode(String code) {
   var hours = <double>[];
-  if (code.contains(_inWeekStr)) {
+  if (code.contains(L10n.everyOtherWeek)) {
     hours = List<double>.generate(14, (i) => 0.0);
   } else {
     hours = List<double>.generate(7, (i) => 0.0);
@@ -26,7 +26,7 @@ String createScheduleCode(List<double> hours) {
   final week = _createOneWeekDays(hours, 0);
   if (hours.length == 7) {
     week.forEach((hour, days) {
-      parts.add(days.join(',') + ' ${doubleToString(hour)}$_hourStr');
+      parts.add(days.join(',') + ' ${doubleToString(hour)}${L10n.hourLetter}');
     });
   } else {
     final week2 = _createOneWeekDays(hours, 7);
@@ -36,9 +36,9 @@ String createScheduleCode(List<double> hours) {
           final daysStr = days.join(',');
           final days2Str = days2.join(',');
           if (daysStr == days2Str) {
-            parts.add('$daysStr $hour$_hourStr');
+            parts.add('$daysStr $hour${L10n.hourLetter}');
           } else {
-            parts.add('$daysStr/$days2Str $_inWeekStr ${doubleToString(hour)}$_hourStr');
+            parts.add('$daysStr/$days2Str ${L10n.everyOtherWeek} ${doubleToString(hour)}${L10n.hourLetter}');
           }
         }
       });
@@ -49,8 +49,8 @@ String createScheduleCode(List<double> hours) {
 
 /// Формирование списка часов одному количеству часов
 void _parseScheduleCode(List<double> hours, String code) {
-  if (code.contains(_inWeekStr)) { // вт/ср чз/нед 1ч
-    final daysHour = code.replaceFirst('$_inWeekStr ', '').split(
+  if (code.contains(L10n.everyOtherWeek)) { // вт/ср чз/нед 1ч
+    final daysHour = code.replaceFirst('${L10n.everyOtherWeek} ', '').split(
         ' '); // ['вт/ср','1ч']
     assert(daysHour.length == 2);
     final weeks = daysHour[0].split('/'); // ['вт','ср']
@@ -75,7 +75,7 @@ void _parseScheduleCode(List<double> hours, String code) {
 void _parseWeek(List<double> hours, String daysString,
     String hourString, int shift) {
   final hour = double.parse(
-      hourString.replaceFirst(_hourStr, '').replaceFirst(',', '.'));
+      hourString.replaceFirst(L10n.hourLetter, '').replaceFirst(',', '.'));
   for (int day = 0; day < 7; day++) {
     if (daysString == '' || daysString.contains(abbrWeekdays[day])) {
       hours[day + shift] = hour;
@@ -96,6 +96,3 @@ _createOneWeekDays(List<double> hours, int offset) {
   }
   return hoursMap;
 }
-
-const String _inWeekStr = 'чз/нед';
-const String _hourStr = 'ч';

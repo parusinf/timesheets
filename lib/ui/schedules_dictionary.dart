@@ -8,7 +8,7 @@ class SchedulesDictionary extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(L10n.of(context).schedules),
+      title: Text(L10n.schedules),
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.add),
@@ -29,10 +29,10 @@ class SchedulesDictionary extends StatelessWidget {
                   itemCount: snapshot.data.length,
                 );
               } else {
-                return centerButton(L10n.of(context).addSchedule, onPressed: () => addSchedule(context));
+                return centerButton(L10n.addSchedule, onPressed: () => addSchedule(context));
               }
             } else {
-              return centerMessage(context, L10n.of(context).dataLoading);
+              return centerMessage(context, L10n.dataLoading);
             }
           }
         ),

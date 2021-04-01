@@ -14,7 +14,6 @@ class PersonsDictionary extends StatefulWidget {
 
 class _PersonsDictionaryState extends State<PersonsDictionary> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
   final searchQueryEdit = TextEditingController();
   bool isSearching = false;
   String searchQuery = '';
@@ -50,7 +49,7 @@ class _PersonsDictionaryState extends State<PersonsDictionary> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: horizontalTitleAlignment,
         children: <Widget>[
-          Text(l10n.persons),
+          Text(L10n.persons),
         ],
       ),
     );
@@ -61,7 +60,7 @@ class _PersonsDictionaryState extends State<PersonsDictionary> {
       controller: searchQueryEdit,
       autofocus: true,
       decoration: InputDecoration(
-        hintText: l10n.person,
+        hintText: L10n.person,
         border: InputBorder.none,
         hintStyle: const TextStyle(color: Colors.white54),
       ),
@@ -125,10 +124,10 @@ class _PersonsDictionaryState extends State<PersonsDictionary> {
                   itemCount: list.length,
                 );
               } else {
-                return centerButton(l10n.addPerson, onPressed: () => addPerson(context));
+                return centerButton(L10n.addPerson, onPressed: () => addPerson(context));
               }
             } else {
-              return centerMessage(context, l10n.dataLoading);
+              return centerMessage(context, L10n.dataLoading);
             }
           }
         ),

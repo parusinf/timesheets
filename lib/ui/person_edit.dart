@@ -27,7 +27,6 @@ class PersonEdit extends StatefulWidget {
 /// Состояние формы редактирования персоны
 class _PersonEditState extends State<PersonEdit> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _familyEdit = TextEditingController();
@@ -64,7 +63,7 @@ class _PersonEditState extends State<PersonEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(l10n.person),
+      title: Text(L10n.person),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],
@@ -86,7 +85,7 @@ class _PersonEditState extends State<PersonEdit> {
                 autofocus: widget.actionType == DataActionType.Insert ? true : false,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.person),
-                  labelText: l10n.personFamily,
+                  labelText: L10n.personFamily,
                 ),
                 validator: _validateFamily,
               ),
@@ -97,7 +96,7 @@ class _PersonEditState extends State<PersonEdit> {
                 textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.person),
-                  labelText: l10n.personName,
+                  labelText: L10n.personName,
                 ),
                 validator: _validateName,
               ),
@@ -108,7 +107,7 @@ class _PersonEditState extends State<PersonEdit> {
                 textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.person),
-                  labelText: l10n.personMiddleName,
+                  labelText: L10n.personMiddleName,
                 ),
               ),
               divider(),
@@ -118,9 +117,9 @@ class _PersonEditState extends State<PersonEdit> {
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.event),
-                  labelText: l10n.personBirthday,
+                  labelText: L10n.personBirthday,
                 ),
-                validator: _validateDate,
+                validator: (value) => validateDate(context, value),
                 inputFormatters: DateFormatters.formatters,
                 maxLength: 10,
               ),
@@ -130,8 +129,8 @@ class _PersonEditState extends State<PersonEdit> {
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.phone),
-                  labelText: '${l10n.phone} 1',
-                  prefixText: l10n.countryPhoneCode,
+                  labelText: '${L10n.phone} 1',
+                  prefixText: L10n.countryPhoneCode,
                   suffix: IconButton(
                     icon: const Icon(Icons.phone_in_talk),
                     onPressed: () => _callPerson(_phoneEdit.text),
@@ -148,8 +147,8 @@ class _PersonEditState extends State<PersonEdit> {
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.phone),
-                  labelText: '${l10n.phone} 2',
-                  prefixText: l10n.countryPhoneCode,
+                  labelText: '${L10n.phone} 2',
+                  prefixText: L10n.countryPhoneCode,
                   suffix: IconButton(
                     icon: const Icon(Icons.phone_in_talk),
                     onPressed: () => _callPerson(_phone2Edit.text),
@@ -208,16 +207,16 @@ class _PersonEditState extends State<PersonEdit> {
   /// Звонок персоне
   Future _callPerson(String phone) async {
     if (phone.isNotEmpty && phone.length == phoneLength) {
-      launchUrl(_scaffoldKey, 'tel:${l10n.countryPhoneCode}$phone');
+      launchUrl(_scaffoldKey, 'tel:${L10n.countryPhoneCode}$phone');
     } else {
-      showMessage(_scaffoldKey, l10n.invalidPhone);
+      showMessage(_scaffoldKey, L10n.invalidPhone);
     }
   }
 
   /// Проверка фамилии
   String _validateFamily(String value) {
     if (isEmpty(value)) {
-      return l10n.noPersonFamily;
+      return L10n.noPersonFamily;
     }
     return null;
   }
@@ -225,15 +224,7 @@ class _PersonEditState extends State<PersonEdit> {
   /// Проверка имени
   String _validateName(String value) {
     if (isEmpty(value)) {
-      return l10n.noPersonName;
-    }
-    return null;
-  }
-
-  /// Проверка даты
-  String _validateDate(String value) {
-    if (value.isNotEmpty && stringToDate(value) == null) {
-      return l10n.invalidDate;
+      return L10n.noPersonName;
     }
     return null;
   }
@@ -241,7 +232,7 @@ class _PersonEditState extends State<PersonEdit> {
   /// Проверка телефона
   String _validatePhone(String value) {
     if (value.isNotEmpty && value.length != phoneLength) {
-      return l10n.invalidPhone;
+      return L10n.invalidPhone;
     }
     return null;
   }

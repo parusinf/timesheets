@@ -1,14 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show SynchronousFuture;
-
 class L10n {
-  final Locale locale;
-
-  L10n(this.locale);
-
-  static L10n of(BuildContext context) {
-    return Localizations.of<L10n>(context, L10n);
-  }
+  static String languageCode = 'ru';
 
   static const Map<String, Map<String, String>> _l10n = {
     'ru': {
@@ -23,7 +14,9 @@ class L10n {
       'countryPhoneCode': '+7 ',
       'dataLoading': 'Загрузка данных',
       'days': 'Дней',
+      'doubleTapInTimesheet': 'Двойное нажатие в табеле',
       'endDate': 'Дата выбытия',
+      'everyOtherWeek': 'чз/нед',
       'failedToGetInitialLink': 'Не удалось получить начальную ссылку',
       'failedToParseInitialLink': 'Не удалось разобрать начальную ссылку',
       'fileFormatError': 'Ошибка в формате файла',
@@ -36,6 +29,7 @@ class L10n {
       'help': 'Справка',
       'holiday': 'Праздничный или выходной день',
       'holidays': 'Праздники',
+      'hourLetter': 'ч',
       'inn': 'ИНН',
       'innLength': 'ИНН должен состоять из 10 цифр',
       'invalidDate': 'Формат даты ДД.ММ.ГГГГ',
@@ -65,6 +59,7 @@ class L10n {
       'schedules': 'Графики',
       'selectPerson': 'Выберите персону',
       'selectSchedule': 'Выберите график',
+      'settings': 'Настройки',
       'timesheet': 'Табель посещаемости',
       'timesheets': 'Табели посещаемости',
       'to': 'по',
@@ -81,85 +76,73 @@ class L10n {
     }
   };
 
-  get addGroup => _l10n[locale.languageCode]['addGroup'];
-  get addHoliday => _l10n[locale.languageCode]['addHoliday'];
-  get addOrg => _l10n[locale.languageCode]['addOrg'];
-  get addPerson => _l10n[locale.languageCode]['addPerson'];
-  get addPersonToGroup => _l10n[locale.languageCode]['addPersonToGroup'];
-  get addSchedule => _l10n[locale.languageCode]['addSchedule'];
-  get beginDate => _l10n[locale.languageCode]['beginDate'];
-  get binding => _l10n[locale.languageCode]['binding'];
-  get countryPhoneCode => _l10n[locale.languageCode]['countryPhoneCode'];
-  get dataLoading => _l10n[locale.languageCode]['dataLoading'];
-  get days => _l10n[locale.languageCode]['days'];
-  get endDate => _l10n[locale.languageCode]['endDate'];
-  get failedToGetInitialLink => _l10n[locale.languageCode]['failedToGetInitialLink'];
-  get failedToParseInitialLink => _l10n[locale.languageCode]['failedToParseInitialLink'];
-  get fileFormatError => _l10n[locale.languageCode]['fileFormatError'];
-  get fileNotSelected => _l10n[locale.languageCode]['fileNotSelected'];
-  get from => _l10n[locale.languageCode]['from'];
-  get group => _l10n[locale.languageCode]['group'];
-  get groupPersons => _l10n[locale.languageCode]['groupPersons'];
-  get groups => _l10n[locale.languageCode]['groups'];
-  get help => _l10n[locale.languageCode]['help'];
-  get holiday => _l10n[locale.languageCode]['holiday'];
-  get holidays => _l10n[locale.languageCode]['holidays'];
-  get inn => _l10n[locale.languageCode]['inn'];
-  get innLength => _l10n[locale.languageCode]['innLength'];
-  get invalidDate => _l10n[locale.languageCode]['invalidDate'];
-  get invalidHoursNorm => _l10n[locale.languageCode]['invalidHoursNorm'];
-  get invalidPhone => _l10n[locale.languageCode]['invalidPhone'];
-  get linkNotStart => _l10n[locale.languageCode]['linkNotStart'];
-  get meals => _l10n[locale.languageCode]['meals'];
-  get meals0 => _l10n[locale.languageCode]['meals0'];
-  get meals1 => _l10n[locale.languageCode]['meals1'];
-  get meals2 => _l10n[locale.languageCode]['meals2'];
-  get name => _l10n[locale.languageCode]['name'];
-  get noHoursNorm => _l10n[locale.languageCode]['noHoursNorm'];
-  get noName => _l10n[locale.languageCode]['noName'];
-  get noPersonFamily => _l10n[locale.languageCode]['noPersonFamily'];
-  get noPersonName => _l10n[locale.languageCode]['noPersonName'];
-  get org => _l10n[locale.languageCode]['org'];
-  get orgs => _l10n[locale.languageCode]['orgs'];
-  get permissionDenied => _l10n[locale.languageCode]['permissionDenied'];
-  get person => _l10n[locale.languageCode]['person'];
-  get personBirthday => _l10n[locale.languageCode]['personBirthday'];
-  get personFamily => _l10n[locale.languageCode]['personFamily'];
-  get personMiddleName => _l10n[locale.languageCode]['personMiddleName'];
-  get personName => _l10n[locale.languageCode]['personName'];
-  get persons => _l10n[locale.languageCode]['persons'];
-  get phone => _l10n[locale.languageCode]['phone'];
-  get schedule => _l10n[locale.languageCode]['schedule'];
-  get schedules => _l10n[locale.languageCode]['schedules'];
-  get selectPerson => _l10n[locale.languageCode]['selectPerson'];
-  get selectSchedule => _l10n[locale.languageCode]['selectSchedule'];
-  get timesheet => _l10n[locale.languageCode]['timesheet'];
-  get timesheets => _l10n[locale.languageCode]['timesheets'];
-  get to => _l10n[locale.languageCode]['to'];
-  get uniqueDay => _l10n[locale.languageCode]['uniqueDay'];
-  get uniqueGroup => _l10n[locale.languageCode]['uniqueGroup'];
-  get uniqueGroupPerson => _l10n[locale.languageCode]['uniqueGroupPerson'];
-  get uniqueOrg => _l10n[locale.languageCode]['uniqueOrg'];
-  get uniquePerson => _l10n[locale.languageCode]['uniquePerson'];
-  get uniqueSchedule => _l10n[locale.languageCode]['uniqueSchedule'];
-  get unknown => _l10n[locale.languageCode]['unknown'];
-  get withoutInn => _l10n[locale.languageCode]['withoutInn'];
-  get withoutTime => _l10n[locale.languageCode]['withoutTime'];
-  get workday => _l10n[locale.languageCode]['workday'];
-
-}
-
-class L10nDelegate extends LocalizationsDelegate<L10n> {
-  const L10nDelegate();
-
-  @override
-  bool isSupported(Locale locale) => ['ru'].contains(locale.languageCode);
-
-  @override
-  Future<L10n> load(Locale locale) {
-    return SynchronousFuture<L10n>(L10n(locale));
-  }
-
-  @override
-  bool shouldReload(L10nDelegate old) => false;
+  static get addGroup => _l10n[languageCode]['addGroup'];
+  static get addHoliday => _l10n[languageCode]['addHoliday'];
+  static get addOrg => _l10n[languageCode]['addOrg'];
+  static get addPerson => _l10n[languageCode]['addPerson'];
+  static get addPersonToGroup => _l10n[languageCode]['addPersonToGroup'];
+  static get addSchedule => _l10n[languageCode]['addSchedule'];
+  static get beginDate => _l10n[languageCode]['beginDate'];
+  static get binding => _l10n[languageCode]['binding'];
+  static get countryPhoneCode => _l10n[languageCode]['countryPhoneCode'];
+  static get dataLoading => _l10n[languageCode]['dataLoading'];
+  static get days => _l10n[languageCode]['days'];
+  static get doubleTapInTimesheet => _l10n[languageCode]['doubleTapInTimesheet'];
+  static get endDate => _l10n[languageCode]['endDate'];
+  static get everyOtherWeek => _l10n[languageCode]['everyOtherWeek'];
+  static get failedToGetInitialLink => _l10n[languageCode]['failedToGetInitialLink'];
+  static get failedToParseInitialLink => _l10n[languageCode]['failedToParseInitialLink'];
+  static get fileFormatError => _l10n[languageCode]['fileFormatError'];
+  static get fileNotSelected => _l10n[languageCode]['fileNotSelected'];
+  static get from => _l10n[languageCode]['from'];
+  static get group => _l10n[languageCode]['group'];
+  static get groupPersons => _l10n[languageCode]['groupPersons'];
+  static get groups => _l10n[languageCode]['groups'];
+  static get help => _l10n[languageCode]['help'];
+  static get holiday => _l10n[languageCode]['holiday'];
+  static get holidays => _l10n[languageCode]['holidays'];
+  static get hourLetter => _l10n[languageCode]['hourLetter'];
+  static get inn => _l10n[languageCode]['inn'];
+  static get innLength => _l10n[languageCode]['innLength'];
+  static get invalidDate => _l10n[languageCode]['invalidDate'];
+  static get invalidHoursNorm => _l10n[languageCode]['invalidHoursNorm'];
+  static get invalidPhone => _l10n[languageCode]['invalidPhone'];
+  static get linkNotStart => _l10n[languageCode]['linkNotStart'];
+  static get meals => _l10n[languageCode]['meals'];
+  static get meals0 => _l10n[languageCode]['meals0'];
+  static get meals1 => _l10n[languageCode]['meals1'];
+  static get meals2 => _l10n[languageCode]['meals2'];
+  static get name => _l10n[languageCode]['name'];
+  static get noHoursNorm => _l10n[languageCode]['noHoursNorm'];
+  static get noName => _l10n[languageCode]['noName'];
+  static get noPersonFamily => _l10n[languageCode]['noPersonFamily'];
+  static get noPersonName => _l10n[languageCode]['noPersonName'];
+  static get org => _l10n[languageCode]['org'];
+  static get orgs => _l10n[languageCode]['orgs'];
+  static get permissionDenied => _l10n[languageCode]['permissionDenied'];
+  static get person => _l10n[languageCode]['person'];
+  static get personBirthday => _l10n[languageCode]['personBirthday'];
+  static get personFamily => _l10n[languageCode]['personFamily'];
+  static get personMiddleName => _l10n[languageCode]['personMiddleName'];
+  static get personName => _l10n[languageCode]['personName'];
+  static get persons => _l10n[languageCode]['persons'];
+  static get phone => _l10n[languageCode]['phone'];
+  static get schedule => _l10n[languageCode]['schedule'];
+  static get schedules => _l10n[languageCode]['schedules'];
+  static get selectPerson => _l10n[languageCode]['selectPerson'];
+  static get selectSchedule => _l10n[languageCode]['selectSchedule'];
+  static get settings => _l10n[languageCode]['settings'];
+  static get timesheet => _l10n[languageCode]['timesheet'];
+  static get timesheets => _l10n[languageCode]['timesheets'];
+  static get to => _l10n[languageCode]['to'];
+  static get uniqueDay => _l10n[languageCode]['uniqueDay'];
+  static get uniqueGroup => _l10n[languageCode]['uniqueGroup'];
+  static get uniqueGroupPerson => _l10n[languageCode]['uniqueGroupPerson'];
+  static get uniqueOrg => _l10n[languageCode]['uniqueOrg'];
+  static get uniquePerson => _l10n[languageCode]['uniquePerson'];
+  static get uniqueSchedule => _l10n[languageCode]['uniqueSchedule'];
+  static get unknown => _l10n[languageCode]['unknown'];
+  static get withoutInn => _l10n[languageCode]['withoutInn'];
+  static get withoutTime => _l10n[languageCode]['withoutTime'];
+  static get workday => _l10n[languageCode]['workday'];
 }

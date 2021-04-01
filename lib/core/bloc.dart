@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:moor/moor.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timesheets/db/db.dart';
+import 'package:timesheets/core.dart';
 
 /// Организация с признаком активности
 class ActiveOrg {
@@ -93,6 +94,9 @@ class Bloc {
 
   // Посещаемость активной организации в активном периоде
   Stream<List<AttendanceView>> orgAttendances;
+
+  // Пользовательские настройки
+  final userSettings = BehaviorSubject<List<Setting>>();
 
   /// Конструктор
   Bloc() : db = Db() {
@@ -198,6 +202,10 @@ class Bloc {
     // Отслеживание персон в активной группе в активном периоде
     Rx.concat([activeGroupPeriod.switchMap(db.groupPersonsDao.watchGroupPeriod)])
         .listen(groupPeriodPersons.add);
+
+    // Отслеживание пользовательских настроек
+    Rx.concat([db.settingsDao.watchUserSettings()])
+        .listen(userSettings.add);
   }
 
   /// Перенаправление контента в поток БЛоКа
@@ -233,6 +241,7 @@ class Bloc {
     groupPersons.close();
     groupPeriodPersons.close();
     meals.close();
+    userSettings.close();
     db.close();
   }
 
@@ -414,4 +423,15 @@ class Bloc {
   /// Удаление посещаемости
   Future<bool> deleteAttendance(Attendance attendance) async =>
       db.attendancesDao.delete2(attendance);
+
+  // Настройки -----------------------------------------------------------------
+  Setting getSetting(String name) =>
+      userSettings.value.firstWhere((e) => e.name == name);
+
+  get doubleTapInTimesheet =>
+      getSetting(L10n.doubleTapInTimesheet).boolValue;
+
+  /// Исправление настройки
+  Future<bool> updateSetting(Setting setting) async =>
+      db.settingsDao.update2(setting);
 }

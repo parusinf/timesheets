@@ -27,7 +27,6 @@ class HolidayEdit extends StatefulWidget {
 /// Состояние формы редактирования праздника
 class _HolidayEditState extends State<HolidayEdit> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _holidayEdit = TextEditingController();
@@ -52,7 +51,7 @@ class _HolidayEditState extends State<HolidayEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(l10n.holidays),
+      title: Text(L10n.holidays),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],
@@ -73,7 +72,7 @@ class _HolidayEditState extends State<HolidayEdit> {
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.event),
-                  labelText: l10n.holiday,
+                  labelText: L10n.holiday,
                 ),
                 validator: _validateDate,
                 inputFormatters: DateFormatters.formatters,
@@ -85,7 +84,7 @@ class _HolidayEditState extends State<HolidayEdit> {
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.event),
-                  labelText: l10n.workday,
+                  labelText: L10n.workday,
                 ),
                 validator: _validateNullableDate,
                 inputFormatters: DateFormatters.formatters,
@@ -131,7 +130,7 @@ class _HolidayEditState extends State<HolidayEdit> {
   /// Проверка даты
   String _validateDate(String value) {
     if (stringToDate(value) == null) {
-      return l10n.invalidDate;
+      return L10n.invalidDate;
     }
     return null;
   }
@@ -139,7 +138,7 @@ class _HolidayEditState extends State<HolidayEdit> {
   /// Проверка необязательной даты
   String _validateNullableDate(String value) {
     if (value.isNotEmpty && stringToDate(value) == null) {
-      return l10n.invalidDate;
+      return L10n.invalidDate;
     }
     return null;
   }

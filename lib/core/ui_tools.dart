@@ -23,12 +23,12 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
   if (uniqueRegexp.hasMatch(message)) {
     final tableName = uniqueRegexp.firstMatch(message)[1];
     switch (tableName) {
-      case 'orgs': newMessage = L10n.of(context).uniqueOrg; break;
-      case 'schedules': newMessage = L10n.of(context).uniqueSchedule; break;
-      case 'holidays': newMessage = L10n.of(context).uniqueDay; break;
-      case 'groups': newMessage = L10n.of(context).uniqueGroup; break;
-      case 'persons': newMessage = L10n.of(context).uniquePerson; break;
-      case 'group_persons': newMessage = L10n.of(context).uniqueGroupPerson; break;
+      case 'orgs': newMessage = L10n.uniqueOrg; break;
+      case 'schedules': newMessage = L10n.uniqueSchedule; break;
+      case 'holidays': newMessage = L10n.uniqueDay; break;
+      case 'groups': newMessage = L10n.uniqueGroup; break;
+      case 'persons': newMessage = L10n.uniquePerson; break;
+      case 'group_persons': newMessage = L10n.uniqueGroupPerson; break;
     }
   } else {
     newMessage = newMessage.replaceFirst('Invalid argument(s): ', '');
@@ -176,22 +176,30 @@ Row formElement(BuildContext context, IconData icon, Widget widget) {
 }
 
 /// Переход на страницу
-Future<T> push<T extends Object>(BuildContext context, Widget page) async =>
-    await Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+Future<T> push<T extends Object>(
+  BuildContext context,
+  Widget page, {
+  bool pop = false
+}) async {
+  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+  if (pop) {
+    Navigator.pop(context);
+  }
+  return result;
+}
 
 /// Вызов ссылки
 Future launchUrl(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
   if (await canLaunch(url)) {
     await launch(url);
   } else {
-    showMessage(scaffoldKey, L10n.of(scaffoldKey.currentContext).linkNotStart);
+    showMessage(scaffoldKey, L10n.linkNotStart);
   }
 }
 
 /// Преобразование строки периода в дату
 DateTime stringToPeriod(BuildContext context, String period) {
-  final l10n = L10n.of(context);
-  final monthList = dateTimeSymbolMap()[l10n.locale.languageCode].STANDALONEMONTHS
+  final monthList = dateTimeSymbolMap()[L10n.languageCode].STANDALONEMONTHS
       .map((month) => month.toLowerCase()).toList();
   final parts = period.split(' ');
   if (parts.length != 2) {
@@ -207,21 +215,19 @@ DateTime stringToPeriod(BuildContext context, String period) {
 
 /// Преобразование диапазона дат в строку
 String datesToString(BuildContext context, DateTime beginDate, DateTime endDate) {
-  final l10n = L10n.of(context);
   final begin = dateToString(beginDate);
   final end = dateToString(endDate);
   return begin != ''
-      ? end != '' ? '${l10n.from} $begin ${l10n.to} $end' : '${l10n.from} $begin'
-      : end != '' ? '${l10n.to} $end' : l10n.withoutTime;
+      ? end != '' ? '${L10n.from} $begin ${L10n.to} $end' : '${L10n.from} $begin'
+      : end != '' ? '${L10n.to} $end' : L10n.withoutTime;
 }
 
 /// Наименование питания по индексу
 String mealsName(BuildContext context, int index) {
-  final l10n = L10n.of(context);
   switch (index) {
-    case 0: return l10n.meals0;
-    case 1: return l10n.meals1;
-    case 2: return l10n.meals2;
+    case 0: return L10n.meals0;
+    case 1: return L10n.meals1;
+    case 2: return L10n.meals2;
     default: return null;
   }
 }
@@ -259,3 +265,11 @@ bool isHoliday(Bloc bloc, DateTime date) {
 /// Дата является переносом рабочего дня
 bool isTransWorkday(Bloc bloc, DateTime date) =>
     bloc.workdaysDateList.value.contains(date);
+
+/// Проверка даты
+String validateDate(BuildContext context, String value) {
+  if (value.isNotEmpty && stringToDate(value) == null) {
+    return L10n.invalidDate;
+  }
+  return null;
+}

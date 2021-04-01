@@ -26,7 +26,6 @@ class OrgEdit extends StatefulWidget {
 /// Состояние формы редактирования организации
 class _OrgEditState extends State<OrgEdit> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _nameEdit = TextEditingController();
@@ -51,7 +50,7 @@ class _OrgEditState extends State<OrgEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(l10n.org),
+      title: Text(L10n.org),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],
@@ -73,7 +72,7 @@ class _OrgEditState extends State<OrgEdit> {
                 autofocus: widget.actionType == DataActionType.Insert ? true : false,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.business),
-                  labelText: l10n.name,
+                  labelText: L10n.name,
                 ),
                 validator: _validateName,
                 maxLength: 20,
@@ -83,8 +82,8 @@ class _OrgEditState extends State<OrgEdit> {
                 controller: _innEdit,
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
-                  icon: const Icon(Icons.dialpad),
-                  labelText: l10n.inn,
+                  icon: const Icon(Icons.looks_one_outlined),
+                  labelText: L10n.inn,
                 ),
                 validator: _validateInn,
                 inputFormatters: IntFormatters.formatters,
@@ -132,7 +131,7 @@ class _OrgEditState extends State<OrgEdit> {
   /// Проверка наименования
   String _validateName(String value) {
     if (isEmpty(value)) {
-      return l10n.noName;
+      return L10n.noName;
     }
     return null;
   }
@@ -141,7 +140,7 @@ class _OrgEditState extends State<OrgEdit> {
   String _validateInn(String value) {
     final regexp = RegExp(r'^\d{10}$');
     if (value.isNotEmpty && !regexp.hasMatch(value)) {
-      return l10n.innLength;
+      return L10n.innLength;
     }
     return null;
   }

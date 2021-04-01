@@ -1,3 +1,5 @@
+import 'value_type.dart';
+
 -- Организации
 CREATE TABLE orgs (
   -- Идентификатор организации
@@ -115,12 +117,20 @@ CREATE TABLE settings (
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Наименование настройки
   name               TEXT NOT NULL,
+  -- Тип значения (text, bool, int, real, date)
+  valueType          ENUM(ValueType) NOT NULL,
   -- Текстовое значение
   textValue          TEXT,
+  -- Логическое значение
+  boolValue          BOOL,
   -- Целочисленное значение
   intValue           INT,
+  -- Действительное значение
+  realValue          REAL,
   -- Значение даты
-  dateValue          DATE
+  dateValue          DATE,
+  -- Признак пользовательской настройки
+  isUserSetting      BOOL NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX settings_index ON settings (name);
 

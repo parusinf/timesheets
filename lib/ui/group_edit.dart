@@ -33,7 +33,6 @@ class GroupEdit extends StatefulWidget {
 /// Состояние формы редактирования группы
 class _GroupEditState extends State<GroupEdit> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _nameEdit = TextEditingController();
@@ -62,7 +61,7 @@ class _GroupEditState extends State<GroupEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(l10n.group),
+      title: Text(L10n.group),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],
@@ -83,7 +82,7 @@ class _GroupEditState extends State<GroupEdit> {
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
                 icon: const Icon(Icons.group),
-                labelText: l10n.name,
+                labelText: L10n.name,
               ),
               validator: _validateName,
               maxLength: 20,
@@ -94,7 +93,7 @@ class _GroupEditState extends State<GroupEdit> {
               readOnly: true,
               decoration: InputDecoration(
                 icon: const Icon(Icons.calendar_today),
-                labelText: l10n.schedule,
+                labelText: L10n.schedule,
               ),
               validator: _validateSchedule,
               onTap: () => _selectSchedule(context),
@@ -187,7 +186,7 @@ class _GroupEditState extends State<GroupEdit> {
   /// Проверка наименования
   String _validateName(String value) {
     if (isEmpty(value)) {
-      return l10n.noName;
+      return L10n.noName;
     }
     return null;
   }
@@ -195,7 +194,7 @@ class _GroupEditState extends State<GroupEdit> {
   /// Проверка графика
   String _validateSchedule(String value) {
     if (isEmpty(value)) {
-      return l10n.selectSchedule;
+      return L10n.selectSchedule;
     }
     return null;
   }

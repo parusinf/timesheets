@@ -3,9 +3,10 @@ import 'package:moor/moor.dart';
 import 'package:moor/ffi.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:timesheets/core/tools.dart';
 import 'schedule_helper.dart';
-import 'init_holidays.dart';
+import 'value_type.dart';
+import 'upgrade_db.dart';
+import 'create_db.dart';
 
 part 'db.g.dart';
 
@@ -173,45 +174,17 @@ class Db extends _$Db {
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   /// Обновление структуры базы данных
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onUpgrade: (Migrator m, int from, int to) async {
-      if (from == 1) {
-        await m.addColumn(groups, groups.meals);
-        await m.addColumn(persons, persons.phone);
-        await m.addColumn(persons, persons.phone2);
-      }
-      if (from <= 2) {
-        await customStatement('DROP INDEX groups_index');
-        await customStatement('CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name)');
-      }
-      if (from <= 3) {
-        await customStatement('''
-CREATE TABLE holidays (
-  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
-  date               DATE NOT NULL,
-  workday            DATE
-);
-CREATE UNIQUE INDEX holidays_index ON holidays (date);
-CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
-        ''');
-      }
-    },
-    onCreate: (Migrator m) {
-      return m.createAll();
-    },
+    onUpgrade: (Migrator m, int from, int to) => upgradeDb(this, m, from, to),
+    onCreate: (Migrator m) => m.createAll(),
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
       if (details.wasCreated) {
-        transaction(() async {
-          await settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
-          for (final holiday in initHolidays) {
-            await holidaysDao.insert2(date: holiday.date, workday: holiday.workday);
-          }
-        });
+        createDb(this);
       }
     }
   );
@@ -820,31 +793,53 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   SettingsDao(Db db) : super(db);
 
   /// Добавление настройки
-  Future<Setting> insert2(String name, {
+  Future<Setting> insert2(String name, ValueType valueType, {
     String textValue,
+    bool boolValue,
     int intValue,
+    double realValue,
     DateTime dateValue,
+    bool isUserSetting = false,
   }) async {
     final id = await into(db.settings).insert(
         SettingsCompanion(
           name: Value(name),
+          valueType: Value(valueType),
           textValue: Value(textValue),
+          boolValue: Value(boolValue),
           intValue: Value(intValue),
+          realValue: Value(realValue),
           dateValue: Value(dateValue),
+          isUserSetting: Value(isUserSetting),
         )
     );
     return Setting(
       id: id,
       name: name,
+      valueType: valueType,
       textValue: textValue,
       intValue: intValue,
+      boolValue: boolValue,
+      realValue: realValue,
       dateValue: dateValue,
+      isUserSetting: isUserSetting,
     );
   }
+
+  /// Исправление настройки
+  Future<bool> update2(Setting setting) async =>
+      await update(db.settings).replace(setting);
 
   /// Удаление настройки
   void delete2(String settingName) =>
       delete(db.settings).where((row) => row.name.equals(settingName));
+
+  /// Отслеживание пользовательских настроек
+  Stream<List<Setting>> watchUserSettings() =>
+      (select(db.settings)
+        ..where((e) => e.isUserSetting.equals(true))
+        ..orderBy([(e) => OrderingTerm.asc(e.id)])
+      ).watch();
 
   /// Активная организация
   Stream<Org> watchActiveOrg() => db._activeOrg().map((row) =>
@@ -863,7 +858,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
     else {
       final count = await db._setActiveOrg(org.id);
       if (count == 0) {
-        insert2('activeOrg', intValue: org.id);
+        insert2('activeOrg', ValueType.int, intValue: org.id);
       }
     }
   }
@@ -883,7 +878,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
     else {
       final count = await db._setActiveSchedule(schedule.id);
       if (count == 0) {
-        insert2('activeSchedule', intValue: schedule.id);
+        insert2('activeSchedule', ValueType.int, intValue: schedule.id);
       }
     }
   }
@@ -916,7 +911,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
     else {
       final count = await db._setActivePeriod(period);
       if (count == 0) {
-        insert2('activePeriod', dateValue: period);
+        insert2('activePeriod', ValueType.date, dateValue: period);
       }
     }
   }

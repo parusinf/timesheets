@@ -29,7 +29,6 @@ class ScheduleEdit extends StatefulWidget {
 /// Состояние формы редактирования графика
 class _ScheduleEditState extends State<ScheduleEdit> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   var _autovalidateMode = AutovalidateMode.disabled;
@@ -38,7 +37,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   void initState() {
     super.initState();
     if (widget.actionType == DataActionType.Insert) {
-      final scheduleDays = List<ScheduleDay>();
+      final scheduleDays = <ScheduleDay>[];
       for (int dayNumber = 0; dayNumber < abbrWeekdays.length; dayNumber++) {
         scheduleDays.add(ScheduleDay(
           id: dayNumber,
@@ -55,7 +54,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(l10n.schedule),
+      title: Text(L10n.schedule),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],
@@ -103,7 +102,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
           hours.add(bloc.scheduleDays.value[i].hoursNorm);
         }
         if (hours.reduce((a, b) => a + b) == 0.0) {
-          showMessage(_scaffoldKey, l10n.noHoursNorm);
+          showMessage(_scaffoldKey, L10n.noHoursNorm);
         } else {
           switch (widget.actionType) {
             case DataActionType.Insert: _insert(hours); break;
@@ -123,7 +122,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
     if (value.isNotEmpty) {
       final hoursNorm = double.tryParse(value);
       if (hoursNorm == null || hoursNorm > 24.0) {
-        return l10n.invalidHoursNorm;
+        return L10n.invalidHoursNorm;
       }
     }
     return null;

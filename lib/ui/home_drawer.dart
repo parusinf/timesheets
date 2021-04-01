@@ -8,6 +8,7 @@ import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/help_page.dart';
 import 'package:timesheets/ui/org_report.dart';
 import 'package:timesheets/ui/holidays_dictionary.dart';
+import 'package:timesheets/ui/settings_edit.dart';
 
 /// Дроувер домашнего экрана
 class HomeDrawer extends StatefulWidget {
@@ -19,7 +20,6 @@ class HomeDrawer extends StatefulWidget {
 /// Состояние дроувера домашнего экрана
 class _HomeDrawerState extends State<HomeDrawer> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
 
   @override
   Widget build(BuildContext context) => OrientationBuilder(
@@ -31,7 +31,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               // Список организаций
-              listHeater(context, Icons.business, l10n.orgs,
+              listHeater(context, Icons.business, L10n.orgs,
                   onAddPressed: () => addOrg(context)),
               Flexible(
                 child: StreamBuilder<List<ActiveOrg>>(
@@ -49,7 +49,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
               StreamBuilder<Org>(
                   stream: bloc.activeOrg,
                   builder: (context, snapshot) => snapshot.hasData
-                      ? listHeater(context, Icons.group, l10n.groups,
+                      ? listHeater(context, Icons.group, L10n.groups,
                           onAddPressed: () async {
                             await addGroup(context);
                             Navigator.pop(context);
@@ -64,10 +64,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       : Text('')
               ),
               Spacer(),
-              listHeater(context, Icons.auto_awesome, l10n.holidays,
-                  onHeaderTap: () => push(context, HolidaysDictionary())),
-              listHeater(context, Icons.help, l10n.help,
-                  onHeaderTap: () => push(context, HelpPage())),
+              listHeater(context, Icons.auto_awesome, L10n.holidays,
+                  onHeaderTap: () => push(context, HolidaysDictionary(), pop: true)),
+              listHeater(context, Icons.settings, L10n.settings,
+                  onHeaderTap: () => push(context, SettingsEdit(), pop: true)),
+              listHeater(context, Icons.help, L10n.help,
+                  onHeaderTap: () => push(context, HelpPage(), pop: true)),
             ],
           ),
         ),
@@ -130,7 +132,7 @@ class _OrgCard extends StatelessWidget {
             title: Text(entry.orgView.name),
             subtitle: Text('${isNotEmpty(entry.orgView.inn)
                 ? entry.orgView.inn
-                : L10n.of(context).withoutInn}'
+                : L10n.withoutInn}'
             ),
             trailing: IconButton(
               icon: Icon(Icons.article),

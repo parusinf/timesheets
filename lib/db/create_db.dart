@@ -1,7 +1,9 @@
-import 'package:timesheets/db/db.dart';
-import 'package:timesheets/core/tools.dart';
+import 'db.dart';
+import 'value_type.dart';
+import 'package:timesheets/core.dart';
 
-final initHolidays = <Holiday>[
+/// Список праздников и переносов выходных дней
+final _initHolidays = <Holiday>[
   Holiday(id: 0, date: stringToDate('01.01.2021')),
   Holiday(id: 0, date: stringToDate('02.01.2021')),
   Holiday(id: 0, date: stringToDate('03.01.2021')),
@@ -23,3 +25,18 @@ final initHolidays = <Holiday>[
   Holiday(id: 0, date: stringToDate('05.11.2021')),
   Holiday(id: 0, date: stringToDate('31.12.2021')),
 ];
+
+/// Создание пользовательских настроек
+Future _initUserSettings(Db db) async {
+  await db.settingsDao.insert2(L10n.doubleTapInTimesheet,
+      ValueType.bool, boolValue: false, isUserSetting: true);
+}
+
+/// Инициализация новой базы данных
+Future createDb(Db db) async {
+  await db.settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
+  for (final holiday in _initHolidays) {
+    await db.holidaysDao.insert2(date: holiday.date, workday: holiday.workday);
+  }
+  await _initUserSettings(db);
+}

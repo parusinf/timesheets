@@ -25,7 +25,6 @@ class HomePage extends StatefulWidget {
 /// Состояние табелей
 class HomePageState extends State<HomePage> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<GroupPersonView> _groupPeriodPersons;
   List<Attendance> _groupAttendances;
@@ -70,7 +69,7 @@ class HomePageState extends State<HomePage> {
                 )
                 : InkWell(
                   onTap: () => push(context, HelpPage()),
-                  child: text(l10n.timesheets),
+                  child: text(L10n.timesheets),
                 )
         ),
       ),
@@ -103,11 +102,11 @@ class HomePageState extends State<HomePage> {
         builder: (context, snapshot) {
           // Добавить организацию
           if (bloc.activeOrg.value == null) {
-            return centerButton(l10n.addOrg, onPressed: () => addOrg(context));
+            return centerButton(L10n.addOrg, onPressed: () => addOrg(context));
           } else {
             // Добавить группу
             if (bloc.activeGroup.value == null) {
-              return centerButton(l10n.addGroup, onPressed: () => addGroup(context));
+              return centerButton(L10n.addGroup, onPressed: () => addGroup(context));
             } else {
               // Персоны группы загрузились
               if (snapshot.hasData) {
@@ -130,13 +129,13 @@ class HomePageState extends State<HomePage> {
                         );
                         // Посещаемость загружаются
                       } else {
-                        return centerMessage(context, l10n.dataLoading);
+                        return centerMessage(context, L10n.dataLoading);
                       }
                     }
                 );
                 // Персоны группы загружаются
               } else {
-                return centerMessage(context, l10n.dataLoading);
+                return centerMessage(context, L10n.dataLoading);
               }
             }
           }
@@ -210,7 +209,7 @@ class HomePageState extends State<HomePage> {
     // Дней посещения персоны за период
     rowCells.add(
         _createCell(
-          l10n.days,
+          L10n.days,
           width: columnWidth,
           alignment: Alignment.center,
           fontSize: 16.0,
@@ -349,7 +348,14 @@ class HomePageState extends State<HomePage> {
                 (attendance) => attendance.date == date);
         rowCells.add(
           InkWell(
-            onTap: () => _deleteAttendance(attendance),
+            onTap: () {
+              if (!bloc.doubleTapInTimesheet)
+                _deleteAttendance(attendance);
+            },
+            onDoubleTap: () {
+              if (bloc.doubleTapInTimesheet)
+                _deleteAttendance(attendance);
+            },
             child: _createCell(
               doubleToString(attendance.hoursFact),
               color: isBirthday(date, groupPerson.person.birthday) 
@@ -372,7 +378,14 @@ class HomePageState extends State<HomePage> {
         // Добавление ячейки в строку
         rowCells.add(
           InkWell(
-            onTap: () => _insertAttendance(groupPerson, date, hoursNorm),
+            onTap: () {
+              if (!bloc.doubleTapInTimesheet)
+                _insertAttendance(groupPerson, date, hoursNorm);
+            },
+            onDoubleTap: () {
+              if (bloc.doubleTapInTimesheet)
+                _insertAttendance(groupPerson, date, hoursNorm);
+            },
             child: _createCell(
               hoursNormStr,
               color: isBirthday(date, groupPerson.person.birthday)

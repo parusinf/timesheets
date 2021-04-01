@@ -8,25 +8,23 @@ import 'package:timesheets/db/db.dart';
 
 /// Выбор CSV файла и загрузка табеля посещаемости
 Future pickAndLoadFromFile(BuildContext context) async {
-  final l10n = L10n.of(context);
   if (!(await Permission.storage.request().isGranted)) {
-    throw l10n.permissionDenied;
+    throw L10n.permissionDenied;
   }
   FilePickerResult result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['csv'],
   );
   if (result == null) {
-    throw l10n.fileNotSelected;
+    throw L10n.fileNotSelected;
   }
   await loadFromFile(context, result.files.single.path);
 }
 
 /// Загрузка CSV файла
 Future loadFromFile(BuildContext context, String fileName) async {
-  final l10n = L10n.of(context);
   if (!(await Permission.storage.request().isGranted)) {
-    throw l10n.permissionDenied;
+    throw L10n.permissionDenied;
   }
   final file = File(fileName);
   final content = decodeCp1251(file.readAsBytesSync());
@@ -34,17 +32,16 @@ Future loadFromFile(BuildContext context, String fileName) async {
 }
 
 Future parseContent(BuildContext context, String content) async {
-  final l10n = L10n.of(context);
   final bloc = Provider.of<Bloc>(context, listen: false);
   final lines = content.split('\n');
   if (lines.length < 4) {
-    throw l10n.fileFormatError;
+    throw L10n.fileFormatError;
   }
 
   // Период
   final period = stringToPeriod(context, lines[0].split(';')[0]);
   if (period == null) {
-    throw l10n.fileFormatError;
+    throw L10n.fileFormatError;
   }
   bloc.setActivePeriod(period);
 
@@ -53,7 +50,7 @@ Future parseContent(BuildContext context, String content) async {
   final orgName = trim(orgColumns[0]);
   final orgInn = trim(orgColumns[1]);
   if (orgName == null) {
-    throw l10n.fileFormatError;
+    throw L10n.fileFormatError;
   }
   var org = await bloc.db.orgsDao.find(orgName);
   if (org == null) {
@@ -75,7 +72,7 @@ Future parseContent(BuildContext context, String content) async {
   final scheduleCode = trim(groupColumns[1]);
   final groupMeals = stringToInt(groupColumns[2]);
   if (groupName == null || scheduleCode == null || groupMeals == null) {
-    throw l10n.fileFormatError;
+    throw L10n.fileFormatError;
   }
   // График
   var schedule = await bloc.db.schedulesDao.find(scheduleCode);
@@ -112,7 +109,7 @@ Future parseContent(BuildContext context, String content) async {
     final personPhone = trim(personColumns[4]);
     final personPhone2 = trim(personColumns[5]);
     if (personFamily == null || personName == null) {
-      throw l10n.fileFormatError;
+      throw L10n.fileFormatError;
     }
     var person = await bloc.db.personsDao.find(personFamily, personName, personMiddleName, personBirthday);
     if (person == null) {

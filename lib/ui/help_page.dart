@@ -13,14 +13,13 @@ class HelpPage extends StatefulWidget {
 /// Состояние справки
 class HelpPageState extends State<HelpPage> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(l10n.help),
+      title: Text(L10n.help),
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.ondemand_video),
@@ -53,16 +52,20 @@ class HelpPageState extends State<HelpPage> {
 
 ### Жесты
 
-* Выбор: _тап_
-* Редактирование: _двойной тап_
-* Удаление: _свайп влево или вправо_
+* Выбор: _нажатие_
+* Редактирование: _двойное нажатие_
+* Удаление: _мах влево или вправо_
+
+### Настройки
+
+* Двойное нажатие в табеле: _Нет_
 
 ### Демо
 [Видео-демонстрация](https://youtu.be/jGygPdV9smU)
 
 ## Выпуск
 
-2021.3.19
+2021.4.1
 
 ## Автор
 

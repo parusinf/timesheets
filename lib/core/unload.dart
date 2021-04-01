@@ -4,9 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:timesheets/db/db.dart';
-import 'package:timesheets/core/tools.dart';
-import 'package:timesheets/core/cp1251.dart';
-import 'package:timesheets/core/l10n.dart';
+import 'package:timesheets/core.dart';
 
 /// Выгрузка посещаемости группы за период в CSV файл
 Future unloadToFile(
@@ -17,7 +15,6 @@ Future unloadToFile(
   List<GroupPersonView> groupPersons,
   List<Attendance> attendances
 ) async {
-  final l10n = L10n.of(context);
   final buffer = new StringBuffer();
   final periodString = periodToString(period);
 
@@ -31,9 +28,9 @@ Future unloadToFile(
   buffer.write('${group.name};${group.schedule.code};${group.meals ?? 0};\n');
 
   // Заголовок табеля
-  buffer.write('${l10n.personFamily};${l10n.personName};${l10n.personMiddleName};');
-  buffer.write('${l10n.personBirthday};${l10n.phone} 1;${l10n.phone} 2;');
-  buffer.write('${l10n.beginDate};${l10n.endDate};');
+  buffer.write('${L10n.personFamily};${L10n.personName};${L10n.personMiddleName};');
+  buffer.write('${L10n.personBirthday};${L10n.phone} 1;${L10n.phone} 2;');
+  buffer.write('${L10n.beginDate};${L10n.endDate};');
   for (int day = 1; day <= period.day; day++) {
     buffer.write('$day;');
   }
@@ -71,5 +68,5 @@ Future unloadToFile(
   file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
 
   // Отправка файла
-  Share.shareFiles([file.path], text: '${l10n.timesheet} ${group.name} $periodString');
+  Share.shareFiles([file.path], text: '${L10n.timesheet} ${group.name} $periodString');
 }

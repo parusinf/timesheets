@@ -17,7 +17,6 @@ class OrgReport extends StatefulWidget {
 /// Состояние отчёта по организации
 class OrgReportState extends State<OrgReport> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<ActiveGroup> _activeGroups;
   List<GroupView> _orgMeals;
@@ -55,7 +54,7 @@ class OrgReportState extends State<OrgReport> {
             Wrap(
               children: [
                 ChoiceChip(
-                  label: Text(l10n.groups),
+                  label: Text(L10n.groups),
                   selected: _grouping == 0,
                   onSelected: (value) {
                     setState(() {
@@ -65,7 +64,7 @@ class OrgReportState extends State<OrgReport> {
                 ),
                 const SizedBox(width: padding2),
                 ChoiceChip(
-                  label: Text(l10n.meals),
+                  label: Text(L10n.meals),
                   selected: _grouping == 1,
                   onSelected: (value) {
                     setState(() {
@@ -103,13 +102,13 @@ class OrgReportState extends State<OrgReport> {
                         rowSeparatorWidget: const Divider(color: lineColor, height: 0.5),
                       );
                     } else {
-                      return centerMessage(context, l10n.dataLoading);
+                      return centerMessage(context, L10n.dataLoading);
                     }
                   }
                 )
               );
             } else {
-              return centerMessage(context, l10n.dataLoading);
+              return centerMessage(context, L10n.dataLoading);
             }
           }
         )
@@ -136,13 +135,13 @@ class OrgReportState extends State<OrgReport> {
                         rowSeparatorWidget: const Divider(color: lineColor, height: 0.5),
                       );
                     } else {
-                      return centerMessage(context, l10n.dataLoading);
+                      return centerMessage(context, L10n.dataLoading);
                     }
                   }
                 )
               );
             } else {
-              return centerMessage(context, l10n.dataLoading);
+              return centerMessage(context, L10n.dataLoading);
             }
           }
         ),
@@ -175,7 +174,7 @@ class OrgReportState extends State<OrgReport> {
     // Дней посещения персоны за период
     rowCells.add(
         _createCell(
-          l10n.days,
+          L10n.days,
           width: columnWidth,
           alignment: Alignment.center,
           fontSize: 16.0,

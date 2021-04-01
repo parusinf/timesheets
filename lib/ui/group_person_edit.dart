@@ -28,7 +28,6 @@ class GroupPersonEdit extends StatefulWidget {
 /// Состояние формы редактирования персоны в группе
 class _GroupPersonEditState extends State<GroupPersonEdit> {
   get bloc => Provider.of<Bloc>(context, listen: false);
-  get l10n => L10n.of(context);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _personEdit = TextEditingController();
@@ -58,7 +57,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
   Widget build(BuildContext context) => Scaffold(
     key: _scaffoldKey,
     appBar: AppBar(
-      title: Text(l10n.binding),
+      title: Text(L10n.binding),
       actions: <Widget>[
         IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
       ],
@@ -81,7 +80,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
                 autofocus: widget.actionType == DataActionType.Insert ? true : false,
                 decoration: InputDecoration(
                   icon: const Icon(Icons.person),
-                  labelText: l10n.person,
+                  labelText: L10n.person,
                 ),
                 validator: _validatePerson,
                 onTap: () => _selectPerson(context),
@@ -93,7 +92,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.event),
-                  labelText: l10n.beginDate,
+                  labelText: L10n.beginDate,
                 ),
                 validator: _validateDate,
                 inputFormatters: DateFormatters.formatters,
@@ -105,7 +104,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
                 keyboardType: TextInputType.numberWithOptions(),
                 decoration: InputDecoration(
                   icon: const Icon(Icons.event),
-                  labelText: l10n.endDate,
+                  labelText: L10n.endDate,
                 ),
                 validator: _validateDate,
                 inputFormatters: DateFormatters.formatters,
@@ -161,7 +160,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
   /// Проверка персоны
   String _validatePerson(String value) {
     if (isEmpty(value)) {
-      return l10n.selectPerson;
+      return L10n.selectPerson;
     }
     return null;
   }
@@ -169,7 +168,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
   /// Проверка даты
   String _validateDate(String value) {
     if (value.isNotEmpty && stringToDate(value) == null) {
-      return l10n.invalidDate;
+      return L10n.invalidDate;
     }
     return null;
   }

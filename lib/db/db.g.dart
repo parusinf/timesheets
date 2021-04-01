@@ -2290,30 +2290,48 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
 class Setting extends DataClass implements Insertable<Setting> {
   final int id;
   final String name;
+  final ValueType valueType;
   final String textValue;
+  final bool boolValue;
   final int intValue;
+  final double realValue;
   final DateTime dateValue;
+  final bool isUserSetting;
   Setting(
       {@required this.id,
       @required this.name,
+      @required this.valueType,
       this.textValue,
+      this.boolValue,
       this.intValue,
-      this.dateValue});
+      this.realValue,
+      this.dateValue,
+      @required this.isUserSetting});
   factory Setting.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
+    final doubleType = db.typeSystem.forDartType<double>();
     final dateTimeType = db.typeSystem.forDartType<DateTime>();
     return Setting(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      valueType: Settings.$converter0.mapToDart(
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}valueType'])),
       textValue: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}textValue']),
+      boolValue:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}boolValue']),
       intValue:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}intValue']),
+      realValue: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}realValue']),
       dateValue: dateTimeType
           .mapFromDatabaseResponse(data['${effectivePrefix}dateValue']),
+      isUserSetting: boolType
+          .mapFromDatabaseResponse(data['${effectivePrefix}isUserSetting']),
     );
   }
   @override
@@ -2325,14 +2343,27 @@ class Setting extends DataClass implements Insertable<Setting> {
     if (!nullToAbsent || name != null) {
       map['name'] = Variable<String>(name);
     }
+    if (!nullToAbsent || valueType != null) {
+      final converter = Settings.$converter0;
+      map['valueType'] = Variable<int>(converter.mapToSql(valueType));
+    }
     if (!nullToAbsent || textValue != null) {
       map['textValue'] = Variable<String>(textValue);
+    }
+    if (!nullToAbsent || boolValue != null) {
+      map['boolValue'] = Variable<bool>(boolValue);
     }
     if (!nullToAbsent || intValue != null) {
       map['intValue'] = Variable<int>(intValue);
     }
+    if (!nullToAbsent || realValue != null) {
+      map['realValue'] = Variable<double>(realValue);
+    }
     if (!nullToAbsent || dateValue != null) {
       map['dateValue'] = Variable<DateTime>(dateValue);
+    }
+    if (!nullToAbsent || isUserSetting != null) {
+      map['isUserSetting'] = Variable<bool>(isUserSetting);
     }
     return map;
   }
@@ -2341,15 +2372,27 @@ class Setting extends DataClass implements Insertable<Setting> {
     return SettingsCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      valueType: valueType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(valueType),
       textValue: textValue == null && nullToAbsent
           ? const Value.absent()
           : Value(textValue),
+      boolValue: boolValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(boolValue),
       intValue: intValue == null && nullToAbsent
           ? const Value.absent()
           : Value(intValue),
+      realValue: realValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(realValue),
       dateValue: dateValue == null && nullToAbsent
           ? const Value.absent()
           : Value(dateValue),
+      isUserSetting: isUserSetting == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isUserSetting),
     );
   }
 
@@ -2359,9 +2402,13 @@ class Setting extends DataClass implements Insertable<Setting> {
     return Setting(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      valueType: serializer.fromJson<ValueType>(json['valueType']),
       textValue: serializer.fromJson<String>(json['textValue']),
+      boolValue: serializer.fromJson<bool>(json['boolValue']),
       intValue: serializer.fromJson<int>(json['intValue']),
+      realValue: serializer.fromJson<double>(json['realValue']),
       dateValue: serializer.fromJson<DateTime>(json['dateValue']),
+      isUserSetting: serializer.fromJson<bool>(json['isUserSetting']),
     );
   }
   @override
@@ -2370,33 +2417,49 @@ class Setting extends DataClass implements Insertable<Setting> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'valueType': serializer.toJson<ValueType>(valueType),
       'textValue': serializer.toJson<String>(textValue),
+      'boolValue': serializer.toJson<bool>(boolValue),
       'intValue': serializer.toJson<int>(intValue),
+      'realValue': serializer.toJson<double>(realValue),
       'dateValue': serializer.toJson<DateTime>(dateValue),
+      'isUserSetting': serializer.toJson<bool>(isUserSetting),
     };
   }
 
   Setting copyWith(
           {int id,
           String name,
+          ValueType valueType,
           String textValue,
+          bool boolValue,
           int intValue,
-          DateTime dateValue}) =>
+          double realValue,
+          DateTime dateValue,
+          bool isUserSetting}) =>
       Setting(
         id: id ?? this.id,
         name: name ?? this.name,
+        valueType: valueType ?? this.valueType,
         textValue: textValue ?? this.textValue,
+        boolValue: boolValue ?? this.boolValue,
         intValue: intValue ?? this.intValue,
+        realValue: realValue ?? this.realValue,
         dateValue: dateValue ?? this.dateValue,
+        isUserSetting: isUserSetting ?? this.isUserSetting,
       );
   @override
   String toString() {
     return (StringBuffer('Setting(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('valueType: $valueType, ')
           ..write('textValue: $textValue, ')
+          ..write('boolValue: $boolValue, ')
           ..write('intValue: $intValue, ')
-          ..write('dateValue: $dateValue')
+          ..write('realValue: $realValue, ')
+          ..write('dateValue: $dateValue, ')
+          ..write('isUserSetting: $isUserSetting')
           ..write(')'))
         .toString();
   }
@@ -2406,67 +2469,110 @@ class Setting extends DataClass implements Insertable<Setting> {
       id.hashCode,
       $mrjc(
           name.hashCode,
-          $mrjc(textValue.hashCode,
-              $mrjc(intValue.hashCode, dateValue.hashCode)))));
+          $mrjc(
+              valueType.hashCode,
+              $mrjc(
+                  textValue.hashCode,
+                  $mrjc(
+                      boolValue.hashCode,
+                      $mrjc(
+                          intValue.hashCode,
+                          $mrjc(
+                              realValue.hashCode,
+                              $mrjc(dateValue.hashCode,
+                                  isUserSetting.hashCode)))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Setting &&
           other.id == this.id &&
           other.name == this.name &&
+          other.valueType == this.valueType &&
           other.textValue == this.textValue &&
+          other.boolValue == this.boolValue &&
           other.intValue == this.intValue &&
-          other.dateValue == this.dateValue);
+          other.realValue == this.realValue &&
+          other.dateValue == this.dateValue &&
+          other.isUserSetting == this.isUserSetting);
 }
 
 class SettingsCompanion extends UpdateCompanion<Setting> {
   final Value<int> id;
   final Value<String> name;
+  final Value<ValueType> valueType;
   final Value<String> textValue;
+  final Value<bool> boolValue;
   final Value<int> intValue;
+  final Value<double> realValue;
   final Value<DateTime> dateValue;
+  final Value<bool> isUserSetting;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.valueType = const Value.absent(),
     this.textValue = const Value.absent(),
+    this.boolValue = const Value.absent(),
     this.intValue = const Value.absent(),
+    this.realValue = const Value.absent(),
     this.dateValue = const Value.absent(),
+    this.isUserSetting = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
     @required String name,
+    @required ValueType valueType,
     this.textValue = const Value.absent(),
+    this.boolValue = const Value.absent(),
     this.intValue = const Value.absent(),
+    this.realValue = const Value.absent(),
     this.dateValue = const Value.absent(),
-  }) : name = Value(name);
+    this.isUserSetting = const Value.absent(),
+  })  : name = Value(name),
+        valueType = Value(valueType);
   static Insertable<Setting> custom({
     Expression<int> id,
     Expression<String> name,
+    Expression<int> valueType,
     Expression<String> textValue,
+    Expression<bool> boolValue,
     Expression<int> intValue,
+    Expression<double> realValue,
     Expression<DateTime> dateValue,
+    Expression<bool> isUserSetting,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (valueType != null) 'valueType': valueType,
       if (textValue != null) 'textValue': textValue,
+      if (boolValue != null) 'boolValue': boolValue,
       if (intValue != null) 'intValue': intValue,
+      if (realValue != null) 'realValue': realValue,
       if (dateValue != null) 'dateValue': dateValue,
+      if (isUserSetting != null) 'isUserSetting': isUserSetting,
     });
   }
 
   SettingsCompanion copyWith(
       {Value<int> id,
       Value<String> name,
+      Value<ValueType> valueType,
       Value<String> textValue,
+      Value<bool> boolValue,
       Value<int> intValue,
-      Value<DateTime> dateValue}) {
+      Value<double> realValue,
+      Value<DateTime> dateValue,
+      Value<bool> isUserSetting}) {
     return SettingsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      valueType: valueType ?? this.valueType,
       textValue: textValue ?? this.textValue,
+      boolValue: boolValue ?? this.boolValue,
       intValue: intValue ?? this.intValue,
+      realValue: realValue ?? this.realValue,
       dateValue: dateValue ?? this.dateValue,
+      isUserSetting: isUserSetting ?? this.isUserSetting,
     );
   }
 
@@ -2479,14 +2585,27 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (valueType.present) {
+      final converter = Settings.$converter0;
+      map['valueType'] = Variable<int>(converter.mapToSql(valueType.value));
+    }
     if (textValue.present) {
       map['textValue'] = Variable<String>(textValue.value);
+    }
+    if (boolValue.present) {
+      map['boolValue'] = Variable<bool>(boolValue.value);
     }
     if (intValue.present) {
       map['intValue'] = Variable<int>(intValue.value);
     }
+    if (realValue.present) {
+      map['realValue'] = Variable<double>(realValue.value);
+    }
     if (dateValue.present) {
       map['dateValue'] = Variable<DateTime>(dateValue.value);
+    }
+    if (isUserSetting.present) {
+      map['isUserSetting'] = Variable<bool>(isUserSetting.value);
     }
     return map;
   }
@@ -2496,9 +2615,13 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     return (StringBuffer('SettingsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('valueType: $valueType, ')
           ..write('textValue: $textValue, ')
+          ..write('boolValue: $boolValue, ')
           ..write('intValue: $intValue, ')
-          ..write('dateValue: $dateValue')
+          ..write('realValue: $realValue, ')
+          ..write('dateValue: $dateValue, ')
+          ..write('isUserSetting: $isUserSetting')
           ..write(')'))
         .toString();
   }
@@ -2526,11 +2649,27 @@ class Settings extends Table with TableInfo<Settings, Setting> {
         $customConstraints: 'NOT NULL');
   }
 
+  final VerificationMeta _valueTypeMeta = const VerificationMeta('valueType');
+  GeneratedIntColumn _valueType;
+  GeneratedIntColumn get valueType => _valueType ??= _constructValueType();
+  GeneratedIntColumn _constructValueType() {
+    return GeneratedIntColumn('valueType', $tableName, false,
+        $customConstraints: 'NOT NULL');
+  }
+
   final VerificationMeta _textValueMeta = const VerificationMeta('textValue');
   GeneratedTextColumn _textValue;
   GeneratedTextColumn get textValue => _textValue ??= _constructTextValue();
   GeneratedTextColumn _constructTextValue() {
     return GeneratedTextColumn('textValue', $tableName, true,
+        $customConstraints: '');
+  }
+
+  final VerificationMeta _boolValueMeta = const VerificationMeta('boolValue');
+  GeneratedBoolColumn _boolValue;
+  GeneratedBoolColumn get boolValue => _boolValue ??= _constructBoolValue();
+  GeneratedBoolColumn _constructBoolValue() {
+    return GeneratedBoolColumn('boolValue', $tableName, true,
         $customConstraints: '');
   }
 
@@ -2542,6 +2681,14 @@ class Settings extends Table with TableInfo<Settings, Setting> {
         $customConstraints: '');
   }
 
+  final VerificationMeta _realValueMeta = const VerificationMeta('realValue');
+  GeneratedRealColumn _realValue;
+  GeneratedRealColumn get realValue => _realValue ??= _constructRealValue();
+  GeneratedRealColumn _constructRealValue() {
+    return GeneratedRealColumn('realValue', $tableName, true,
+        $customConstraints: '');
+  }
+
   final VerificationMeta _dateValueMeta = const VerificationMeta('dateValue');
   GeneratedDateTimeColumn _dateValue;
   GeneratedDateTimeColumn get dateValue => _dateValue ??= _constructDateValue();
@@ -2550,9 +2697,29 @@ class Settings extends Table with TableInfo<Settings, Setting> {
         $customConstraints: '');
   }
 
+  final VerificationMeta _isUserSettingMeta =
+      const VerificationMeta('isUserSetting');
+  GeneratedBoolColumn _isUserSetting;
+  GeneratedBoolColumn get isUserSetting =>
+      _isUserSetting ??= _constructIsUserSetting();
+  GeneratedBoolColumn _constructIsUserSetting() {
+    return GeneratedBoolColumn('isUserSetting', $tableName, false,
+        $customConstraints: 'NOT NULL DEFAULT FALSE',
+        defaultValue: const CustomExpression<bool>('FALSE'));
+  }
+
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, textValue, intValue, dateValue];
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        valueType,
+        textValue,
+        boolValue,
+        intValue,
+        realValue,
+        dateValue,
+        isUserSetting
+      ];
   @override
   Settings get asDslTable => this;
   @override
@@ -2573,17 +2740,32 @@ class Settings extends Table with TableInfo<Settings, Setting> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    context.handle(_valueTypeMeta, const VerificationResult.success());
     if (data.containsKey('textValue')) {
       context.handle(_textValueMeta,
           textValue.isAcceptableOrUnknown(data['textValue'], _textValueMeta));
+    }
+    if (data.containsKey('boolValue')) {
+      context.handle(_boolValueMeta,
+          boolValue.isAcceptableOrUnknown(data['boolValue'], _boolValueMeta));
     }
     if (data.containsKey('intValue')) {
       context.handle(_intValueMeta,
           intValue.isAcceptableOrUnknown(data['intValue'], _intValueMeta));
     }
+    if (data.containsKey('realValue')) {
+      context.handle(_realValueMeta,
+          realValue.isAcceptableOrUnknown(data['realValue'], _realValueMeta));
+    }
     if (data.containsKey('dateValue')) {
       context.handle(_dateValueMeta,
           dateValue.isAcceptableOrUnknown(data['dateValue'], _dateValueMeta));
+    }
+    if (data.containsKey('isUserSetting')) {
+      context.handle(
+          _isUserSettingMeta,
+          isUserSetting.isAcceptableOrUnknown(
+              data['isUserSetting'], _isUserSettingMeta));
     }
     return context;
   }
@@ -2601,6 +2783,8 @@ class Settings extends Table with TableInfo<Settings, Setting> {
     return Settings(_db, alias);
   }
 
+  static TypeConverter<ValueType, int> $converter0 =
+      const EnumIndexConverter<ValueType>(ValueType.values);
   @override
   bool get dontWriteConstraints => true;
 }
