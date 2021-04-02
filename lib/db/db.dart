@@ -174,7 +174,7 @@ class Db extends _$Db {
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 5;
 
   /// Обновление структуры базы данных
   @override
