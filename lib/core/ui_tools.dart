@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -272,4 +273,121 @@ String validateDate(BuildContext context, String value) {
     return L10n.invalidDate;
   }
   return null;
+}
+
+/// Текстовое поле формы
+Widget textFormField({
+  String initialValue,
+  String labelText,
+  ValueChanged<String> onChanged,
+}) {
+  return Column(
+    children: <Widget>[
+      TextFormField(
+        initialValue: initialValue,
+        decoration: InputDecoration(
+          icon: const Icon(Icons.text_fields),
+          labelText: labelText,
+        ),
+        onChanged: onChanged,
+      ),
+      divider(),
+    ],
+  );
+}
+
+/// Логическое поле формы
+Widget boolFormField({
+  bool initialValue,
+  String labelText,
+  ValueChanged<bool> onChanged,
+}) {
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(0.0, padding2, 0.0, padding1),
+    child: Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, padding2, padding1, padding2),
+              child: Icon(Icons.done, color: Colors.black54)
+            ),
+            text(labelText, fontSize: 16.0),
+            Spacer(),
+            CupertinoSwitch(
+              value: initialValue,
+              onChanged: onChanged,
+            ),
+          ],
+        ),
+        divider(),
+      ],
+    ),
+  );
+}
+
+/// Целочисленное поле формы
+Widget intFormField({
+  int initialValue,
+  String labelText,
+  ValueChanged<String> onChanged,
+}) {
+  return Column(
+    children: <Widget>[
+      TextFormField(
+        initialValue: initialValue.toString(),
+        keyboardType: TextInputType.numberWithOptions(),
+        inputFormatters: IntFormatters.formatters,
+        decoration: InputDecoration(
+          icon: const Icon(Icons.looks_one_outlined),
+          labelText: labelText,
+        ),
+        onChanged: onChanged,
+      ),
+      divider(),
+    ],
+  );
+}
+
+/// Действительное поле формы
+Widget realFormField({
+  double initialValue,
+  String labelText,
+  ValueChanged<String> onChanged,
+}) {
+  return Column(
+    children: <Widget>[
+      TextFormField(
+        initialValue: initialValue.toString(),
+        keyboardType: TextInputType.numberWithOptions(),
+        decoration: InputDecoration(
+          icon: const Icon(Icons.looks_one),
+          labelText: labelText,
+        ),
+        onChanged: onChanged,
+      ),
+      divider(),
+    ],
+  );
+}
+
+/// Поле формы с датой
+Widget dateFormField({
+  DateTime initialValue,
+  String labelText,
+  ValueChanged<String> onChanged,
+  FormFieldValidator<String> validator,
+}) {
+  return TextFormField(
+    initialValue: dateToString(initialValue),
+    keyboardType: TextInputType.numberWithOptions(),
+    inputFormatters: DateFormatters.formatters,
+    decoration: InputDecoration(
+      icon: const Icon(Icons.event),
+      labelText: labelText,
+    ),
+    maxLength: 10,
+    onChanged: onChanged,
+    validator: validator,
+  );
 }
