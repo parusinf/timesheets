@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/persons_dictionary.dart';
@@ -27,20 +25,21 @@ class GroupPersonEdit extends StatefulWidget {
 
 /// Состояние формы редактирования персоны в группе
 class _GroupPersonEditState extends State<GroupPersonEdit> {
-  get bloc => Provider.of<Bloc>(context, listen: false);
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _formKey = GlobalKey<FormState>();
   final _personEdit = TextEditingController();
   final _beginDateEdit = TextEditingController();
   final _endDateEdit = TextEditingController();
-  Person person;
+  Person _person;
+
+  get bloc => Provider.of<Bloc>(context, listen: false);
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
   var _autovalidateMode = AutovalidateMode.disabled;
 
   @override
   void initState() {
     super.initState();
-    person = widget.groupPerson?.person;
-    _personEdit.text = personFullName(person);
+    _person = widget.groupPerson?.person;
+    _personEdit.text = personFullName(_person);
     _beginDateEdit.text = dateToString(widget.groupPerson?.beginDate);
     _endDateEdit.text = dateToString(widget.groupPerson?.endDate);
   }
@@ -54,122 +53,70 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    key: _scaffoldKey,
-    appBar: AppBar(
-      title: Text(L10n.binding),
-      actions: <Widget>[
-        IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
-      ],
-    ),
-    body: Form(
-      key: _formKey,
+  Widget build(BuildContext context) {
+    return form(
+      title: L10n.binding,
+      scaffoldKey: _scaffoldKey,
+      formKey: _formKey,
       autovalidateMode: _autovalidateMode,
-      child: Scrollbar(
-        child: SingleChildScrollView(
-          dragStartBehavior: DragStartBehavior.down,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: <Widget>[
-              divider(height: padding2),
-              // Персона
-              TextFormField(
-                controller: _personEdit,
-                readOnly: true,
-                textCapitalization: TextCapitalization.words,
-                autofocus: widget.actionType == DataActionType.Insert ? true : false,
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.person),
-                  labelText: L10n.person,
-                ),
-                validator: _validatePerson,
-                onTap: () => _selectPerson(context),
-              ),
-              divider(),
-              // Дата поступления в группу
-              TextFormField(
-                controller: _beginDateEdit,
-                keyboardType: TextInputType.numberWithOptions(),
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.event),
-                  labelText: L10n.beginDate,
-                ),
-                validator: _validateDate,
-                inputFormatters: DateFormatters.formatters,
-                maxLength: 10,
-              ),
-              // Дата дата выбытия из группы
-              TextFormField(
-                controller: _endDateEdit,
-                keyboardType: TextInputType.numberWithOptions(),
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.event),
-                  labelText: L10n.endDate,
-                ),
-                validator: _validateDate,
-                inputFormatters: DateFormatters.formatters,
-                maxLength: 10,
-              ),
-            ],
-          ),
+      onSubmit: _onSubmit,
+      fields: <Widget>[
+        // Персона
+        textFormField(
+          controller: _personEdit,
+          labelText: L10n.person,
+          icon: Icons.person,
+          onTap: _selectPerson,
+          validator: validateEmpty,
+          autofocus: widget.actionType == DataActionType.Insert ? true : false,
+          readOnly: true,
         ),
-      ),
-    ),
-  );
+        // Дата поступления в группу
+        dateFormField(
+          controller: _beginDateEdit,
+          labelText: L10n.beginDate,
+        ),
+        // Дата дата выбытия из группы
+        dateFormField(
+          controller: _endDateEdit,
+          labelText: L10n.endDate,
+        ),
+      ],
+    );
+  }
 
   /// Выбор персоны из словаря
-  Future _selectPerson(BuildContext context) async {
-    person = await push(context, PersonsDictionary());
-    _personEdit.text = person != null ? personFullName(person) : _personEdit.text;
+  Future _selectPerson() async {
+    _person = await push(context, PersonsDictionary());
+    _personEdit.text = _person != null ? personFullName(_person) : _personEdit.text;
   }
 
   /// Обработка формы
-  Future _handleSubmitted() async {
-    final form = _formKey.currentState;
-    if (!form.validate()) {
+  Future _onSubmit() async {
+    if (!_formKey.currentState.validate()) {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
-        switch (widget.actionType) {
-          case DataActionType.Insert:
-            await bloc.insertGroupPerson(
-              group: bloc.activeGroup.value,
-              person: person,
-              beginDate: stringToDate(_beginDateEdit.text),
-              endDate: stringToDate(_endDateEdit.text),
-            );
-            break;
-          case DataActionType.Update:
-            await bloc.updateGroupPerson(GroupPersonView(
-              id: widget.groupPerson.id,
-              groupId: widget.groupPerson.groupId,
-              person: person ?? widget.groupPerson.person,
-              beginDate: stringToDate(_beginDateEdit.text),
-              endDate: stringToDate(_endDateEdit.text),
-            ));
-            break;
-          case DataActionType.Delete: break;
+        if (widget.actionType == DataActionType.Insert) {
+          await bloc.insertGroupPerson(
+            group: bloc.activeGroup.value,
+            person: _person,
+            beginDate: stringToDate(_beginDateEdit.text),
+            endDate: stringToDate(_endDateEdit.text),
+          );
+        } else {
+          await bloc.updateGroupPerson(GroupPersonView(
+            id: widget.groupPerson.id,
+            groupId: widget.groupPerson.groupId,
+            person: _person ?? widget.groupPerson.person,
+            beginDate: stringToDate(_beginDateEdit.text),
+            endDate: stringToDate(_endDateEdit.text),
+          ));
         }
         Navigator.of(context).pop();
       } catch(e) {
         showMessage(_scaffoldKey, e.toString());
       }
     }
-  }
-
-  /// Проверка персоны
-  String _validatePerson(String value) {
-    if (isEmpty(value)) {
-      return L10n.selectPerson;
-    }
-    return null;
-  }
-
-  /// Проверка даты
-  String _validateDate(String value) {
-    if (value.isNotEmpty && stringToDate(value) == null) {
-      return L10n.invalidDate;
-    }
-    return null;
   }
 }

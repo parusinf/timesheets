@@ -25,31 +25,23 @@ class _SettingsEditState extends State<SettingsEdit> {
   var _autovalidateMode = AutovalidateMode.disabled;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    key: _scaffoldKey,
-    appBar: AppBar(
-      title: Text(L10n.settings),
-    ),
-    body: Form(
-      key: _formKey,
+  Widget build(BuildContext context) {
+    return form(
+      title: L10n.settings,
+      scaffoldKey: _scaffoldKey,
+      formKey: _formKey,
       autovalidateMode: _autovalidateMode,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(padding1, padding2, padding1, 0.0),
-        child: StreamBuilder<List<Setting>>(
-          stream: bloc.userSettings,
-          builder: (context, snapshot) => ListView.builder(
-            itemBuilder: (context, index) => _settingCard(snapshot.data, index),
-            itemCount: snapshot.data?.length ?? 0,
-          ),
-        ),
+      child: StreamBuilder<List<Setting>>(
+        stream: bloc.userSettings,
+        builder: (context, snapshot) =>
+            ListView.builder(
+              itemBuilder: (context, index) =>
+                  _settingCard(snapshot.data, index),
+              itemCount: snapshot.data?.length ?? 0,
+            ),
       ),
-    ),
-  );
+    );
+  }
 
   /// Карточка настройки
   Widget _settingCard(List<Setting> settings, int index) {
@@ -101,10 +93,8 @@ class _SettingsEditState extends State<SettingsEdit> {
             settings[index] = settings[index].copyWith(dateValue: stringToDate(value));
             bloc.db.settingsDao.update2(settings[index]);
           },
-          validator: (value) => validateDate(context, value),
         );
-      default:
-        return null;
     }
+    return null;
   }
 }

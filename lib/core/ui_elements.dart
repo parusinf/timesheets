@@ -1,0 +1,108 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:timesheets/core.dart';
+
+const lineColor = Colors.black12;
+const activeColorOpacity = 0.3;
+const passiveColorOpacity = 0.1;
+const borderRadius = 8.0;
+const padding1 = 16.0;
+const padding2 = 8.0;
+const padding3 = 6.0;
+const dividerHeight = 22.0;
+
+/// Наименования типов питания
+final List<String> mealsNames = [L10n.meals0, L10n.meals1, L10n.meals2];
+
+/// Сообщение в снакбаре
+void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
+  final context = scaffoldKey.currentContext;
+  String newMessage = message;
+  final uniqueRegexp = RegExp(r'UNIQUE constraint failed: ([a-z_]+)\.');
+  if (uniqueRegexp.hasMatch(message)) {
+    final tableName = uniqueRegexp.firstMatch(message)[1];
+    switch (tableName) {
+      case 'orgs': newMessage = L10n.uniqueOrg; break;
+      case 'schedules': newMessage = L10n.uniqueSchedule; break;
+      case 'holidays': newMessage = L10n.uniqueDay; break;
+      case 'groups': newMessage = L10n.uniqueGroup; break;
+      case 'persons': newMessage = L10n.uniquePerson; break;
+      case 'group_persons': newMessage = L10n.uniqueGroupPerson; break;
+    }
+  } else {
+    newMessage = newMessage.replaceFirst('Invalid argument(s): ', '');
+  }
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(newMessage)));
+}
+
+/// Текст
+Widget text(String text, {
+  Color color,
+  double fontSize,
+  FontWeight fontWeight,
+}) {
+  return Text(text,
+    style: TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight),
+  );
+}
+
+/// Сообщение в центре страницы серым цветом
+Widget centerMessage(BuildContext context, String message) =>
+    Center(child: text(message));
+
+Widget centerButton(String label, {Function() onPressed}) =>
+    Center(
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: text(label, color: Colors.black87, fontSize: 16.0),
+      ),
+    );
+
+/// Переход на страницу
+Future<T> push<T extends Object>(
+  BuildContext context,
+  Widget page, {
+  bool pop = false
+}) async {
+  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+  if (pop) {
+    Navigator.pop(context);
+  }
+  return result;
+}
+
+/// Вызов ссылки
+Future launchUrl(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    showMessage(scaffoldKey, L10n.linkNotStart);
+  }
+}
+
+/// Получение нормы часов на дату по активному графику
+double getHoursNorm(Bloc bloc, DateTime date) {
+  final weekdayNumber = abbrWeekdays.indexOf(abbrWeekday(date));
+  final scheduleDays = bloc.scheduleDays.value;
+  var hoursNorm = scheduleDays[weekdayNumber].hoursNorm;
+  // Обнуление нормы часов по графику для праздничного дня
+  if (isHoliday(bloc, date)) {
+    hoursNorm = 0.0;
+  } else {
+    // Добавление нормы часов для переноса рабочего дня
+    if (isTransWorkday(bloc, date)) {
+      // Поиск нормы часов первого дня графика
+      hoursNorm = getFirstHoursNorm(bloc);
+    }
+  }
+  return hoursNorm;
+}
+
+/// Поиск нормы часов первого дня активного графика
+double getFirstHoursNorm(Bloc bloc) {
+  final firstDay = bloc.scheduleDays.value.firstWhere((day) => day.hoursNorm > 0.0);
+  return firstDay != null ? firstDay.hoursNorm : 0;
+}

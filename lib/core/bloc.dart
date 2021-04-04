@@ -336,14 +336,12 @@ class Bloc {
     @required String name,
     @required Schedule schedule,
     int meals,
-    upsert = false,
   }) async {
     final groupView = await db.groupsDao.insert2(
       org: activeOrg.value,
       name: name,
       schedule: schedule,
       meals: meals,
-      upsert: upsert,
     );
     setActiveGroup(groupView);
     return groupView;
@@ -419,6 +417,10 @@ class Bloc {
     date: date,
     hoursFact: hoursFact,
   );
+
+  /// Исправление посещаемости
+  Future<bool> updateAttendance(Attendance attendance) async =>
+      db.attendancesDao.update2(attendance);
 
   /// Удаление посещаемости
   Future<bool> deleteAttendance(Attendance attendance) async =>

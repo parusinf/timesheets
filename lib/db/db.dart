@@ -85,6 +85,20 @@ class GroupView extends Group {
     scheduleId: schedule?.id,
     meals: meals,
   );
+
+  GroupView copy({
+    int id,
+    int orgId,
+    String name,
+    Schedule schedule,
+    int meals
+  }) => GroupView(
+    id: id ?? this.id,
+    orgId: orgId ?? this.orgId,
+    name: name ?? this.name,
+    schedule: schedule ?? this.schedule,
+    meals: meals ?? this.meals,
+  );
 }
 
 /// Персона группы
@@ -105,6 +119,20 @@ class GroupPersonView extends GroupPerson {
     personId: person.id,
     beginDate: beginDate,
     endDate: endDate,
+  );
+
+  GroupPersonView copy({
+    int id,
+    int groupId,
+    Person person,
+    DateTime beginDate,
+    DateTime endDate
+  }) => GroupPersonView(
+    id: id ?? this.id,
+    groupId: groupId ?? this.groupId,
+    person: person ?? this.person,
+    beginDate: beginDate ?? this.beginDate,
+    endDate: endDate ?? this.endDate,
   );
 }
 
@@ -465,7 +493,6 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
     @required String name,
     @required Schedule schedule,
     int meals,
-    bool upsert,
   }) async {
     final id = await into(db.groups).insert(
       GroupsCompanion(
@@ -633,7 +660,12 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
   GroupPersonsDao(Db db) : super(db);
 
   /// Добавление персоны в группу
-  Future<GroupPerson> insert2(Group group, Person person, DateTime beginDate, DateTime endDate) async {
+  Future<GroupPerson> insert2(
+    Group group,
+    Person person,
+    DateTime beginDate,
+    DateTime endDate
+  ) async {
     final id = await into(db.groupPersons).insert(
         GroupPersonsCompanion(
           groupId: Value(group.id),
@@ -725,11 +757,12 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
     @required double hoursFact,
   }) async {
     final id = await into(db.attendances).insert(
-        AttendancesCompanion(
-          groupPersonId: Value(groupPerson.id),
-          date: Value(date),
-          hoursFact: Value(hoursFact),
-        )
+      AttendancesCompanion(
+        groupPersonId: Value(groupPerson.id),
+        date: Value(date),
+        hoursFact: Value(hoursFact),
+      ),
+      mode: InsertMode.insertOrReplace,
     );
     return Attendance(
         id: id,

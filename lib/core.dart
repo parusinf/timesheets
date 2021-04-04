@@ -1,5 +1,9 @@
 export 'core/bloc.dart';
 export 'core/l10n.dart';
 export 'core/tools.dart';
-export 'core/ui_tools.dart';
+export 'core/ui_elements.dart';
 export 'core/cp1251.dart';
+export 'core/form.dart';
+export 'core/formatters.dart';
+export 'core/type_cast.dart';
+export 'core/checks.dart';

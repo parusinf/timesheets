@@ -31,7 +31,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               // Список организаций
-              listHeater(context, Icons.business, L10n.orgs,
+              listHeater(Icons.business, L10n.orgs,
                   onAddPressed: () => addOrg(context)),
               Flexible(
                 child: StreamBuilder<List<ActiveOrg>>(
@@ -49,7 +49,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
               StreamBuilder<Org>(
                   stream: bloc.activeOrg,
                   builder: (context, snapshot) => snapshot.hasData
-                      ? listHeater(context, Icons.group, L10n.groups,
+                      ? listHeater(Icons.group, L10n.groups,
                           onAddPressed: () async {
                             await addGroup(context);
                             Navigator.pop(context);
@@ -64,11 +64,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       : Text('')
               ),
               Spacer(),
-              listHeater(context, Icons.auto_awesome, L10n.holidays,
+              listHeater(Icons.auto_awesome, L10n.holidays,
                   onHeaderTap: () => push(context, HolidaysDictionary(), pop: true)),
-              listHeater(context, Icons.settings, L10n.settings,
+              listHeater(Icons.settings, L10n.settings,
                   onHeaderTap: () => push(context, SettingsEdit(), pop: true)),
-              listHeater(context, Icons.help, L10n.help,
+              listHeater(Icons.help, L10n.help,
                   onHeaderTap: () => push(context, HelpPage(), pop: true)),
             ],
           ),

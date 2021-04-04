@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
@@ -26,15 +25,15 @@ class PersonEdit extends StatefulWidget {
 
 /// Состояние формы редактирования персоны
 class _PersonEditState extends State<PersonEdit> {
-  get bloc => Provider.of<Bloc>(context, listen: false);
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _formKey = GlobalKey<FormState>();
   final _familyEdit = TextEditingController();
   final _nameEdit = TextEditingController();
   final _middleNameEdit = TextEditingController();
   final _birthdayEdit = TextEditingController();
   final _phoneEdit = TextEditingController();
   final _phone2Edit = TextEditingController();
+
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
   var _autovalidateMode = AutovalidateMode.disabled;
 
   @override
@@ -60,180 +59,90 @@ class _PersonEditState extends State<PersonEdit> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    key: _scaffoldKey,
-    appBar: AppBar(
-      title: Text(L10n.person),
-      actions: <Widget>[
-        IconButton(icon: const Icon(Icons.done), onPressed: _handleSubmitted),
-      ],
-    ),
-    body: Form(
-      key: _formKey,
+  Widget build(BuildContext context) {
+    return form(
+      title: L10n.person,
+      scaffoldKey: _scaffoldKey,
+      formKey: _formKey,
       autovalidateMode: _autovalidateMode,
-      child: Scrollbar(
-        child: SingleChildScrollView(
-          dragStartBehavior: DragStartBehavior.down,
-          padding: const EdgeInsets.symmetric(horizontal: padding1),
-          child: Column(
-            children: <Widget>[
-              divider(height: padding2),
-              // Фамилия
-              TextFormField(
-                controller: _familyEdit,
-                textCapitalization: TextCapitalization.words,
-                autofocus: widget.actionType == DataActionType.Insert ? true : false,
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.person),
-                  labelText: L10n.personFamily,
-                ),
-                validator: _validateFamily,
-              ),
-              divider(),
-              // Имя
-              TextFormField(
-                controller: _nameEdit,
-                textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.person),
-                  labelText: L10n.personName,
-                ),
-                validator: _validateName,
-              ),
-              divider(),
-              // Отчество
-              TextFormField(
-                controller: _middleNameEdit,
-                textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.person),
-                  labelText: L10n.personMiddleName,
-                ),
-              ),
-              divider(),
-              // Дата рождения
-              TextFormField(
-                controller: _birthdayEdit,
-                keyboardType: TextInputType.numberWithOptions(),
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.event),
-                  labelText: L10n.personBirthday,
-                ),
-                validator: (value) => validateDate(context, value),
-                inputFormatters: DateFormatters.formatters,
-                maxLength: 10,
-              ),
-              // Телефон 1
-              TextFormField(
-                controller: _phoneEdit,
-                keyboardType: TextInputType.numberWithOptions(),
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.phone),
-                  labelText: '${L10n.phone} 1',
-                  prefixText: L10n.countryPhoneCode,
-                  suffix: IconButton(
-                    icon: const Icon(Icons.phone_in_talk),
-                    onPressed: () => _callPerson(_phoneEdit.text),
-                    color: Colors.green,
-                  ),
-                ),
-                validator: _validatePhone,
-                inputFormatters: PhoneFormatters.formatters,
-                maxLength: phoneLength,
-              ),
-              // Телефон 2
-              TextFormField(
-                controller: _phone2Edit,
-                keyboardType: TextInputType.numberWithOptions(),
-                decoration: InputDecoration(
-                  icon: const Icon(Icons.phone),
-                  labelText: '${L10n.phone} 2',
-                  prefixText: L10n.countryPhoneCode,
-                  suffix: IconButton(
-                    icon: const Icon(Icons.phone_in_talk),
-                    onPressed: () => _callPerson(_phone2Edit.text),
-                    color: Colors.green,
-                  ),
-                ),
-                validator: _validatePhone,
-                inputFormatters: PhoneFormatters.formatters,
-                maxLength: phoneLength,
-              ),
-            ],
-          ),
+      onSubmit: _onSubmit,
+      fields: <Widget>[
+        // Фамилия
+        textFormField(
+          controller: _familyEdit,
+          labelText: L10n.personFamily,
+          icon: Icons.person,
+          validator: validateEmpty,
+          textCapitalization: TextCapitalization.words,
+          autofocus: widget.actionType == DataActionType.Insert ? true : false,
         ),
-      ),
-    ),
-  );
+        // Имя
+        textFormField(
+          controller: _nameEdit,
+          labelText: L10n.personName,
+          icon: Icons.person,
+          validator: validateEmpty,
+          textCapitalization: TextCapitalization.words,
+        ),
+        // Отчество
+        textFormField(
+          controller: _middleNameEdit,
+          labelText: L10n.personMiddleName,
+          icon: Icons.person,
+          textCapitalization: TextCapitalization.words,
+        ),
+        // Дата рождения
+        dateFormField(
+          controller: _birthdayEdit,
+          labelText: L10n.personBirthday,
+        ),
+        // Телефон 1
+        phoneFormField(
+          controller: _phoneEdit,
+          labelText: '${L10n.phone} 1',
+          scaffoldKey: _scaffoldKey,
+        ),
+        // Телефон 2
+        phoneFormField(
+          controller: _phone2Edit,
+          labelText: '${L10n.phone} 2',
+          scaffoldKey: _scaffoldKey,
+        ),
+      ],
+    );
+  }
 
   /// Обработка формы
-  Future _handleSubmitted() async {
-    final form = _formKey.currentState;
-    if (!form.validate()) {
+  Future _onSubmit() async {
+    if (!_formKey.currentState.validate()) {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
+      final bloc = Provider.of<Bloc>(context, listen: false);
       try {
-        switch (widget.actionType) {
-          case DataActionType.Insert:
-            await bloc.insertPerson(
-              family: trim(_familyEdit.text),
-              name: trim(_nameEdit.text),
-              middleName: trim(_middleNameEdit.text),
-              birthday: stringToDate(_birthdayEdit.text),
-              phone: trim(_phoneEdit.text),
-              phone2: trim(_phone2Edit.text),
-            );
-            break;
-          case DataActionType.Update:
-            await bloc.updatePerson(Person(
-              id: widget.person.id,
-              family: trim(_familyEdit.text),
-              name: trim(_nameEdit.text),
-              middleName: trim(_middleNameEdit.text),
-              birthday: stringToDate(_birthdayEdit.text),
-              phone: trim(_phoneEdit.text),
-              phone2: trim(_phone2Edit.text),
-            ));
-            break;
-          case DataActionType.Delete: break;
+        if (widget.actionType == DataActionType.Insert) {
+          await bloc.insertPerson(
+            family: trim(_familyEdit.text),
+            name: trim(_nameEdit.text),
+            middleName: trim(_middleNameEdit.text),
+            birthday: stringToDate(_birthdayEdit.text),
+            phone: trim(_phoneEdit.text),
+            phone2: trim(_phone2Edit.text),
+          );
+        } else {
+          await bloc.updatePerson(Person(
+            id: widget.person.id,
+            family: trim(_familyEdit.text),
+            name: trim(_nameEdit.text),
+            middleName: trim(_middleNameEdit.text),
+            birthday: stringToDate(_birthdayEdit.text),
+            phone: trim(_phoneEdit.text),
+            phone2: trim(_phone2Edit.text),
+          ));
         }
         Navigator.of(context).pop();
       } catch(e) {
         showMessage(_scaffoldKey, e.toString());
       }
     }
-  }
-
-  /// Звонок персоне
-  Future _callPerson(String phone) async {
-    if (phone.isNotEmpty && phone.length == phoneLength) {
-      launchUrl(_scaffoldKey, 'tel:${L10n.countryPhoneCode}$phone');
-    } else {
-      showMessage(_scaffoldKey, L10n.invalidPhone);
-    }
-  }
-
-  /// Проверка фамилии
-  String _validateFamily(String value) {
-    if (isEmpty(value)) {
-      return L10n.noPersonFamily;
-    }
-    return null;
-  }
-
-  /// Проверка имени
-  String _validateName(String value) {
-    if (isEmpty(value)) {
-      return L10n.noPersonName;
-    }
-    return null;
-  }
-
-  /// Проверка телефона
-  String _validatePhone(String value) {
-    if (value.isNotEmpty && value.length != phoneLength) {
-      return L10n.invalidPhone;
-    }
-    return null;
   }
 }

@@ -57,7 +57,7 @@ Future parseContent(BuildContext context, String content) async {
     org = await bloc.insertOrg(name: orgName, inn: orgInn);
   } else {
     bloc.setActiveOrg(org);
-    if (needStringUpdate(org.inn, orgInn)) {
+    if (isNeedStringUpdate(org.inn, orgInn)) {
       bloc.db.orgsDao.update2(Org(
           id: org.id,
           name: org.name,
@@ -123,16 +123,16 @@ Future parseContent(BuildContext context, String content) async {
         phone2: personPhone2,
       );
     } else {
-      if (needStringUpdate(person.phone, personPhone) ||
-          needStringUpdate(person.phone2, personPhone2)) {
+      if (isNeedStringUpdate(person.phone, personPhone) ||
+          isNeedStringUpdate(person.phone2, personPhone2)) {
         bloc.db.personsDao.update2(Person(
           id: person.id,
           family: person.family,
           name: person.name,
           middleName: person.middleName,
           birthday: person.birthday,
-          phone: needStringUpdate(person.phone, personPhone) ? personPhone : person.phone,
-          phone2: needStringUpdate(person.phone2, personPhone2) ? personPhone2 : person.phone2,
+          phone: isNeedStringUpdate(person.phone, personPhone) ? personPhone : person.phone,
+          phone2: isNeedStringUpdate(person.phone2, personPhone2) ? personPhone2 : person.phone2,
         ));
       }
     }
@@ -149,14 +149,14 @@ Future parseContent(BuildContext context, String content) async {
         endDate: groupPersonEndDate,
       );
     } else {
-      if (needDateUpdate(groupPerson.beginDate, groupPersonBeginDate) ||
-          needDateUpdate(groupPerson.endDate, groupPersonEndDate)) {
+      if (isNeedDateUpdate(groupPerson.beginDate, groupPersonBeginDate) ||
+          isNeedDateUpdate(groupPerson.endDate, groupPersonEndDate)) {
         bloc.db.groupPersonsDao.update2(GroupPerson(
           id: groupPerson.id,
           groupId: groupPerson.groupId,
           personId: groupPerson.personId,
-          beginDate: needDateUpdate(groupPerson.beginDate, groupPersonBeginDate) ? groupPersonBeginDate : groupPerson.beginDate,
-          endDate: needDateUpdate(groupPerson.endDate, groupPersonEndDate) ? groupPersonEndDate : groupPerson.endDate,
+          beginDate: isNeedDateUpdate(groupPerson.beginDate, groupPersonBeginDate) ? groupPersonBeginDate : groupPerson.beginDate,
+          endDate: isNeedDateUpdate(groupPerson.endDate, groupPersonEndDate) ? groupPersonEndDate : groupPerson.endDate,
         ));
       }
     }

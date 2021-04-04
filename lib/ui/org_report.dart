@@ -49,7 +49,6 @@ class OrgReportState extends State<OrgReport> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: padding2),
           child: formElement(
-            context,
             Icons.storage,
             Wrap(
               children: [
@@ -283,7 +282,7 @@ class OrgReportState extends State<OrgReport> {
   Widget _createFixedColumn(BuildContext context, int index) {
     final name = _grouping == 0
         ? _activeGroups[index].groupView.name
-        : mealsName(context, _orgMeals[index].meals);
+        : mealsNames[_orgMeals[index].meals];
     return _createFixedCell(
       name,
       '',
@@ -297,10 +296,10 @@ class OrgReportState extends State<OrgReport> {
   /// Создание строки таблицы
   Widget _createTableRow(BuildContext context, int index) {
     final attendances = _grouping == 0
-        ? _orgAttendances.where(
-            (attendance) => attendance.groupId == _activeGroups[index].groupView.id)
-        : _orgAttendances.where(
-            (attendance) => attendance.meals == _orgMeals[index].meals);
+        ? _orgAttendances
+            .where((attendance) => attendance.groupId == _activeGroups[index].groupView.id)
+        : _orgAttendances
+            .where((attendance) => attendance.meals == _orgMeals[index].meals);
     final period = bloc.activePeriod.value;
     final rowCells = <Widget>[];
     // Итог по персоне за период

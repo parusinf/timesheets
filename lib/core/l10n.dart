@@ -73,6 +73,14 @@ class L10n {
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
       'workday': 'Перенос рабочего дня на',
+      'noValue': 'Отсутствует значение',
+      'mo': 'пн',
+      'tu': 'вт',
+      'we': 'ср',
+      'th': 'чт',
+      'fr': 'пт',
+      'sa': 'сб',
+      'su': 'вс',
     }
   };
 
@@ -145,4 +153,12 @@ class L10n {
   static get withoutInn => _l10n[languageCode]['withoutInn'];
   static get withoutTime => _l10n[languageCode]['withoutTime'];
   static get workday => _l10n[languageCode]['workday'];
+  static get noValue => _l10n[languageCode]['noValue'];
+  static get mo => _l10n[languageCode]['mo'];
+  static get tu => _l10n[languageCode]['tu'];
+  static get we => _l10n[languageCode]['we'];
+  static get th => _l10n[languageCode]['th'];
+  static get fr => _l10n[languageCode]['fr'];
+  static get sa => _l10n[languageCode]['sa'];
+  static get su => _l10n[languageCode]['su'];
 }
