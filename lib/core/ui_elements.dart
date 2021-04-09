@@ -53,12 +53,18 @@ Widget text(String text, {
 Widget centerMessage(BuildContext context, String message) =>
     Center(child: text(message));
 
-Widget centerButton(String label, {Function() onPressed}) =>
+/// Кнопка в центре
+Widget centerButton(String label, {VoidCallback onPressed}) =>
     Center(
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: text(label, color: Colors.black87, fontSize: 16.0),
-      ),
+      child: button(label, onPressed: onPressed),
+    );
+
+/// Кнопка
+Widget button(String label, {VoidCallback onPressed, ButtonStyle style}) =>
+    ElevatedButton(
+      onPressed: onPressed,
+      style: style,
+      child: text(label, color: Colors.black87, fontSize: 16.0),
     );
 
 /// Переход на страницу
@@ -105,4 +111,34 @@ double getHoursNorm(Bloc bloc, DateTime date) {
 double getFirstHoursNorm(Bloc bloc) {
   final firstDay = bloc.scheduleDays.value.firstWhere((day) => day.hoursNorm > 0.0);
   return firstDay != null ? firstDay.hoursNorm : 0;
+}
+
+/// Диалог подтверждения
+showAlertDialog(BuildContext context, String title, VoidCallback action) {
+  // set up the buttons
+  Widget cancelButton = button(L10n.cancel, onPressed: () => Navigator.pop(context));
+  Widget continueButton = button(L10n.continueAction,
+    onPressed: () {
+      action();
+      Navigator.pop(context);
+    },
+    style: ButtonStyle(
+      backgroundColor: MaterialStateProperty.all<Color>(Colors.red[500]),
+    ),
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text(title),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

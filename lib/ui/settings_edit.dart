@@ -19,7 +19,7 @@ class SettingsEdit extends StatefulWidget {
 
 /// Состояние формы исправления настроек
 class _SettingsEditState extends State<SettingsEdit> {
-  get bloc => Provider.of<Bloc>(context, listen: false);
+  get _bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   var _autovalidateMode = AutovalidateMode.disabled;
@@ -32,15 +32,33 @@ class _SettingsEditState extends State<SettingsEdit> {
       formKey: _formKey,
       autovalidateMode: _autovalidateMode,
       child: StreamBuilder<List<Setting>>(
-        stream: bloc.userSettings,
-        builder: (context, snapshot) =>
-            ListView.builder(
-              itemBuilder: (context, index) =>
-                  _settingCard(snapshot.data, index),
-              itemCount: snapshot.data?.length ?? 0,
-            ),
+        stream: _bloc.userSettings,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final settings = snapshot.data;
+            _addSetting(settings, L10n.eraseAllData);
+            return ListView.builder(
+              itemBuilder: (context, index) => _settingCard(settings, index),
+              itemCount: settings.length,
+            );
+          } else {
+            return centerMessage(context, L10n.dataLoading);
+          }
+        }
       ),
     );
+  }
+
+  /// Добавление настройки
+  void _addSetting(List<Setting> settings, String name) {
+    if (settings.where((e) => e.name == name).length == 0) {
+      settings.add(Setting(
+        id: 0,
+        name: L10n.eraseAllData,
+        valueType: null,
+        isUserSetting: true,
+      ));
+    }
   }
 
   /// Карточка настройки
@@ -53,7 +71,7 @@ class _SettingsEditState extends State<SettingsEdit> {
             labelText: setting.name,
             onChanged: (value) {
               settings[index] = settings[index].copyWith(textValue: value);
-              bloc.db.settingsDao.update2(settings[index]);
+              _bloc.db.settingsDao.update2(settings[index]);
             },
           );
       case ValueType.bool:
@@ -63,7 +81,7 @@ class _SettingsEditState extends State<SettingsEdit> {
           onChanged: (value) {
             setState(() {
               settings[index] = settings[index].copyWith(boolValue: value);
-              bloc.db.settingsDao.update2(settings[index]);
+              _bloc.db.settingsDao.update2(settings[index]);
             });
           },
         );
@@ -73,7 +91,7 @@ class _SettingsEditState extends State<SettingsEdit> {
           labelText: setting.name,
           onChanged: (value) {
             settings[index] = settings[index].copyWith(intValue: stringToInt(value));
-            bloc.db.settingsDao.update2(settings[index]);
+            _bloc.db.settingsDao.update2(settings[index]);
           },
         );
       case ValueType.real:
@@ -82,7 +100,7 @@ class _SettingsEditState extends State<SettingsEdit> {
           labelText: setting.name,
           onChanged: (value) {
             settings[index] = settings[index].copyWith(realValue: stringToDouble(value));
-            bloc.db.settingsDao.update2(settings[index]);
+            _bloc.db.settingsDao.update2(settings[index]);
           },
         );
       case ValueType.date:
@@ -91,9 +109,23 @@ class _SettingsEditState extends State<SettingsEdit> {
           labelText: setting.name,
           onChanged: (value) {
             settings[index] = settings[index].copyWith(dateValue: stringToDate(value));
-            bloc.db.settingsDao.update2(settings[index]);
+            _bloc.db.settingsDao.update2(settings[index]);
           },
         );
+      default:
+        if (setting.name == L10n.eraseAllData) {
+          return button(setting.name,
+            onPressed: () async {
+              showAlertDialog(context, L10n.eraseAllData, () async {
+                await _bloc.db.reset();
+                Navigator.pop(context);
+              });
+            },
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.red[500]),
+            ),
+          );
+        }
     }
     return null;
   }

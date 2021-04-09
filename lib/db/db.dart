@@ -209,14 +209,34 @@ class Db extends _$Db {
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (Migrator m, int from, int to) => upgradeDb(this, m, from, to),
     onCreate: (Migrator m) => m.createAll(),
-    beforeOpen: (details) async {
-      await customStatement('PRAGMA foreign_keys = ON');
-      if (details.wasCreated) {
-        createDb(this);
-      }
-    }
+    beforeOpen: (details) async => await _init(details.wasCreated),
   );
-}
+
+  /// Сброс базы данных
+  Future<void> reset() async {
+    await _deleteEverything();
+    return _init(true);
+  }
+
+  /// Инициализация базы данных
+  Future<void> _init(bool wasCreated) async {
+    transaction(() async {
+      await customStatement('PRAGMA foreign_keys = ON');
+      if (wasCreated) {
+        await createDb(this);
+      }
+    });
+  }
+
+  /// Удаление всех таблиц базы данных
+  Future<void> _deleteEverything() {
+    return transaction(() async {
+      await customStatement('PRAGMA foreign_keys = OFF');
+      for (final table in allTables) {
+        await delete(table).go();
+      }
+    });
+  }}
 
 /// Помещает файл базы данных в каталог документов приложения
 LazyDatabase _openConnection() => LazyDatabase(() async {

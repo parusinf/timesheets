@@ -3,12 +3,12 @@ class L10n {
 
   static const Map<String, Map<String, String>> _l10n = {
     'ru': {
-      'addGroup': 'Добавьте группу',
-      'addHoliday': 'Добавьте праздник',
-      'addOrg': 'Добавьте организацию',
-      'addPerson': 'Добавьте персону',
-      'addPersonToGroup': 'Добавьте персону в группу',
-      'addSchedule': 'Добавьте график',
+      'addGroup': 'Добавить группу',
+      'addHoliday': 'Добавить праздник',
+      'addOrg': 'Добавить организацию',
+      'addPerson': 'Добавить персону',
+      'addPersonToGroup': 'Добавить персону в группу',
+      'addSchedule': 'Добавить график',
       'beginDate': 'Дата поступления',
       'binding': 'Прикрепление',
       'countryPhoneCode': '+7 ',
@@ -81,6 +81,9 @@ class L10n {
       'fr': 'пт',
       'sa': 'сб',
       'su': 'вс',
+      'eraseAllData': 'Стереть все данные',
+      'cancel': 'Отмена',
+      'continueAction': 'Продолжить',
     }
   };
 
@@ -161,4 +164,7 @@ class L10n {
   static get fr => _l10n[languageCode]['fr'];
   static get sa => _l10n[languageCode]['sa'];
   static get su => _l10n[languageCode]['su'];
+  static get eraseAllData => _l10n[languageCode]['eraseAllData'];
+  static get cancel => _l10n[languageCode]['cancel'];
+  static get continueAction => _l10n[languageCode]['continueAction'];
 }
