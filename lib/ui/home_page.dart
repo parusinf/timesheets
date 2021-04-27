@@ -206,14 +206,30 @@ class HomePageState extends State<HomePage> {
             ),
       ),
     ];
+    // Количество присутствующих персон на период
+    final daysCount = _groupAttendances.where(
+            (e) => e.hoursFact > 0.0).toList().length;
     // Дней посещения персоны за период
     rowCells.add(
-        _createCell(
-          L10n.days,
-          width: columnWidth,
-          alignment: Alignment.center,
-          fontSize: 16.0,
-        )
+        StreamBuilder<DateTime>(
+            stream: _bloc.activePeriod,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return _createFixedCell(
+                  L10n.days,
+                  daysCount.toString(),
+                  width: columnWidth,
+                  alignment: Alignment.center,
+                  borderStyle: BorderStyle.solid,
+                  titleColor: Colors.black87,
+                  subtitleColor: Colors.black54,
+                  wrap: false,
+                );
+              } else {
+                return Text('');
+              }
+            }
+        ),
     );
     // Колонки по дням периода
     for (int day = 1; day <= period.day; day++) {

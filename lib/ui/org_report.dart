@@ -16,7 +16,7 @@ class OrgReport extends StatefulWidget {
 
 /// Состояние отчёта по организации
 class OrgReportState extends State<OrgReport> {
-  get bloc => Provider.of<Bloc>(context, listen: false);
+  get _bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<ActiveGroup> _activeGroups;
   List<GroupView> _orgMeals;
@@ -32,7 +32,7 @@ class OrgReportState extends State<OrgReport> {
     key: _scaffoldKey,
     appBar: AppBar(
       title: StreamBuilder<Org>(
-        stream: bloc.activeOrg,
+        stream: _bloc.activeOrg,
         builder: (context, snapshot) => snapshot.hasData
           ? InkWell(
             onTap: () async => await editOrg(context, snapshot.data),
@@ -80,19 +80,19 @@ class OrgReportState extends State<OrgReport> {
         _grouping == 0
         ?
         StreamBuilder<List<ActiveGroup>>(
-          stream: bloc.activeGroups,
+          stream: _bloc.activeGroups,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               _activeGroups = snapshot.data;
               return Flexible(
                 child: StreamBuilder<List<AttendanceView>>(
-                  stream: bloc.orgAttendances,
+                  stream: _bloc.orgAttendances,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       _orgAttendances = snapshot.data;
                       return HorizontalDataTable(
                         leftHandSideColumnWidth: fixedColumnWidth,
-                        rightHandSideColumnWidth: columnWidth * (bloc.activePeriod.value.day + 1),
+                        rightHandSideColumnWidth: columnWidth * (_bloc.activePeriod.value.day + 1),
                         isFixedHeader: true,
                         headerWidgets: _createTitleRow(),
                         leftSideItemBuilder: _createFixedColumn,
@@ -113,19 +113,19 @@ class OrgReportState extends State<OrgReport> {
         )
         :
         StreamBuilder<List<GroupView>>(
-          stream: bloc.meals,
+          stream: _bloc.meals,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               _orgMeals = snapshot.data;
               return Flexible(
                 child: StreamBuilder<List<AttendanceView>>(
-                  stream: bloc.orgAttendances,
+                  stream: _bloc.orgAttendances,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       _orgAttendances = snapshot.data;
                       return HorizontalDataTable(
                         leftHandSideColumnWidth: fixedColumnWidth,
-                        rightHandSideColumnWidth: columnWidth * (bloc.activePeriod.value.day + 1),
+                        rightHandSideColumnWidth: columnWidth * (_bloc.activePeriod.value.day + 1),
                         isFixedHeader: true,
                         headerWidgets: _createTitleRow(),
                         leftSideItemBuilder: _createFixedColumn,
@@ -150,10 +150,10 @@ class OrgReportState extends State<OrgReport> {
 
   /// Создание строки заголовка таблицы
   List<Widget> _createTitleRow() {
-    final DateTime period = bloc.activePeriod.value;
+    final DateTime period = _bloc.activePeriod.value;
     final rowCells = <Widget>[
       StreamBuilder<DateTime>(
-        stream: bloc.activePeriod,
+        stream: _bloc.activePeriod,
         builder: (context, snapshot) =>
             InkWell(
                 onTap: _selectPeriod,
@@ -170,19 +170,35 @@ class OrgReportState extends State<OrgReport> {
             ),
       ),
     ];
+    // Количество присутствующих персон на период
+    final daysCount = _orgAttendances.where(
+            (e) => e.hoursFact > 0.0).toList().length;
     // Дней посещения персоны за период
     rowCells.add(
-        _createCell(
-          L10n.days,
-          width: columnWidth,
-          alignment: Alignment.center,
-          fontSize: 16.0,
-        )
+      StreamBuilder<DateTime>(
+          stream: _bloc.activePeriod,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return _createFixedCell(
+                L10n.days,
+                daysCount.toString(),
+                width: columnWidth,
+                alignment: Alignment.center,
+                borderStyle: BorderStyle.solid,
+                titleColor: Colors.black87,
+                subtitleColor: Colors.black54,
+                wrap: false,
+              );
+            } else {
+              return Text('');
+            }
+          }
+      ),
     );
     // Колонки по дням периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
-      final hoursNorm = getHoursNorm(bloc, date);
+      final hoursNorm = getHoursNorm(_bloc, date);
       // Количество присутствующих персон на дату
       final dateCount = _orgAttendances.where(
               (attendance) => attendance.date == date).toList().length;
@@ -192,7 +208,7 @@ class OrgReportState extends State<OrgReport> {
       // Добавление ячейки в строку
       rowCells.add(
         StreamBuilder<DateTime>(
-            stream: bloc.activePeriod,
+            stream: _bloc.activePeriod,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return _createFixedCell(
@@ -201,7 +217,7 @@ class OrgReportState extends State<OrgReport> {
                   width: columnWidth,
                   alignment: Alignment.center,
                   borderStyle: BorderStyle.solid,
-                  titleColor: isHoliday(bloc, date) ? Colors.red : Colors.black87,
+                  titleColor: isHoliday(_bloc, date) ? Colors.red : Colors.black87,
                   subtitleColor: Colors.black54,
                   wrap: false,
                 );
@@ -300,7 +316,7 @@ class OrgReportState extends State<OrgReport> {
             .where((attendance) => attendance.groupId == _activeGroups[index].groupView.id)
         : _orgAttendances
             .where((attendance) => attendance.meals == _orgMeals[index].meals);
-    final period = bloc.activePeriod.value;
+    final period = _bloc.activePeriod.value;
     final rowCells = <Widget>[];
     // Итог по персоне за период
     rowCells.add(_createCell(attendances.length.toString(),
@@ -308,7 +324,7 @@ class OrgReportState extends State<OrgReport> {
     // Цикл по дням текущего периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
-      final hoursNorm = getHoursNorm(bloc, date);
+      final hoursNorm = getHoursNorm(_bloc, date);
       final hoursFact = attendances.where(
               (attendance) => attendance.date == date).toList().length;
       final dateCountStr = hoursFact > 0.0
@@ -330,11 +346,11 @@ class OrgReportState extends State<OrgReport> {
       context: context,
       firstDate: DateTime(DateTime.now().year - 1),
       lastDate: DateTime(DateTime.now().year + 1),
-      initialDate: bloc.activePeriod.value,
+      initialDate: _bloc.activePeriod.value,
       locale: Locale('ru'),
     );
     if (period != null) {
-      bloc.setActivePeriod(lastDayOfMonth(period));
+      _bloc.setActivePeriod(lastDayOfMonth(period));
     }
   }
 }
