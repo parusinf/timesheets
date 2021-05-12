@@ -223,6 +223,7 @@ Widget phoneFormField({
       suffix: IconButton(
         icon: const Icon(Icons.phone_in_talk),
         onPressed: () async {
+          phone = controller.text ?? initialValue;
           launchUrl(scaffoldKey, 'tel:${L10n.countryPhoneCode}$phone');
         },
         color: Colors.green,
