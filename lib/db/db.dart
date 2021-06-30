@@ -309,30 +309,44 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
       ).watch();
 
   /// Предыдущая организация перед заданной
-  Future<Org> getPrevious(Org org) async =>
-    await db._previousOrg(org.name).map((row) =>
-        Org(
-          id: row.id,
-          name: row.name,
-          inn: row.inn,
-          activeGroupId: row.activeGroupId,
-        )
-    ).getSingle() ?? _getFirst();
-
-  /// Первая организация в алфавитном порядке
-  Future<Org> _getFirst() async =>
-      await db._firstOrg().map((row) =>
+  Future<Org> getPrevious(Org org) async {
+    try {
+      return await db._previousOrg(org.name).map((row) =>
           Org(
             id: row.id,
             name: row.name,
             inn: row.inn,
             activeGroupId: row.activeGroupId,
-          )
-      ).getSingle();
+          )).getSingle();
+    } catch(_) {
+      return _getFirst();
+    }
+  }
+
+  /// Первая организация в алфавитном порядке
+  Future<Org> _getFirst() async {
+    try {
+      return await db._firstOrg().map((row) =>
+        Org(
+          id: row.id,
+          name: row.name,
+          inn: row.inn,
+          activeGroupId: row.activeGroupId,
+        )).getSingle();
+    } catch(_) {
+      return null;
+    }
+  }
 
   /// Поиск организации
-  Future<Org> find(String name) async =>
-      await (select(db.orgs)..where((e) => e.name.equals(name))).getSingle();
+  Future<Org> find(String name) async {
+    try {
+      return await (select(db.orgs)
+        ..where((e) => e.name.equals(name))).getSingle();
+    } catch(_) {
+      return null;
+    }
+  }
 }
 
 // Графики ---------------------------------------------------------------------
@@ -380,30 +394,52 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
       ).watch();
 
   /// Предыдущий график перед заданным
-  Future<Schedule> getPrevious(Schedule schedule) async =>
-      await db._previousSchedule(schedule.code).map((row) =>
+  getPrevious(Schedule schedule) async {
+    try {
+      return await db._previousSchedule(schedule.code).map((row) =>
           Schedule(
             id: row.id,
             code: row.code,
           )
-      ).getSingle() ?? _getFirst();
+      ).getSingle();
+    } catch(_) {
+      return _getFirst();
+    }
+  }
 
   /// Первый график в алфавитном порядке
-  Future<Schedule> _getFirst() async =>
+  _getFirst() async {
+    try {
       await db._firstSchedule().map((row) =>
           Schedule(
             id: row.id,
             code: row.code,
           )
       ).getSingle();
+    } catch (_) {
+      return null;
+    }
+  }
 
   /// Получение графика
-  Future<Schedule> get(int id) async =>
-      await (select(db.schedules)..where((schedule) => schedule.id?.equals(id))).getSingle();
+  get(int id) async {
+    try {
+      await (select(db.schedules)
+        ..where((schedule) => schedule.id?.equals(id))).getSingle();
+    } catch(_) {
+      return null;
+    }
+  }
 
   /// Поиск графика
-  Future<Schedule> find(String code) async =>
-      await (select(db.schedules)..where((schedule) => schedule.code.equals(code))).getSingle();
+  find(String code) async {
+    try {
+      await (select(db.schedules)
+        ..where((schedule) => schedule.code.equals(code))).getSingle();
+    } catch(_) {
+      return null;
+    }
+  }
 }
 
 // Дни графиков ----------------------------------------------------------------
@@ -566,19 +602,25 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
       ).watch();
 
   /// Предыдущая группа перед заданной
-  Future<Group> getPrevious(Org org, Group group) async =>
-    await db._previousGroup(org.id, group.name).map((row) =>
-        Group(
-          id: row.id,
-          orgId: row.orgId,
-          name: row.name,
-          scheduleId: row.scheduleId,
-          meals: row.meals,
-        )
-    ).getSingle() ?? _getFirst(org);
+  getPrevious(Org org, Group group) async {
+    try {
+      return await db._previousGroup(org.id, group.name).map((row) =>
+          Group(
+            id: row.id,
+            orgId: row.orgId,
+            name: row.name,
+            scheduleId: row.scheduleId,
+            meals: row.meals,
+          )
+      ).getSingle();
+    } catch(_) {
+      return _getFirst(org);
+    }
+  }
 
   /// Первая группа организации в алфавитном порядке
-  Future<Group> _getFirst(Org org) async =>
+  _getFirst(Org org) async {
+    try {
       await db._firstGroup(org.id).map((row) =>
           Group(
             id: row.id,
@@ -588,14 +630,24 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
             meals: row.meals,
           )
       ).getSingle();
+    } catch(_) {
+      return null;
+    }
+  }
 
   /// Поиск группы
-  Future<Group> find(String name, Org org, Schedule schedule) async =>
-      await (select(db.groups)..where((e) =>
+  find(String name, Org org, Schedule schedule) async {
+    try {
+      return await (select(db.groups)
+        ..where((e) =>
         e.name.equals(name) &
         e.orgId.equals(org.id) &
         e.scheduleId.equals(schedule.id)
-      )).getSingle();
+        )).getSingle();
+    } catch(_) {
+      return null;
+    }
+  }
 }
 
 // Персоны ---------------------------------------------------------------------
@@ -662,16 +714,22 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
     String name,
     String middleName,
     DateTime birthday,
-  ) async =>
-      await (db._findPerson(family, name, middleName, birthday).map((row) => Person(
-        id: row.id,
-        family: row.family,
-        name: row.name,
-        middleName: row.middleName,
-        birthday: row.birthday,
-        phone: row.phone,
-        phone2: row.phone2,
-      ))).getSingle();
+  ) async {
+    try {
+      await (db._findPerson(family, name, middleName, birthday).map((row) =>
+          Person(
+            id: row.id,
+            family: row.family,
+            name: row.name,
+            middleName: row.middleName,
+            birthday: row.birthday,
+            phone: row.phone,
+            phone2: row.phone2,
+          ))).getSingle();
+    } catch(_) {
+      return null;
+    }
+  }
 }
 
 // Персоны в группе -----------------------------------------------------
@@ -758,11 +816,17 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
       )).watch();
 
   /// Поиск персоны в группе
-  Future<GroupPerson> find(Group group, Person person) async =>
-      await (select(db.groupPersons)..where((e) =>
+  Future<GroupPerson> find(Group group, Person person) async {
+    try {
+      return await (select(db.groupPersons)
+        ..where((e) =>
         e.groupId.equals(group.id) &
         e.personId.equals(person.id)
-      )).getSingle();
+        )).getSingle();
+    } catch(_) {
+      return null;
+    }
+  }
 }
 
 // Посещаемость персон в группе ----------------------------------------------
@@ -833,11 +897,17 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
       )).watch();
 
   /// Поиск посещаемости
-  Future<Attendance> find(GroupPerson groupPerson, DateTime date) async =>
-      await (select(db.attendances)..where((e) =>
+  Future<Attendance> find(GroupPerson groupPerson, DateTime date) async {
+    try {
+      await (select(db.attendances)
+        ..where((e) =>
         e.groupPersonId.equals(groupPerson.id) &
         e.date.equals(date)
-      )).getSingle();
+        )).getSingle();
+    } catch(_) {
+      return null;
+    }
+  }
 }
 
 // Настройки -------------------------------------------------------------------
@@ -955,7 +1025,14 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
 
   // Активный период
   Stream<DateTime> watchActivePeriod() => db._activePeriod().watchSingle();
-  Future<DateTime> getActivePeriod() async => await db._activePeriod().getSingle();
+
+  getActivePeriod() async {
+    try {
+      return await db._activePeriod().getSingle();
+    } catch(_) {
+      return null;
+    }
+  }
 
   /// Установка активного периода
   Future setActivePeriod(DateTime period) async {

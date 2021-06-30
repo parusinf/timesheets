@@ -16,13 +16,13 @@ class Org extends DataClass implements Insertable<Org> {
   factory Org.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
-    final stringType = db.typeSystem.forDartType<String>();
     return Org(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
-      inn: stringType.mapFromDatabaseResponse(data['${effectivePrefix}inn']),
-      activeGroupId: intType
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      name: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      inn: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}inn']),
+      activeGroupId: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}activeGroupId']),
     );
   }
@@ -97,7 +97,7 @@ class Org extends DataClass implements Insertable<Org> {
   int get hashCode => $mrjf($mrjc(id.hashCode,
       $mrjc(name.hashCode, $mrjc(inn.hashCode, activeGroupId.hashCode))));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Org &&
           other.id == this.id &&
@@ -258,8 +258,8 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Org map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Org.fromData(data, _db, prefix: effectivePrefix);
+    return Org.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -278,11 +278,10 @@ class Schedule extends DataClass implements Insertable<Schedule> {
   factory Schedule.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
-    final stringType = db.typeSystem.forDartType<String>();
     return Schedule(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      code: stringType.mapFromDatabaseResponse(data['${effectivePrefix}code']),
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      code: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}code']),
     );
   }
   @override
@@ -337,7 +336,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
   @override
   int get hashCode => $mrjf($mrjc(id.hashCode, code.hashCode));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Schedule && other.id == this.id && other.code == this.code);
 }
@@ -443,8 +442,8 @@ class Schedules extends Table with TableInfo<Schedules, Schedule> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Schedule map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Schedule.fromData(data, _db, prefix: effectivePrefix);
+    return Schedule.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -469,15 +468,13 @@ class ScheduleDay extends DataClass implements Insertable<ScheduleDay> {
   factory ScheduleDay.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
-    final doubleType = db.typeSystem.forDartType<double>();
     return ScheduleDay(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      scheduleId:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}scheduleId']),
-      dayNumber:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}dayNumber']),
-      hoursNorm: doubleType
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      scheduleId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}scheduleId']),
+      dayNumber: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}dayNumber']),
+      hoursNorm: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}hoursNorm']),
     );
   }
@@ -560,7 +557,7 @@ class ScheduleDay extends DataClass implements Insertable<ScheduleDay> {
       $mrjc(
           scheduleId.hashCode, $mrjc(dayNumber.hashCode, hoursNorm.hashCode))));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ScheduleDay &&
           other.id == this.id &&
@@ -727,8 +724,8 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   ScheduleDay map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return ScheduleDay.fromData(data, _db, prefix: effectivePrefix);
+    return ScheduleDay.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -748,13 +745,11 @@ class Holiday extends DataClass implements Insertable<Holiday> {
   factory Holiday.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
-    final dateTimeType = db.typeSystem.forDartType<DateTime>();
     return Holiday(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      date:
-          dateTimeType.mapFromDatabaseResponse(data['${effectivePrefix}date']),
-      workday: dateTimeType
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      date: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date']),
+      workday: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}workday']),
     );
   }
@@ -821,7 +816,7 @@ class Holiday extends DataClass implements Insertable<Holiday> {
   int get hashCode =>
       $mrjf($mrjc(id.hashCode, $mrjc(date.hashCode, workday.hashCode)));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Holiday &&
           other.id == this.id &&
@@ -953,8 +948,8 @@ class Holidays extends Table with TableInfo<Holidays, Holiday> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Holiday map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Holiday.fromData(data, _db, prefix: effectivePrefix);
+    return Holiday.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -981,15 +976,16 @@ class Group extends DataClass implements Insertable<Group> {
   factory Group.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
-    final stringType = db.typeSystem.forDartType<String>();
     return Group(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      orgId: intType.mapFromDatabaseResponse(data['${effectivePrefix}orgId']),
-      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
-      scheduleId:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}scheduleId']),
-      meals: intType.mapFromDatabaseResponse(data['${effectivePrefix}meals']),
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      orgId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}orgId']),
+      name: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      scheduleId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}scheduleId']),
+      meals: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}meals']),
     );
   }
   @override
@@ -1076,7 +1072,7 @@ class Group extends DataClass implements Insertable<Group> {
       $mrjc(orgId.hashCode,
           $mrjc(name.hashCode, $mrjc(scheduleId.hashCode, meals.hashCode)))));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Group &&
           other.id == this.id &&
@@ -1266,8 +1262,8 @@ class Groups extends Table with TableInfo<Groups, Group> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Group map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Group.fromData(data, _db, prefix: effectivePrefix);
+    return Group.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -1298,22 +1294,20 @@ class Person extends DataClass implements Insertable<Person> {
   factory Person.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
-    final stringType = db.typeSystem.forDartType<String>();
-    final dateTimeType = db.typeSystem.forDartType<DateTime>();
     return Person(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      family:
-          stringType.mapFromDatabaseResponse(data['${effectivePrefix}family']),
-      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
-      middleName: stringType
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      family: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}family']),
+      name: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      middleName: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}middleName']),
-      birthday: dateTimeType
+      birthday: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}birthday']),
-      phone:
-          stringType.mapFromDatabaseResponse(data['${effectivePrefix}phone']),
-      phone2:
-          stringType.mapFromDatabaseResponse(data['${effectivePrefix}phone2']),
+      phone: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}phone']),
+      phone2: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}phone2']),
     );
   }
   @override
@@ -1432,7 +1426,7 @@ class Person extends DataClass implements Insertable<Person> {
                   $mrjc(birthday.hashCode,
                       $mrjc(phone.hashCode, phone2.hashCode)))))));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Person &&
           other.id == this.id &&
@@ -1668,8 +1662,8 @@ class Persons extends Table with TableInfo<Persons, Person> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Person map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Person.fromData(data, _db, prefix: effectivePrefix);
+    return Person.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -1696,17 +1690,15 @@ class GroupPerson extends DataClass implements Insertable<GroupPerson> {
   factory GroupPerson.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
-    final dateTimeType = db.typeSystem.forDartType<DateTime>();
     return GroupPerson(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      groupId:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}groupId']),
-      personId:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}personId']),
-      beginDate: dateTimeType
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      groupId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}groupId']),
+      personId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}personId']),
+      beginDate: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}beginDate']),
-      endDate: dateTimeType
+      endDate: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}endDate']),
     );
   }
@@ -1805,7 +1797,7 @@ class GroupPerson extends DataClass implements Insertable<GroupPerson> {
           $mrjc(personId.hashCode,
               $mrjc(beginDate.hashCode, endDate.hashCode)))));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is GroupPerson &&
           other.id == this.id &&
@@ -1991,8 +1983,8 @@ class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   GroupPerson map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return GroupPerson.fromData(data, _db, prefix: effectivePrefix);
+    return GroupPerson.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -2017,16 +2009,13 @@ class Attendance extends DataClass implements Insertable<Attendance> {
   factory Attendance.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
-    final dateTimeType = db.typeSystem.forDartType<DateTime>();
-    final doubleType = db.typeSystem.forDartType<double>();
     return Attendance(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      groupPersonId: intType
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      groupPersonId: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}groupPersonId']),
-      date:
-          dateTimeType.mapFromDatabaseResponse(data['${effectivePrefix}date']),
-      hoursFact: doubleType
+      date: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date']),
+      hoursFact: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}hoursFact']),
     );
   }
@@ -2105,7 +2094,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
   int get hashCode => $mrjf($mrjc(id.hashCode,
       $mrjc(groupPersonId.hashCode, $mrjc(date.hashCode, hoursFact.hashCode))));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Attendance &&
           other.id == this.id &&
@@ -2274,8 +2263,8 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Attendance map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Attendance.fromData(data, _db, prefix: effectivePrefix);
+    return Attendance.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -2310,27 +2299,23 @@ class Setting extends DataClass implements Insertable<Setting> {
   factory Setting.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
-    final stringType = db.typeSystem.forDartType<String>();
-    final boolType = db.typeSystem.forDartType<bool>();
-    final doubleType = db.typeSystem.forDartType<double>();
-    final dateTimeType = db.typeSystem.forDartType<DateTime>();
     return Setting(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
-      valueType: Settings.$converter0.mapToDart(
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}valueType'])),
-      textValue: stringType
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      name: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      valueType: Settings.$converter0.mapToDart(const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}valueType'])),
+      textValue: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}textValue']),
-      boolValue:
-          boolType.mapFromDatabaseResponse(data['${effectivePrefix}boolValue']),
-      intValue:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}intValue']),
-      realValue: doubleType
+      boolValue: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}boolValue']),
+      intValue: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}intValue']),
+      realValue: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}realValue']),
-      dateValue: dateTimeType
+      dateValue: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}dateValue']),
-      isUserSetting: boolType
+      isUserSetting: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}isUserSetting']),
     );
   }
@@ -2482,7 +2467,7 @@ class Setting extends DataClass implements Insertable<Setting> {
                               $mrjc(dateValue.hashCode,
                                   isUserSetting.hashCode)))))))));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Setting &&
           other.id == this.id &&
@@ -2532,7 +2517,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
   static Insertable<Setting> custom({
     Expression<int> id,
     Expression<String> name,
-    Expression<int> valueType,
+    Expression<ValueType> valueType,
     Expression<String> textValue,
     Expression<bool> boolValue,
     Expression<int> intValue,
@@ -2774,8 +2759,8 @@ class Settings extends Table with TableInfo<Settings, Setting> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Setting map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Setting.fromData(data, _db, prefix: effectivePrefix);
+    return Setting.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -2870,7 +2855,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<ScheduleDay> _daysInSchedule(int scheduleId) {
     return customSelect(
         'SELECT *\n  FROM schedule_days\n WHERE scheduleId = :scheduleId',
-        variables: [Variable.withInt(scheduleId)],
+        variables: [Variable<int>(scheduleId)],
         readsFrom: {scheduleDays}).map(scheduleDays.mapFromRow);
   }
 
@@ -2884,7 +2869,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<Org> _previousOrg(String orgName) {
     return customSelect(
         'SELECT *\n  FROM orgs\n WHERE name =\n       (\n         SELECT MAX(name)\n           FROM orgs\n          WHERE name < :orgName\n       )',
-        variables: [Variable.withString(orgName)],
+        variables: [Variable<String>(orgName)],
         readsFrom: {orgs}).map(orgs.mapFromRow);
   }
 
@@ -2898,7 +2883,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<Schedule> _previousSchedule(String scheduleCode) {
     return customSelect(
         'SELECT *\n  FROM schedules\n WHERE code =\n       (\n         SELECT MAX(code)\n           FROM schedules\n          WHERE code < :scheduleCode\n       )',
-        variables: [Variable.withString(scheduleCode)],
+        variables: [Variable<String>(scheduleCode)],
         readsFrom: {schedules}).map(schedules.mapFromRow);
   }
 
@@ -2910,14 +2895,14 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<Group> _firstGroup(int orgId) {
     return customSelect(
         'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MIN(name)\n           FROM "groups"\n          WHERE orgId = :orgId\n       )',
-        variables: [Variable.withInt(orgId)],
+        variables: [Variable<int>(orgId)],
         readsFrom: {groups}).map(groups.mapFromRow);
   }
 
   Selectable<Group> _previousGroup(int orgId, String groupName) {
     return customSelect(
         'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MAX(name)\n           FROM "groups"\n          WHERE name < :groupName\n       )',
-        variables: [Variable.withInt(orgId), Variable.withString(groupName)],
+        variables: [Variable<int>(orgId), Variable<String>(groupName)],
         readsFrom: {groups}).map(groups.mapFromRow);
   }
 
@@ -2927,11 +2912,11 @@ abstract class _$Db extends GeneratedDatabase {
         variables: [],
         readsFrom: {orgs, groups}).map((QueryRow row) {
       return OrgsViewResult(
-        id: row.readInt('id'),
-        name: row.readString('name'),
-        inn: row.readString('inn'),
-        activeGroupId: row.readInt('activeGroupId'),
-        groupCount: row.readInt('groupCount'),
+        id: row.read<int>('id'),
+        name: row.read<String>('name'),
+        inn: row.read<String>('inn'),
+        activeGroupId: row.read<int>('activeGroupId'),
+        groupCount: row.read<int>('groupCount'),
       );
     });
   }
@@ -2942,9 +2927,9 @@ abstract class _$Db extends GeneratedDatabase {
         variables: [],
         readsFrom: {schedules, groups}).map((QueryRow row) {
       return SchedulesViewResult(
-        id: row.readInt('id'),
-        code: row.readString('code'),
-        groupCount: row.readInt('groupCount'),
+        id: row.read<int>('id'),
+        code: row.read<String>('code'),
+        groupCount: row.read<int>('groupCount'),
       );
     });
   }
@@ -2952,16 +2937,16 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<GroupsViewResult> _groupsView(int orgId) {
     return customSelect(
         'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       G.meals,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE G.orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
-        variables: [Variable.withInt(orgId)],
+        variables: [Variable<int>(orgId)],
         readsFrom: {groups, schedules, groupPersons}).map((QueryRow row) {
       return GroupsViewResult(
-        id: row.readInt('id'),
-        orgId: row.readInt('orgId'),
-        name: row.readString('name'),
-        scheduleId: row.readInt('scheduleId'),
-        scheduleCode: row.readString('scheduleCode'),
-        meals: row.readInt('meals'),
-        personCount: row.readInt('personCount'),
+        id: row.read<int>('id'),
+        orgId: row.read<int>('orgId'),
+        name: row.read<String>('name'),
+        scheduleId: row.read<int>('scheduleId'),
+        scheduleCode: row.read<String>('scheduleCode'),
+        meals: row.read<int>('meals'),
+        personCount: row.read<int>('personCount'),
       );
     });
   }
@@ -2969,11 +2954,11 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<OrgMealsResult> _orgMeals(int orgId) {
     return customSelect(
         'SELECT G.orgId,\n       G.meals\n  FROM "groups" G\n WHERE G.orgId = :orgId\n GROUP BY\n       G.orgId,\n       G.meals\n ORDER BY\n       G.orgId,\n       G.meals',
-        variables: [Variable.withInt(orgId)],
+        variables: [Variable<int>(orgId)],
         readsFrom: {groups}).map((QueryRow row) {
       return OrgMealsResult(
-        orgId: row.readInt('orgId'),
-        meals: row.readInt('meals'),
+        orgId: row.read<int>('orgId'),
+        meals: row.read<int>('meals'),
       );
     });
   }
@@ -2984,14 +2969,14 @@ abstract class _$Db extends GeneratedDatabase {
         variables: [],
         readsFrom: {persons, groupPersons}).map((QueryRow row) {
       return PersonsViewResult(
-        id: row.readInt('id'),
-        family: row.readString('family'),
-        name: row.readString('name'),
-        middleName: row.readString('middleName'),
-        birthday: row.readDateTime('birthday'),
-        phone: row.readString('phone'),
-        phone2: row.readString('phone2'),
-        groupCount: row.readInt('groupCount'),
+        id: row.read<int>('id'),
+        family: row.read<String>('family'),
+        name: row.read<String>('name'),
+        middleName: row.read<String>('middleName'),
+        birthday: row.read<DateTime>('birthday'),
+        phone: row.read<String>('phone'),
+        phone2: row.read<String>('phone2'),
+        groupCount: row.read<int>('groupCount'),
       );
     });
   }
@@ -3001,10 +2986,10 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT P.id,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2\n  FROM persons P\n WHERE P.family = :family\n   AND P.name = :name\n   AND (:middleName IS NULL OR :middleName = \'\' OR P.middleName = :middleName)\n   AND (:birthday IS NULL OR P.birthday = :birthday)',
         variables: [
-          Variable.withString(family),
-          Variable.withString(name),
-          Variable.withString(middleName),
-          Variable.withDateTime(birthday)
+          Variable<String>(family),
+          Variable<String>(name),
+          Variable<String>(middleName),
+          Variable<DateTime>(birthday)
         ],
         readsFrom: {
           persons
@@ -3014,21 +2999,21 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {
     return customSelect(
         'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
-        variables: [Variable.withInt(groupId)],
+        variables: [Variable<int>(groupId)],
         readsFrom: {groupPersons, persons, attendances}).map((QueryRow row) {
       return PersonsInGroupResult(
-        id: row.readInt('id'),
-        groupId: row.readInt('groupId'),
-        personId: row.readInt('personId'),
-        beginDate: row.readDateTime('beginDate'),
-        endDate: row.readDateTime('endDate'),
-        family: row.readString('family'),
-        name: row.readString('name'),
-        middleName: row.readString('middleName'),
-        birthday: row.readDateTime('birthday'),
-        phone: row.readString('phone'),
-        phone2: row.readString('phone2'),
-        attendanceCount: row.readInt('attendanceCount'),
+        id: row.read<int>('id'),
+        groupId: row.read<int>('groupId'),
+        personId: row.read<int>('personId'),
+        beginDate: row.read<DateTime>('beginDate'),
+        endDate: row.read<DateTime>('endDate'),
+        family: row.read<String>('family'),
+        name: row.read<String>('name'),
+        middleName: row.read<String>('middleName'),
+        birthday: row.read<DateTime>('birthday'),
+        phone: row.read<String>('phone'),
+        phone2: row.read<String>('phone2'),
+        attendanceCount: row.read<int>('attendanceCount'),
       );
     });
   }
@@ -3038,9 +3023,9 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
         variables: [
-          Variable.withInt(groupId),
-          Variable.withDateTime(periodBegin),
-          Variable.withDateTime(periodEnd)
+          Variable<int>(groupId),
+          Variable<DateTime>(periodBegin),
+          Variable<DateTime>(periodEnd)
         ],
         readsFrom: {
           groupPersons,
@@ -3048,18 +3033,18 @@ abstract class _$Db extends GeneratedDatabase {
           attendances
         }).map((QueryRow row) {
       return PersonsInGroupPeriodResult(
-        id: row.readInt('id'),
-        groupId: row.readInt('groupId'),
-        personId: row.readInt('personId'),
-        beginDate: row.readDateTime('beginDate'),
-        endDate: row.readDateTime('endDate'),
-        family: row.readString('family'),
-        name: row.readString('name'),
-        middleName: row.readString('middleName'),
-        birthday: row.readDateTime('birthday'),
-        phone: row.readString('phone'),
-        phone2: row.readString('phone2'),
-        attendanceCount: row.readInt('attendanceCount'),
+        id: row.read<int>('id'),
+        groupId: row.read<int>('groupId'),
+        personId: row.read<int>('personId'),
+        beginDate: row.read<DateTime>('beginDate'),
+        endDate: row.read<DateTime>('endDate'),
+        family: row.read<String>('family'),
+        name: row.read<String>('name'),
+        middleName: row.read<String>('middleName'),
+        birthday: row.read<DateTime>('birthday'),
+        phone: row.read<String>('phone'),
+        phone2: row.read<String>('phone2'),
+        attendanceCount: row.read<int>('attendanceCount'),
       );
     });
   }
@@ -3069,9 +3054,9 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT T.*\n  FROM group_persons L\n INNER JOIN attendances T ON T.groupPersonId = L.id\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n   AND T.date >= :periodBegin\n   AND T.date <= :periodEnd',
         variables: [
-          Variable.withInt(groupId),
-          Variable.withDateTime(periodBegin),
-          Variable.withDateTime(periodEnd)
+          Variable<int>(groupId),
+          Variable<DateTime>(periodBegin),
+          Variable<DateTime>(periodEnd)
         ],
         readsFrom: {
           groupPersons,
@@ -3084,9 +3069,9 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT L.groupId,\n       G.meals,\n       T.*\n  FROM "groups" G\n INNER JOIN group_persons L ON L.groupId = G.id\n INNER JOIN attendances T ON T.groupPersonId = L.id\n WHERE G.orgId = :orgId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n   AND T.date >= :periodBegin\n   AND T.date <= :periodEnd',
         variables: [
-          Variable.withInt(orgId),
-          Variable.withDateTime(periodBegin),
-          Variable.withDateTime(periodEnd)
+          Variable<int>(orgId),
+          Variable<DateTime>(periodBegin),
+          Variable<DateTime>(periodEnd)
         ],
         readsFrom: {
           groupPersons,
@@ -3094,12 +3079,12 @@ abstract class _$Db extends GeneratedDatabase {
           attendances
         }).map((QueryRow row) {
       return OrgAttendancesResult(
-        groupId: row.readInt('groupId'),
-        meals: row.readInt('meals'),
-        id: row.readInt('id'),
-        groupPersonId: row.readInt('groupPersonId'),
-        date: row.readDateTime('date'),
-        hoursFact: row.readDouble('hoursFact'),
+        groupId: row.read<int>('groupId'),
+        meals: row.read<int>('meals'),
+        id: row.read<int>('id'),
+        groupPersonId: row.read<int>('groupPersonId'),
+        date: row.read<DateTime>('date'),
+        hoursFact: row.read<double>('hoursFact'),
       );
     });
   }
@@ -3114,7 +3099,7 @@ abstract class _$Db extends GeneratedDatabase {
   Future<int> _setActiveOrg(int id) {
     return customUpdate(
       'UPDATE settings SET intValue = :id WHERE name = \'activeOrg\'',
-      variables: [Variable.withInt(id)],
+      variables: [Variable<int>(id)],
       updates: {settings},
       updateKind: UpdateKind.update,
     );
@@ -3130,7 +3115,7 @@ abstract class _$Db extends GeneratedDatabase {
   Future<int> _setActiveSchedule(int id) {
     return customUpdate(
       'UPDATE settings SET intValue = :id WHERE name = \'activeSchedule\'',
-      variables: [Variable.withInt(id)],
+      variables: [Variable<int>(id)],
       updates: {settings},
       updateKind: UpdateKind.update,
     );
@@ -3139,16 +3124,16 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<ActiveGroupResult> _activeGroup(int orgId) {
     return customSelect(
         'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       G.meals,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM orgs O\n INNER JOIN "groups" G ON G.id = O.activeGroupId\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE O.id = :orgId',
-        variables: [Variable.withInt(orgId)],
+        variables: [Variable<int>(orgId)],
         readsFrom: {groups, schedules, groupPersons, orgs}).map((QueryRow row) {
       return ActiveGroupResult(
-        id: row.readInt('id'),
-        orgId: row.readInt('orgId'),
-        name: row.readString('name'),
-        scheduleId: row.readInt('scheduleId'),
-        scheduleCode: row.readString('scheduleCode'),
-        meals: row.readInt('meals'),
-        personCount: row.readInt('personCount'),
+        id: row.read<int>('id'),
+        orgId: row.read<int>('orgId'),
+        name: row.read<String>('name'),
+        scheduleId: row.read<int>('scheduleId'),
+        scheduleCode: row.read<String>('scheduleCode'),
+        meals: row.read<int>('meals'),
+        personCount: row.read<int>('personCount'),
       );
     });
   }
@@ -3156,7 +3141,7 @@ abstract class _$Db extends GeneratedDatabase {
   Future<int> _setActiveGroup(int activeGroupId, int orgId) {
     return customUpdate(
       'UPDATE orgs SET activeGroupId = :activeGroupId WHERE id = :orgId',
-      variables: [Variable.withInt(activeGroupId), Variable.withInt(orgId)],
+      variables: [Variable<int>(activeGroupId), Variable<int>(orgId)],
       updates: {orgs},
       updateKind: UpdateKind.update,
     );
@@ -3168,13 +3153,13 @@ abstract class _$Db extends GeneratedDatabase {
         variables: [],
         readsFrom: {
           settings
-        }).map((QueryRow row) => row.readDateTime('dateValue'));
+        }).map((QueryRow row) => row.read<DateTime>('dateValue'));
   }
 
   Future<int> _setActivePeriod(DateTime activePeriod) {
     return customUpdate(
       'UPDATE settings SET dateValue = :activePeriod WHERE name = \'activePeriod\'',
-      variables: [Variable.withDateTime(activePeriod)],
+      variables: [Variable<DateTime>(activePeriod)],
       updates: {settings},
       updateKind: UpdateKind.update,
     );
@@ -3233,11 +3218,11 @@ class OrgsViewResult {
   final int activeGroupId;
   final int groupCount;
   OrgsViewResult({
-    this.id,
-    this.name,
+    @required this.id,
+    @required this.name,
     this.inn,
     this.activeGroupId,
-    this.groupCount,
+    @required this.groupCount,
   });
 }
 
@@ -3246,9 +3231,9 @@ class SchedulesViewResult {
   final String code;
   final int groupCount;
   SchedulesViewResult({
-    this.id,
-    this.code,
-    this.groupCount,
+    @required this.id,
+    @required this.code,
+    @required this.groupCount,
   });
 }
 
@@ -3261,13 +3246,13 @@ class GroupsViewResult {
   final int meals;
   final int personCount;
   GroupsViewResult({
-    this.id,
-    this.orgId,
-    this.name,
-    this.scheduleId,
-    this.scheduleCode,
+    @required this.id,
+    @required this.orgId,
+    @required this.name,
+    @required this.scheduleId,
+    @required this.scheduleCode,
     this.meals,
-    this.personCount,
+    @required this.personCount,
   });
 }
 
@@ -3275,7 +3260,7 @@ class OrgMealsResult {
   final int orgId;
   final int meals;
   OrgMealsResult({
-    this.orgId,
+    @required this.orgId,
     this.meals,
   });
 }
@@ -3290,14 +3275,14 @@ class PersonsViewResult {
   final String phone2;
   final int groupCount;
   PersonsViewResult({
-    this.id,
-    this.family,
-    this.name,
+    @required this.id,
+    @required this.family,
+    @required this.name,
     this.middleName,
     this.birthday,
     this.phone,
     this.phone2,
-    this.groupCount,
+    @required this.groupCount,
   });
 }
 
@@ -3315,18 +3300,18 @@ class PersonsInGroupResult {
   final String phone2;
   final int attendanceCount;
   PersonsInGroupResult({
-    this.id,
-    this.groupId,
-    this.personId,
+    @required this.id,
+    @required this.groupId,
+    @required this.personId,
     this.beginDate,
     this.endDate,
-    this.family,
-    this.name,
+    @required this.family,
+    @required this.name,
     this.middleName,
     this.birthday,
     this.phone,
     this.phone2,
-    this.attendanceCount,
+    @required this.attendanceCount,
   });
 }
 
@@ -3344,18 +3329,18 @@ class PersonsInGroupPeriodResult {
   final String phone2;
   final int attendanceCount;
   PersonsInGroupPeriodResult({
-    this.id,
-    this.groupId,
-    this.personId,
+    @required this.id,
+    @required this.groupId,
+    @required this.personId,
     this.beginDate,
     this.endDate,
-    this.family,
-    this.name,
+    @required this.family,
+    @required this.name,
     this.middleName,
     this.birthday,
     this.phone,
     this.phone2,
-    this.attendanceCount,
+    @required this.attendanceCount,
   });
 }
 
@@ -3367,12 +3352,12 @@ class OrgAttendancesResult {
   final DateTime date;
   final double hoursFact;
   OrgAttendancesResult({
-    this.groupId,
+    @required this.groupId,
     this.meals,
-    this.id,
-    this.groupPersonId,
-    this.date,
-    this.hoursFact,
+    @required this.id,
+    @required this.groupPersonId,
+    @required this.date,
+    @required this.hoursFact,
   });
 }
 
@@ -3385,13 +3370,13 @@ class ActiveGroupResult {
   final int meals;
   final int personCount;
   ActiveGroupResult({
-    this.id,
-    this.orgId,
-    this.name,
-    this.scheduleId,
-    this.scheduleCode,
+    @required this.id,
+    @required this.orgId,
+    @required this.name,
+    @required this.scheduleId,
+    @required this.scheduleCode,
     this.meals,
-    this.personCount,
+    @required this.personCount,
   });
 }
 

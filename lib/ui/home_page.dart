@@ -420,7 +420,6 @@ class HomePageState extends State<HomePage> {
       firstDate: DateTime(DateTime.now().year - 1),
       lastDate: DateTime(DateTime.now().year + 1),
       initialDate: _bloc.activePeriod.value,
-      locale: Locale('ru'),
     );
     if (period != null) {
       _bloc.setActivePeriod(lastDayOfMonth(period));
