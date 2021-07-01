@@ -123,7 +123,7 @@ class _GroupEditState extends State<GroupEdit> {
           Navigator.of(context).pop(groupView);
         } else {
           await _bloc.updateGroup(Group(
-            id: widget.groupView.id,
+            id: widget.groupView?.id,
             orgId: widget.groupView.orgId,
             name: trim(_nameEdit.text),
             scheduleId: _schedule?.id ?? widget.groupView.schedule,

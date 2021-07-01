@@ -93,15 +93,16 @@ Future launchUrl(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
 double getHoursNorm(Bloc bloc, DateTime date) {
   final weekdayNumber = abbrWeekdays.indexOf(abbrWeekday(date));
   final scheduleDays = bloc.scheduleDays.value;
-  var hoursNorm = scheduleDays[weekdayNumber].hoursNorm;
-  // Обнуление нормы часов по графику для праздничного дня
-  if (isHoliday(bloc, date)) {
-    hoursNorm = 0.0;
-  } else {
-    // Добавление нормы часов для переноса рабочего дня
-    if (isTransWorkday(bloc, date)) {
-      // Поиск нормы часов первого дня графика
-      hoursNorm = getFirstHoursNorm(bloc);
+  var hoursNorm = 0.0;
+  if (scheduleDays.length > 0) {
+    hoursNorm = scheduleDays[weekdayNumber].hoursNorm;
+    // Обнуление нормы часов по графику для праздничного дня
+    if (!isHoliday(bloc, date)) {
+      // Добавление нормы часов для переноса рабочего дня
+      if (isTransWorkday(bloc, date)) {
+        // Поиск нормы часов первого дня графика
+        hoursNorm = getFirstHoursNorm(bloc);
+      }
     }
   }
   return hoursNorm;

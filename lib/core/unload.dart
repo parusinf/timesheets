@@ -40,7 +40,7 @@ Future unloadToFile(
   for (final groupPerson in groupPersons) {
     final person = groupPerson.person;
     final personAttendances = attendances.where(
-            (attendance) => attendance.groupPersonId == groupPerson.id);
+            (attendance) => attendance.groupPersonId == groupPerson?.id);
     final dates = personAttendances.map((attendance) => attendance.date).toList();
 
     // Персона в группе

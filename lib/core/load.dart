@@ -31,6 +31,7 @@ Future loadFromFile(BuildContext context, String fileName) async {
   await parseContent(context, content);
 }
 
+/// Разбор и загрузка контента
 Future parseContent(BuildContext context, String content) async {
   final bloc = Provider.of<Bloc>(context, listen: false);
   final lines = content.split('\n');
@@ -59,7 +60,7 @@ Future parseContent(BuildContext context, String content) async {
     bloc.setActiveOrg(org);
     if (isNeedStringUpdate(org.inn, orgInn)) {
       bloc.db.orgsDao.update2(Org(
-          id: org.id,
+          id: org?.id,
           name: org.name,
           inn: orgInn
       ));
@@ -86,7 +87,7 @@ Future parseContent(BuildContext context, String content) async {
     bloc.setActiveGroup(group);
     if (group.meals != groupMeals) {
       bloc.db.groupsDao.update2(Group(
-          id: group.id,
+          id: group?.id,
           orgId: group.orgId,
           name: group.name,
           scheduleId: group.scheduleId,
@@ -126,7 +127,7 @@ Future parseContent(BuildContext context, String content) async {
       if (isNeedStringUpdate(person.phone, personPhone) ||
           isNeedStringUpdate(person.phone2, personPhone2)) {
         bloc.db.personsDao.update2(Person(
-          id: person.id,
+          id: person?.id,
           family: person.family,
           name: person.name,
           middleName: person.middleName,

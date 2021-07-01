@@ -95,7 +95,7 @@ class _OrgEditState extends State<OrgEdit> {
           Navigator.of(context).pop(org);
         } else {
           await bloc.updateOrg(Org(
-            id: widget.org.id,
+            id: widget.org?.id,
             name: trim(_nameEdit.text),
             inn: trim(_innEdit.text),
             activeGroupId: widget.org.activeGroupId,

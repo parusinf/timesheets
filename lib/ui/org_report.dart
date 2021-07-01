@@ -313,7 +313,7 @@ class OrgReportState extends State<OrgReport> {
   Widget _createTableRow(BuildContext context, int index) {
     final attendances = _grouping == 0
         ? _orgAttendances
-            .where((attendance) => attendance.groupId == _activeGroups[index].groupView.id)
+            .where((attendance) => attendance.groupId == _activeGroups[index].groupView?.id)
         : _orgAttendances
             .where((attendance) => attendance.meals == _orgMeals[index].meals);
     final period = _bloc.activePeriod.value;

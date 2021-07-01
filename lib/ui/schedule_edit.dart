@@ -116,7 +116,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
                 ));
           } else {
             await _bloc.updateSchedule(Schedule(
-              id: widget.schedule.id,
+              id: widget.schedule?.id,
               code: createScheduleCode(hours),
             ));
             _bloc.scheduleDays.value.forEach((scheduleDay) =>

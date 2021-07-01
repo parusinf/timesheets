@@ -106,7 +106,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
           );
         } else {
           await bloc.updateGroupPerson(GroupPersonView(
-            id: widget.groupPerson.id,
+            id: widget.groupPerson?.id,
             groupId: widget.groupPerson.groupId,
             person: _person ?? widget.groupPerson.person,
             beginDate: stringToDate(_beginDateEdit.text),

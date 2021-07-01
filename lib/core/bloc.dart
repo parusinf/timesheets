@@ -436,4 +436,26 @@ class Bloc {
   /// Исправление настройки
   Future<bool> updateSetting(Setting setting) async =>
       db.settingsDao.update2(setting);
+
+  /// Сброс базы данных
+  reset() async {
+    await db.reset();
+    activeOrg.add(null);
+    activeSchedule.add(null);
+    activeGroup.add(null);
+    activePeriod.add(null);
+    activeGroupPeriod.add(null);
+    activeOrgPeriod.add(null);
+    activeOrgs.add(null);
+    activeSchedules.add(null);
+    scheduleDays.add(null);
+    holidays.add(null);
+    holidaysDateList.add(null);
+    workdaysDateList.add(null);
+    activeGroups.add(null);
+    groupPersons.add(null);
+    groupPeriodPersons.add(null);
+    meals.add(null);
+    userSettings.add(null);
+  }
 }

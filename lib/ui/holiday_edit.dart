@@ -83,7 +83,7 @@ class _HolidayEditState extends State<HolidayEdit> {
           );
         } else {
           await _bloc.updateHoliday(Holiday(
-            id: widget.holiday.id,
+            id: widget.holiday?.id,
             date: stringToDate(_holidayEdit.text),
             workday: stringToDate(_workdayEdit.text),
           ));

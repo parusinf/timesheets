@@ -117,7 +117,7 @@ class _SettingsEditState extends State<SettingsEdit> {
           return button(setting.name,
             onPressed: () async {
               showAlertDialog(context, L10n.eraseAllData, () async {
-                await _bloc.db.reset();
+                await _bloc.reset();
                 Navigator.pop(context);
               });
             },

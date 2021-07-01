@@ -348,7 +348,7 @@ class HomePageState extends State<HomePage> {
   Widget _createTableRow(BuildContext context, int index) {
     final groupPerson = _groupPeriodPersons[index];
     final personAttendances = _groupAttendances
-        .where((attendance) => attendance.groupPersonId == groupPerson.id);
+        .where((attendance) => attendance.groupPersonId == groupPerson?.id);
     final period = _bloc.activePeriod.value;
     final rowCells = <Widget>[];
     // Итог по персоне за период

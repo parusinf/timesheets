@@ -116,7 +116,7 @@ class GroupPersonView extends GroupPerson {
   }) : super(
     id: id,
     groupId: groupId,
-    personId: person.id,
+    personId: person?.id,
     beginDate: beginDate,
     endDate: endDate,
   );
@@ -173,17 +173,6 @@ class OrgPeriod {
 /// База данных
 @UseMoor(
   include: {'model.moor'},
-  tables: [
-    Orgs,             // Организации
-    Schedules,        // Графики
-    ScheduleDays,     // Дни графиков
-    Holidays,         // Праздники
-    Groups,           // Группы
-    Persons,          // Персоны
-    GroupPersons,     // Персоны в группе
-    Attendances,      // Табели
-    Settings,         // Настройки
-  ],
   daos: [
     OrgsDao,
     SchedulesDao,
@@ -410,7 +399,7 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
   /// Первый график в алфавитном порядке
   _getFirst() async {
     try {
-      await db._firstSchedule().map((row) =>
+      return await db._firstSchedule().map((row) =>
           Schedule(
             id: row.id,
             code: row.code,
@@ -424,8 +413,8 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
   /// Получение графика
   get(int id) async {
     try {
-      await (select(db.schedules)
-        ..where((schedule) => schedule.id?.equals(id))).getSingle();
+      return await (select(db.schedules)
+        ..where((schedule) => schedule?.id?.equals(id))).getSingle();
     } catch(_) {
       return null;
     }
@@ -434,7 +423,7 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
   /// Поиск графика
   find(String code) async {
     try {
-      await (select(db.schedules)
+      return await (select(db.schedules)
         ..where((schedule) => schedule.code.equals(code))).getSingle();
     } catch(_) {
       return null;
@@ -455,14 +444,14 @@ class ScheduleDaysDao extends DatabaseAccessor<Db> with _$ScheduleDaysDaoMixin {
   }) async {
     final id = await into(db.scheduleDays).insert(
         ScheduleDaysCompanion(
-          scheduleId: Value(schedule.id),
+          scheduleId: Value(schedule?.id),
           dayNumber: Value(dayNumber),
           hoursNorm: Value(hoursNorm),
         )
     );
     return ScheduleDay(
       id: id,
-      scheduleId: schedule.id,
+      scheduleId: schedule?.id,
       dayNumber: dayNumber,
       hoursNorm: hoursNorm,
     );
@@ -552,15 +541,15 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
   }) async {
     final id = await into(db.groups).insert(
       GroupsCompanion(
-        orgId: Value(org.id),
+        orgId: Value(org?.id),
         name: Value(name),
-        scheduleId: Value(schedule.id),
+        scheduleId: Value(schedule?.id),
         meals: Value(meals),
       ),
     );
     return GroupView(
       id: id,
-      orgId: org.id,
+      orgId: org?.id,
       name: name,
       schedule: schedule,
       meals: meals,
@@ -604,7 +593,7 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
   /// Предыдущая группа перед заданной
   getPrevious(Org org, Group group) async {
     try {
-      return await db._previousGroup(org.id, group.name).map((row) =>
+      return await db._previousGroup(org?.id, group.name).map((row) =>
           Group(
             id: row.id,
             orgId: row.orgId,
@@ -621,7 +610,7 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
   /// Первая группа организации в алфавитном порядке
   _getFirst(Org org) async {
     try {
-      await db._firstGroup(org.id).map((row) =>
+      return await db._firstGroup(org?.id).map((row) =>
           Group(
             id: row.id,
             orgId: row.orgId,
@@ -641,8 +630,8 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
       return await (select(db.groups)
         ..where((e) =>
         e.name.equals(name) &
-        e.orgId.equals(org.id) &
-        e.scheduleId.equals(schedule.id)
+        e.orgId.equals(org?.id) &
+        e.scheduleId.equals(schedule?.id)
         )).getSingle();
     } catch(_) {
       return null;
@@ -716,7 +705,7 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
     DateTime birthday,
   ) async {
     try {
-      await (db._findPerson(family, name, middleName, birthday).map((row) =>
+      return await (db._findPerson(family, name, middleName, birthday).map((row) =>
           Person(
             id: row.id,
             family: row.family,
@@ -746,16 +735,16 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
   ) async {
     final id = await into(db.groupPersons).insert(
         GroupPersonsCompanion(
-          groupId: Value(group.id),
-          personId: Value(person.id),
+          groupId: Value(group?.id),
+          personId: Value(person?.id),
           beginDate: Value(beginDate),
           endDate: Value(endDate),
         )
     );
     return GroupPerson(
       id: id,
-      groupId: group.id,
-      personId: person.id,
+      groupId: group?.id,
+      personId: person?.id,
       beginDate: beginDate,
       endDate: endDate,
     );
@@ -768,7 +757,7 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
   /// Удаление персоны из группы
   Future<bool> delete2(GroupPerson groupPerson) async =>
       (await delete(db.groupPersons).delete(
-          GroupPersonsCompanion(id: Value(groupPerson.id))
+          GroupPersonsCompanion(id: Value(groupPerson?.id))
       )) > 0 ? true : false;
 
   /// Отслеживание персон в группе
@@ -820,8 +809,8 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
     try {
       return await (select(db.groupPersons)
         ..where((e) =>
-        e.groupId.equals(group.id) &
-        e.personId.equals(person.id)
+        e.groupId.equals(group?.id) &
+        e.personId.equals(person?.id)
         )).getSingle();
     } catch(_) {
       return null;
@@ -842,7 +831,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
   }) async {
     final id = await into(db.attendances).insert(
       AttendancesCompanion(
-        groupPersonId: Value(groupPerson.id),
+        groupPersonId: Value(groupPerson?.id),
         date: Value(date),
         hoursFact: Value(hoursFact),
       ),
@@ -850,7 +839,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
     );
     return Attendance(
         id: id,
-        groupPersonId: groupPerson.id,
+        groupPersonId: groupPerson?.id,
         date: date,
         hoursFact: hoursFact
     );
@@ -899,9 +888,9 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
   /// Поиск посещаемости
   Future<Attendance> find(GroupPerson groupPerson, DateTime date) async {
     try {
-      await (select(db.attendances)
+      return await (select(db.attendances)
         ..where((e) =>
-        e.groupPersonId.equals(groupPerson.id) &
+        e.groupPersonId.equals(groupPerson?.id) &
         e.date.equals(date)
         )).getSingle();
     } catch(_) {
@@ -979,9 +968,9 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
     if (org == null)
       delete2('activeOrg');
     else {
-      final count = await db._setActiveOrg(org.id);
+      final count = await db._setActiveOrg(org?.id);
       if (count == 0) {
-        insert2('activeOrg', ValueType.int, intValue: org.id);
+        insert2('activeOrg', ValueType.int, intValue: org?.id);
       }
     }
   }
@@ -999,9 +988,9 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
     if (schedule == null)
       delete2('activeSchedule');
     else {
-      final count = await db._setActiveSchedule(schedule.id);
+      final count = await db._setActiveSchedule(schedule?.id);
       if (count == 0) {
-        insert2('activeSchedule', ValueType.int, intValue: schedule.id);
+        insert2('activeSchedule', ValueType.int, intValue: schedule?.id);
       }
     }
   }
@@ -1021,7 +1010,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
 
   /// Установка активной группы
   Future setActiveGroup(Org org, Group group) async =>
-      await db._setActiveGroup(group?.id, org.id);
+      await db._setActiveGroup(group?.id, org?.id);
 
   // Активный период
   Stream<DateTime> watchActivePeriod() => db._activePeriod().watchSingle();

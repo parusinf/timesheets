@@ -130,7 +130,7 @@ class _PersonEditState extends State<PersonEdit> {
           );
         } else {
           await bloc.updatePerson(Person(
-            id: widget.person.id,
+            id: widget.person?.id,
             family: trim(_familyEdit.text),
             name: trim(_nameEdit.text),
             middleName: trim(_middleNameEdit.text),
