@@ -98,8 +98,8 @@ Copyright (c) 2020 Павел Никитин
 
 ### 5.1. Реестры
 
-* Единый реестр российских программ для ЭВМ и баз данных https://reestr.digital.gov.ru/reestr/339496/?sphrase_id=290012
-* Роспатент https://fips.ru/EGD/1ea51a53-7ead-46f4-bd8e-9a53a8640a38/2021613419.eod.pdf
+* Единый реестр российских программ для ЭВМ и баз данных https://reestr.digital.gov.ru/reestr/339496/
+* Роспатент https://www1.fips.ru/ofpstorage/Doc/PrEVM/RUNWPR/000/002/021/613/419/2021613419-00001/DOCUMENT.PDF
 
 ### 5.2. Нормативные документы
 
