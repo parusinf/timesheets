@@ -36,9 +36,11 @@ Widget form({
   return Scaffold(
     appBar: AppBar(
       title: Text(title),
-      actions: onSubmit == null ? null : <Widget>[
-        IconButton(icon: const Icon(Icons.done), onPressed: onSubmit),
-      ],
+      actions: onSubmit == null
+          ? null
+          : <Widget>[
+              IconButton(icon: const Icon(Icons.done), onPressed: onSubmit),
+            ],
     ),
     key: scaffoldKey,
     body: Form(
@@ -64,7 +66,8 @@ Widget textFormField({
   bool readOnly = false,
 }) {
   return Padding(
-    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, (maxLength ?? 0) > 0 ? 0.0 : dividerHeight),
+    padding: EdgeInsets.fromLTRB(
+        0.0, 0.0, 0.0, (maxLength ?? 0) > 0 ? 0.0 : dividerHeight),
     child: TextFormField(
       controller: controller,
       initialValue: initialValue,
@@ -95,9 +98,9 @@ Widget boolFormField({
     child: Row(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.fromLTRB(0.0, padding2, padding1, padding2),
-          child: Icon(icon, color: Colors.black54)
-        ),
+            padding:
+                const EdgeInsets.fromLTRB(0.0, padding2, padding1, padding2),
+            child: Icon(icon, color: Colors.black54)),
         text(labelText, fontSize: 16.0),
         Spacer(),
         CupertinoSwitch(
@@ -121,7 +124,8 @@ Widget intFormField({
   bool autofocus = false,
 }) {
   return Padding(
-    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, (maxLength ?? 0) > 0 ? 0.0 : dividerHeight),
+    padding: EdgeInsets.fromLTRB(
+        0.0, 0.0, 0.0, (maxLength ?? 0) > 0 ? 0.0 : dividerHeight),
     child: TextFormField(
       controller: controller,
       initialValue: initialValue != null ? initialValue.toString() : null,
@@ -151,7 +155,8 @@ Widget realFormField({
   bool autofocus = false,
 }) {
   return Padding(
-    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, (maxLength ?? 0) > 0 ? 0.0 : dividerHeight),
+    padding: EdgeInsets.fromLTRB(
+        0.0, 0.0, 0.0, (maxLength ?? 0) > 0 ? 0.0 : dividerHeight),
     child: TextFormField(
       controller: controller,
       initialValue: initialValue != null ? doubleToString(initialValue) : null,
@@ -278,27 +283,25 @@ String validateDate(String value) {
 
 /// Элемент формы
 Widget formElement(IconData icon, Widget widget) {
-  return Row(
-    children: <Widget>[
-      Padding(
+  return Row(children: <Widget>[
+    Padding(
         padding: const EdgeInsets.fromLTRB(0.0, padding2, padding1, padding2),
-        child: Icon(icon, color: Colors.black54)
-      ),
-      widget,
-    ]
-  );
+        child: Icon(icon, color: Colors.black54)),
+    widget,
+  ]);
 }
 
 /// Заголовок списка с кнопкой добавления
-Widget listHeater(IconData icon, String title, {
-  VoidCallback onAddPressed,
-  VoidCallback onHeaderTap
-}) {
+Widget listHeater(IconData icon, String title,
+    {VoidCallback onAddPressed, VoidCallback onHeaderTap}) {
   final items = (formElement(icon, text(title.toUpperCase())) as Row).children;
   if (onAddPressed != null) {
     items.addAll(<Widget>[
       const Spacer(),
-      IconButton(icon: const Icon(Icons.add), color: Colors.black54, onPressed: onAddPressed),
+      IconButton(
+          icon: const Icon(Icons.add),
+          color: Colors.black54,
+          onPressed: onAddPressed),
     ]);
   }
   return onHeaderTap != null

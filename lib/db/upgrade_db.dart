@@ -1,4 +1,4 @@
-import 'package:moor/moor.dart';
+import 'package:drift/drift.dart';
 import 'package:timesheets/core.dart';
 import 'db.dart';
 import 'value_type.dart';
@@ -11,7 +11,8 @@ Future upgradeDb(Db db, Migrator m, int from, int to) async {
   }
   if (from <= 2) {
     await db.customStatement('DROP INDEX groups_index');
-    await db.customStatement('CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name)');
+    await db.customStatement(
+        'CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name)');
   }
   if (from <= 3) {
     await db.customStatement('''
@@ -33,7 +34,7 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
         "valueType = ValueType.int WHERE name IN ('activeOrg', 'activeSchedule')");
     await db.customStatement("UPDATE settings SET isUserSetting = FALSE, "
         "valueType = ValueType.date WHERE name IN ('activePeriod')");
-    await db.settingsDao.insert2(L10n.doubleTapInTimesheet,
-        ValueType.bool, boolValue: false, isUserSetting: true);
+    await db.settingsDao.insert2(L10n.doubleTapInTimesheet, ValueType.bool,
+        boolValue: false, isUserSetting: true);
   }
 }

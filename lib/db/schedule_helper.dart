@@ -10,9 +10,11 @@ List<double> parseScheduleCode(String code) {
     hours = List<double>.generate(7, (i) => 0.0);
   }
   final parts = code.split(';');
-  if (parts.length > 1) { // пн,вт 1ч;чт 2ч
+  if (parts.length > 1) {
+    // пн,вт 1ч;чт 2ч
     parts.forEach((part) => _parseScheduleCode(hours, part));
-  } else { // пн,вт 1ч
+  } else {
+    // пн,вт 1ч
     _parseScheduleCode(hours, code);
   }
   return hours;
@@ -38,7 +40,8 @@ String createScheduleCode(List<double> hours) {
           if (daysStr == days2Str) {
             parts.add('$daysStr $hour${L10n.hourLetter}');
           } else {
-            parts.add('$daysStr/$days2Str ${L10n.everyOtherWeek} ${doubleToString(hour)}${L10n.hourLetter}');
+            parts.add(
+                '$daysStr/$days2Str ${L10n.everyOtherWeek} ${doubleToString(hour)}${L10n.hourLetter}');
           }
         }
       });
@@ -49,15 +52,18 @@ String createScheduleCode(List<double> hours) {
 
 /// Формирование списка часов одному количеству часов
 void _parseScheduleCode(List<double> hours, String code) {
-  if (code.contains(L10n.everyOtherWeek)) { // вт/ср чз/нед 1ч
-    final daysHour = code.replaceFirst('${L10n.everyOtherWeek} ', '').split(
-        ' '); // ['вт/ср','1ч']
+  if (code.contains(L10n.everyOtherWeek)) {
+    // вт/ср чз/нед 1ч
+    final daysHour = code
+        .replaceFirst('${L10n.everyOtherWeek} ', '')
+        .split(' '); // ['вт/ср','1ч']
     assert(daysHour.length == 2);
     final weeks = daysHour[0].split('/'); // ['вт','ср']
     assert(weeks.length == 2);
     _parseWeek(hours, weeks[0], daysHour[1], 0);
     _parseWeek(hours, weeks[1], daysHour[1], 7);
-  } else { // пн,вт 1ч
+  } else {
+    // пн,вт 1ч
     final daysHour = code.split(' '); // ['пн,вт','1ч']
     assert(daysHour.length == 2);
     if (daysHour.length == 1) {
@@ -72,8 +78,8 @@ void _parseScheduleCode(List<double> hours, String code) {
 }
 
 /// Разбор строки с днями недели и строки с часами с учётом чередования недель
-void _parseWeek(List<double> hours, String daysString,
-    String hourString, int shift) {
+void _parseWeek(
+    List<double> hours, String daysString, String hourString, int shift) {
   final hour = double.parse(
       hourString.replaceFirst(L10n.hourLetter, '').replaceFirst(',', '.'));
   for (int day = 0; day < 7; day++) {

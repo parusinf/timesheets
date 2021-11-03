@@ -5,8 +5,7 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
 /// Добавление персоны
-Future addPerson(BuildContext context) async =>
-    push(context, PersonEdit(null));
+Future addPerson(BuildContext context) async => push(context, PersonEdit(null));
 
 /// Исправление персоны
 Future editPerson(BuildContext context, Person person) async =>
@@ -17,7 +16,8 @@ class PersonEdit extends StatefulWidget {
   final Person person;
   final DataActionType actionType;
   const PersonEdit(this.person, {Key key})
-      : this.actionType = person == null ? DataActionType.Insert : DataActionType.Update,
+      : this.actionType =
+            person == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override
   _PersonEditState createState() => _PersonEditState();
@@ -140,7 +140,7 @@ class _PersonEditState extends State<PersonEdit> {
           ));
         }
         Navigator.of(context).pop();
-      } catch(e) {
+      } catch (e) {
         showMessage(_scaffoldKey, e.toString());
       }
     }

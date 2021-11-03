@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:moor/moor.dart';
+import 'package:drift/drift.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core.dart';
@@ -102,13 +102,12 @@ class Bloc {
   Bloc() : db = Db() {
     // Получение контента, переданного при запуске приложения
     startUri().then(_onRedirected);
-    
+
     // Отслеживание контента во время работы приложения
     eventChannel.receiveBroadcastStream().listen((d) => _onRedirected(d));
 
     // Отслеживание активной организации из настройки
-    Rx.concat([db.settingsDao.watchActiveOrg()])
-        .listen(activeOrg.add);
+    Rx.concat([db.settingsDao.watchActiveOrg()]).listen(activeOrg.add);
 
     // Отслеживание активного графика из настройки
     Rx.concat([db.settingsDao.watchActiveSchedule()])
@@ -119,93 +118,84 @@ class Bloc {
         .listen(activeGroup.add);
 
     // Отслеживание активного периода из настройки
-    Rx.concat([db.settingsDao.watchActivePeriod()])
-        .listen(activePeriod.add);
+    Rx.concat([db.settingsDao.watchActivePeriod()]).listen(activePeriod.add);
 
     // Отслеживание дней активного графика
     Rx.concat([activeSchedule.switchMap(db.scheduleDaysDao.watch)])
         .listen(scheduleDays.add);
 
     // Отслеживание праздников
-    Rx.concat([db.holidaysDao.watch()])
-        .listen(holidays.add);
+    Rx.concat([db.holidaysDao.watch()]).listen(holidays.add);
 
     // Отслеживание праздничных дней
-    Rx.concat([db.holidaysDao.watchHolidays()])
-        .listen(holidaysDateList.add);
+    Rx.concat([db.holidaysDao.watchHolidays()]).listen(holidaysDateList.add);
 
     // Отслеживание рабочих дней
-    Rx.concat([db.holidaysDao.watchWorkdays()])
-        .listen(workdaysDateList.add);
+    Rx.concat([db.holidaysDao.watchWorkdays()]).listen(workdaysDateList.add);
 
     // Отслеживание групп в активной организации
     groups = activeOrg.switchMap(db.groupsDao.watch);
 
     // Отслеживание питания в активной организации
-    Rx.concat([activeOrg.switchMap(db.groupsDao.watchMeals)])
-        .listen(meals.add);
+    Rx.concat([activeOrg.switchMap(db.groupsDao.watchMeals)]).listen(meals.add);
 
     // Отслеживание активной группы и периода
     Rx.combineLatest2<Group, DateTime, GroupPeriod>(
-        activeGroup,
-        activePeriod,
-        (group, period) => GroupPeriod(group, period),
+      activeGroup,
+      activePeriod,
+      (group, period) => GroupPeriod(group, period),
     ).listen(activeGroupPeriod.add);
 
     // Отслеживание активной организации и периода
     Rx.combineLatest2<Org, DateTime, OrgPeriod>(
-        activeOrg,
-        activePeriod,
-        (org, period) => OrgPeriod(org, period),
+      activeOrg,
+      activePeriod,
+      (org, period) => OrgPeriod(org, period),
     ).listen(activeOrgPeriod.add);
 
     // Отслеживание посещаемости персон в группе за период
     attendances = activeGroupPeriod.switchMap(db.attendancesDao.watch);
 
     // Отслеживание посещаемости в организации за период
-    orgAttendances = activeOrgPeriod.switchMap(db.attendancesDao.watchOrgPeriod);
+    orgAttendances =
+        activeOrgPeriod.switchMap(db.attendancesDao.watchOrgPeriod);
 
     // Формирование признака активности организаций
     Rx.combineLatest2<List<Org>, Org, List<ActiveOrg>>(
         db.orgsDao.watch(),
         activeOrg,
-        (orgs, selected) =>
-            orgs.map((org) =>
-                ActiveOrg(org, org?.id == selected?.id)
-            ).toList()
-    ).listen(activeOrgs.add);
+        (orgs, selected) => orgs
+            .map((org) => ActiveOrg(org, org?.id == selected?.id))
+            .toList()).listen(activeOrgs.add);
 
     // Формирование признака активности графиков
     Rx.combineLatest2<List<Schedule>, Schedule, List<ActiveSchedule>>(
         db.schedulesDao.watch(),
         activeSchedule,
-        (schedules, selected) =>
-            schedules.map((schedule) =>
-                ActiveSchedule(schedule, schedule?.id == selected?.id)
-            ).toList()
-    ).listen(activeSchedules.add);
+        (schedules, selected) => schedules
+            .map((schedule) =>
+                ActiveSchedule(schedule, schedule?.id == selected?.id))
+            .toList()).listen(activeSchedules.add);
 
     // Формирование признака активности групп
     Rx.combineLatest2<List<GroupView>, Group, List<ActiveGroup>>(
         groups,
         activeGroup,
-        (groups, selected) =>
-            groups.map((group) =>
-                ActiveGroup(group, group?.id == selected?.id)
-            ).toList()
-    ).listen(activeGroups.add);
+        (groups, selected) => groups
+            .map((group) => ActiveGroup(group, group?.id == selected?.id))
+            .toList()).listen(activeGroups.add);
 
     // Отслеживание персон в активной группе
     Rx.concat([activeGroup.switchMap(db.groupPersonsDao.watch)])
         .listen(groupPersons.add);
 
     // Отслеживание персон в активной группе в активном периоде
-    Rx.concat([activeGroupPeriod.switchMap(db.groupPersonsDao.watchGroupPeriod)])
+    Rx.concat(
+            [activeGroupPeriod.switchMap(db.groupPersonsDao.watchGroupPeriod)])
         .listen(groupPeriodPersons.add);
 
     // Отслеживание пользовательских настроек
-    Rx.concat([db.settingsDao.watchUserSettings()])
-        .listen(userSettings.add);
+    Rx.concat([db.settingsDao.watchUserSettings()]).listen(userSettings.add);
   }
 
   /// Перенаправление контента в поток БЛоКа
@@ -252,8 +242,7 @@ class Bloc {
 
   // Организации ---------------------------------------------------------------
   /// Установка активной организации
-  Future setActiveOrg(Org org) async =>
-      db.settingsDao.setActiveOrg(org);
+  Future setActiveOrg(Org org) async => db.settingsDao.setActiveOrg(org);
 
   /// Добавление организации
   Future<Org> insertOrg({@required String name, String inn}) async {
@@ -282,8 +271,10 @@ class Bloc {
       db.settingsDao.setActiveSchedule(schedule);
 
   /// Добавление графика
-  Future<Schedule> insertSchedule({@required String code, createDays = false}) async {
-    final schedule = await db.schedulesDao.insert2(code: code, createDays: createDays);
+  Future<Schedule> insertSchedule(
+      {@required String code, createDays = false}) async {
+    final schedule =
+        await db.schedulesDao.insert2(code: code, createDays: createDays);
     setActiveSchedule(schedule);
     return schedule;
   }
@@ -356,8 +347,8 @@ class Bloc {
   /// Удаление группы
   Future<bool> deleteGroup(Group group) async {
     final result = db.groupsDao.delete2(group);
-    final previousGroup = await db.groupsDao.getPrevious(
-        activeOrg.value, group);
+    final previousGroup =
+        await db.groupsDao.getPrevious(activeOrg.value, group);
     setActiveGroup(previousGroup);
     return result;
   }
@@ -371,14 +362,15 @@ class Bloc {
     DateTime birthday,
     String phone,
     String phone2,
-  }) async => db.personsDao.insert2(
-    family: family,
-    name: name,
-    middleName: middleName,
-    birthday: birthday,
-    phone: phone,
-    phone2: phone2,
-  );
+  }) async =>
+      db.personsDao.insert2(
+        family: family,
+        name: name,
+        middleName: middleName,
+        birthday: birthday,
+        phone: phone,
+        phone2: phone2,
+      );
 
   /// Исправление персоны
   Future<bool> updatePerson(Person person) async =>
@@ -390,12 +382,11 @@ class Bloc {
 
   // Персоны в группе ----------------------------------------------------------
   /// Добавление персоны в группу
-  Future<GroupPerson> insertGroupPerson({
-    @required Group group,
-    @required Person person,
-    DateTime beginDate,
-    DateTime endDate
-  }) async =>
+  Future<GroupPerson> insertGroupPerson(
+          {@required Group group,
+          @required Person person,
+          DateTime beginDate,
+          DateTime endDate}) async =>
       db.groupPersonsDao.insert2(group, person, beginDate, endDate);
 
   /// Исправление персоны в группе
@@ -412,11 +403,12 @@ class Bloc {
     @required GroupPerson groupPerson,
     @required DateTime date,
     @required double hoursFact,
-  }) async => db.attendancesDao.insert2(
-    groupPerson: groupPerson,
-    date: date,
-    hoursFact: hoursFact,
-  );
+  }) async =>
+      db.attendancesDao.insert2(
+        groupPerson: groupPerson,
+        date: date,
+        hoursFact: hoursFact,
+      );
 
   /// Исправление посещаемости
   Future<bool> updateAttendance(Attendance attendance) async =>
@@ -430,8 +422,7 @@ class Bloc {
   Setting getSetting(String name) =>
       userSettings.value.firstWhere((e) => e.name == name);
 
-  get doubleTapInTimesheet =>
-      getSetting(L10n.doubleTapInTimesheet).boolValue;
+  get doubleTapInTimesheet => getSetting(L10n.doubleTapInTimesheet).boolValue;
 
   /// Исправление настройки
   Future<bool> updateSetting(Setting setting) async =>

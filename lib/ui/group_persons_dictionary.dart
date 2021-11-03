@@ -8,7 +8,7 @@ import 'package:timesheets/ui/group_person_edit.dart';
 
 /// Словарь персон в группе
 class GroupPersonsDictionary extends StatefulWidget {
-  const GroupPersonsDictionary({Key key}): super(key: key);
+  const GroupPersonsDictionary({Key key}) : super(key: key);
   @override
   _GroupPersonsDictionaryState createState() => _GroupPersonsDictionaryState();
 }
@@ -42,8 +42,8 @@ class _GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
   }
 
   Widget _buildTitle(BuildContext context) {
-    var horizontalTitleAlignment = Platform.isIOS
-        ? CrossAxisAlignment.center : CrossAxisAlignment.start;
+    var horizontalTitleAlignment =
+        Platform.isIOS ? CrossAxisAlignment.center : CrossAxisAlignment.start;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Column(
@@ -51,14 +51,13 @@ class _GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
         crossAxisAlignment: horizontalTitleAlignment,
         children: <Widget>[
           StreamBuilder<Group>(
-            stream: bloc.activeGroup,
-            builder: (context, snapshot) => snapshot.hasData
-                ? InkWell(
-                  onTap: () => editGroup(context, bloc.activeGroup.value),
-                  child: text(snapshot.data.name),
-                )
-                : text('')
-          ),
+              stream: bloc.activeGroup,
+              builder: (context, snapshot) => snapshot.hasData
+                  ? InkWell(
+                      onTap: () => editGroup(context, bloc.activeGroup.value),
+                      child: text(snapshot.data.name),
+                    )
+                  : text('')),
         ],
       ),
     );
@@ -111,38 +110,41 @@ class _GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      leading: isSearching ? const BackButton() : null,
-      title: isSearching ? _buildSearchField() : _buildTitle(context),
-      actions: _buildActions(),
-    ),
-    body: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(padding1),
-        child: StreamBuilder<List<GroupPersonView>>(
-            stream: bloc.groupPersons,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final list = snapshot.data.where((groupPerson) => personFullName(groupPerson.person)
-                    .toLowerCase()
-                    .contains(searchQuery.toLowerCase()))
-                  .toList();
-                if (list.length > 0) {
-                  return ListView.builder(
-                    itemBuilder: (context, index) => _GroupPersonCard(list, index),
-                    itemCount: list.length,
-                  );
-                } else {
-                  return centerButton(L10n.addPersonToGroup, onPressed: () => addGroupPerson(context));
-                }
-              } else {
-                return centerMessage(context, L10n.dataLoading);
-              }
-            }
+        appBar: AppBar(
+          leading: isSearching ? const BackButton() : null,
+          title: isSearching ? _buildSearchField() : _buildTitle(context),
+          actions: _buildActions(),
         ),
-      ),
-    ),
-  );
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(padding1),
+            child: StreamBuilder<List<GroupPersonView>>(
+                stream: bloc.groupPersons,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final list = snapshot.data
+                        .where((groupPerson) =>
+                            personFullName(groupPerson.person)
+                                .toLowerCase()
+                                .contains(searchQuery.toLowerCase()))
+                        .toList();
+                    if (list.length > 0) {
+                      return ListView.builder(
+                        itemBuilder: (context, index) =>
+                            _GroupPersonCard(list, index),
+                        itemCount: list.length,
+                      );
+                    } else {
+                      return centerButton(L10n.addPersonToGroup,
+                          onPressed: () => addGroupPerson(context));
+                    }
+                  } else {
+                    return centerMessage(context, L10n.dataLoading);
+                  }
+                }),
+          ),
+        ),
+      );
 }
 
 /// Карточка персоны в группе
@@ -154,35 +156,36 @@ class _GroupPersonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
-    child: Dismissible(
-      confirmDismiss: (direction) async => entry.attendanceCount == 0,
-      background: Material(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      key: UniqueKey(),
-      onDismissed: (direction) {
-        groupPersons.removeAt(index);
-        Provider.of<Bloc>(context, listen: false).deleteGroupPerson(entry);
-      },
-      child: Material(
-        color: Colors.lightGreen.withOpacity(passiveColorOpacity),
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: InkWell(
-          onTap: () => editGroupPerson(context, entry),
-          onDoubleTap: () => editGroupPerson(context, entry),
-          child: ListTile(
-            title: Text(personFullName(entry.person)),
-            subtitle: Text(datesToString(context, entry.beginDate, entry.endDate)),
-            trailing: IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () => editGroupPerson(context, entry),
+        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
+        child: Dismissible(
+          confirmDismiss: (direction) async => entry.attendanceCount == 0,
+          background: Material(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(borderRadius),
+            child: const Icon(Icons.delete, color: Colors.white),
+          ),
+          key: UniqueKey(),
+          onDismissed: (direction) {
+            groupPersons.removeAt(index);
+            Provider.of<Bloc>(context, listen: false).deleteGroupPerson(entry);
+          },
+          child: Material(
+            color: Colors.lightGreen.withOpacity(passiveColorOpacity),
+            borderRadius: BorderRadius.circular(borderRadius),
+            child: InkWell(
+              onTap: () => editGroupPerson(context, entry),
+              onDoubleTap: () => editGroupPerson(context, entry),
+              child: ListTile(
+                title: Text(personFullName(entry.person)),
+                subtitle: Text(
+                    datesToString(context, entry.beginDate, entry.endDate)),
+                trailing: IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () => editGroupPerson(context, entry),
+                ),
+              ),
             ),
           ),
         ),
-      ),
-    ),
-  );
+      );
 }

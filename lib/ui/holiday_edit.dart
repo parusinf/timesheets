@@ -16,7 +16,8 @@ class HolidayEdit extends StatefulWidget {
   final Holiday holiday;
   final DataActionType actionType;
   const HolidayEdit(this.holiday, {Key key})
-      : this.actionType = holiday == null ? DataActionType.Insert : DataActionType.Update,
+      : this.actionType =
+            holiday == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override
   _HolidayEditState createState() => _HolidayEditState();
@@ -89,7 +90,7 @@ class _HolidayEditState extends State<HolidayEdit> {
           ));
         }
         Navigator.of(context).pop();
-      } catch(e) {
+      } catch (e) {
         showMessage(_scaffoldKey, e.toString());
       }
     }

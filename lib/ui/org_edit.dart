@@ -4,8 +4,7 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
 /// Добавление организации
-Future addOrg(BuildContext context) async =>
-    push(context, OrgEdit(null));
+Future addOrg(BuildContext context) async => push(context, OrgEdit(null));
 
 /// Исправление организации
 Future editOrg(BuildContext context, Org org) async =>
@@ -16,7 +15,8 @@ class OrgEdit extends StatefulWidget {
   final Org org;
   final DataActionType actionType;
   const OrgEdit(this.org, {Key key})
-      : this.actionType = org == null ? DataActionType.Insert : DataActionType.Update,
+      : this.actionType =
+            org == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override
   _OrgEditState createState() => _OrgEditState();
@@ -102,7 +102,7 @@ class _OrgEditState extends State<OrgEdit> {
           ));
           Navigator.of(context).pop();
         }
-      } catch(e) {
+      } catch (e) {
         showMessage(_scaffoldKey, e.toString());
       }
     }

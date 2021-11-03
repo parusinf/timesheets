@@ -17,14 +17,15 @@ Future addGroup(BuildContext context) async {
 
 /// Исправление группы
 Future editGroup(BuildContext context, GroupView groupView) async =>
-  await push(context, GroupEdit(groupView));
+    await push(context, GroupEdit(groupView));
 
 /// Форма редактирования группы
 class GroupEdit extends StatefulWidget {
   final GroupView groupView;
   final DataActionType actionType;
   const GroupEdit(this.groupView, {Key key})
-      : this.actionType = groupView == null ? DataActionType.Insert : DataActionType.Update,
+      : this.actionType =
+            groupView == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override
   _GroupEditState createState() => _GroupEditState();
@@ -48,7 +49,8 @@ class _GroupEditState extends State<GroupEdit> {
     _nameEdit.text = widget.groupView?.name;
     _schedule = widget.groupView?.schedule ?? _bloc.activeSchedule.value;
     _scheduleEdit.text = _schedule?.code;
-    _meals = widget.groupView?.meals ?? 0; // 0 - Без питания, 1 - До 2 лет, 2 - От 3 лет
+    _meals = widget.groupView?.meals ??
+        0; // 0 - Без питания, 1 - До 2 лет, 2 - От 3 лет
   }
 
   @override
@@ -103,8 +105,8 @@ class _GroupEditState extends State<GroupEdit> {
 
   /// Выбор графика из словаря
   Future _selectSchedule() async {
-    _schedule = await push(context, SchedulesDictionary())
-        ?? _bloc.activeSchedule?.value;
+    _schedule = await push(context, SchedulesDictionary()) ??
+        _bloc.activeSchedule?.value;
     _scheduleEdit.text = _schedule?.code ?? _scheduleEdit.text;
   }
 
@@ -131,7 +133,7 @@ class _GroupEditState extends State<GroupEdit> {
           ));
           Navigator.of(context).pop();
         }
-      } catch(e) {
+      } catch (e) {
         showMessage(_scaffoldKey, e.toString());
       }
     }

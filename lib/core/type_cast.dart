@@ -54,8 +54,10 @@ String abbrWeekday(DateTime date) {
 
 /// Преобразование строки периода в дату
 DateTime stringToPeriod(BuildContext context, String period) {
-  final monthList = dateTimeSymbolMap()[L10n.languageCode].STANDALONEMONTHS
-      .map((month) => month.toLowerCase()).toList();
+  final monthList = dateTimeSymbolMap()[L10n.languageCode]
+      .STANDALONEMONTHS
+      .map((month) => month.toLowerCase())
+      .toList();
   final parts = period.split(' ');
   if (parts.length != 2) {
     return null;
@@ -69,12 +71,17 @@ DateTime stringToPeriod(BuildContext context, String period) {
 }
 
 /// Преобразование диапазона дат в строку
-String datesToString(BuildContext context, DateTime beginDate, DateTime endDate) {
+String datesToString(
+    BuildContext context, DateTime beginDate, DateTime endDate) {
   final begin = dateToString(beginDate);
   final end = dateToString(endDate);
   return begin != ''
-      ? end != '' ? '${L10n.from} $begin ${L10n.to} $end' : '${L10n.from} $begin'
-      : end != '' ? '${L10n.to} $end' : L10n.withoutTime;
+      ? end != ''
+          ? '${L10n.from} $begin ${L10n.to} $end'
+          : '${L10n.from} $begin'
+      : end != ''
+          ? '${L10n.to} $end'
+          : L10n.withoutTime;
 }
 
 // Преобразование ссылки в строку

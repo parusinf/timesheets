@@ -9,7 +9,8 @@ Future addGroupPerson(BuildContext context) async =>
     push(context, GroupPersonEdit(null));
 
 /// Исправление персоны
-Future editGroupPerson(BuildContext context, GroupPersonView groupPerson) async =>
+Future editGroupPerson(
+        BuildContext context, GroupPersonView groupPerson) async =>
     push(context, GroupPersonEdit(groupPerson));
 
 /// Форма редактирования персоны в группе
@@ -17,7 +18,8 @@ class GroupPersonEdit extends StatefulWidget {
   final GroupPersonView groupPerson;
   final DataActionType actionType;
   const GroupPersonEdit(this.groupPerson, {Key key})
-      : this.actionType = groupPerson == null ? DataActionType.Insert : DataActionType.Update,
+      : this.actionType =
+            groupPerson == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override
   _GroupPersonEditState createState() => _GroupPersonEditState();
@@ -88,7 +90,8 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
   /// Выбор персоны из словаря
   Future _selectPerson() async {
     _person = await push(context, PersonsDictionary());
-    _personEdit.text = _person != null ? personFullName(_person) : _personEdit.text;
+    _personEdit.text =
+        _person != null ? personFullName(_person) : _personEdit.text;
   }
 
   /// Обработка формы
@@ -114,7 +117,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
           ));
         }
         Navigator.of(context).pop();
-      } catch(e) {
+      } catch (e) {
         showMessage(_scaffoldKey, e.toString());
       }
     }

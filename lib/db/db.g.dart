@@ -13,8 +13,7 @@ class Org extends DataClass implements Insertable<Org> {
   final String inn;
   final int activeGroupId;
   Org({@required this.id, @required this.name, this.inn, this.activeGroupId});
-  factory Org.fromData(Map<String, dynamic> data, GeneratedDatabase db,
-      {String prefix}) {
+  factory Org.fromData(Map<String, dynamic> data, {String prefix}) {
     final effectivePrefix = prefix ?? '';
     return Org(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
@@ -57,7 +56,7 @@ class Org extends DataClass implements Insertable<Org> {
 
   factory Org.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return Org(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
@@ -67,7 +66,7 @@ class Org extends DataClass implements Insertable<Org> {
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
@@ -94,8 +93,7 @@ class Org extends DataClass implements Insertable<Org> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(id.hashCode,
-      $mrjc(name.hashCode, $mrjc(inn.hashCode, activeGroupId.hashCode))));
+  int get hashCode => Object.hash(id, name, inn, activeGroupId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -185,48 +183,40 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
   final String _alias;
   Orgs(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        declaredAsPrimaryKey: true,
-        hasAutoIncrement: true,
-        $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  }
-
+  GeneratedColumn<int> _id;
+  GeneratedColumn<int> get id =>
+      _id ??= GeneratedColumn<int>('id', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  GeneratedTextColumn _name;
-  GeneratedTextColumn get name => _name ??= _constructName();
-  GeneratedTextColumn _constructName() {
-    return GeneratedTextColumn('name', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<String> _name;
+  GeneratedColumn<String> get name =>
+      _name ??= GeneratedColumn<String>('name', aliasedName, false,
+          typeName: 'TEXT',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _innMeta = const VerificationMeta('inn');
-  GeneratedTextColumn _inn;
-  GeneratedTextColumn get inn => _inn ??= _constructInn();
-  GeneratedTextColumn _constructInn() {
-    return GeneratedTextColumn('inn', $tableName, true, $customConstraints: '');
-  }
-
+  GeneratedColumn<String> _inn;
+  GeneratedColumn<String> get inn =>
+      _inn ??= GeneratedColumn<String>('inn', aliasedName, true,
+          typeName: 'TEXT',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _activeGroupIdMeta =
       const VerificationMeta('activeGroupId');
-  GeneratedIntColumn _activeGroupId;
-  GeneratedIntColumn get activeGroupId =>
-      _activeGroupId ??= _constructActiveGroupId();
-  GeneratedIntColumn _constructActiveGroupId() {
-    return GeneratedIntColumn('activeGroupId', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<int> _activeGroupId;
+  GeneratedColumn<int> get activeGroupId => _activeGroupId ??=
+      GeneratedColumn<int>('activeGroupId', aliasedName, true,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns => [id, name, inn, activeGroupId];
   @override
-  Orgs get asDslTable => this;
+  String get aliasedName => _alias ?? 'orgs';
   @override
-  String get $tableName => _alias ?? 'orgs';
-  @override
-  final String actualTableName = 'orgs';
+  String get actualTableName => 'orgs';
   @override
   VerificationContext validateIntegrity(Insertable<Org> instance,
       {bool isInserting = false}) {
@@ -258,7 +248,7 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Org map(Map<String, dynamic> data, {String tablePrefix}) {
-    return Org.fromData(data, _db,
+    return Org.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -275,8 +265,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
   final int id;
   final String code;
   Schedule({@required this.id, @required this.code});
-  factory Schedule.fromData(Map<String, dynamic> data, GeneratedDatabase db,
-      {String prefix}) {
+  factory Schedule.fromData(Map<String, dynamic> data, {String prefix}) {
     final effectivePrefix = prefix ?? '';
     return Schedule(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
@@ -305,7 +294,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
 
   factory Schedule.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return Schedule(
       id: serializer.fromJson<int>(json['id']),
       code: serializer.fromJson<String>(json['code']),
@@ -313,7 +302,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'code': serializer.toJson<String>(code),
@@ -334,7 +323,7 @@ class Schedule extends DataClass implements Insertable<Schedule> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(id.hashCode, code.hashCode));
+  int get hashCode => Object.hash(id, code);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -396,31 +385,25 @@ class Schedules extends Table with TableInfo<Schedules, Schedule> {
   final String _alias;
   Schedules(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        declaredAsPrimaryKey: true,
-        hasAutoIncrement: true,
-        $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  }
-
+  GeneratedColumn<int> _id;
+  GeneratedColumn<int> get id =>
+      _id ??= GeneratedColumn<int>('id', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  GeneratedTextColumn _code;
-  GeneratedTextColumn get code => _code ??= _constructCode();
-  GeneratedTextColumn _constructCode() {
-    return GeneratedTextColumn('code', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<String> _code;
+  GeneratedColumn<String> get code =>
+      _code ??= GeneratedColumn<String>('code', aliasedName, false,
+          typeName: 'TEXT',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   @override
   List<GeneratedColumn> get $columns => [id, code];
   @override
-  Schedules get asDslTable => this;
+  String get aliasedName => _alias ?? 'schedules';
   @override
-  String get $tableName => _alias ?? 'schedules';
-  @override
-  final String actualTableName = 'schedules';
+  String get actualTableName => 'schedules';
   @override
   VerificationContext validateIntegrity(Insertable<Schedule> instance,
       {bool isInserting = false}) {
@@ -442,7 +425,7 @@ class Schedules extends Table with TableInfo<Schedules, Schedule> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Schedule map(Map<String, dynamic> data, {String tablePrefix}) {
-    return Schedule.fromData(data, _db,
+    return Schedule.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -465,8 +448,7 @@ class ScheduleDay extends DataClass implements Insertable<ScheduleDay> {
       @required this.scheduleId,
       @required this.dayNumber,
       @required this.hoursNorm});
-  factory ScheduleDay.fromData(Map<String, dynamic> data, GeneratedDatabase db,
-      {String prefix}) {
+  factory ScheduleDay.fromData(Map<String, dynamic> data, {String prefix}) {
     final effectivePrefix = prefix ?? '';
     return ScheduleDay(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
@@ -513,7 +495,7 @@ class ScheduleDay extends DataClass implements Insertable<ScheduleDay> {
 
   factory ScheduleDay.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return ScheduleDay(
       id: serializer.fromJson<int>(json['id']),
       scheduleId: serializer.fromJson<int>(json['scheduleId']),
@@ -523,7 +505,7 @@ class ScheduleDay extends DataClass implements Insertable<ScheduleDay> {
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'scheduleId': serializer.toJson<int>(scheduleId),
@@ -552,10 +534,7 @@ class ScheduleDay extends DataClass implements Insertable<ScheduleDay> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(
-      id.hashCode,
-      $mrjc(
-          scheduleId.hashCode, $mrjc(dayNumber.hashCode, hoursNorm.hashCode))));
+  int get hashCode => Object.hash(id, scheduleId, dayNumber, hoursNorm);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -647,48 +626,40 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
   final String _alias;
   ScheduleDays(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        declaredAsPrimaryKey: true,
-        hasAutoIncrement: true,
-        $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  }
-
+  GeneratedColumn<int> _id;
+  GeneratedColumn<int> get id =>
+      _id ??= GeneratedColumn<int>('id', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _scheduleIdMeta = const VerificationMeta('scheduleId');
-  GeneratedIntColumn _scheduleId;
-  GeneratedIntColumn get scheduleId => _scheduleId ??= _constructScheduleId();
-  GeneratedIntColumn _constructScheduleId() {
-    return GeneratedIntColumn('scheduleId', $tableName, false,
-        $customConstraints:
-            'NOT NULL REFERENCES schedules (id) ON DELETE CASCADE');
-  }
-
+  GeneratedColumn<int> _scheduleId;
+  GeneratedColumn<int> get scheduleId =>
+      _scheduleId ??= GeneratedColumn<int>('scheduleId', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: true,
+          $customConstraints:
+              'NOT NULL REFERENCES schedules (id) ON DELETE CASCADE');
   final VerificationMeta _dayNumberMeta = const VerificationMeta('dayNumber');
-  GeneratedIntColumn _dayNumber;
-  GeneratedIntColumn get dayNumber => _dayNumber ??= _constructDayNumber();
-  GeneratedIntColumn _constructDayNumber() {
-    return GeneratedIntColumn('dayNumber', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<int> _dayNumber;
+  GeneratedColumn<int> get dayNumber =>
+      _dayNumber ??= GeneratedColumn<int>('dayNumber', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _hoursNormMeta = const VerificationMeta('hoursNorm');
-  GeneratedRealColumn _hoursNorm;
-  GeneratedRealColumn get hoursNorm => _hoursNorm ??= _constructHoursNorm();
-  GeneratedRealColumn _constructHoursNorm() {
-    return GeneratedRealColumn('hoursNorm', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<double> _hoursNorm;
+  GeneratedColumn<double> get hoursNorm =>
+      _hoursNorm ??= GeneratedColumn<double>('hoursNorm', aliasedName, false,
+          typeName: 'REAL',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   @override
   List<GeneratedColumn> get $columns => [id, scheduleId, dayNumber, hoursNorm];
   @override
-  ScheduleDays get asDslTable => this;
+  String get aliasedName => _alias ?? 'schedule_days';
   @override
-  String get $tableName => _alias ?? 'schedule_days';
-  @override
-  final String actualTableName = 'schedule_days';
+  String get actualTableName => 'schedule_days';
   @override
   VerificationContext validateIntegrity(Insertable<ScheduleDay> instance,
       {bool isInserting = false}) {
@@ -724,7 +695,7 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   ScheduleDay map(Map<String, dynamic> data, {String tablePrefix}) {
-    return ScheduleDay.fromData(data, _db,
+    return ScheduleDay.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -742,8 +713,7 @@ class Holiday extends DataClass implements Insertable<Holiday> {
   final DateTime date;
   final DateTime workday;
   Holiday({@required this.id, @required this.date, this.workday});
-  factory Holiday.fromData(Map<String, dynamic> data, GeneratedDatabase db,
-      {String prefix}) {
+  factory Holiday.fromData(Map<String, dynamic> data, {String prefix}) {
     final effectivePrefix = prefix ?? '';
     return Holiday(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
@@ -780,7 +750,7 @@ class Holiday extends DataClass implements Insertable<Holiday> {
 
   factory Holiday.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return Holiday(
       id: serializer.fromJson<int>(json['id']),
       date: serializer.fromJson<DateTime>(json['date']),
@@ -789,7 +759,7 @@ class Holiday extends DataClass implements Insertable<Holiday> {
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'date': serializer.toJson<DateTime>(date),
@@ -813,8 +783,7 @@ class Holiday extends DataClass implements Insertable<Holiday> {
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(date.hashCode, workday.hashCode)));
+  int get hashCode => Object.hash(id, date, workday);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -890,39 +859,32 @@ class Holidays extends Table with TableInfo<Holidays, Holiday> {
   final String _alias;
   Holidays(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        declaredAsPrimaryKey: true,
-        hasAutoIncrement: true,
-        $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  }
-
+  GeneratedColumn<int> _id;
+  GeneratedColumn<int> get id =>
+      _id ??= GeneratedColumn<int>('id', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _dateMeta = const VerificationMeta('date');
-  GeneratedDateTimeColumn _date;
-  GeneratedDateTimeColumn get date => _date ??= _constructDate();
-  GeneratedDateTimeColumn _constructDate() {
-    return GeneratedDateTimeColumn('date', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<DateTime> _date;
+  GeneratedColumn<DateTime> get date =>
+      _date ??= GeneratedColumn<DateTime>('date', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _workdayMeta = const VerificationMeta('workday');
-  GeneratedDateTimeColumn _workday;
-  GeneratedDateTimeColumn get workday => _workday ??= _constructWorkday();
-  GeneratedDateTimeColumn _constructWorkday() {
-    return GeneratedDateTimeColumn('workday', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<DateTime> _workday;
+  GeneratedColumn<DateTime> get workday =>
+      _workday ??= GeneratedColumn<DateTime>('workday', aliasedName, true,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns => [id, date, workday];
   @override
-  Holidays get asDslTable => this;
+  String get aliasedName => _alias ?? 'holidays';
   @override
-  String get $tableName => _alias ?? 'holidays';
-  @override
-  final String actualTableName = 'holidays';
+  String get actualTableName => 'holidays';
   @override
   VerificationContext validateIntegrity(Insertable<Holiday> instance,
       {bool isInserting = false}) {
@@ -948,7 +910,7 @@ class Holidays extends Table with TableInfo<Holidays, Holiday> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Holiday map(Map<String, dynamic> data, {String tablePrefix}) {
-    return Holiday.fromData(data, _db,
+    return Holiday.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -973,8 +935,7 @@ class Group extends DataClass implements Insertable<Group> {
       @required this.name,
       @required this.scheduleId,
       this.meals});
-  factory Group.fromData(Map<String, dynamic> data, GeneratedDatabase db,
-      {String prefix}) {
+  factory Group.fromData(Map<String, dynamic> data, {String prefix}) {
     final effectivePrefix = prefix ?? '';
     return Group(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
@@ -1025,7 +986,7 @@ class Group extends DataClass implements Insertable<Group> {
 
   factory Group.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return Group(
       id: serializer.fromJson<int>(json['id']),
       orgId: serializer.fromJson<int>(json['orgId']),
@@ -1036,7 +997,7 @@ class Group extends DataClass implements Insertable<Group> {
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'orgId': serializer.toJson<int>(orgId),
@@ -1067,10 +1028,7 @@ class Group extends DataClass implements Insertable<Group> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(
-      id.hashCode,
-      $mrjc(orgId.hashCode,
-          $mrjc(name.hashCode, $mrjc(scheduleId.hashCode, meals.hashCode)))));
+  int get hashCode => Object.hash(id, orgId, name, scheduleId, meals);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1174,55 +1132,46 @@ class Groups extends Table with TableInfo<Groups, Group> {
   final String _alias;
   Groups(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        declaredAsPrimaryKey: true,
-        hasAutoIncrement: true,
-        $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  }
-
+  GeneratedColumn<int> _id;
+  GeneratedColumn<int> get id =>
+      _id ??= GeneratedColumn<int>('id', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _orgIdMeta = const VerificationMeta('orgId');
-  GeneratedIntColumn _orgId;
-  GeneratedIntColumn get orgId => _orgId ??= _constructOrgId();
-  GeneratedIntColumn _constructOrgId() {
-    return GeneratedIntColumn('orgId', $tableName, false,
-        $customConstraints: 'NOT NULL REFERENCES orgs (id)');
-  }
-
+  GeneratedColumn<int> _orgId;
+  GeneratedColumn<int> get orgId =>
+      _orgId ??= GeneratedColumn<int>('orgId', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL REFERENCES orgs (id)');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  GeneratedTextColumn _name;
-  GeneratedTextColumn get name => _name ??= _constructName();
-  GeneratedTextColumn _constructName() {
-    return GeneratedTextColumn('name', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<String> _name;
+  GeneratedColumn<String> get name =>
+      _name ??= GeneratedColumn<String>('name', aliasedName, false,
+          typeName: 'TEXT',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _scheduleIdMeta = const VerificationMeta('scheduleId');
-  GeneratedIntColumn _scheduleId;
-  GeneratedIntColumn get scheduleId => _scheduleId ??= _constructScheduleId();
-  GeneratedIntColumn _constructScheduleId() {
-    return GeneratedIntColumn('scheduleId', $tableName, false,
-        $customConstraints: 'NOT NULL REFERENCES schedules (id)');
-  }
-
+  GeneratedColumn<int> _scheduleId;
+  GeneratedColumn<int> get scheduleId =>
+      _scheduleId ??= GeneratedColumn<int>('scheduleId', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL REFERENCES schedules (id)');
   final VerificationMeta _mealsMeta = const VerificationMeta('meals');
-  GeneratedIntColumn _meals;
-  GeneratedIntColumn get meals => _meals ??= _constructMeals();
-  GeneratedIntColumn _constructMeals() {
-    return GeneratedIntColumn('meals', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<int> _meals;
+  GeneratedColumn<int> get meals =>
+      _meals ??= GeneratedColumn<int>('meals', aliasedName, true,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns => [id, orgId, name, scheduleId, meals];
   @override
-  Groups get asDslTable => this;
+  String get aliasedName => _alias ?? 'groups';
   @override
-  String get $tableName => _alias ?? 'groups';
-  @override
-  final String actualTableName = 'groups';
+  String get actualTableName => 'groups';
   @override
   VerificationContext validateIntegrity(Insertable<Group> instance,
       {bool isInserting = false}) {
@@ -1262,7 +1211,7 @@ class Groups extends Table with TableInfo<Groups, Group> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Group map(Map<String, dynamic> data, {String tablePrefix}) {
-    return Group.fromData(data, _db,
+    return Group.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -1291,8 +1240,7 @@ class Person extends DataClass implements Insertable<Person> {
       this.birthday,
       this.phone,
       this.phone2});
-  factory Person.fromData(Map<String, dynamic> data, GeneratedDatabase db,
-      {String prefix}) {
+  factory Person.fromData(Map<String, dynamic> data, {String prefix}) {
     final effectivePrefix = prefix ?? '';
     return Person(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
@@ -1358,7 +1306,7 @@ class Person extends DataClass implements Insertable<Person> {
 
   factory Person.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return Person(
       id: serializer.fromJson<int>(json['id']),
       family: serializer.fromJson<String>(json['family']),
@@ -1371,7 +1319,7 @@ class Person extends DataClass implements Insertable<Person> {
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'family': serializer.toJson<String>(family),
@@ -1415,16 +1363,8 @@ class Person extends DataClass implements Insertable<Person> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(
-      id.hashCode,
-      $mrjc(
-          family.hashCode,
-          $mrjc(
-              name.hashCode,
-              $mrjc(
-                  middleName.hashCode,
-                  $mrjc(birthday.hashCode,
-                      $mrjc(phone.hashCode, phone2.hashCode)))))));
+  int get hashCode =>
+      Object.hash(id, family, name, middleName, birthday, phone, phone2);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1551,72 +1491,61 @@ class Persons extends Table with TableInfo<Persons, Person> {
   final String _alias;
   Persons(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        declaredAsPrimaryKey: true,
-        hasAutoIncrement: true,
-        $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  }
-
+  GeneratedColumn<int> _id;
+  GeneratedColumn<int> get id =>
+      _id ??= GeneratedColumn<int>('id', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _familyMeta = const VerificationMeta('family');
-  GeneratedTextColumn _family;
-  GeneratedTextColumn get family => _family ??= _constructFamily();
-  GeneratedTextColumn _constructFamily() {
-    return GeneratedTextColumn('family', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<String> _family;
+  GeneratedColumn<String> get family =>
+      _family ??= GeneratedColumn<String>('family', aliasedName, false,
+          typeName: 'TEXT',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  GeneratedTextColumn _name;
-  GeneratedTextColumn get name => _name ??= _constructName();
-  GeneratedTextColumn _constructName() {
-    return GeneratedTextColumn('name', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<String> _name;
+  GeneratedColumn<String> get name =>
+      _name ??= GeneratedColumn<String>('name', aliasedName, false,
+          typeName: 'TEXT',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _middleNameMeta = const VerificationMeta('middleName');
-  GeneratedTextColumn _middleName;
-  GeneratedTextColumn get middleName => _middleName ??= _constructMiddleName();
-  GeneratedTextColumn _constructMiddleName() {
-    return GeneratedTextColumn('middleName', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<String> _middleName;
+  GeneratedColumn<String> get middleName =>
+      _middleName ??= GeneratedColumn<String>('middleName', aliasedName, true,
+          typeName: 'TEXT',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _birthdayMeta = const VerificationMeta('birthday');
-  GeneratedDateTimeColumn _birthday;
-  GeneratedDateTimeColumn get birthday => _birthday ??= _constructBirthday();
-  GeneratedDateTimeColumn _constructBirthday() {
-    return GeneratedDateTimeColumn('birthday', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<DateTime> _birthday;
+  GeneratedColumn<DateTime> get birthday =>
+      _birthday ??= GeneratedColumn<DateTime>('birthday', aliasedName, true,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _phoneMeta = const VerificationMeta('phone');
-  GeneratedTextColumn _phone;
-  GeneratedTextColumn get phone => _phone ??= _constructPhone();
-  GeneratedTextColumn _constructPhone() {
-    return GeneratedTextColumn('phone', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<String> _phone;
+  GeneratedColumn<String> get phone =>
+      _phone ??= GeneratedColumn<String>('phone', aliasedName, true,
+          typeName: 'TEXT',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _phone2Meta = const VerificationMeta('phone2');
-  GeneratedTextColumn _phone2;
-  GeneratedTextColumn get phone2 => _phone2 ??= _constructPhone2();
-  GeneratedTextColumn _constructPhone2() {
-    return GeneratedTextColumn('phone2', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<String> _phone2;
+  GeneratedColumn<String> get phone2 =>
+      _phone2 ??= GeneratedColumn<String>('phone2', aliasedName, true,
+          typeName: 'TEXT',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns =>
       [id, family, name, middleName, birthday, phone, phone2];
   @override
-  Persons get asDslTable => this;
+  String get aliasedName => _alias ?? 'persons';
   @override
-  String get $tableName => _alias ?? 'persons';
-  @override
-  final String actualTableName = 'persons';
+  String get actualTableName => 'persons';
   @override
   VerificationContext validateIntegrity(Insertable<Person> instance,
       {bool isInserting = false}) {
@@ -1662,7 +1591,7 @@ class Persons extends Table with TableInfo<Persons, Person> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Person map(Map<String, dynamic> data, {String tablePrefix}) {
-    return Person.fromData(data, _db,
+    return Person.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -1687,8 +1616,7 @@ class GroupPerson extends DataClass implements Insertable<GroupPerson> {
       @required this.personId,
       this.beginDate,
       this.endDate});
-  factory GroupPerson.fromData(Map<String, dynamic> data, GeneratedDatabase db,
-      {String prefix}) {
+  factory GroupPerson.fromData(Map<String, dynamic> data, {String prefix}) {
     final effectivePrefix = prefix ?? '';
     return GroupPerson(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
@@ -1743,7 +1671,7 @@ class GroupPerson extends DataClass implements Insertable<GroupPerson> {
 
   factory GroupPerson.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return GroupPerson(
       id: serializer.fromJson<int>(json['id']),
       groupId: serializer.fromJson<int>(json['groupId']),
@@ -1754,7 +1682,7 @@ class GroupPerson extends DataClass implements Insertable<GroupPerson> {
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'groupId': serializer.toJson<int>(groupId),
@@ -1790,12 +1718,7 @@ class GroupPerson extends DataClass implements Insertable<GroupPerson> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(
-      id.hashCode,
-      $mrjc(
-          groupId.hashCode,
-          $mrjc(personId.hashCode,
-              $mrjc(beginDate.hashCode, endDate.hashCode)))));
+  int get hashCode => Object.hash(id, groupId, personId, beginDate, endDate);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1898,56 +1821,47 @@ class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
   final String _alias;
   GroupPersons(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        declaredAsPrimaryKey: true,
-        hasAutoIncrement: true,
-        $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  }
-
+  GeneratedColumn<int> _id;
+  GeneratedColumn<int> get id =>
+      _id ??= GeneratedColumn<int>('id', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _groupIdMeta = const VerificationMeta('groupId');
-  GeneratedIntColumn _groupId;
-  GeneratedIntColumn get groupId => _groupId ??= _constructGroupId();
-  GeneratedIntColumn _constructGroupId() {
-    return GeneratedIntColumn('groupId', $tableName, false,
-        $customConstraints: 'NOT NULL REFERENCES "groups" (id)');
-  }
-
+  GeneratedColumn<int> _groupId;
+  GeneratedColumn<int> get groupId =>
+      _groupId ??= GeneratedColumn<int>('groupId', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL REFERENCES "groups" (id)');
   final VerificationMeta _personIdMeta = const VerificationMeta('personId');
-  GeneratedIntColumn _personId;
-  GeneratedIntColumn get personId => _personId ??= _constructPersonId();
-  GeneratedIntColumn _constructPersonId() {
-    return GeneratedIntColumn('personId', $tableName, false,
-        $customConstraints: 'NOT NULL REFERENCES persons (id)');
-  }
-
+  GeneratedColumn<int> _personId;
+  GeneratedColumn<int> get personId =>
+      _personId ??= GeneratedColumn<int>('personId', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL REFERENCES persons (id)');
   final VerificationMeta _beginDateMeta = const VerificationMeta('beginDate');
-  GeneratedDateTimeColumn _beginDate;
-  GeneratedDateTimeColumn get beginDate => _beginDate ??= _constructBeginDate();
-  GeneratedDateTimeColumn _constructBeginDate() {
-    return GeneratedDateTimeColumn('beginDate', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<DateTime> _beginDate;
+  GeneratedColumn<DateTime> get beginDate =>
+      _beginDate ??= GeneratedColumn<DateTime>('beginDate', aliasedName, true,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _endDateMeta = const VerificationMeta('endDate');
-  GeneratedDateTimeColumn _endDate;
-  GeneratedDateTimeColumn get endDate => _endDate ??= _constructEndDate();
-  GeneratedDateTimeColumn _constructEndDate() {
-    return GeneratedDateTimeColumn('endDate', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<DateTime> _endDate;
+  GeneratedColumn<DateTime> get endDate =>
+      _endDate ??= GeneratedColumn<DateTime>('endDate', aliasedName, true,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns =>
       [id, groupId, personId, beginDate, endDate];
   @override
-  GroupPersons get asDslTable => this;
+  String get aliasedName => _alias ?? 'group_persons';
   @override
-  String get $tableName => _alias ?? 'group_persons';
-  @override
-  final String actualTableName = 'group_persons';
+  String get actualTableName => 'group_persons';
   @override
   VerificationContext validateIntegrity(Insertable<GroupPerson> instance,
       {bool isInserting = false}) {
@@ -1983,7 +1897,7 @@ class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   GroupPerson map(Map<String, dynamic> data, {String tablePrefix}) {
-    return GroupPerson.fromData(data, _db,
+    return GroupPerson.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -2006,8 +1920,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
       @required this.groupPersonId,
       @required this.date,
       @required this.hoursFact});
-  factory Attendance.fromData(Map<String, dynamic> data, GeneratedDatabase db,
-      {String prefix}) {
+  factory Attendance.fromData(Map<String, dynamic> data, {String prefix}) {
     final effectivePrefix = prefix ?? '';
     return Attendance(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
@@ -2052,7 +1965,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
 
   factory Attendance.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return Attendance(
       id: serializer.fromJson<int>(json['id']),
       groupPersonId: serializer.fromJson<int>(json['groupPersonId']),
@@ -2062,7 +1975,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'groupPersonId': serializer.toJson<int>(groupPersonId),
@@ -2091,8 +2004,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(id.hashCode,
-      $mrjc(groupPersonId.hashCode, $mrjc(date.hashCode, hoursFact.hashCode))));
+  int get hashCode => Object.hash(id, groupPersonId, date, hoursFact);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2184,50 +2096,42 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
   final String _alias;
   Attendances(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        declaredAsPrimaryKey: true,
-        hasAutoIncrement: true,
-        $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  }
-
+  GeneratedColumn<int> _id;
+  GeneratedColumn<int> get id =>
+      _id ??= GeneratedColumn<int>('id', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _groupPersonIdMeta =
       const VerificationMeta('groupPersonId');
-  GeneratedIntColumn _groupPersonId;
-  GeneratedIntColumn get groupPersonId =>
-      _groupPersonId ??= _constructGroupPersonId();
-  GeneratedIntColumn _constructGroupPersonId() {
-    return GeneratedIntColumn('groupPersonId', $tableName, false,
-        $customConstraints:
-            'NOT NULL REFERENCES group_persons (id) ON DELETE CASCADE');
-  }
-
+  GeneratedColumn<int> _groupPersonId;
+  GeneratedColumn<int> get groupPersonId =>
+      _groupPersonId ??=
+          GeneratedColumn<int>('groupPersonId', aliasedName, false,
+              typeName: 'INTEGER',
+              requiredDuringInsert: true,
+              $customConstraints:
+                  'NOT NULL REFERENCES group_persons (id) ON DELETE CASCADE');
   final VerificationMeta _dateMeta = const VerificationMeta('date');
-  GeneratedDateTimeColumn _date;
-  GeneratedDateTimeColumn get date => _date ??= _constructDate();
-  GeneratedDateTimeColumn _constructDate() {
-    return GeneratedDateTimeColumn('date', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<DateTime> _date;
+  GeneratedColumn<DateTime> get date =>
+      _date ??= GeneratedColumn<DateTime>('date', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _hoursFactMeta = const VerificationMeta('hoursFact');
-  GeneratedRealColumn _hoursFact;
-  GeneratedRealColumn get hoursFact => _hoursFact ??= _constructHoursFact();
-  GeneratedRealColumn _constructHoursFact() {
-    return GeneratedRealColumn('hoursFact', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<double> _hoursFact;
+  GeneratedColumn<double> get hoursFact =>
+      _hoursFact ??= GeneratedColumn<double>('hoursFact', aliasedName, false,
+          typeName: 'REAL',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   @override
   List<GeneratedColumn> get $columns => [id, groupPersonId, date, hoursFact];
   @override
-  Attendances get asDslTable => this;
+  String get aliasedName => _alias ?? 'attendances';
   @override
-  String get $tableName => _alias ?? 'attendances';
-  @override
-  final String actualTableName = 'attendances';
+  String get actualTableName => 'attendances';
   @override
   VerificationContext validateIntegrity(Insertable<Attendance> instance,
       {bool isInserting = false}) {
@@ -2263,7 +2167,7 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Attendance map(Map<String, dynamic> data, {String tablePrefix}) {
-    return Attendance.fromData(data, _db,
+    return Attendance.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -2296,8 +2200,7 @@ class Setting extends DataClass implements Insertable<Setting> {
       this.realValue,
       this.dateValue,
       @required this.isUserSetting});
-  factory Setting.fromData(Map<String, dynamic> data, GeneratedDatabase db,
-      {String prefix}) {
+  factory Setting.fromData(Map<String, dynamic> data, {String prefix}) {
     final effectivePrefix = prefix ?? '';
     return Setting(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
@@ -2383,7 +2286,7 @@ class Setting extends DataClass implements Insertable<Setting> {
 
   factory Setting.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return Setting(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
@@ -2398,7 +2301,7 @@ class Setting extends DataClass implements Insertable<Setting> {
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
-    serializer ??= moorRuntimeOptions.defaultSerializer;
+    serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
@@ -2450,22 +2353,8 @@ class Setting extends DataClass implements Insertable<Setting> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(
-      id.hashCode,
-      $mrjc(
-          name.hashCode,
-          $mrjc(
-              valueType.hashCode,
-              $mrjc(
-                  textValue.hashCode,
-                  $mrjc(
-                      boolValue.hashCode,
-                      $mrjc(
-                          intValue.hashCode,
-                          $mrjc(
-                              realValue.hashCode,
-                              $mrjc(dateValue.hashCode,
-                                  isUserSetting.hashCode)))))))));
+  int get hashCode => Object.hash(id, name, valueType, textValue, boolValue,
+      intValue, realValue, dateValue, isUserSetting);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2617,82 +2506,71 @@ class Settings extends Table with TableInfo<Settings, Setting> {
   final String _alias;
   Settings(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        declaredAsPrimaryKey: true,
-        hasAutoIncrement: true,
-        $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  }
-
+  GeneratedColumn<int> _id;
+  GeneratedColumn<int> get id =>
+      _id ??= GeneratedColumn<int>('id', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  GeneratedTextColumn _name;
-  GeneratedTextColumn get name => _name ??= _constructName();
-  GeneratedTextColumn _constructName() {
-    return GeneratedTextColumn('name', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumn<String> _name;
+  GeneratedColumn<String> get name =>
+      _name ??= GeneratedColumn<String>('name', aliasedName, false,
+          typeName: 'TEXT',
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _valueTypeMeta = const VerificationMeta('valueType');
-  GeneratedIntColumn _valueType;
-  GeneratedIntColumn get valueType => _valueType ??= _constructValueType();
-  GeneratedIntColumn _constructValueType() {
-    return GeneratedIntColumn('valueType', $tableName, false,
-        $customConstraints: 'NOT NULL');
-  }
-
+  GeneratedColumnWithTypeConverter<ValueType, int> _valueType;
+  GeneratedColumnWithTypeConverter<ValueType, int> get valueType =>
+      _valueType ??= GeneratedColumn<int>('valueType', aliasedName, false,
+              typeName: 'INTEGER',
+              requiredDuringInsert: true,
+              $customConstraints: 'NOT NULL')
+          .withConverter<ValueType>(Settings.$converter0);
   final VerificationMeta _textValueMeta = const VerificationMeta('textValue');
-  GeneratedTextColumn _textValue;
-  GeneratedTextColumn get textValue => _textValue ??= _constructTextValue();
-  GeneratedTextColumn _constructTextValue() {
-    return GeneratedTextColumn('textValue', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<String> _textValue;
+  GeneratedColumn<String> get textValue =>
+      _textValue ??= GeneratedColumn<String>('textValue', aliasedName, true,
+          typeName: 'TEXT',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _boolValueMeta = const VerificationMeta('boolValue');
-  GeneratedBoolColumn _boolValue;
-  GeneratedBoolColumn get boolValue => _boolValue ??= _constructBoolValue();
-  GeneratedBoolColumn _constructBoolValue() {
-    return GeneratedBoolColumn('boolValue', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<bool> _boolValue;
+  GeneratedColumn<bool> get boolValue =>
+      _boolValue ??= GeneratedColumn<bool>('boolValue', aliasedName, true,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _intValueMeta = const VerificationMeta('intValue');
-  GeneratedIntColumn _intValue;
-  GeneratedIntColumn get intValue => _intValue ??= _constructIntValue();
-  GeneratedIntColumn _constructIntValue() {
-    return GeneratedIntColumn('intValue', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<int> _intValue;
+  GeneratedColumn<int> get intValue =>
+      _intValue ??= GeneratedColumn<int>('intValue', aliasedName, true,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _realValueMeta = const VerificationMeta('realValue');
-  GeneratedRealColumn _realValue;
-  GeneratedRealColumn get realValue => _realValue ??= _constructRealValue();
-  GeneratedRealColumn _constructRealValue() {
-    return GeneratedRealColumn('realValue', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<double> _realValue;
+  GeneratedColumn<double> get realValue =>
+      _realValue ??= GeneratedColumn<double>('realValue', aliasedName, true,
+          typeName: 'REAL',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _dateValueMeta = const VerificationMeta('dateValue');
-  GeneratedDateTimeColumn _dateValue;
-  GeneratedDateTimeColumn get dateValue => _dateValue ??= _constructDateValue();
-  GeneratedDateTimeColumn _constructDateValue() {
-    return GeneratedDateTimeColumn('dateValue', $tableName, true,
-        $customConstraints: '');
-  }
-
+  GeneratedColumn<DateTime> _dateValue;
+  GeneratedColumn<DateTime> get dateValue =>
+      _dateValue ??= GeneratedColumn<DateTime>('dateValue', aliasedName, true,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _isUserSettingMeta =
       const VerificationMeta('isUserSetting');
-  GeneratedBoolColumn _isUserSetting;
-  GeneratedBoolColumn get isUserSetting =>
-      _isUserSetting ??= _constructIsUserSetting();
-  GeneratedBoolColumn _constructIsUserSetting() {
-    return GeneratedBoolColumn('isUserSetting', $tableName, false,
-        $customConstraints: 'NOT NULL DEFAULT FALSE',
-        defaultValue: const CustomExpression<bool>('FALSE'));
-  }
-
+  GeneratedColumn<bool> _isUserSetting;
+  GeneratedColumn<bool> get isUserSetting => _isUserSetting ??=
+      GeneratedColumn<bool>('isUserSetting', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          $customConstraints: 'NOT NULL DEFAULT FALSE',
+          defaultValue: const CustomExpression<bool>('FALSE'));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -2706,11 +2584,9 @@ class Settings extends Table with TableInfo<Settings, Setting> {
         isUserSetting
       ];
   @override
-  Settings get asDslTable => this;
+  String get aliasedName => _alias ?? 'settings';
   @override
-  String get $tableName => _alias ?? 'settings';
-  @override
-  final String actualTableName = 'settings';
+  String get actualTableName => 'settings';
   @override
   VerificationContext validateIntegrity(Insertable<Setting> instance,
       {bool isInserting = false}) {
@@ -2759,7 +2635,7 @@ class Settings extends Table with TableInfo<Settings, Setting> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Setting map(Map<String, dynamic> data, {String tablePrefix}) {
-    return Setting.fromData(data, _db,
+    return Setting.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -2855,62 +2731,93 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<ScheduleDay> _daysInSchedule(int scheduleId) {
     return customSelect(
         'SELECT *\n  FROM schedule_days\n WHERE scheduleId = :scheduleId',
-        variables: [Variable<int>(scheduleId)],
-        readsFrom: {scheduleDays}).map(scheduleDays.mapFromRow);
+        variables: [
+          Variable<int>(scheduleId)
+        ],
+        readsFrom: {
+          scheduleDays,
+        }).map(scheduleDays.mapFromRow);
   }
 
   Selectable<Org> _firstOrg() {
     return customSelect(
         'SELECT *\n  FROM orgs\n WHERE name =\n       (\n         SELECT MIN(name)\n           FROM orgs\n       )',
         variables: [],
-        readsFrom: {orgs}).map(orgs.mapFromRow);
+        readsFrom: {
+          orgs,
+        }).map(orgs.mapFromRow);
   }
 
   Selectable<Org> _previousOrg(String orgName) {
     return customSelect(
         'SELECT *\n  FROM orgs\n WHERE name =\n       (\n         SELECT MAX(name)\n           FROM orgs\n          WHERE name < :orgName\n       )',
-        variables: [Variable<String>(orgName)],
-        readsFrom: {orgs}).map(orgs.mapFromRow);
+        variables: [
+          Variable<String>(orgName)
+        ],
+        readsFrom: {
+          orgs,
+        }).map(orgs.mapFromRow);
   }
 
   Selectable<Schedule> _firstSchedule() {
     return customSelect(
         'SELECT *\n  FROM schedules\n WHERE code =\n       (\n         SELECT MIN(code)\n           FROM schedules\n       )',
         variables: [],
-        readsFrom: {schedules}).map(schedules.mapFromRow);
+        readsFrom: {
+          schedules,
+        }).map(schedules.mapFromRow);
   }
 
   Selectable<Schedule> _previousSchedule(String scheduleCode) {
     return customSelect(
         'SELECT *\n  FROM schedules\n WHERE code =\n       (\n         SELECT MAX(code)\n           FROM schedules\n          WHERE code < :scheduleCode\n       )',
-        variables: [Variable<String>(scheduleCode)],
-        readsFrom: {schedules}).map(schedules.mapFromRow);
+        variables: [
+          Variable<String>(scheduleCode)
+        ],
+        readsFrom: {
+          schedules,
+        }).map(schedules.mapFromRow);
   }
 
   Selectable<Holiday> _holidaysWorkdays() {
     return customSelect('SELECT *\n  FROM holidays\n WHERE workday IS NOT NULL',
-        variables: [], readsFrom: {holidays}).map(holidays.mapFromRow);
+        variables: [],
+        readsFrom: {
+          holidays,
+        }).map(holidays.mapFromRow);
   }
 
   Selectable<Group> _firstGroup(int orgId) {
     return customSelect(
         'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MIN(name)\n           FROM "groups"\n          WHERE orgId = :orgId\n       )',
-        variables: [Variable<int>(orgId)],
-        readsFrom: {groups}).map(groups.mapFromRow);
+        variables: [
+          Variable<int>(orgId)
+        ],
+        readsFrom: {
+          groups,
+        }).map(groups.mapFromRow);
   }
 
   Selectable<Group> _previousGroup(int orgId, String groupName) {
     return customSelect(
         'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MAX(name)\n           FROM "groups"\n          WHERE name < :groupName\n       )',
-        variables: [Variable<int>(orgId), Variable<String>(groupName)],
-        readsFrom: {groups}).map(groups.mapFromRow);
+        variables: [
+          Variable<int>(orgId),
+          Variable<String>(groupName)
+        ],
+        readsFrom: {
+          groups,
+        }).map(groups.mapFromRow);
   }
 
   Selectable<OrgsViewResult> _orgsView() {
     return customSelect(
         'SELECT O.id,\n       O.name,\n       O.inn,\n       O.activeGroupId,\n       CAST((SELECT COUNT(*) FROM "groups" WHERE orgId = O.id) AS INT) AS groupCount\n  FROM orgs O\n ORDER BY\n       O.name,\n       O.inn',
         variables: [],
-        readsFrom: {orgs, groups}).map((QueryRow row) {
+        readsFrom: {
+          orgs,
+          groups,
+        }).map((QueryRow row) {
       return OrgsViewResult(
         id: row.read<int>('id'),
         name: row.read<String>('name'),
@@ -2925,7 +2832,10 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT S.id,\n       S.code,\n       CAST((SELECT COUNT(*) FROM "groups" WHERE scheduleId = S.id) AS INT) AS groupCount\n  FROM schedules S\n ORDER BY\n       S.code',
         variables: [],
-        readsFrom: {schedules, groups}).map((QueryRow row) {
+        readsFrom: {
+          schedules,
+          groups,
+        }).map((QueryRow row) {
       return SchedulesViewResult(
         id: row.read<int>('id'),
         code: row.read<String>('code'),
@@ -2937,8 +2847,14 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<GroupsViewResult> _groupsView(int orgId) {
     return customSelect(
         'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       G.meals,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE G.orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
-        variables: [Variable<int>(orgId)],
-        readsFrom: {groups, schedules, groupPersons}).map((QueryRow row) {
+        variables: [
+          Variable<int>(orgId)
+        ],
+        readsFrom: {
+          groups,
+          schedules,
+          groupPersons,
+        }).map((QueryRow row) {
       return GroupsViewResult(
         id: row.read<int>('id'),
         orgId: row.read<int>('orgId'),
@@ -2954,8 +2870,12 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<OrgMealsResult> _orgMeals(int orgId) {
     return customSelect(
         'SELECT G.orgId,\n       G.meals\n  FROM "groups" G\n WHERE G.orgId = :orgId\n GROUP BY\n       G.orgId,\n       G.meals\n ORDER BY\n       G.orgId,\n       G.meals',
-        variables: [Variable<int>(orgId)],
-        readsFrom: {groups}).map((QueryRow row) {
+        variables: [
+          Variable<int>(orgId)
+        ],
+        readsFrom: {
+          groups,
+        }).map((QueryRow row) {
       return OrgMealsResult(
         orgId: row.read<int>('orgId'),
         meals: row.read<int>('meals'),
@@ -2967,7 +2887,10 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT P.id,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE personId = P.id) AS INT) AS groupCount\n  FROM persons P\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
         variables: [],
-        readsFrom: {persons, groupPersons}).map((QueryRow row) {
+        readsFrom: {
+          persons,
+          groupPersons,
+        }).map((QueryRow row) {
       return PersonsViewResult(
         id: row.read<int>('id'),
         family: row.read<String>('family'),
@@ -2992,15 +2915,21 @@ abstract class _$Db extends GeneratedDatabase {
           Variable<DateTime>(birthday)
         ],
         readsFrom: {
-          persons
+          persons,
         }).map(persons.mapFromRow);
   }
 
   Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {
     return customSelect(
         'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
-        variables: [Variable<int>(groupId)],
-        readsFrom: {groupPersons, persons, attendances}).map((QueryRow row) {
+        variables: [
+          Variable<int>(groupId)
+        ],
+        readsFrom: {
+          groupPersons,
+          persons,
+          attendances,
+        }).map((QueryRow row) {
       return PersonsInGroupResult(
         id: row.read<int>('id'),
         groupId: row.read<int>('groupId'),
@@ -3030,7 +2959,7 @@ abstract class _$Db extends GeneratedDatabase {
         readsFrom: {
           groupPersons,
           persons,
-          attendances
+          attendances,
         }).map((QueryRow row) {
       return PersonsInGroupPeriodResult(
         id: row.read<int>('id'),
@@ -3060,7 +2989,7 @@ abstract class _$Db extends GeneratedDatabase {
         ],
         readsFrom: {
           groupPersons,
-          attendances
+          attendances,
         }).map(attendances.mapFromRow);
   }
 
@@ -3076,7 +3005,7 @@ abstract class _$Db extends GeneratedDatabase {
         readsFrom: {
           groupPersons,
           groups,
-          attendances
+          attendances,
         }).map((QueryRow row) {
       return OrgAttendancesResult(
         groupId: row.read<int>('groupId'),
@@ -3093,7 +3022,10 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT O.*\n  FROM settings S\n INNER JOIN orgs O ON O.id = S.intValue\n WHERE S.name = \'activeOrg\'',
         variables: [],
-        readsFrom: {settings, orgs}).map(orgs.mapFromRow);
+        readsFrom: {
+          settings,
+          orgs,
+        }).map(orgs.mapFromRow);
   }
 
   Future<int> _setActiveOrg(int id) {
@@ -3109,7 +3041,10 @@ abstract class _$Db extends GeneratedDatabase {
     return customSelect(
         'SELECT SCH.*\n  FROM settings S\n INNER JOIN schedules SCH ON SCH.id = S.intValue\n WHERE S.name = \'activeSchedule\'',
         variables: [],
-        readsFrom: {settings, schedules}).map(schedules.mapFromRow);
+        readsFrom: {
+          settings,
+          schedules,
+        }).map(schedules.mapFromRow);
   }
 
   Future<int> _setActiveSchedule(int id) {
@@ -3124,8 +3059,15 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<ActiveGroupResult> _activeGroup(int orgId) {
     return customSelect(
         'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       G.meals,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM orgs O\n INNER JOIN "groups" G ON G.id = O.activeGroupId\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE O.id = :orgId',
-        variables: [Variable<int>(orgId)],
-        readsFrom: {groups, schedules, groupPersons, orgs}).map((QueryRow row) {
+        variables: [
+          Variable<int>(orgId)
+        ],
+        readsFrom: {
+          groups,
+          schedules,
+          groupPersons,
+          orgs,
+        }).map((QueryRow row) {
       return ActiveGroupResult(
         id: row.read<int>('id'),
         orgId: row.read<int>('orgId'),
@@ -3152,7 +3094,7 @@ abstract class _$Db extends GeneratedDatabase {
         'SELECT S.dateValue\n  FROM settings S\n WHERE S.name = \'activePeriod\'',
         variables: [],
         readsFrom: {
-          settings
+          settings,
         }).map((QueryRow row) => row.read<DateTime>('dateValue'));
   }
 

@@ -2,7 +2,15 @@ import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core/l10n.dart';
 
 const externalFiles = '/storage/emulated/0';
-final List<String> abbrWeekdays = [L10n.mo, L10n.tu, L10n.we, L10n.th, L10n.fr, L10n.sa, L10n.su];
+final List<String> abbrWeekdays = [
+  L10n.mo,
+  L10n.tu,
+  L10n.we,
+  L10n.th,
+  L10n.fr,
+  L10n.sa,
+  L10n.su
+];
 
 /// Тип действия с данными
 enum DataActionType {
@@ -17,14 +25,14 @@ DateTime lastDayOfMonth(DateTime date) => date.month < 12
     : DateTime(date.year + 1, 1, 0);
 
 /// Фамилия Имя Отчество
-String personFullName(Person person) => person != null
-    ? '${person.family} ${personName(person)}' : '';
+String personFullName(Person person) =>
+    person != null ? '${person.family} ${personName(person)}' : '';
 
 /// Имя Отчество
 String personName(Person person, {showMiddleName = true}) => person != null
     ? (person.middleName == null || !showMiddleName)
-      ? person.name
-      : '${person.name} ${person.middleName}'
+        ? person.name
+        : '${person.name} ${person.middleName}'
     : '';
 
 /// Заглавная первая буква в строке

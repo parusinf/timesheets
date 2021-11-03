@@ -59,11 +59,7 @@ Future parseContent(BuildContext context, String content) async {
   } else {
     bloc.setActiveOrg(org);
     if (isNeedStringUpdate(org.inn, orgInn)) {
-      bloc.db.orgsDao.update2(Org(
-          id: org?.id,
-          name: org.name,
-          inn: orgInn
-      ));
+      bloc.db.orgsDao.update2(Org(id: org?.id, name: org.name, inn: orgInn));
     }
   }
 
@@ -82,7 +78,8 @@ Future parseContent(BuildContext context, String content) async {
   }
   var group = await bloc.db.groupsDao.find(groupName, org, schedule);
   if (group == null) {
-    group = await bloc.insertGroup(name: groupName, schedule: schedule, meals: groupMeals);
+    group = await bloc.insertGroup(
+        name: groupName, schedule: schedule, meals: groupMeals);
   } else {
     bloc.setActiveGroup(group);
     if (group.meals != groupMeals) {
@@ -91,8 +88,7 @@ Future parseContent(BuildContext context, String content) async {
           orgId: group.orgId,
           name: group.name,
           scheduleId: group.scheduleId,
-          meals: groupMeals
-      ));
+          meals: groupMeals));
     }
   }
 
@@ -112,13 +108,13 @@ Future parseContent(BuildContext context, String content) async {
     if (personFamily == null || personName == null) {
       throw L10n.fileFormatError;
     }
-    var person = await bloc.db.personsDao.find(personFamily, personName, personMiddleName, personBirthday);
+    var person = await bloc.db.personsDao
+        .find(personFamily, personName, personMiddleName, personBirthday);
     if (person == null) {
       person = await bloc.insertPerson(
         family: personFamily,
         name: personName,
-        middleName:
-        personMiddleName,
+        middleName: personMiddleName,
         birthday: personBirthday,
         phone: personPhone,
         phone2: personPhone2,
@@ -132,8 +128,12 @@ Future parseContent(BuildContext context, String content) async {
           name: person.name,
           middleName: person.middleName,
           birthday: person.birthday,
-          phone: isNeedStringUpdate(person.phone, personPhone) ? personPhone : person.phone,
-          phone2: isNeedStringUpdate(person.phone2, personPhone2) ? personPhone2 : person.phone2,
+          phone: isNeedStringUpdate(person.phone, personPhone)
+              ? personPhone
+              : person.phone,
+          phone2: isNeedStringUpdate(person.phone2, personPhone2)
+              ? personPhone2
+              : person.phone2,
         ));
       }
     }
@@ -156,8 +156,13 @@ Future parseContent(BuildContext context, String content) async {
           id: groupPerson.id,
           groupId: groupPerson.groupId,
           personId: groupPerson.personId,
-          beginDate: isNeedDateUpdate(groupPerson.beginDate, groupPersonBeginDate) ? groupPersonBeginDate : groupPerson.beginDate,
-          endDate: isNeedDateUpdate(groupPerson.endDate, groupPersonEndDate) ? groupPersonEndDate : groupPerson.endDate,
+          beginDate:
+              isNeedDateUpdate(groupPerson.beginDate, groupPersonBeginDate)
+                  ? groupPersonBeginDate
+                  : groupPerson.beginDate,
+          endDate: isNeedDateUpdate(groupPerson.endDate, groupPersonEndDate)
+              ? groupPersonEndDate
+              : groupPerson.endDate,
         ));
       }
     }

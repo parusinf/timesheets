@@ -17,22 +17,24 @@ class HelpPageState extends State<HelpPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    key: _scaffoldKey,
-    appBar: AppBar(
-      title: Text(L10n.help),
-      actions: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.ondemand_video),
-          onPressed: () => launchUrl(_scaffoldKey, 'https://youtu.be/vvLaug6BrWo'),
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(L10n.help),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.ondemand_video),
+              onPressed: () =>
+                  launchUrl(_scaffoldKey, 'https://youtu.be/vvLaug6BrWo'),
+            ),
+            IconButton(
+              icon: const Icon(Icons.chat),
+              onPressed: () => launchUrl(_scaffoldKey,
+                  'https://chat.whatsapp.com/LU9rBpRadmE1Xw53TZ3VOl'),
+            ),
+          ],
         ),
-        IconButton(
-          icon: const Icon(Icons.chat),
-          onPressed: () => launchUrl(_scaffoldKey, 'https://chat.whatsapp.com/LU9rBpRadmE1Xw53TZ3VOl'),
-        ),
-      ],
-    ),
-    body: Markdown(data: _fetchHelp()),
-  );
+        body: Markdown(data: _fetchHelp()),
+      );
 
   String _fetchHelp() {
     return '''

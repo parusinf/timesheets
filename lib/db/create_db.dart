@@ -12,7 +12,10 @@ final _initHolidays = <Holiday>[
   Holiday(id: 0, date: stringToDate('06.01.2021')),
   Holiday(id: 0, date: stringToDate('07.01.2021')),
   Holiday(id: 0, date: stringToDate('08.01.2021')),
-  Holiday(id: 0, date: stringToDate('22.02.2021'), workday: stringToDate('20.02.2021')),
+  Holiday(
+      id: 0,
+      date: stringToDate('22.02.2021'),
+      workday: stringToDate('20.02.2021')),
   Holiday(id: 0, date: stringToDate('23.02.2021')),
   Holiday(id: 0, date: stringToDate('08.03.2021')),
   Holiday(id: 0, date: stringToDate('01.05.2021')),
@@ -28,8 +31,8 @@ final _initHolidays = <Holiday>[
 
 /// Создание пользовательских настроек
 Future _initUserSettings(Db db) async {
-  await db.settingsDao.insert2(L10n.doubleTapInTimesheet,
-      ValueType.bool, boolValue: false, isUserSetting: true);
+  await db.settingsDao.insert2(L10n.doubleTapInTimesheet, ValueType.bool,
+      boolValue: false, isUserSetting: true);
 }
 
 /// Инициализация новой базы данных

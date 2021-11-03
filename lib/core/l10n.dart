@@ -98,11 +98,14 @@ class L10n {
   static get countryPhoneCode => _l10n[languageCode]['countryPhoneCode'];
   static get dataLoading => _l10n[languageCode]['dataLoading'];
   static get days => _l10n[languageCode]['days'];
-  static get doubleTapInTimesheet => _l10n[languageCode]['doubleTapInTimesheet'];
+  static get doubleTapInTimesheet =>
+      _l10n[languageCode]['doubleTapInTimesheet'];
   static get endDate => _l10n[languageCode]['endDate'];
   static get everyOtherWeek => _l10n[languageCode]['everyOtherWeek'];
-  static get failedToGetInitialLink => _l10n[languageCode]['failedToGetInitialLink'];
-  static get failedToParseInitialLink => _l10n[languageCode]['failedToParseInitialLink'];
+  static get failedToGetInitialLink =>
+      _l10n[languageCode]['failedToGetInitialLink'];
+  static get failedToParseInitialLink =>
+      _l10n[languageCode]['failedToParseInitialLink'];
   static get fileFormatError => _l10n[languageCode]['fileFormatError'];
   static get fileNotSelected => _l10n[languageCode]['fileNotSelected'];
   static get from => _l10n[languageCode]['from'];

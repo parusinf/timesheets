@@ -14,12 +14,12 @@ dependencies:
   cupertino_icons:
   intl:
   sqflite:
-  moor: ^4.3.2
+  drift:
   sqlite3_flutter_libs:
   path_provider:
-  rxdart: ^0.24.0
+  rxdart:
   provider:
-  month_picker_dialog: ^0.3.3
+  month_picker_dialog:
   horizontal_data_table:
   flutter_markdown:
   url_launcher:
@@ -28,7 +28,7 @@ dependencies:
   file_picker:
 
 dev_dependencies:
-  moor_generator: ^4.3.2
+  drift_dev:
   build_runner:
   flutter_launcher_icons:
 

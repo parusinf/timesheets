@@ -15,23 +15,23 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Provider<Bloc>(
-    create: (_) => Bloc(),
-    dispose: (_, bloc) => bloc.close(),
-    child: MaterialApp(
-      debugShowCheckedModeBanner: false,
-      onGenerateTitle: (BuildContext context) => L10n.timesheets,
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      supportedLocales: [
-        const Locale('ru'),
-      ],
-      theme: ThemeData(
-        primarySwatch: Colors.lightBlue,
-        typography: Typography.material2018(),
-      ),
-      home: HomePage(),
-    ),
-  );
+        create: (_) => Bloc(),
+        dispose: (_, bloc) => bloc.close(),
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          onGenerateTitle: (BuildContext context) => L10n.timesheets,
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: [
+            const Locale('ru'),
+          ],
+          theme: ThemeData(
+            primarySwatch: Colors.lightBlue,
+            typography: Typography.material2018(),
+          ),
+          home: HomePage(),
+        ),
+      );
 }

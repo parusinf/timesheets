@@ -24,27 +24,42 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
   if (uniqueRegexp.hasMatch(message)) {
     final tableName = uniqueRegexp.firstMatch(message)[1];
     switch (tableName) {
-      case 'orgs': newMessage = L10n.uniqueOrg; break;
-      case 'schedules': newMessage = L10n.uniqueSchedule; break;
-      case 'holidays': newMessage = L10n.uniqueDay; break;
-      case 'groups': newMessage = L10n.uniqueGroup; break;
-      case 'persons': newMessage = L10n.uniquePerson; break;
-      case 'group_persons': newMessage = L10n.uniqueGroupPerson; break;
+      case 'orgs':
+        newMessage = L10n.uniqueOrg;
+        break;
+      case 'schedules':
+        newMessage = L10n.uniqueSchedule;
+        break;
+      case 'holidays':
+        newMessage = L10n.uniqueDay;
+        break;
+      case 'groups':
+        newMessage = L10n.uniqueGroup;
+        break;
+      case 'persons':
+        newMessage = L10n.uniquePerson;
+        break;
+      case 'group_persons':
+        newMessage = L10n.uniqueGroupPerson;
+        break;
     }
   } else {
     newMessage = newMessage.replaceFirst('Invalid argument(s): ', '');
   }
   ScaffoldMessenger.of(context).hideCurrentSnackBar();
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(newMessage)));
+  ScaffoldMessenger.of(context)
+      .showSnackBar(SnackBar(content: Text(newMessage)));
 }
 
 /// Текст
-Widget text(String text, {
+Widget text(
+  String text, {
   Color color,
   double fontSize,
   FontWeight fontWeight,
 }) {
-  return Text(text,
+  return Text(
+    text,
     style: TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight),
   );
 }
@@ -54,8 +69,7 @@ Widget centerMessage(BuildContext context, String message) =>
     Center(child: text(message));
 
 /// Кнопка в центре
-Widget centerButton(String label, {VoidCallback onPressed}) =>
-    Center(
+Widget centerButton(String label, {VoidCallback onPressed}) => Center(
       child: button(label, onPressed: onPressed),
     );
 
@@ -68,12 +82,10 @@ Widget button(String label, {VoidCallback onPressed, ButtonStyle style}) =>
     );
 
 /// Переход на страницу
-Future<T> push<T extends Object>(
-  BuildContext context,
-  Widget page, {
-  bool pop = false
-}) async {
-  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+Future<T> push<T extends Object>(BuildContext context, Widget page,
+    {bool pop = false}) async {
+  final result = await Navigator.push(
+      context, MaterialPageRoute(builder: (context) => page));
   if (pop) {
     Navigator.pop(context);
   }
@@ -110,15 +122,18 @@ double getHoursNorm(Bloc bloc, DateTime date) {
 
 /// Поиск нормы часов первого дня активного графика
 double getFirstHoursNorm(Bloc bloc) {
-  final firstDay = bloc.scheduleDays.value.firstWhere((day) => day.hoursNorm > 0.0);
+  final firstDay =
+      bloc.scheduleDays.value.firstWhere((day) => day.hoursNorm > 0.0);
   return firstDay != null ? firstDay.hoursNorm : 0;
 }
 
 /// Диалог подтверждения
 showAlertDialog(BuildContext context, String title, VoidCallback action) {
   // set up the buttons
-  Widget cancelButton = button(L10n.cancel, onPressed: () => Navigator.pop(context));
-  Widget continueButton = button(L10n.continueAction,
+  Widget cancelButton =
+      button(L10n.cancel, onPressed: () => Navigator.pop(context));
+  Widget continueButton = button(
+    L10n.continueAction,
     onPressed: () {
       action();
       Navigator.pop(context);

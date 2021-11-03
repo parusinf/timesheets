@@ -22,7 +22,8 @@ class DateFormatters {
 /// Форматировщик даты в формате ДД.ММ.ГГГГ
 class _DateDMYFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue _, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue _, TextEditingValue newValue) {
     final newTextLength = newValue.text.length;
     final newText = StringBuffer();
     var selectionIndex = newValue.selection.end;
@@ -57,7 +58,8 @@ class PhoneFormatters {
 /// Форматировщик телефона в формате (###) ###-#### ##
 class _PhoneFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     final newTextLength = newValue.text.length;
     final newText = StringBuffer();
     var selectionIndex = newValue.selection.end;

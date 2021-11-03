@@ -32,20 +32,19 @@ class _SettingsEditState extends State<SettingsEdit> {
       formKey: _formKey,
       autovalidateMode: _autovalidateMode,
       child: StreamBuilder<List<Setting>>(
-        stream: _bloc.userSettings,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final settings = snapshot.data;
-            _addSetting(settings, L10n.eraseAllData);
-            return ListView.builder(
-              itemBuilder: (context, index) => _settingCard(settings, index),
-              itemCount: settings.length,
-            );
-          } else {
-            return centerMessage(context, L10n.dataLoading);
-          }
-        }
-      ),
+          stream: _bloc.userSettings,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final settings = snapshot.data;
+              _addSetting(settings, L10n.eraseAllData);
+              return ListView.builder(
+                itemBuilder: (context, index) => _settingCard(settings, index),
+                itemCount: settings.length,
+              );
+            } else {
+              return centerMessage(context, L10n.dataLoading);
+            }
+          }),
     );
   }
 
@@ -67,13 +66,13 @@ class _SettingsEditState extends State<SettingsEdit> {
     switch (setting.valueType) {
       case ValueType.text:
         return textFormField(
-            initialValue: setting.textValue,
-            labelText: setting.name,
-            onChanged: (value) {
-              settings[index] = settings[index].copyWith(textValue: value);
-              _bloc.db.settingsDao.update2(settings[index]);
-            },
-          );
+          initialValue: setting.textValue,
+          labelText: setting.name,
+          onChanged: (value) {
+            settings[index] = settings[index].copyWith(textValue: value);
+            _bloc.db.settingsDao.update2(settings[index]);
+          },
+        );
       case ValueType.bool:
         return boolFormField(
           initialValue: setting.boolValue,
@@ -90,7 +89,8 @@ class _SettingsEditState extends State<SettingsEdit> {
           initialValue: setting.intValue,
           labelText: setting.name,
           onChanged: (value) {
-            settings[index] = settings[index].copyWith(intValue: stringToInt(value));
+            settings[index] =
+                settings[index].copyWith(intValue: stringToInt(value));
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
@@ -99,7 +99,8 @@ class _SettingsEditState extends State<SettingsEdit> {
           initialValue: setting.realValue,
           labelText: setting.name,
           onChanged: (value) {
-            settings[index] = settings[index].copyWith(realValue: stringToDouble(value));
+            settings[index] =
+                settings[index].copyWith(realValue: stringToDouble(value));
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
@@ -108,13 +109,15 @@ class _SettingsEditState extends State<SettingsEdit> {
           initialValue: setting.dateValue,
           labelText: setting.name,
           onChanged: (value) {
-            settings[index] = settings[index].copyWith(dateValue: stringToDate(value));
+            settings[index] =
+                settings[index].copyWith(dateValue: stringToDate(value));
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
       default:
         if (setting.name == L10n.eraseAllData) {
-          return button(setting.name,
+          return button(
+            setting.name,
             onPressed: () async {
               showAlertDialog(context, L10n.eraseAllData, () async {
                 await _bloc.reset();
@@ -122,7 +125,8 @@ class _SettingsEditState extends State<SettingsEdit> {
               });
             },
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.red[500]),
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.red[500]),
             ),
           );
         }

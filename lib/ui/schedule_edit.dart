@@ -20,7 +20,8 @@ class ScheduleEdit extends StatefulWidget {
   final Schedule schedule;
   final DataActionType actionType;
   const ScheduleEdit(this.schedule, {Key key})
-      : this.actionType = schedule == null ? DataActionType.Insert : DataActionType.Update,
+      : this.actionType =
+            schedule == null ? DataActionType.Insert : DataActionType.Update,
         super(key: key);
   @override
   _ScheduleEditState createState() => _ScheduleEditState();
@@ -60,12 +61,11 @@ class _ScheduleEditState extends State<ScheduleEdit> {
       onSubmit: _onSubmit,
       child: StreamBuilder<List<ScheduleDay>>(
         stream: _bloc.scheduleDays,
-        builder: (context, snapshot) =>
-            ListView.builder(
-              itemBuilder: (context, index) =>
-                  _scheduleDayCard(snapshot.data, index),
-              itemCount: snapshot.data?.length ?? 0,
-            ),
+        builder: (context, snapshot) => ListView.builder(
+          itemBuilder: (context, index) =>
+              _scheduleDayCard(snapshot.data, index),
+          itemCount: snapshot.data?.length ?? 0,
+        ),
       ),
     );
   }
@@ -107,24 +107,25 @@ class _ScheduleEditState extends State<ScheduleEdit> {
           showMessage(_scaffoldKey, L10n.noHoursNorm);
         } else {
           if (widget.actionType == DataActionType.Insert) {
-            final schedule = await _bloc.insertSchedule(code: createScheduleCode(hours));
-            _bloc.scheduleDays.value.forEach((scheduleDay) =>
-                _bloc.db.scheduleDaysDao.insert2(
-                  schedule: schedule,
-                  dayNumber: scheduleDay.dayNumber,
-                  hoursNorm: scheduleDay.hoursNorm,
-                ));
+            final schedule =
+                await _bloc.insertSchedule(code: createScheduleCode(hours));
+            _bloc.scheduleDays.value
+                .forEach((scheduleDay) => _bloc.db.scheduleDaysDao.insert2(
+                      schedule: schedule,
+                      dayNumber: scheduleDay.dayNumber,
+                      hoursNorm: scheduleDay.hoursNorm,
+                    ));
           } else {
             await _bloc.updateSchedule(Schedule(
               id: widget.schedule?.id,
               code: createScheduleCode(hours),
             ));
-            _bloc.scheduleDays.value.forEach((scheduleDay) =>
-                _bloc.db.scheduleDaysDao.update2(scheduleDay));
+            _bloc.scheduleDays.value.forEach(
+                (scheduleDay) => _bloc.db.scheduleDaysDao.update2(scheduleDay));
           }
           Navigator.of(context).pop();
         }
-      } catch(e) {
+      } catch (e) {
         showMessage(_scaffoldKey, e.toString());
       }
     }
