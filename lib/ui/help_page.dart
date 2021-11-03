@@ -65,13 +65,13 @@ class HelpPageState extends State<HelpPage> {
 
 ## Выпуск
 
-2021.7.2
+2021.11.3
 
 ## Автор
 
-Павел Никитин
+Павел Никитин [pavel@parusinf.ru](mailto:pavel@parusinf.ru)
 
-[pavel@parusinf.ru](mailto:pavel@parusinf.ru)
+Оплата по сердцу **+7 916 070-44-94** (Тинькофф, Сбербанк, ВТБ)
 ''';
   }
 }
