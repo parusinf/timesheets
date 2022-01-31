@@ -54,7 +54,7 @@ class _GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
               stream: bloc.activeGroup,
               builder: (context, snapshot) => snapshot.hasData
                   ? InkWell(
-                      onTap: () => editGroup(context, bloc.activeGroup.value),
+                      onTap: () => editGroup(context, bloc.activeGroup.valueWrapper?.value),
                       child: text(snapshot.data.name),
                     )
                   : text('')),

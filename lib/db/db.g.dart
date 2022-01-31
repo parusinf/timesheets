@@ -186,21 +186,21 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
       _id ??= GeneratedColumn<int>('id', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   GeneratedColumn<String> _name;
   GeneratedColumn<String> get name =>
       _name ??= GeneratedColumn<String>('name', aliasedName, false,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   final VerificationMeta _innMeta = const VerificationMeta('inn');
   GeneratedColumn<String> _inn;
   GeneratedColumn<String> get inn =>
       _inn ??= GeneratedColumn<String>('inn', aliasedName, true,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   final VerificationMeta _activeGroupIdMeta =
@@ -208,7 +208,7 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
   GeneratedColumn<int> _activeGroupId;
   GeneratedColumn<int> get activeGroupId => _activeGroupId ??=
       GeneratedColumn<int>('activeGroupId', aliasedName, true,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   @override
@@ -388,14 +388,14 @@ class Schedules extends Table with TableInfo<Schedules, Schedule> {
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
       _id ??= GeneratedColumn<int>('id', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _codeMeta = const VerificationMeta('code');
   GeneratedColumn<String> _code;
   GeneratedColumn<String> get code =>
       _code ??= GeneratedColumn<String>('code', aliasedName, false,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   @override
@@ -629,14 +629,14 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
       _id ??= GeneratedColumn<int>('id', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _scheduleIdMeta = const VerificationMeta('scheduleId');
   GeneratedColumn<int> _scheduleId;
   GeneratedColumn<int> get scheduleId =>
       _scheduleId ??= GeneratedColumn<int>('scheduleId', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: true,
           $customConstraints:
               'NOT NULL REFERENCES schedules (id) ON DELETE CASCADE');
@@ -644,14 +644,14 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
   GeneratedColumn<int> _dayNumber;
   GeneratedColumn<int> get dayNumber =>
       _dayNumber ??= GeneratedColumn<int>('dayNumber', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   final VerificationMeta _hoursNormMeta = const VerificationMeta('hoursNorm');
   GeneratedColumn<double> _hoursNorm;
   GeneratedColumn<double> get hoursNorm =>
       _hoursNorm ??= GeneratedColumn<double>('hoursNorm', aliasedName, false,
-          typeName: 'REAL',
+          type: const RealType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   @override
@@ -862,21 +862,21 @@ class Holidays extends Table with TableInfo<Holidays, Holiday> {
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
       _id ??= GeneratedColumn<int>('id', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _dateMeta = const VerificationMeta('date');
   GeneratedColumn<DateTime> _date;
   GeneratedColumn<DateTime> get date =>
       _date ??= GeneratedColumn<DateTime>('date', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   final VerificationMeta _workdayMeta = const VerificationMeta('workday');
   GeneratedColumn<DateTime> _workday;
   GeneratedColumn<DateTime> get workday =>
       _workday ??= GeneratedColumn<DateTime>('workday', aliasedName, true,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   @override
@@ -1135,35 +1135,35 @@ class Groups extends Table with TableInfo<Groups, Group> {
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
       _id ??= GeneratedColumn<int>('id', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _orgIdMeta = const VerificationMeta('orgId');
   GeneratedColumn<int> _orgId;
   GeneratedColumn<int> get orgId =>
       _orgId ??= GeneratedColumn<int>('orgId', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL REFERENCES orgs (id)');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   GeneratedColumn<String> _name;
   GeneratedColumn<String> get name =>
       _name ??= GeneratedColumn<String>('name', aliasedName, false,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   final VerificationMeta _scheduleIdMeta = const VerificationMeta('scheduleId');
   GeneratedColumn<int> _scheduleId;
   GeneratedColumn<int> get scheduleId =>
       _scheduleId ??= GeneratedColumn<int>('scheduleId', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL REFERENCES schedules (id)');
   final VerificationMeta _mealsMeta = const VerificationMeta('meals');
   GeneratedColumn<int> _meals;
   GeneratedColumn<int> get meals =>
       _meals ??= GeneratedColumn<int>('meals', aliasedName, true,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   @override
@@ -1494,49 +1494,49 @@ class Persons extends Table with TableInfo<Persons, Person> {
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
       _id ??= GeneratedColumn<int>('id', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _familyMeta = const VerificationMeta('family');
   GeneratedColumn<String> _family;
   GeneratedColumn<String> get family =>
       _family ??= GeneratedColumn<String>('family', aliasedName, false,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   GeneratedColumn<String> _name;
   GeneratedColumn<String> get name =>
       _name ??= GeneratedColumn<String>('name', aliasedName, false,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   final VerificationMeta _middleNameMeta = const VerificationMeta('middleName');
   GeneratedColumn<String> _middleName;
   GeneratedColumn<String> get middleName =>
       _middleName ??= GeneratedColumn<String>('middleName', aliasedName, true,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   final VerificationMeta _birthdayMeta = const VerificationMeta('birthday');
   GeneratedColumn<DateTime> _birthday;
   GeneratedColumn<DateTime> get birthday =>
       _birthday ??= GeneratedColumn<DateTime>('birthday', aliasedName, true,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   final VerificationMeta _phoneMeta = const VerificationMeta('phone');
   GeneratedColumn<String> _phone;
   GeneratedColumn<String> get phone =>
       _phone ??= GeneratedColumn<String>('phone', aliasedName, true,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   final VerificationMeta _phone2Meta = const VerificationMeta('phone2');
   GeneratedColumn<String> _phone2;
   GeneratedColumn<String> get phone2 =>
       _phone2 ??= GeneratedColumn<String>('phone2', aliasedName, true,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   @override
@@ -1824,35 +1824,35 @@ class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
       _id ??= GeneratedColumn<int>('id', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _groupIdMeta = const VerificationMeta('groupId');
   GeneratedColumn<int> _groupId;
   GeneratedColumn<int> get groupId =>
       _groupId ??= GeneratedColumn<int>('groupId', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL REFERENCES "groups" (id)');
   final VerificationMeta _personIdMeta = const VerificationMeta('personId');
   GeneratedColumn<int> _personId;
   GeneratedColumn<int> get personId =>
       _personId ??= GeneratedColumn<int>('personId', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL REFERENCES persons (id)');
   final VerificationMeta _beginDateMeta = const VerificationMeta('beginDate');
   GeneratedColumn<DateTime> _beginDate;
   GeneratedColumn<DateTime> get beginDate =>
       _beginDate ??= GeneratedColumn<DateTime>('beginDate', aliasedName, true,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   final VerificationMeta _endDateMeta = const VerificationMeta('endDate');
   GeneratedColumn<DateTime> _endDate;
   GeneratedColumn<DateTime> get endDate =>
       _endDate ??= GeneratedColumn<DateTime>('endDate', aliasedName, true,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   @override
@@ -2099,7 +2099,7 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
       _id ??= GeneratedColumn<int>('id', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _groupPersonIdMeta =
@@ -2108,7 +2108,7 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
   GeneratedColumn<int> get groupPersonId =>
       _groupPersonId ??=
           GeneratedColumn<int>('groupPersonId', aliasedName, false,
-              typeName: 'INTEGER',
+              type: const IntType(),
               requiredDuringInsert: true,
               $customConstraints:
                   'NOT NULL REFERENCES group_persons (id) ON DELETE CASCADE');
@@ -2116,14 +2116,14 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
   GeneratedColumn<DateTime> _date;
   GeneratedColumn<DateTime> get date =>
       _date ??= GeneratedColumn<DateTime>('date', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   final VerificationMeta _hoursFactMeta = const VerificationMeta('hoursFact');
   GeneratedColumn<double> _hoursFact;
   GeneratedColumn<double> get hoursFact =>
       _hoursFact ??= GeneratedColumn<double>('hoursFact', aliasedName, false,
-          typeName: 'REAL',
+          type: const RealType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   @override
@@ -2509,21 +2509,21 @@ class Settings extends Table with TableInfo<Settings, Setting> {
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
       _id ??= GeneratedColumn<int>('id', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   GeneratedColumn<String> _name;
   GeneratedColumn<String> get name =>
       _name ??= GeneratedColumn<String>('name', aliasedName, false,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
   final VerificationMeta _valueTypeMeta = const VerificationMeta('valueType');
   GeneratedColumnWithTypeConverter<ValueType, int> _valueType;
   GeneratedColumnWithTypeConverter<ValueType, int> get valueType =>
       _valueType ??= GeneratedColumn<int>('valueType', aliasedName, false,
-              typeName: 'INTEGER',
+              type: const IntType(),
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<ValueType>(Settings.$converter0);
@@ -2531,35 +2531,35 @@ class Settings extends Table with TableInfo<Settings, Setting> {
   GeneratedColumn<String> _textValue;
   GeneratedColumn<String> get textValue =>
       _textValue ??= GeneratedColumn<String>('textValue', aliasedName, true,
-          typeName: 'TEXT',
+          type: const StringType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   final VerificationMeta _boolValueMeta = const VerificationMeta('boolValue');
   GeneratedColumn<bool> _boolValue;
   GeneratedColumn<bool> get boolValue =>
       _boolValue ??= GeneratedColumn<bool>('boolValue', aliasedName, true,
-          typeName: 'INTEGER',
+          type: const BoolType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   final VerificationMeta _intValueMeta = const VerificationMeta('intValue');
   GeneratedColumn<int> _intValue;
   GeneratedColumn<int> get intValue =>
       _intValue ??= GeneratedColumn<int>('intValue', aliasedName, true,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   final VerificationMeta _realValueMeta = const VerificationMeta('realValue');
   GeneratedColumn<double> _realValue;
   GeneratedColumn<double> get realValue =>
       _realValue ??= GeneratedColumn<double>('realValue', aliasedName, true,
-          typeName: 'REAL',
+          type: const RealType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   final VerificationMeta _dateValueMeta = const VerificationMeta('dateValue');
   GeneratedColumn<DateTime> _dateValue;
   GeneratedColumn<DateTime> get dateValue =>
       _dateValue ??= GeneratedColumn<DateTime>('dateValue', aliasedName, true,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           $customConstraints: '');
   final VerificationMeta _isUserSettingMeta =
@@ -2567,7 +2567,7 @@ class Settings extends Table with TableInfo<Settings, Setting> {
   GeneratedColumn<bool> _isUserSetting;
   GeneratedColumn<bool> get isUserSetting => _isUserSetting ??=
       GeneratedColumn<bool>('isUserSetting', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const BoolType(),
           requiredDuringInsert: false,
           $customConstraints: 'NOT NULL DEFAULT FALSE',
           defaultValue: const CustomExpression<bool>('FALSE'));

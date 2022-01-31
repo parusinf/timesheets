@@ -1,7 +1,7 @@
 name: timesheets
 description: Табели посещаемости в детсадах и доп.образовании
 
-version: 2021.11.3
+version: 2022.1.31
 
 environment:
   sdk: ">=2.8.2 <3.0.0"

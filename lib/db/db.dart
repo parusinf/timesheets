@@ -313,8 +313,7 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
 
   /// Первая организация в алфавитном порядке
   Future<Org> _getFirst() async {
-    try {
-      return await db
+    return await db
           ._firstOrg()
           .map((row) => Org(
                 id: row.id,
@@ -322,20 +321,13 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
                 inn: row.inn,
                 activeGroupId: row.activeGroupId,
               ))
-          .getSingle();
-    } catch (_) {
-      return null;
-    }
+          .getSingleOrNull();
   }
 
   /// Поиск организации
   Future<Org> find(String name) async {
-    try {
       return await (select(db.orgs)..where((e) => e.name.equals(name)))
-          .getSingle();
-    } catch (_) {
-      return null;
-    }
+          .getSingleOrNull();
   }
 }
 
@@ -400,39 +392,27 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
 
   /// Первый график в алфавитном порядке
   _getFirst() async {
-    try {
       return await db
           ._firstSchedule()
           .map((row) => Schedule(
                 id: row.id,
                 code: row.code,
               ))
-          .getSingle();
-    } catch (_) {
-      return null;
-    }
+          .getSingleOrNull();
   }
 
   /// Получение графика
   get(int id) async {
-    try {
       return await (select(db.schedules)
             ..where((schedule) => schedule?.id?.equals(id)))
-          .getSingle();
-    } catch (_) {
-      return null;
-    }
+          .getSingleOrNull();
   }
 
   /// Поиск графика
   find(String code) async {
-    try {
       return await (select(db.schedules)
             ..where((schedule) => schedule.code.equals(code)))
-          .getSingle();
-    } catch (_) {
-      return null;
-    }
+          .getSingleOrNull();
   }
 }
 
@@ -604,7 +584,6 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
 
   /// Первая группа организации в алфавитном порядке
   _getFirst(Org org) async {
-    try {
       return await db
           ._firstGroup(org?.id)
           .map((row) => Group(
@@ -614,24 +593,17 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
                 scheduleId: row.scheduleId,
                 meals: row.meals,
               ))
-          .getSingle();
-    } catch (_) {
-      return null;
-    }
+          .getSingleOrNull();
   }
 
   /// Поиск группы
   find(String name, Org org, Schedule schedule) async {
-    try {
       return await (select(db.groups)
             ..where((e) =>
                 e.name.equals(name) &
                 e.orgId.equals(org?.id) &
                 e.scheduleId.equals(schedule?.id)))
-          .getSingle();
-    } catch (_) {
-      return null;
-    }
+          .getSingleOrNull();
   }
 }
 
@@ -698,7 +670,6 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
     String middleName,
     DateTime birthday,
   ) async {
-    try {
       return await (db
           ._findPerson(family, name, middleName, birthday)
           .map((row) => Person(
@@ -709,10 +680,7 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
                 birthday: row.birthday,
                 phone: row.phone,
                 phone2: row.phone2,
-              ))).getSingle();
-    } catch (_) {
-      return null;
-    }
+              ))).getSingleOrNull();
   }
 }
 
@@ -801,14 +769,10 @@ class GroupPersonsDao extends DatabaseAccessor<Db> with _$GroupPersonsDaoMixin {
 
   /// Поиск персоны в группе
   Future<GroupPerson> find(Group group, Person person) async {
-    try {
       return await (select(db.groupPersons)
             ..where((e) =>
                 e.groupId.equals(group?.id) & e.personId.equals(person?.id)))
-          .getSingle();
-    } catch (_) {
-      return null;
-    }
+          .getSingleOrNull();
   }
 }
 
@@ -884,14 +848,10 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
 
   /// Поиск посещаемости
   Future<Attendance> find(GroupPerson groupPerson, DateTime date) async {
-    try {
       return await (select(db.attendances)
             ..where((e) =>
                 e.groupPersonId.equals(groupPerson?.id) & e.date.equals(date)))
-          .getSingle();
-    } catch (_) {
-      return null;
-    }
+          .getSingleOrNull();
   }
 }
 
@@ -901,16 +861,15 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   SettingsDao(Db db) : super(db);
 
   /// Добавление настройки
-  Future<Setting> insert2(
-    String name,
-    ValueType valueType, {
-    String textValue,
-    bool boolValue,
-    int intValue,
-    double realValue,
-    DateTime dateValue,
-    bool isUserSetting = false,
-  }) async {
+  Future<Setting> insert2(String name,
+      ValueType valueType, {
+        String textValue,
+        bool boolValue,
+        int intValue,
+        double realValue,
+        DateTime dateValue,
+        bool isUserSetting = false,
+      }) async {
     final id = await into(db.settings).insert(SettingsCompanion(
       name: Value(name),
       valueType: Value(valueType),
@@ -943,21 +902,25 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
       delete(db.settings).where((row) => row.name.equals(settingName));
 
   /// Отслеживание пользовательских настроек
-  Stream<List<Setting>> watchUserSettings() => (select(db.settings)
+  Stream<List<Setting>> watchUserSettings() =>
+      (select(db.settings)
         ..where((e) => e.isUserSetting.equals(true))
         ..orderBy([(e) => OrderingTerm.asc(e.id)]))
-      .watch();
+          .watch();
 
   /// Активная организация
-  Stream<Org> watchActiveOrg() => db
-      ._activeOrg()
-      .map((row) => Org(
+  Stream<Org> watchActiveOrg() {
+      return db
+          ._activeOrg()
+          .map((row) =>
+          Org(
             id: row.id,
             name: row.name,
             inn: row.inn,
             activeGroupId: row.activeGroupId,
           ))
-      .watchSingle();
+          .watchSingleOrNull();
+  }
 
   /// Установка активной организации
   Future setActiveOrg(Org org) async {
@@ -972,11 +935,13 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   }
 
   /// Активный график
-  Stream<Schedule> watchActiveSchedule() =>
-      (db._activeSchedule().map((row) => Schedule(
+  Stream<Schedule> watchActiveSchedule() {
+      return (db._activeSchedule().map((row) =>
+          Schedule(
             id: row.id,
             code: row.code,
-          ))).watchSingle();
+          ))).watchSingleOrNull();
+  }
 
   /// Установка активного графика
   Future setActiveSchedule(Schedule schedule) async {
@@ -991,9 +956,11 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   }
 
   /// Активная группа
-  Stream<GroupView> watchActiveGroup(Org org) => db
-      ._activeGroup(org?.id)
-      .map((row) => GroupView(
+  Stream<GroupView> watchActiveGroup(Org org) {
+      return db
+          ._activeGroup(org?.id)
+          .map((row) =>
+          GroupView(
             id: row.id,
             orgId: row.orgId,
             name: row.name,
@@ -1001,21 +968,20 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
             meals: row.meals,
             personCount: row.personCount,
           ))
-      .watchSingle();
+          .watchSingleOrNull();
+  }
 
   /// Установка активной группы
   Future setActiveGroup(Org org, Group group) async =>
       await db._setActiveGroup(group?.id, org?.id);
 
   // Активный период
-  Stream<DateTime> watchActivePeriod() => db._activePeriod().watchSingle();
+  Stream<DateTime> watchActivePeriod() {
+      return db._activePeriod().watchSingleOrNull();
+  }
 
   getActivePeriod() async {
-    try {
-      return await db._activePeriod().getSingle();
-    } catch (_) {
-      return null;
-    }
+      return await db._activePeriod().getSingleOrNull();
   }
 
   /// Установка активного периода

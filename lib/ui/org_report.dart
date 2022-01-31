@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -92,7 +91,7 @@ class OrgReportState extends State<OrgReport> {
                                     return HorizontalDataTable(
                                       leftHandSideColumnWidth: fixedColumnWidth,
                                       rightHandSideColumnWidth: columnWidth *
-                                          (_bloc.activePeriod.value.day + 1),
+                                          (_bloc.activePeriod.valueWrapper.value.day + 1),
                                       isFixedHeader: true,
                                       headerWidgets: _createTitleRow(),
                                       leftSideItemBuilder: _createFixedColumn,
@@ -124,7 +123,7 @@ class OrgReportState extends State<OrgReport> {
                                     return HorizontalDataTable(
                                       leftHandSideColumnWidth: fixedColumnWidth,
                                       rightHandSideColumnWidth: columnWidth *
-                                          (_bloc.activePeriod.value.day + 1),
+                                          (_bloc.activePeriod.valueWrapper.value.day + 1),
                                       isFixedHeader: true,
                                       headerWidgets: _createTitleRow(),
                                       leftSideItemBuilder: _createFixedColumn,
@@ -148,7 +147,7 @@ class OrgReportState extends State<OrgReport> {
 
   /// Создание строки заголовка таблицы
   List<Widget> _createTitleRow() {
-    final DateTime period = _bloc.activePeriod.value;
+    final DateTime period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[
       StreamBuilder<DateTime>(
         stream: _bloc.activePeriod,
@@ -322,7 +321,7 @@ class OrgReportState extends State<OrgReport> {
             attendance.groupId == _activeGroups[index].groupView?.id)
         : _orgAttendances
             .where((attendance) => attendance.meals == _orgMeals[index].meals);
-    final period = _bloc.activePeriod.value;
+    final period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[];
     // Итог по персоне за период
     rowCells.add(_createCell(attendances.length.toString(),
@@ -356,7 +355,7 @@ class OrgReportState extends State<OrgReport> {
       context: context,
       firstDate: DateTime(DateTime.now().year - 1),
       lastDate: DateTime(DateTime.now().year + 1),
-      initialDate: _bloc.activePeriod.value,
+      initialDate: _bloc.activePeriod.valueWrapper?.value,
     );
     if (period != null) {
       _bloc.setActivePeriod(lastDayOfMonth(period));

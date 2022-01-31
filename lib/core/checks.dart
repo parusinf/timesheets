@@ -21,12 +21,12 @@ bool isHoliday(Bloc bloc, DateTime date) {
   final weekdayIndex = abbrWeekdays.indexOf(weekday);
   return !isTransWorkday(bloc, date) &&
       ([5, 6].contains(weekdayIndex) ||
-          bloc.holidaysDateList.value.contains(date));
+          bloc.holidaysDateList.valueWrapper.value.contains(date));
 }
 
 /// Дата является переносом рабочего дня
 bool isTransWorkday(Bloc bloc, DateTime date) =>
-    bloc.workdaysDateList.value.contains(date);
+    bloc.workdaysDateList.valueWrapper.value.contains(date);
 
 /// Строка нуждается в исправлении
 bool isNeedStringUpdate(String oldValue, String newValue) =>

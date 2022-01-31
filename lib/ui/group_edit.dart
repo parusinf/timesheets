@@ -47,7 +47,7 @@ class _GroupEditState extends State<GroupEdit> {
   void initState() {
     super.initState();
     _nameEdit.text = widget.groupView?.name;
-    _schedule = widget.groupView?.schedule ?? _bloc.activeSchedule.value;
+    _schedule = widget.groupView?.schedule ?? _bloc.activeSchedule.valueWrapper?.value;
     _scheduleEdit.text = _schedule?.code;
     _meals = widget.groupView?.meals ??
         0; // 0 - Без питания, 1 - До 2 лет, 2 - От 3 лет
@@ -106,7 +106,7 @@ class _GroupEditState extends State<GroupEdit> {
   /// Выбор графика из словаря
   Future _selectSchedule() async {
     _schedule = await push(context, SchedulesDictionary()) ??
-        _bloc.activeSchedule?.value;
+        _bloc.activeSchedule?.valueWrapper?.value;
     _scheduleEdit.text = _schedule?.code ?? _scheduleEdit.text;
   }
 

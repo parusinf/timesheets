@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -64,7 +63,7 @@ class HomePageState extends State<HomePage> {
                 stream: _bloc.activeOrg,
                 builder: (context, snapshot) => snapshot.hasData
                     ? InkWell(
-                        onTap: () => editOrg(context, _bloc.activeOrg.value),
+                        onTap: () => editOrg(context, _bloc.activeOrg.valueWrapper?.value),
                         child: text(snapshot.data.name),
                       )
                     : InkWell(
@@ -77,7 +76,7 @@ class HomePageState extends State<HomePage> {
         StreamBuilder<List<GroupPersonView>>(
             stream: _bloc.groupPeriodPersons,
             builder: (context, snapshot) {
-              if (_bloc.activeGroup.value != null && snapshot.hasData) {
+              if (_bloc.activeGroup.valueWrapper?.value != null && snapshot.hasData) {
                 return IconButton(
                   icon: Icon(Icons.file_upload),
                   onPressed: _unloadToFile,
@@ -99,11 +98,11 @@ class HomePageState extends State<HomePage> {
         stream: _bloc.groupPeriodPersons,
         builder: (context, snapshot) {
           // Добавить организацию
-          if (_bloc.activeOrg.value == null) {
+          if (_bloc.activeOrg.valueWrapper?.value == null) {
             return centerButton(L10n.addOrg, onPressed: () => addOrg(context));
           } else {
             // Добавить группу
-            if (_bloc.activeGroup.value == null) {
+            if (_bloc.activeGroup.valueWrapper?.value == null) {
               return centerButton(L10n.addGroup,
                   onPressed: () => addGroup(context));
             } else {
@@ -119,7 +118,7 @@ class HomePageState extends State<HomePage> {
                         return HorizontalDataTable(
                           leftHandSideColumnWidth: fixedColumnWidth,
                           rightHandSideColumnWidth:
-                              columnWidth * (_bloc.activePeriod.value.day + 1),
+                              columnWidth * (_bloc.activePeriod.valueWrapper.value.day + 1),
                           isFixedHeader: true,
                           headerWidgets: _createTitleRow(),
                           leftSideItemBuilder: _createFixedColumn,
@@ -172,9 +171,9 @@ class HomePageState extends State<HomePage> {
     try {
       await unloadToFile(
         context,
-        _bloc.activeOrg.value,
-        _bloc.activeGroup.value,
-        _bloc.activePeriod.value,
+        _bloc.activeOrg.valueWrapper?.value,
+        _bloc.activeGroup.valueWrapper?.value,
+        _bloc.activePeriod.valueWrapper?.value,
         _groupPeriodPersons,
         _groupAttendances,
       );
@@ -185,7 +184,7 @@ class HomePageState extends State<HomePage> {
 
   /// Создание строки заголовка таблицы
   List<Widget> _createTitleRow() {
-    final DateTime period = _bloc.activePeriod.value;
+    final DateTime period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[
       StreamBuilder<DateTime>(
         stream: _bloc.activePeriod,
@@ -357,7 +356,7 @@ class HomePageState extends State<HomePage> {
     final groupPerson = _groupPeriodPersons[index];
     final personAttendances = _groupAttendances
         .where((attendance) => attendance.groupPersonId == groupPerson?.id);
-    final period = _bloc.activePeriod.value;
+    final period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[];
     // Итог по персоне за период
     rowCells.add(_createCell(personAttendances.length.toString(),
@@ -431,7 +430,7 @@ class HomePageState extends State<HomePage> {
       context: context,
       firstDate: DateTime(DateTime.now().year - 1),
       lastDate: DateTime(DateTime.now().year + 1),
-      initialDate: _bloc.activePeriod.value,
+      initialDate: _bloc.activePeriod.valueWrapper?.value,
     );
     if (period != null) {
       _bloc.setActivePeriod(lastDayOfMonth(period));

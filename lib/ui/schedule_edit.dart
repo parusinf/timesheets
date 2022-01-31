@@ -100,8 +100,8 @@ class _ScheduleEditState extends State<ScheduleEdit> {
     } else {
       try {
         final hours = <double>[];
-        for (int i = 0; i < _bloc.scheduleDays.value.length; i++) {
-          hours.add(_bloc.scheduleDays.value[i].hoursNorm);
+        for (int i = 0; i < _bloc.scheduleDays.valueWrapper?.value.length; i++) {
+          hours.add(_bloc.scheduleDays.valueWrapper?.value[i].hoursNorm);
         }
         if (hours.reduce((a, b) => a + b) == 0.0) {
           showMessage(_scaffoldKey, L10n.noHoursNorm);
@@ -109,7 +109,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
           if (widget.actionType == DataActionType.Insert) {
             final schedule =
                 await _bloc.insertSchedule(code: createScheduleCode(hours));
-            _bloc.scheduleDays.value
+            _bloc.scheduleDays.valueWrapper?.value
                 .forEach((scheduleDay) => _bloc.db.scheduleDaysDao.insert2(
                       schedule: schedule,
                       dayNumber: scheduleDay.dayNumber,
@@ -120,7 +120,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
               id: widget.schedule?.id,
               code: createScheduleCode(hours),
             ));
-            _bloc.scheduleDays.value.forEach(
+            _bloc.scheduleDays.valueWrapper?.value.forEach(
                 (scheduleDay) => _bloc.db.scheduleDaysDao.update2(scheduleDay));
           }
           Navigator.of(context).pop();

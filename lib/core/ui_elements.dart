@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timesheets/core.dart';
 
@@ -104,7 +102,7 @@ Future launchUrl(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
 /// Получение нормы часов на дату по активному графику
 double getHoursNorm(Bloc bloc, DateTime date) {
   final weekdayNumber = abbrWeekdays.indexOf(abbrWeekday(date));
-  final scheduleDays = bloc.scheduleDays.value;
+  final scheduleDays = bloc.scheduleDays.valueWrapper?.value;
   var hoursNorm = 0.0;
   if (scheduleDays.length > 0) {
     hoursNorm = scheduleDays[weekdayNumber].hoursNorm;
@@ -123,7 +121,7 @@ double getHoursNorm(Bloc bloc, DateTime date) {
 /// Поиск нормы часов первого дня активного графика
 double getFirstHoursNorm(Bloc bloc) {
   final firstDay =
-      bloc.scheduleDays.value.firstWhere((day) => day.hoursNorm > 0.0);
+      bloc.scheduleDays.valueWrapper?.value?.firstWhere((day) => day.hoursNorm > 0.0);
   return firstDay != null ? firstDay.hoursNorm : 0;
 }
 

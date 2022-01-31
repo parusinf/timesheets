@@ -102,7 +102,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
       try {
         if (widget.actionType == DataActionType.Insert) {
           await bloc.insertGroupPerson(
-            group: bloc.activeGroup.value,
+            group: bloc.activeGroup.valueWrapper?.value,
             person: _person,
             beginDate: stringToDate(_beginDateEdit.text),
             endDate: stringToDate(_endDateEdit.text),

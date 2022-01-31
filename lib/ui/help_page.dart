@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
@@ -67,13 +66,7 @@ class HelpPageState extends State<HelpPage> {
 
 ## Выпуск
 
-2021.11.3
-
-## Автор
-
-Павел Никитин [pavel@parusinf.ru](mailto:pavel@parusinf.ru)
-
-Оплата по сердцу **+7 916 070-44-94** (Тинькофф, Сбербанк, ВТБ)
+2022.1.31
 ''';
   }
 }
