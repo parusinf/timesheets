@@ -1,0 +1,10 @@
+workflows:
+  workflow-name:
+    environment:
+      groups:
+        - appstore_credentials
+        # Add the above mentioned group environment variables in Codemagic UI (either in Application/Team variables):
+        # APP_STORE_CONNECT_ISSUER_ID
+        # APP_STORE_CONNECT_KEY_IDENTIFIER
+        # APP_STORE_CONNECT_PRIVATE_KEY
+        # CERTIFICATE_PRIVATE_KEY
