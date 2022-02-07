@@ -66,7 +66,7 @@ class HelpPageState extends State<HelpPage> {
 
 ## Выпуск
 
-2022.1.31
+2022.2.7
 ''';
   }
 }

@@ -1,7 +1,7 @@
 name: timesheets
-description: Табели посещаемости в детсадах и доп.образовании
+description: Табели посещаемости
 
-version: 2022.1.31
+version: 2022.2.7
 
 environment:
   sdk: ">=2.8.2 <3.0.0"
@@ -26,6 +26,7 @@ dependencies:
   permission_handler:
   share:
   file_picker:
+  receive_sharing_intent:
 
 dev_dependencies:
   drift_dev:

@@ -31,15 +31,15 @@ class MainActivity: FlutterActivity() {
         }
 
         EventChannel(flutterEngine.dartExecutor, EVENTS).setStreamHandler(
-                object : EventChannel.StreamHandler {
-                    override fun onListen(args: Any?, events: EventSink) {
-                        linksReceiver = createChangeReceiver(events)
-                    }
-
-                    override fun onCancel(args: Any?) {
-                        linksReceiver = null
-                    }
+            object : EventChannel.StreamHandler {
+                override fun onListen(args: Any?, events: EventSink) {
+                    linksReceiver = createChangeReceiver(events)
                 }
+
+                override fun onCancel(args: Any?) {
+                    linksReceiver = null
+                }
+            }
         )
     }
 
