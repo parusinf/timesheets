@@ -8,6 +8,12 @@
 	<key>CFBundleName</key>
 	    <string>Табели посещаемости</string>
 
+    <key>LSApplicationQueriesSchemes</key>
+        <array>
+          <string>https</string>
+          <string>tel</string>
+        </array>
+
     <key>CFBundleURLTypes</key>
         <array>
             <dict>

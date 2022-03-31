@@ -179,9 +179,10 @@ class OrgsCompanion extends UpdateCompanion<Org> {
 }
 
 class Orgs extends Table with TableInfo<Orgs, Org> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String _alias;
-  Orgs(this._db, [this._alias]);
+  Orgs(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
@@ -254,7 +255,7 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
 
   @override
   Orgs createAlias(String alias) {
-    return Orgs(_db, alias);
+    return Orgs(attachedDatabase, alias);
   }
 
   @override
@@ -381,9 +382,10 @@ class SchedulesCompanion extends UpdateCompanion<Schedule> {
 }
 
 class Schedules extends Table with TableInfo<Schedules, Schedule> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String _alias;
-  Schedules(this._db, [this._alias]);
+  Schedules(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
@@ -431,7 +433,7 @@ class Schedules extends Table with TableInfo<Schedules, Schedule> {
 
   @override
   Schedules createAlias(String alias) {
-    return Schedules(_db, alias);
+    return Schedules(attachedDatabase, alias);
   }
 
   @override
@@ -622,9 +624,10 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDay> {
 }
 
 class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String _alias;
-  ScheduleDays(this._db, [this._alias]);
+  ScheduleDays(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
@@ -701,7 +704,7 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
 
   @override
   ScheduleDays createAlias(String alias) {
-    return ScheduleDays(_db, alias);
+    return ScheduleDays(attachedDatabase, alias);
   }
 
   @override
@@ -855,9 +858,10 @@ class HolidaysCompanion extends UpdateCompanion<Holiday> {
 }
 
 class Holidays extends Table with TableInfo<Holidays, Holiday> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String _alias;
-  Holidays(this._db, [this._alias]);
+  Holidays(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
@@ -916,7 +920,7 @@ class Holidays extends Table with TableInfo<Holidays, Holiday> {
 
   @override
   Holidays createAlias(String alias) {
-    return Holidays(_db, alias);
+    return Holidays(attachedDatabase, alias);
   }
 
   @override
@@ -1128,9 +1132,10 @@ class GroupsCompanion extends UpdateCompanion<Group> {
 }
 
 class Groups extends Table with TableInfo<Groups, Group> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String _alias;
-  Groups(this._db, [this._alias]);
+  Groups(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
@@ -1217,7 +1222,7 @@ class Groups extends Table with TableInfo<Groups, Group> {
 
   @override
   Groups createAlias(String alias) {
-    return Groups(_db, alias);
+    return Groups(attachedDatabase, alias);
   }
 
   @override
@@ -1487,9 +1492,10 @@ class PersonsCompanion extends UpdateCompanion<Person> {
 }
 
 class Persons extends Table with TableInfo<Persons, Person> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String _alias;
-  Persons(this._db, [this._alias]);
+  Persons(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
@@ -1597,7 +1603,7 @@ class Persons extends Table with TableInfo<Persons, Person> {
 
   @override
   Persons createAlias(String alias) {
-    return Persons(_db, alias);
+    return Persons(attachedDatabase, alias);
   }
 
   @override
@@ -1817,9 +1823,10 @@ class GroupPersonsCompanion extends UpdateCompanion<GroupPerson> {
 }
 
 class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String _alias;
-  GroupPersons(this._db, [this._alias]);
+  GroupPersons(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
@@ -1903,7 +1910,7 @@ class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
 
   @override
   GroupPersons createAlias(String alias) {
-    return GroupPersons(_db, alias);
+    return GroupPersons(attachedDatabase, alias);
   }
 
   @override
@@ -2092,9 +2099,10 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
 }
 
 class Attendances extends Table with TableInfo<Attendances, Attendance> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String _alias;
-  Attendances(this._db, [this._alias]);
+  Attendances(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
@@ -2173,7 +2181,7 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
 
   @override
   Attendances createAlias(String alias) {
-    return Attendances(_db, alias);
+    return Attendances(attachedDatabase, alias);
   }
 
   @override
@@ -2502,9 +2510,10 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
 }
 
 class Settings extends Table with TableInfo<Settings, Setting> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String _alias;
-  Settings(this._db, [this._alias]);
+  Settings(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedColumn<int> _id;
   GeneratedColumn<int> get id =>
@@ -2641,7 +2650,7 @@ class Settings extends Table with TableInfo<Settings, Setting> {
 
   @override
   Settings createAlias(String alias) {
-    return Settings(_db, alias);
+    return Settings(attachedDatabase, alias);
   }
 
   static TypeConverter<ValueType, int> $converter0 =

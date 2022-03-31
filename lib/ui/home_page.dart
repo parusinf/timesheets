@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ import 'package:timesheets/ui/group_edit.dart';
 import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/person_edit.dart';
 import 'package:timesheets/ui/help_page.dart';
+import 'package:uri_to_file/uri_to_file.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
@@ -33,20 +35,22 @@ class HomePageState extends State<HomePage> {
   static const leftPadding = 12.0;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        key: _scaffoldKey,
-        appBar: _createAppBar(),
-        drawer: HomeDrawer(),
-        body: StreamBuilder<String>(
-          stream: _bloc.content,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              _loadContent(snapshot.data);
-            }
-            return _createBody();
-          },
-        ),
-      );
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: _createAppBar(),
+      drawer: HomeDrawer(),
+      body: StreamBuilder<String>(
+        stream: _bloc.content,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            _loadContent(snapshot.data);
+          }
+          return _createBody();
+        },
+      ),
+    );
+  }
 
   Widget _createAppBar() {
     return AppBar(
@@ -72,23 +76,32 @@ class HomePageState extends State<HomePage> {
                       )),
       ),
       actions: <Widget>[
-        // Выгрузка в файл
-        StreamBuilder<List<GroupPersonView>>(
-            stream: _bloc.groupPeriodPersons,
-            builder: (context, snapshot) {
-              if (_bloc.activeGroup.valueWrapper?.value != null && snapshot.hasData) {
-                return IconButton(
-                  icon: Icon(Icons.file_upload),
-                  onPressed: _unloadToFile,
-                );
-              } else {
-                return Text('');
-              }
-            }),
-        IconButton(
-          icon: Icon(Icons.file_download),
-          onPressed: _pickAndLoadFromFile,
-        ),
+        DropdownButton(
+          items: [
+            DropdownMenuItem(
+              value: L10n.sendTimesheet,
+              child: IconButton(
+                icon: Icon(Icons.file_upload),
+                onPressed: _unloadToFile,
+              ),
+            ),
+            DropdownMenuItem(
+              value: L10n.receiveTimesheetFromParus,
+              child: IconButton(
+                icon: const Icon(Icons.adb),
+                onPressed: () => launchUrl(_scaffoldKey, 'https://t.me/timesheets_parus_bot'),
+              ),
+            ),
+            DropdownMenuItem(
+              value: L10n.receiveTimesheetFromFile,
+              child: IconButton(
+                icon: Icon(Icons.file_download),
+                onPressed: _pickAndLoadFromFile,
+              ),
+            ),
+          ],
+          onChanged: (_) {},
+        )
       ],
     );
   }
@@ -146,8 +159,8 @@ class HomePageState extends State<HomePage> {
     try {
       if (content != null) {
         if (content.contains('content://')) {
-          final uri = Uri.parse(content);
-          await loadFromFile(context, uriToString(uri));
+          File file = await toFile(content);
+          await loadFromFile(context, file);
         } else {
           parseContent(context, content);
         }
@@ -168,17 +181,27 @@ class HomePageState extends State<HomePage> {
 
   /// Выгрузка в CSV файл
   Future _unloadToFile() async {
-    try {
-      await unloadToFile(
-        context,
-        _bloc.activeOrg.valueWrapper?.value,
-        _bloc.activeGroup.valueWrapper?.value,
-        _bloc.activePeriod.valueWrapper?.value,
-        _groupPeriodPersons,
-        _groupAttendances,
-      );
-    } catch (e) {
-      showMessage(_scaffoldKey, e.toString());
+    final org = _bloc.activeOrg.valueWrapper?.value;
+    final group = _bloc.activeGroup.valueWrapper?.value;
+    if (org == null) {
+      showMessage(_scaffoldKey, L10n.addOrg);
+    }
+    else if (group == null) {
+      showMessage(_scaffoldKey, L10n.addGroup);
+    }
+    else {
+      try {
+        await unloadToFile(
+          context,
+          org,
+          group,
+          _bloc.activePeriod.valueWrapper?.value,
+          _groupPeriodPersons,
+          _groupAttendances,
+        );
+      } catch (e) {
+        showMessage(_scaffoldKey, e.toString());
+      }
     }
   }
 

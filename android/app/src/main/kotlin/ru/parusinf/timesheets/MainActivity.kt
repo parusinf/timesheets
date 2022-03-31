@@ -13,7 +13,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 class MainActivity: FlutterActivity() {
-
     private val CHANNEL = "receive_content/channel"
     private val EVENTS = "receive_content/events"
     private var startString: String? = null
@@ -66,5 +65,4 @@ class MainActivity: FlutterActivity() {
             }
         }
     }
-
 }

@@ -3,12 +3,12 @@ class L10n {
 
   static const Map<String, Map<String, String>> _l10n = {
     'ru': {
-      'addGroup': 'Добавить группу',
-      'addHoliday': 'Добавить праздник',
-      'addOrg': 'Добавить организацию',
-      'addPerson': 'Добавить персону',
-      'addPersonToGroup': 'Добавить персону в группу',
-      'addSchedule': 'Добавить график',
+      'addGroup': 'Добавьте группу',
+      'addHoliday': 'Добавьте праздник',
+      'addOrg': 'Добавьте организацию',
+      'addPerson': 'Добавьте персону',
+      'addPersonToGroup': 'Добавьте персону в группу',
+      'addSchedule': 'Добавьте график',
       'beginDate': 'Дата поступления',
       'binding': 'Прикрепление',
       'countryPhoneCode': '+7 ',
@@ -84,9 +84,11 @@ class L10n {
       'eraseAllData': 'Стереть все данные',
       'cancel': 'Отмена',
       'continueAction': 'Продолжить',
+      'sendTimesheet': 'Отправить табель',
+      'receiveTimesheetFromParus': 'Получить табель из Паруса',
+      'receiveTimesheetFromFile': 'Получить табель из файла',
     }
   };
-
   static get addGroup => _l10n[languageCode]['addGroup'];
   static get addHoliday => _l10n[languageCode]['addHoliday'];
   static get addOrg => _l10n[languageCode]['addOrg'];
@@ -170,4 +172,7 @@ class L10n {
   static get eraseAllData => _l10n[languageCode]['eraseAllData'];
   static get cancel => _l10n[languageCode]['cancel'];
   static get continueAction => _l10n[languageCode]['continueAction'];
+  static get sendTimesheet => _l10n[languageCode]['sendTimesheet'];
+  static get receiveTimesheetFromParus => _l10n[languageCode]['receiveTimesheetFromParus'];
+  static get receiveTimesheetFromFile => _l10n[languageCode]['receiveTimesheetFromFile'];
 }

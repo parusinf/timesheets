@@ -18,15 +18,14 @@ Future pickAndLoadFromFile(BuildContext context) async {
   if (result == null) {
     throw L10n.fileNotSelected;
   }
-  await loadFromFile(context, result.files.single.path);
+  await loadFromFile(context, File(result.files.single.path));
 }
 
 /// Загрузка CSV файла
-Future loadFromFile(BuildContext context, String fileName) async {
+Future loadFromFile(BuildContext context, File file) async {
   if (!(await Permission.storage.request().isGranted)) {
     throw L10n.permissionDenied;
   }
-  final file = File(fileName);
   final content = decodeCp1251(file.readAsBytesSync());
   await parseContent(context, content);
 }

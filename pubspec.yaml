@@ -1,7 +1,7 @@
 name: timesheets
 description: Табели посещаемости
 
-version: 2022.2.7
+version: 2022.3.31
 
 environment:
   sdk: ">=2.8.2 <3.0.0"
@@ -26,7 +26,7 @@ dependencies:
   permission_handler:
   share:
   file_picker:
-  receive_sharing_intent:
+  uri_to_file:
 
 dev_dependencies:
   drift_dev:
