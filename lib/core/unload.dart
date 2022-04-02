@@ -66,7 +66,9 @@ Future unloadToFile(
   }
 
   // Запись файла
-  final filename = '${org.name}-${group.name}-$periodString.csv'.replaceAll(' ', '_');
+  RegExp exp = RegExp(r'[\s\.№]+');
+  final filename = '${org.name}_${group.name}_$periodString\_Приложение'
+      .replaceAll(exp, '_') + '.csv';
   final directory = await getTemporaryDirectory();
   final file = File(p.join(directory.path, filename));
   file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);

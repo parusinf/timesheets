@@ -17,7 +17,6 @@
     </queries>
 
     <uses-permission android:name="android.permission.EXTERNAL_CONTENT_URI"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <application
             android:name="${applicationName}"
             android:label="Табели посещаемости"

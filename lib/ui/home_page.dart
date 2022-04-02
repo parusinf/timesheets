@@ -76,32 +76,34 @@ class HomePageState extends State<HomePage> {
                       )),
       ),
       actions: <Widget>[
-        DropdownButton(
-          items: [
-            DropdownMenuItem(
-              value: L10n.sendTimesheet,
-              child: IconButton(
-                icon: Icon(Icons.file_upload),
-                onPressed: _unloadToFile,
+        DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            items: [
+              DropdownMenuItem(
+                value: L10n.sendTimesheet,
+                child: const Icon(Icons.file_upload),
               ),
-            ),
-            DropdownMenuItem(
-              value: L10n.receiveTimesheetFromParus,
-              child: IconButton(
-                icon: const Icon(Icons.adb),
-                onPressed: () => launchUrl(_scaffoldKey, 'https://t.me/timesheets_parus_bot'),
+              DropdownMenuItem(
+                value: L10n.receiveTimesheetFromParus,
+                child: const Icon(Icons.adb),
               ),
-            ),
-            DropdownMenuItem(
-              value: L10n.receiveTimesheetFromFile,
-              child: IconButton(
-                icon: Icon(Icons.file_download),
-                onPressed: _pickAndLoadFromFile,
+              DropdownMenuItem(
+                value: L10n.receiveTimesheetFromFile,
+                child: const Icon(Icons.file_download),
               ),
-            ),
-          ],
-          onChanged: (_) {},
-        )
+            ],
+            onChanged: (String value) {
+              setState(() {
+                if (L10n.sendTimesheet == value)
+                  _unloadToFile();
+                else if (L10n.receiveTimesheetFromParus == value)
+                  launchUrl(_scaffoldKey, 'https://t.me/timesheets_parus_bot');
+                else if (L10n.receiveTimesheetFromFile == value)
+                  _pickAndLoadFromFile();
+              });
+            },
+          ),
+        ),
       ],
     );
   }

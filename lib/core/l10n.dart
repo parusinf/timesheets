@@ -87,6 +87,11 @@ class L10n {
       'sendTimesheet': 'Отправить табель',
       'receiveTimesheetFromParus': 'Получить табель из Паруса',
       'receiveTimesheetFromFile': 'Получить табель из файла',
+      'fileHeaderError': 'В заголовке файла должно быть 4 строки',
+      'filePeriodError': 'В 1-й строке файла должен быть период в формате МЕСЯЦ ГОД',
+      'fileOrgError': 'Во 2-й строке файла должен быть мнемокод учреждения и ИНН',
+      'fileGroupError': 'В 3-й строке файла должен быть мнемокод группы, графика и код типа питания',
+      'fileEmptyTimesheetError': 'Начиная с 5-й строки файла должен быть табель посещаемости по одному ребёнку на строку',
     }
   };
   static get addGroup => _l10n[languageCode]['addGroup'];
@@ -175,4 +180,11 @@ class L10n {
   static get sendTimesheet => _l10n[languageCode]['sendTimesheet'];
   static get receiveTimesheetFromParus => _l10n[languageCode]['receiveTimesheetFromParus'];
   static get receiveTimesheetFromFile => _l10n[languageCode]['receiveTimesheetFromFile'];
+
+  static get fileHeaderError => _l10n[languageCode]['fileHeaderError'];
+  static get filePeriodError => _l10n[languageCode]['filePeriodError'];
+  static get fileOrgError => _l10n[languageCode]['fileOrgError'];
+  static get fileGroupError => _l10n[languageCode]['fileGroupError'];
+  static get fileEmptyTimesheetError => _l10n[languageCode]['fileEmptyTimesheetError'];
+
 }
