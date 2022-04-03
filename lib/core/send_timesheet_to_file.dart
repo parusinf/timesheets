@@ -7,7 +7,7 @@ import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core.dart';
 
 /// Выгрузка посещаемости группы за период в CSV файл
-Future unloadToFile(
+Future sendTimesheetToFile(
     BuildContext context,
     Org org,
     GroupView group,
@@ -74,5 +74,8 @@ Future unloadToFile(
   file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
 
   // Отправка файла
-  Share.shareFiles([file.path]);
+  await Share.shareFiles([file.path]);
+
+  // Удаление файла
+  await file.delete();
 }

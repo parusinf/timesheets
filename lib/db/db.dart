@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'schedule_helper.dart';
 import 'value_type.dart';
 import 'upgrade_db.dart';
-import 'create_db.dart';
+import 'init_new_db.dart';
 
 part 'db.g.dart';
 
@@ -208,7 +208,7 @@ class Db extends _$Db {
     transaction(() async {
       await customStatement('PRAGMA foreign_keys = ON');
       if (wasCreated) {
-        await createDb(this);
+        await initNewDb(this);
       }
     });
   }

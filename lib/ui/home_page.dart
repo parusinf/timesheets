@@ -1,12 +1,16 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
+import 'package:restart_app/restart_app.dart';
+import 'package:uri_to_file/uri_to_file.dart';
 import 'package:timesheets/core.dart';
-import 'package:timesheets/core/unload.dart';
-import 'package:timesheets/core/load.dart';
+import 'package:timesheets/core/send_timesheet_to_file.dart';
+import 'package:timesheets/core/receive_timesheet_from_file.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/home_drawer.dart';
 import 'package:timesheets/ui/org_edit.dart';
@@ -14,7 +18,6 @@ import 'package:timesheets/ui/group_edit.dart';
 import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/person_edit.dart';
 import 'package:timesheets/ui/help_page.dart';
-import 'package:uri_to_file/uri_to_file.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
@@ -24,15 +27,45 @@ class HomePage extends StatefulWidget {
 }
 
 /// Состояние табелей
-class HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   get _bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<GroupPersonView> _groupPeriodPersons;
   List<Attendance> _groupAttendances;
+  String _timesheetsNeedRestartFlagFileName;
   static const fixedColumnWidth = 150.0;
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
   static const leftPadding = 12.0;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if ([AppLifecycleState.resumed, AppLifecycleState.detached].contains(state)) {
+      final flagFile = File(_timesheetsNeedRestartFlagFileName);
+      if (flagFile.existsSync()) {
+        flagFile.delete();
+        Restart.restartApp();
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addObserver(this);
+    _setTimesheetsNeedRestartFileName();
+  }
+  
+  Future _setTimesheetsNeedRestartFileName() async {
+    final directory = await getTemporaryDirectory();
+    _timesheetsNeedRestartFlagFileName = p.join(directory.path, 'timesheets_need_restart');
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +77,7 @@ class HomePageState extends State<HomePage> {
         stream: _bloc.content,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            _loadContent(snapshot.data);
+            _receiveTimesheetFromContent(snapshot.data);
           }
           return _createBody();
         },
@@ -95,11 +128,11 @@ class HomePageState extends State<HomePage> {
             onChanged: (String value) {
               setState(() {
                 if (L10n.sendTimesheet == value)
-                  _unloadToFile();
+                  _sendTimesheetToFile();
                 else if (L10n.receiveTimesheetFromParus == value)
                   launchUrl(_scaffoldKey, 'https://t.me/timesheets_parus_bot');
                 else if (L10n.receiveTimesheetFromFile == value)
-                  _pickAndLoadFromFile();
+                  _pickAndReceiveTimesheetFromFile();
               });
             },
           ),
@@ -156,16 +189,18 @@ class HomePageState extends State<HomePage> {
         });
   }
 
-  /// Загрузка из переданного контента
-  Future _loadContent(String content) async {
+  /// Получение табеля из переданного контента
+  Future _receiveTimesheetFromContent(String content) async {
     try {
       if (content != null) {
         if (content.contains('content://')) {
           File file = await toFile(content);
-          await loadFromFile(context, file);
+          await receiveTimesheetFromFile(context, file);
         } else {
-          parseContent(context, content);
+          receiveTimesheetFromContent(context, content);
         }
+        final flagFile = File(_timesheetsNeedRestartFlagFileName);
+        flagFile.writeAsStringSync('1', flush: true);
       }
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());
@@ -173,16 +208,16 @@ class HomePageState extends State<HomePage> {
   }
 
   /// Загрузка из CSV файла
-  Future _pickAndLoadFromFile() async {
+  Future _pickAndReceiveTimesheetFromFile() async {
     try {
-      await pickAndLoadFromFile(context);
+      await pickAndReceiveTimesheetFromFile(context);
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());
     }
   }
 
   /// Выгрузка в CSV файл
-  Future _unloadToFile() async {
+  Future _sendTimesheetToFile() async {
     final org = _bloc.activeOrg.valueWrapper?.value;
     final group = _bloc.activeGroup.valueWrapper?.value;
     if (org == null) {
@@ -193,7 +228,7 @@ class HomePageState extends State<HomePage> {
     }
     else {
       try {
-        await unloadToFile(
+        await sendTimesheetToFile(
           context,
           org,
           group,

@@ -36,7 +36,7 @@ Future _initUserSettings(Db db) async {
 }
 
 /// Инициализация новой базы данных
-Future createDb(Db db) async {
+Future initNewDb(Db db) async {
   await db.settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
   for (final holiday in _initHolidays) {
     await db.holidaysDao.insert2(date: holiday.date, workday: holiday.workday);
