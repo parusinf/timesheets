@@ -2,15 +2,11 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
 /// Выбор CSV файла и загрузка табеля посещаемости
 Future pickAndLoadFromFile(BuildContext context) async {
-  if (!(await Permission.storage.request().isGranted)) {
-    throw L10n.permissionDenied;
-  }
   FilePickerResult result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['csv'],
@@ -23,9 +19,6 @@ Future pickAndLoadFromFile(BuildContext context) async {
 
 /// Загрузка CSV файла
 Future loadFromFile(BuildContext context, File file) async {
-  if (!(await Permission.storage.request().isGranted)) {
-    throw L10n.permissionDenied;
-  }
   final content = decodeCp1251(file.readAsBytesSync());
   await parseContent(context, content);
 }

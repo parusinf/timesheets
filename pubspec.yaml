@@ -1,7 +1,7 @@
 name: timesheets
 description: Табели посещаемости
 
-version: 2022.4.2
+version: 2022.4.3
 
 environment:
   sdk: ">=2.8.2 <3.0.0"
@@ -23,7 +23,6 @@ dependencies:
   horizontal_data_table:
   flutter_markdown:
   url_launcher:
-  permission_handler:
   share:
   file_picker:
   uri_to_file:
