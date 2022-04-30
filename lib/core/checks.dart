@@ -29,13 +29,12 @@ bool isTransWorkday(Bloc bloc, DateTime date) =>
     bloc.workdaysDateList.valueWrapper.value.contains(date);
 
 /// Строка нуждается в исправлении
-bool isNeedStringUpdate(String oldValue, String newValue) =>
-    trim(oldValue) == '' && trim(newValue) != '' ||
-    trim(oldValue) != '' &&
-        trim(newValue) != '' &&
-        trim(oldValue) != trim(newValue);
+bool isEqual(String oldValue, String newValue) =>
+    !(trim(oldValue) == '' && trim(newValue) != '' ||
+      trim(oldValue) != '' && trim(newValue) != '' &&
+      trim(oldValue) != trim(newValue));
 
 /// Дата нуждается в исправлении
-bool isNeedDateUpdate(DateTime oldValue, DateTime newValue) =>
-    oldValue == null && newValue != null ||
-    oldValue != null && newValue != null && oldValue != newValue;
+bool isDateEqual(DateTime oldValue, DateTime newValue) =>
+    !(oldValue == null && newValue != null ||
+      oldValue != null && newValue != null && oldValue != newValue);

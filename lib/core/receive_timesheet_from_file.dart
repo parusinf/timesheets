@@ -45,13 +45,18 @@ Future receiveTimesheetFromContent(BuildContext context, String content) async {
   if (orgName == null) {
     throw L10n.fileFormatError;
   }
-  var org = await bloc.db.orgsDao.find(orgName);
+  var org;
+  if (orgInn != null) {
+    org = await bloc.db.orgsDao.findByInn(orgInn);
+  } else {
+    org = await bloc.db.orgsDao.find(orgName);
+  }
   if (org == null) {
     org = await bloc.insertOrg(name: orgName, inn: orgInn);
   } else {
     bloc.setActiveOrg(org);
-    if (isNeedStringUpdate(org.inn, orgInn)) {
-      bloc.db.orgsDao.update2(Org(id: org?.id, name: org.name, inn: orgInn));
+    if (!isEqual(org.name, orgName) || !isEqual(org.inn, orgInn)) {
+      bloc.db.orgsDao.update2(Org(id: org?.id, name: orgName, inn: orgInn));
     }
   }
 
@@ -112,18 +117,18 @@ Future receiveTimesheetFromContent(BuildContext context, String content) async {
         phone2: personPhone2,
       );
     } else {
-      if (isNeedStringUpdate(person.phone, personPhone) ||
-          isNeedStringUpdate(person.phone2, personPhone2)) {
+      if (!isEqual(person.phone, personPhone) ||
+          !isEqual(person.phone2, personPhone2)) {
         bloc.db.personsDao.update2(Person(
           id: person?.id,
           family: person.family,
           name: person.name,
           middleName: person.middleName,
           birthday: person.birthday,
-          phone: isNeedStringUpdate(person.phone, personPhone)
+          phone: !isEqual(person.phone, personPhone)
               ? personPhone
               : person.phone,
-          phone2: isNeedStringUpdate(person.phone2, personPhone2)
+          phone2: !isEqual(person.phone2, personPhone2)
               ? personPhone2
               : person.phone2,
         ));
@@ -142,17 +147,17 @@ Future receiveTimesheetFromContent(BuildContext context, String content) async {
         endDate: groupPersonEndDate,
       );
     } else {
-      if (isNeedDateUpdate(groupPerson.beginDate, groupPersonBeginDate) ||
-          isNeedDateUpdate(groupPerson.endDate, groupPersonEndDate)) {
+      if (!isDateEqual(groupPerson.beginDate, groupPersonBeginDate) ||
+          !isDateEqual(groupPerson.endDate, groupPersonEndDate)) {
         bloc.db.groupPersonsDao.update2(GroupPerson(
           id: groupPerson.id,
           groupId: groupPerson.groupId,
           personId: groupPerson.personId,
           beginDate:
-              isNeedDateUpdate(groupPerson.beginDate, groupPersonBeginDate)
+              !isDateEqual(groupPerson.beginDate, groupPersonBeginDate)
                   ? groupPersonBeginDate
                   : groupPerson.beginDate,
-          endDate: isNeedDateUpdate(groupPerson.endDate, groupPersonEndDate)
+          endDate: !isDateEqual(groupPerson.endDate, groupPersonEndDate)
               ? groupPersonEndDate
               : groupPerson.endDate,
         ));

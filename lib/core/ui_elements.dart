@@ -23,7 +23,7 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
     final tableName = uniqueRegexp.firstMatch(message)[1];
     switch (tableName) {
       case 'orgs':
-        newMessage = L10n.uniqueOrg;
+        newMessage = L10n.dupOrgName;
         break;
       case 'schedules':
         newMessage = L10n.uniqueSchedule;
@@ -43,6 +43,7 @@ void showMessage(GlobalKey<ScaffoldState> scaffoldKey, String message) {
     }
   } else {
     newMessage = newMessage.replaceFirst('Invalid argument(s): ', '');
+    newMessage = newMessage.replaceFirst('Exception: ', '');
   }
   ScaffoldMessenger.of(context).hideCurrentSnackBar();
   ScaffoldMessenger.of(context)

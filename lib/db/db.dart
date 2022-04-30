@@ -329,6 +329,11 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
       return await (select(db.orgs)..where((e) => e.name.equals(name)))
           .getSingleOrNull();
   }
+
+  Future<Org> findByInn(String inn) async {
+    return await (select(db.orgs)..where((e) => e.inn.equals(inn)))
+        .getSingleOrNull();
+  }
 }
 
 // Графики ---------------------------------------------------------------------
