@@ -1,12 +1,9 @@
 import 'dart:io';
 import 'dart:async';
-import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
-import 'package:restart_app/restart_app.dart';
 import 'package:uri_to_file/uri_to_file.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/core/send_timesheet_to_file.dart';
@@ -32,35 +29,17 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<GroupPersonView> _groupPeriodPersons;
   List<Attendance> _groupAttendances;
-  String _timesheetsNeedRestartFlagFileName;
   static const fixedColumnWidth = 150.0;
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
   static const leftPadding = 12.0;
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if ([AppLifecycleState.resumed, AppLifecycleState.detached].contains(state)) {
-      final flagFile = File(_timesheetsNeedRestartFlagFileName);
-      if (flagFile.existsSync()) {
-        flagFile.delete();
-        Restart.restartApp();
-      }
-    }
-  }
-
-  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addObserver(this);
-    _setTimesheetsNeedRestartFileName();
   }
   
-  Future _setTimesheetsNeedRestartFileName() async {
-    final directory = await getTemporaryDirectory();
-    _timesheetsNeedRestartFlagFileName = p.join(directory.path, 'timesheets_need_restart');
-  }
-
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
@@ -197,10 +176,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           File file = await toFile(content);
           await receiveTimesheetFromFile(context, file);
         } else {
-          receiveTimesheetFromContent(context, content);
+          await receiveTimesheetFromContent(context, content);
         }
-        final flagFile = File(_timesheetsNeedRestartFlagFileName);
-        flagFile.writeAsStringSync('1', flush: true);
       }
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());

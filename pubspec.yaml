@@ -26,7 +26,6 @@ dependencies:
   share:
   file_picker:
   uri_to_file:
-  restart_app:
 
 dev_dependencies:
   drift_dev:
