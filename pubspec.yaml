@@ -1,7 +1,7 @@
 name: timesheets
 description: Табели посещаемости
 
-version: 2022.4.4
+version: 1.2.0
 
 environment:
   sdk: ">=2.8.2 <3.0.0"
