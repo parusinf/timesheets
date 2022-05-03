@@ -13,7 +13,8 @@ Future sendTimesheetToFile(
     GroupView group,
     DateTime period,
     List<GroupPersonView> groupPersons,
-    List<Attendance> attendances) async {
+    List<Attendance> attendances) async
+{
   final buffer = new StringBuffer();
   final periodString = periodToString(period);
 
@@ -66,10 +67,10 @@ Future sendTimesheetToFile(
   }
 
   // Запись файла
-  RegExp exp = RegExp(r'[\s\.№]+');
+  RegExp exp = RegExp(r'[\s.№]+');
   final filename = '${org.name}_${group.name}_$periodString\_Приложение'
       .replaceAll(exp, '_') + '.csv';
-  final directory = await getTemporaryDirectory();
+  final directory = await getApplicationDocumentsDirectory();
   final file = File(p.join(directory.path, filename));
   file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
 
