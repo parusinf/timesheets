@@ -186,7 +186,7 @@ class Db extends _$Db {
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   /// Обновление структуры базы данных
   @override
@@ -328,11 +328,6 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
   Future<Org> find(String name) async {
       return await (select(db.orgs)..where((e) => e.name.equals(name)))
           .getSingleOrNull();
-  }
-
-  Future<Org> findByInn(String inn) async {
-    return await (select(db.orgs)..where((e) => e.inn.equals(inn)))
-        .getSingleOrNull();
   }
 }
 

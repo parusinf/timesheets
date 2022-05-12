@@ -107,7 +107,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             onChanged: (String value) {
               setState(() {
                 if (L10n.sendTimesheet == value)
-                  _sendTimesheetToFile();
+                  _sendTimesheet();
                 else if (L10n.receiveTimesheetFromParus == value)
                   launchUrl(_scaffoldKey, 'https://t.me/timesheets_parus_bot');
                 else if (L10n.receiveTimesheetFromFile == value)
@@ -193,8 +193,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  /// Выгрузка в CSV файл
-  Future _sendTimesheetToFile() async {
+  /// Отправка табеля
+  Future _sendTimesheet() async {
     final org = _bloc.activeOrg.valueWrapper?.value;
     final group = _bloc.activeGroup.valueWrapper?.value;
     if (org == null) {
@@ -205,14 +205,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
     else {
       try {
-        await sendTimesheetToFile(
-          context,
+        final result = await sendTimesheet(
           org,
           group,
           _bloc.activePeriod.valueWrapper?.value,
           _groupPeriodPersons,
           _groupAttendances,
+          _bloc.parusIntegration,
         );
+        showMessage(_scaffoldKey, result);
       } catch (e) {
         showMessage(_scaffoldKey, e.toString());
       }

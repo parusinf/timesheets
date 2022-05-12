@@ -93,6 +93,7 @@ class L10n {
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
       'workday': 'Перенос рабочего дня на',
+      'parusIntegration': 'Интеграция с Парусом',
     }
   };
   static get addGroup => _l10n[languageCode]['addGroup'];
@@ -184,4 +185,5 @@ class L10n {
   static get withoutInn => _l10n[languageCode]['withoutInn'];
   static get withoutTime => _l10n[languageCode]['withoutTime'];
   static get workday => _l10n[languageCode]['workday'];
+  static get parusIntegration => _l10n[languageCode]['parusIntegration'];
 }

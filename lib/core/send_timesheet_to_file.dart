@@ -1,20 +1,67 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core.dart';
 
-/// Выгрузка посещаемости группы за период в CSV файл
-Future sendTimesheetToFile(
-    BuildContext context,
+/// Отправка табеля в Парус или вфайл
+Future sendTimesheet(
     Org org,
     GroupView group,
     DateTime period,
     List<GroupPersonView> groupPersons,
-    List<Attendance> attendances) async
+    List<Attendance> attendances,
+    bool parusIntegration,
+    ) async
 {
+  final content = createContent(org, group, period, groupPersons, attendances);
+
+  // Запись файла
+  RegExp exp = RegExp(r'[\s.№]+');
+  final periodString = periodToString(period);
+  final filename = '${org.name}_${group.name}_$periodString\_Приложение'
+      .replaceAll(exp, '_') + '.csv';
+  final directory = await getTemporaryDirectory();
+  final filepath = p.join(directory.path, filename);
+  final file = File(filepath);
+  file.writeAsBytesSync(content, flush: true);
+
+  var result = '';
+  if (parusIntegration) {
+    final uri = Uri.parse('https://api.parusinf.ru/c7cb76df-cd86-4c55-833b-6671a7f5d4d8');
+    final request = http.MultipartRequest('POST', uri)
+      ..files.add(await http.MultipartFile.fromPath(
+          'package', filepath,
+          contentType: MediaType('application', 'octet-stream')));
+    final response = await request.send();
+    if (response.statusCode == 202) {
+      result = await response.stream.bytesToString();
+    } else {
+      result = 'Ошибка отправки табеля посещаемости в Парус: ' + response.reasonPhrase;
+    }
+  } else {
+    // Отправка файла
+    await Share.shareFiles([file.path]);
+    result = 'Табель посещаемости успешно выгружен в файл';
+  }
+
+  // Удаление файла
+  await file.delete();
+
+  return result;
+}
+
+/// Формирование табеля в CSV формате
+createContent(
+    Org org,
+    GroupView group,
+    DateTime period,
+    List<GroupPersonView> groupPersons,
+    List<Attendance> attendances,
+) {
   final buffer = new StringBuffer();
   final periodString = periodToString(period);
 
@@ -43,7 +90,7 @@ Future sendTimesheetToFile(
     final personAttendances = attendances
         .where((attendance) => attendance.groupPersonId == groupPerson?.id);
     final dates =
-        personAttendances.map((attendance) => attendance.date).toList();
+    personAttendances.map((attendance) => attendance.date).toList();
 
     // Персона в группе
     buffer.write('${person.family};${person.name};${trim(person.middleName)};');
@@ -65,18 +112,5 @@ Future sendTimesheetToFile(
     }
     buffer.write('\n');
   }
-
-  // Запись файла
-  RegExp exp = RegExp(r'[\s.№]+');
-  final filename = '${org.name}_${group.name}_$periodString\_Приложение'
-      .replaceAll(exp, '_') + '.csv';
-  final directory = await getApplicationDocumentsDirectory();
-  final file = File(p.join(directory.path, filename));
-  file.writeAsBytesSync(encodeCp1251(buffer.toString()), flush: true);
-
-  // Отправка файла
-  await Share.shareFiles([file.path]);
-
-  // Удаление файла
-  await file.delete();
+  return encodeCp1251(buffer.toString());
 }

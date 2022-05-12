@@ -45,18 +45,13 @@ Future receiveTimesheetFromContent(BuildContext context, String content) async {
   if (orgName == null) {
     throw L10n.fileFormatError;
   }
-  var org;
-  if (orgInn != null) {
-    org = await bloc.db.orgsDao.findByInn(orgInn);
-  } else {
-    org = await bloc.db.orgsDao.find(orgName);
-  }
+  var org = await bloc.db.orgsDao.find(orgName);
   if (org == null) {
     org = await bloc.insertOrg(name: orgName, inn: orgInn);
   } else {
     bloc.setActiveOrg(org);
-    if (!isEqual(org.name, orgName) || !isEqual(org.inn, orgInn)) {
-      bloc.db.orgsDao.update2(Org(id: org?.id, name: orgName, inn: orgInn));
+    if (!isEqual(org.inn, orgInn)) {
+      bloc.db.orgsDao.update2(Org(id: org.id, name: orgName, inn: orgInn));
     }
   }
 

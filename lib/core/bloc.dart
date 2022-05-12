@@ -248,16 +248,9 @@ class Bloc {
   /// Добавление организации
   Future<Org> insertOrg({@required String name, String inn}) async {
     var org;
-    if (inn != null) {
-      org = await db.orgsDao.findByInn(inn);
-      if (org != null) {
-        throw Exception(L10n.dupOrgInn);
-      }
-    } else {
-      org = await db.orgsDao.find(name);
-      if (org != null) {
-        throw Exception(L10n.dupOrgName);
-      }
+    org = await db.orgsDao.find(name);
+    if (org != null) {
+      throw Exception(L10n.dupOrgName);
     }
     if (org == null) {
       org = await db.orgsDao.insert2(name: name, inn: inn);
@@ -438,6 +431,8 @@ class Bloc {
       userSettings.valueWrapper.value.firstWhere((e) => e.name == name);
 
   get doubleTapInTimesheet => getSetting(L10n.doubleTapInTimesheet).boolValue;
+
+  get parusIntegration => getSetting(L10n.parusIntegration).boolValue;
 
   /// Исправление настройки
   Future<bool> updateSetting(Setting setting) async =>
