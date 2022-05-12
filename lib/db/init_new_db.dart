@@ -33,6 +33,8 @@ final _initHolidays = <Holiday>[
 Future _initUserSettings(Db db) async {
   await db.settingsDao.insert2(L10n.doubleTapInTimesheet, ValueType.bool,
       boolValue: false, isUserSetting: true);
+  await db.settingsDao.insert2(L10n.parusIntegration, ValueType.bool,
+      boolValue: true, isUserSetting: true);
 }
 
 /// Инициализация новой базы данных
