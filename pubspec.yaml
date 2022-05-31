@@ -1,10 +1,10 @@
 name: timesheets
 description: Табели посещаемости
 
-version: 2022.5.22
+version: 2022.5.31
 
 environment:
-  sdk: ">=2.8.2 <3.0.0"
+  sdk: ">=2.8.2 <4.0.0"
 
 dependencies:
   flutter:
@@ -32,6 +32,7 @@ dev_dependencies:
   drift_dev:
   build_runner:
   flutter_launcher_icons:
+  flutter_lints:
 
 flutter_icons:
   android: "ic_launcher"
