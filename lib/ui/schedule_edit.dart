@@ -6,13 +6,13 @@ import 'package:timesheets/db/schedule_helper.dart';
 
 /// Добавление графика
 Future addSchedule(BuildContext context) async =>
-    push(context, const ScheduleEdit(null));
+    await push(context, const ScheduleEdit(null));
 
 /// Исправление графика
 Future editSchedule(BuildContext context, Schedule schedule) async {
   final bloc = Provider.of<Bloc>(context, listen: false);
   bloc.setActiveSchedule(schedule);
-  push(context, ScheduleEdit(schedule));
+  await push(context, ScheduleEdit(schedule));
 }
 
 /// Форма редактирования графика
@@ -59,6 +59,7 @@ class ScheduleEditState extends State<ScheduleEdit> {
       formKey: _formKey,
       autovalidateMode: _autovalidateMode,
       onSubmit: _onSubmit,
+      fields: [],
       child: StreamBuilder<List<ScheduleDay>>(
         stream: _bloc.scheduleDays,
         builder: (context, snapshot) => ListView.builder(

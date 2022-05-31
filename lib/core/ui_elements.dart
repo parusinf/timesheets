@@ -118,9 +118,9 @@ double getHoursNorm(Bloc bloc, DateTime date) {
 
 /// Поиск нормы часов первого дня активного графика
 double getFirstHoursNorm(Bloc bloc) {
-  final firstDay =
-      bloc.scheduleDays.valueWrapper?.value?.firstWhere((day) => day.hoursNorm > 0.0);
-  return firstDay != null ? firstDay.hoursNorm : 0;
+  final days = bloc.scheduleDays.valueWrapper?.value;
+  final firstDay = days.isNotEmpty ? days.firstWhere((day) => day.hoursNorm > 0.0) : null;
+  return firstDay != null ? firstDay.hoursNorm : 0.0;
 }
 
 /// Диалог подтверждения
