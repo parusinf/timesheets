@@ -81,13 +81,9 @@ Widget button(String label, {VoidCallback onPressed, ButtonStyle style}) =>
     );
 
 /// Переход на страницу
-Future<T> push<T extends Object>(BuildContext context, Widget page,
-    {bool pop = false}) async {
+Future<T> push<T extends Object>(BuildContext context, Widget page) async {
   final result = await Navigator.push(
       context, MaterialPageRoute(builder: (context) => page));
-  if (pop) {
-    Navigator.pop(context);
-  }
   return result;
 }
 

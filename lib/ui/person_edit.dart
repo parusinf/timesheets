@@ -138,6 +138,7 @@ class PersonEditState extends State<PersonEdit> {
             phone2: trim(_phone2Edit.text),
           ));
         }
+        if (!mounted) return;
         Navigator.of(context).pop();
       } catch (e) {
         showMessage(_scaffoldKey, e.toString());

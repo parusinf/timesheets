@@ -92,6 +92,7 @@ class OrgEditState extends State<OrgEdit> {
             name: trim(_nameEdit.text),
             inn: trim(_innEdit.text),
           );
+          if (!mounted) return;
           Navigator.of(context).pop(org);
         } else {
           await bloc.updateOrg(Org(
@@ -100,6 +101,7 @@ class OrgEditState extends State<OrgEdit> {
             inn: trim(_innEdit.text),
             activeGroupId: widget.org.activeGroupId,
           ));
+          if (!mounted) return;
           Navigator.of(context).pop();
         }
       } catch (e) {

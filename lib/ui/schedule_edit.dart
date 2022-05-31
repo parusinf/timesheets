@@ -124,6 +124,7 @@ class ScheduleEditState extends State<ScheduleEdit> {
             _bloc.scheduleDays.valueWrapper?.value?.forEach(
                 (scheduleDay) => _bloc.db.scheduleDaysDao.update2(scheduleDay));
           }
+          if (!mounted) return;
           Navigator.of(context).pop();
         }
       } catch (e) {

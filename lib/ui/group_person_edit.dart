@@ -116,6 +116,7 @@ class GroupPersonEditState extends State<GroupPersonEdit> {
             endDate: stringToDate(_endDateEdit.text),
           ));
         }
+        if (!mounted) return;
         Navigator.of(context).pop();
       } catch (e) {
         showMessage(_scaffoldKey, e.toString());

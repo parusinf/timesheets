@@ -120,6 +120,7 @@ class SettingsEditState extends State<SettingsEdit> {
             onPressed: () async {
               showAlertDialog(context, L10n.eraseAllData, () async {
                 await _bloc.reset();
+                if (!mounted) return;
                 Navigator.pop(context);
               });
             },

@@ -89,6 +89,7 @@ class HolidayEditState extends State<HolidayEdit> {
             workday: stringToDate(_workdayEdit.text),
           ));
         }
+        if (!mounted) return;
         Navigator.of(context).pop();
       } catch (e) {
         showMessage(_scaffoldKey, e.toString());

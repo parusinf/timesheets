@@ -3,16 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/schedules_dictionary.dart';
-import 'package:timesheets/ui/group_persons_dictionary.dart';
 
 /// Добавление группы
 Future addGroup(BuildContext context) async {
   // Добавление группы
-  final groupView = await push(context, const GroupEdit(null));
-  // Добавление персон в группу
-  if (groupView != null) {
-    await push(context, const GroupPersonsDictionary());
-  }
+  return await push(context, const GroupEdit(null));
 }
 
 /// Исправление группы
@@ -105,7 +100,7 @@ class GroupEditState extends State<GroupEdit> {
 
   /// Выбор графика из словаря
   Future _selectSchedule() async {
-    _schedule = await push(context, SchedulesDictionary()) ??
+    _schedule = await push(context, const SchedulesDictionary()) ??
         _bloc.activeSchedule?.valueWrapper?.value;
     _scheduleEdit.text = _schedule?.code ?? _scheduleEdit.text;
   }
@@ -122,6 +117,7 @@ class GroupEditState extends State<GroupEdit> {
             schedule: _schedule,
             meals: _meals,
           );
+          if (!mounted) return;
           Navigator.of(context).pop(groupView);
         } else {
           await _bloc.updateGroup(Group(
@@ -131,6 +127,7 @@ class GroupEditState extends State<GroupEdit> {
             scheduleId: _schedule?.id ?? widget.groupView.schedule,
             meals: _meals,
           ));
+          if (!mounted) return;
           Navigator.of(context).pop();
         }
       } catch (e) {
