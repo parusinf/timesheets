@@ -5,6 +5,8 @@ import 'package:timesheets/ui/schedule_edit.dart';
 
 /// Словарь графиков
 class SchedulesDictionary extends StatelessWidget {
+  const SchedulesDictionary({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -23,7 +25,7 @@ class SchedulesDictionary extends StatelessWidget {
                 stream: Provider.of<Bloc>(context).activeSchedules,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    if (snapshot.data.length > 0) {
+                    if (snapshot.data.isNotEmpty) {
                       return ListView.builder(
                         itemBuilder: (context, index) =>
                             _ScheduleCard(snapshot.data, index),
@@ -81,7 +83,7 @@ class _ScheduleCard extends StatelessWidget {
               child: ListTile(
                 title: Text(entry.scheduleView.code),
                 trailing: IconButton(
-                  icon: Icon(Icons.edit),
+                  icon: const Icon(Icons.edit),
                   onPressed: () => editSchedule(context, entry.scheduleView),
                 ),
               ),

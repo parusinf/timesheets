@@ -29,9 +29,9 @@ class ActiveGroup {
 /// Компонент бизнес логики (блок) приложения
 class Bloc {
   // Отслеживание контента
-  static const eventChannel = const EventChannel('receive_content/events');
-  static const methodChannel = const MethodChannel('receive_content/channel');
-  StreamController<String> _contentController = StreamController();
+  static const eventChannel = EventChannel('receive_content/events');
+  static const methodChannel = MethodChannel('receive_content/channel');
+  final StreamController<String> _contentController = StreamController();
   Stream<String> get content => _contentController.stream;
   Sink<String> get contentSink => _contentController.sink;
 
@@ -247,14 +247,11 @@ class Bloc {
 
   /// Добавление организации
   Future<Org> insertOrg({@required String name, String inn}) async {
-    var org;
-    org = await db.orgsDao.find(name);
+    var org = await db.orgsDao.find(name);
     if (org != null) {
       throw Exception(L10n.dupOrgName);
     }
-    if (org == null) {
-      org = await db.orgsDao.insert2(name: name, inn: inn);
-    }
+    org ??= await db.orgsDao.insert2(name: name, inn: inn);
     await setActiveOrg(org);
     return org;
   }

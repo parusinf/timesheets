@@ -8,10 +8,10 @@ import 'package:timesheets/ui/group_persons_dictionary.dart';
 /// Добавление группы
 Future addGroup(BuildContext context) async {
   // Добавление группы
-  final groupView = await push(context, GroupEdit(null));
+  final groupView = await push(context, const GroupEdit(null));
   // Добавление персон в группу
   if (groupView != null) {
-    await push(context, GroupPersonsDictionary());
+    await push(context, const GroupPersonsDictionary());
   }
 }
 
@@ -24,15 +24,15 @@ class GroupEdit extends StatefulWidget {
   final GroupView groupView;
   final DataActionType actionType;
   const GroupEdit(this.groupView, {Key key})
-      : this.actionType =
-            groupView == null ? DataActionType.Insert : DataActionType.Update,
+      : actionType =
+            groupView == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
   @override
-  _GroupEditState createState() => _GroupEditState();
+  GroupEditState createState() => GroupEditState();
 }
 
 /// Состояние формы редактирования группы
-class _GroupEditState extends State<GroupEdit> {
+class GroupEditState extends State<GroupEdit> {
   final _nameEdit = TextEditingController();
   final _scheduleEdit = TextEditingController();
   Schedule _schedule;
@@ -76,7 +76,7 @@ class _GroupEditState extends State<GroupEdit> {
           icon: Icons.group,
           validator: validateEmpty,
           textCapitalization: TextCapitalization.words,
-          autofocus: widget.actionType == DataActionType.Insert ? true : false,
+          autofocus: widget.actionType == DataActionType.insert ? true : false,
           maxLength: 20,
         ),
         // График
@@ -116,7 +116,7 @@ class _GroupEditState extends State<GroupEdit> {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
-        if (widget.actionType == DataActionType.Insert) {
+        if (widget.actionType == DataActionType.insert) {
           final groupView = await _bloc.insertGroup(
             name: trim(_nameEdit.text),
             schedule: _schedule,

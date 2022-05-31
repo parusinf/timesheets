@@ -5,6 +5,8 @@ import 'package:timesheets/core.dart';
 
 /// Справка
 class HelpPage extends StatefulWidget {
+  const HelpPage({Key key}) : super(key: key);
+
   @override
   HelpPageState createState() => HelpPageState();
 }

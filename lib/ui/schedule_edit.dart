@@ -6,7 +6,7 @@ import 'package:timesheets/db/schedule_helper.dart';
 
 /// Добавление графика
 Future addSchedule(BuildContext context) async =>
-    push(context, ScheduleEdit(null));
+    push(context, const ScheduleEdit(null));
 
 /// Исправление графика
 Future editSchedule(BuildContext context, Schedule schedule) async {
@@ -20,15 +20,15 @@ class ScheduleEdit extends StatefulWidget {
   final Schedule schedule;
   final DataActionType actionType;
   const ScheduleEdit(this.schedule, {Key key})
-      : this.actionType =
-            schedule == null ? DataActionType.Insert : DataActionType.Update,
+      : actionType =
+            schedule == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
   @override
-  _ScheduleEditState createState() => _ScheduleEditState();
+  ScheduleEditState createState() => ScheduleEditState();
 }
 
 /// Состояние формы редактирования графика
-class _ScheduleEditState extends State<ScheduleEdit> {
+class ScheduleEditState extends State<ScheduleEdit> {
   get _bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
@@ -37,7 +37,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
   @override
   void initState() {
     super.initState();
-    if (widget.actionType == DataActionType.Insert) {
+    if (widget.actionType == DataActionType.insert) {
       final scheduleDays = <ScheduleDay>[];
       for (int dayNumber = 0; dayNumber < abbrWeekdays.length; dayNumber++) {
         scheduleDays.add(ScheduleDay(
@@ -107,7 +107,7 @@ class _ScheduleEditState extends State<ScheduleEdit> {
         if (hours.reduce((a, b) => a + b) == 0.0) {
           showMessage(_scaffoldKey, L10n.noHoursNorm);
         } else {
-          if (widget.actionType == DataActionType.Insert) {
+          if (widget.actionType == DataActionType.insert) {
             final schedule =
                 await _bloc.insertSchedule(code: createScheduleCode(hours));
             _bloc.scheduleDays.valueWrapper?.value

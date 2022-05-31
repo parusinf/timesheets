@@ -162,7 +162,7 @@ class OrgReportState extends State<OrgReport> {
                     color: Colors.lightBlue,
                     fontSize: 14.0,
                   )
-                : Text('')),
+                : const Text('')),
       ),
     ];
     // Количество присутствующих персон на период
@@ -185,7 +185,7 @@ class OrgReportState extends State<OrgReport> {
                 wrap: false,
               );
             } else {
-              return Text('');
+              return const Text('');
             }
           }),
     );
@@ -221,7 +221,7 @@ class OrgReportState extends State<OrgReport> {
                   wrap: false,
                 );
               } else {
-                return Text('');
+                return const Text('');
               }
             }),
       );
@@ -232,17 +232,15 @@ class OrgReportState extends State<OrgReport> {
   /// Создание ячейки таблицы
   Widget _createCell(
     String title, {
-    width: columnWidth,
-    alignment: Alignment.center,
-    leftPadding: 0.0,
-    borderStyle: BorderStyle.solid,
-    color: Colors.black87,
-    fontSize: 14.0,
-    fontWeight: FontWeight.normal,
+    width = columnWidth,
+    alignment = Alignment.center,
+    leftPadding = 0.0,
+    borderStyle = BorderStyle.solid,
+    color = Colors.black87,
+    fontSize = 14.0,
+    fontWeight = FontWeight.normal,
   }) =>
       Container(
-        child: text(title,
-            color: color, fontSize: fontSize, fontWeight: fontWeight),
         width: width,
         height: rowHeight,
         padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
@@ -252,25 +250,36 @@ class OrgReportState extends State<OrgReport> {
               left:
                   BorderSide(color: lineColor, width: 0.5, style: borderStyle)),
         ),
+        child: text(title,
+            color: color, fontSize: fontSize, fontWeight: fontWeight),
       );
 
   /// Создание фиксированной ячейки
   Widget _createFixedCell(
     String title,
     String subtitle, {
-    double width: columnWidth,
-    alignment: Alignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    titleColor: Colors.black87,
-    subtitleColor: Colors.black54,
-    leftPadding: 0.0,
-    borderStyle: BorderStyle.none,
+    double width = columnWidth,
+    alignment = Alignment.center,
+    crossAxisAlignment = CrossAxisAlignment.center,
+    titleColor = Colors.black87,
+    subtitleColor = Colors.black54,
+    leftPadding = 0.0,
+    borderStyle = BorderStyle.none,
     Function() onTap,
     wrap = true,
   }) =>
       InkWell(
         onTap: onTap ?? () => {},
         child: Container(
+          width: width,
+          height: rowHeight,
+          alignment: alignment,
+          padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
+          decoration: BoxDecoration(
+            border: Border(
+                left: BorderSide(
+                    color: lineColor, width: 0.5, style: borderStyle)),
+          ),
           child: wrap
               ? Wrap(
                   children: <Widget>[
@@ -287,15 +296,6 @@ class OrgReportState extends State<OrgReport> {
                     text(subtitle, fontSize: 14.0, color: subtitleColor),
                   ],
                 ),
-          width: width,
-          height: rowHeight,
-          alignment: alignment,
-          padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
-          decoration: BoxDecoration(
-            border: Border(
-                left: BorderSide(
-                    color: lineColor, width: 0.5, style: borderStyle)),
-          ),
         ),
       );
 

@@ -4,7 +4,7 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
 /// Добавление организации
-Future addOrg(BuildContext context) async => push(context, OrgEdit(null));
+Future addOrg(BuildContext context) async => push(context, const OrgEdit(null));
 
 /// Исправление организации
 Future editOrg(BuildContext context, Org org) async =>
@@ -15,15 +15,15 @@ class OrgEdit extends StatefulWidget {
   final Org org;
   final DataActionType actionType;
   const OrgEdit(this.org, {Key key})
-      : this.actionType =
-            org == null ? DataActionType.Insert : DataActionType.Update,
+      : actionType =
+            org == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
   @override
-  _OrgEditState createState() => _OrgEditState();
+  OrgEditState createState() => OrgEditState();
 }
 
 /// Состояние формы редактирования организации
-class _OrgEditState extends State<OrgEdit> {
+class OrgEditState extends State<OrgEdit> {
   get bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
@@ -61,7 +61,7 @@ class _OrgEditState extends State<OrgEdit> {
           icon: Icons.business,
           validator: validateEmpty,
           textCapitalization: TextCapitalization.words,
-          autofocus: widget.actionType == DataActionType.Insert ? true : false,
+          autofocus: widget.actionType == DataActionType.insert ? true : false,
           maxLength: 20,
         ),
         // ИНН
@@ -87,7 +87,7 @@ class _OrgEditState extends State<OrgEdit> {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
-        if (widget.actionType == DataActionType.Insert) {
+        if (widget.actionType == DataActionType.insert) {
           final org = await bloc.insertOrg(
             name: trim(_nameEdit.text),
             inn: trim(_innEdit.text),

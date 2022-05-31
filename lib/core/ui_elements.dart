@@ -93,8 +93,9 @@ Future<T> push<T extends Object>(BuildContext context, Widget page,
 
 /// Вызов ссылки
 Future launchUrl(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
+  final uri = Uri.parse(url);
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(scaffoldKey, url);
   } else {
     showMessage(scaffoldKey, L10n.linkNotStart);
   }
@@ -105,7 +106,7 @@ double getHoursNorm(Bloc bloc, DateTime date) {
   final weekdayNumber = abbrWeekdays.indexOf(abbrWeekday(date));
   final scheduleDays = bloc.scheduleDays.valueWrapper?.value;
   var hoursNorm = 0.0;
-  if (scheduleDays.length > 0) {
+  if (scheduleDays.isNotEmpty) {
     hoursNorm = scheduleDays[weekdayNumber].hoursNorm;
     // Обнуление нормы часов по графику для праздничного дня
     if (!isHoliday(bloc, date)) {

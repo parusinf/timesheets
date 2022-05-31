@@ -14,11 +14,11 @@ import 'package:timesheets/ui/settings_edit.dart';
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({Key key}) : super(key: key);
   @override
-  _HomeDrawerState createState() => _HomeDrawerState();
+  HomeDrawerState createState() => HomeDrawerState();
 }
 
 /// Состояние дроувера домашнего экрана
-class _HomeDrawerState extends State<HomeDrawer> {
+class HomeDrawerState extends State<HomeDrawer> {
   get bloc => Provider.of<Bloc>(context, listen: false);
 
   @override
@@ -55,21 +55,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
                               await addGroup(context);
                               Navigator.pop(context);
                             })
-                          : Spacer()),
+                          : const Spacer()),
                   StreamBuilder<List<ActiveOrg>>(
                       stream: bloc.activeOrgs,
                       builder: (context, snapshot) => snapshot.hasData
                           ? _groupList(orientation, snapshot.data.length)
-                          : Text('')),
-                  Spacer(),
+                          : const Text('')),
+                  const Spacer(),
                   listHeater(Icons.auto_awesome, L10n.holidays,
                       onHeaderTap: () =>
-                          push(context, HolidaysDictionary(), pop: true)),
+                          push(context, const HolidaysDictionary(), pop: true)),
                   listHeater(Icons.settings, L10n.settings,
                       onHeaderTap: () =>
-                          push(context, SettingsEdit(), pop: true)),
+                          push(context, const SettingsEdit(), pop: true)),
                   listHeater(Icons.help, L10n.help,
-                      onHeaderTap: () => push(context, HelpPage(), pop: true)),
+                      onHeaderTap: () => push(context, const HelpPage(), pop: true)),
                 ],
               ),
             ),
@@ -135,9 +135,9 @@ class _OrgCard extends StatelessWidget {
                 subtitle: Text(
                     '${isNotEmpty(entry.orgView.inn) ? entry.orgView.inn : L10n.withoutInn}'),
                 trailing: IconButton(
-                  icon: Icon(Icons.article),
+                  icon: const Icon(Icons.article),
                   onPressed: () async {
-                    await push(context, OrgReport());
+                    await push(context, const OrgReport());
                     Navigator.pop(context);
                   },
                 ),
@@ -190,9 +190,9 @@ class _GroupCard extends StatelessWidget {
                 title: Text(entry.groupView.name),
                 subtitle: Text(entry.groupView.schedule.code),
                 trailing: IconButton(
-                  icon: Icon(Icons.group_add),
+                  icon: const Icon(Icons.group_add),
                   onPressed: () async {
-                    await push(context, GroupPersonsDictionary());
+                    await push(context, const GroupPersonsDictionary());
                     Navigator.pop(context);
                   },
                 ),

@@ -6,22 +6,22 @@ import 'package:timesheets/db/value_type.dart';
 
 /// Исправление настроек
 Future editSettings(BuildContext context) async {
-  push(context, SettingsEdit());
+  push(context, const SettingsEdit());
 }
 
 /// Форма исправления настроек
 class SettingsEdit extends StatefulWidget {
   const SettingsEdit({Key key}) : super(key: key);
   @override
-  _SettingsEditState createState() => _SettingsEditState();
+  SettingsEditState createState() => SettingsEditState();
 }
 
 /// Состояние формы исправления настроек
-class _SettingsEditState extends State<SettingsEdit> {
+class SettingsEditState extends State<SettingsEdit> {
   get _bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
-  var _autovalidateMode = AutovalidateMode.disabled;
+  final _autovalidateMode = AutovalidateMode.disabled;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _SettingsEditState extends State<SettingsEdit> {
 
   /// Добавление настройки
   void _addSetting(List<Setting> settings, String name) {
-    if (settings.where((e) => e.name == name).length == 0) {
+    if (settings.where((e) => e.name == name).isEmpty) {
       settings.add(Setting(
         id: 0,
         name: L10n.eraseAllData,

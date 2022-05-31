@@ -4,7 +4,7 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
 /// Добавление персоны
-Future addPerson(BuildContext context) async => push(context, PersonEdit(null));
+Future addPerson(BuildContext context) async => push(context, const PersonEdit(null));
 
 /// Исправление персоны
 Future editPerson(BuildContext context, Person person) async =>
@@ -15,15 +15,15 @@ class PersonEdit extends StatefulWidget {
   final Person person;
   final DataActionType actionType;
   const PersonEdit(this.person, {Key key})
-      : this.actionType =
-            person == null ? DataActionType.Insert : DataActionType.Update,
+      : actionType =
+            person == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
   @override
-  _PersonEditState createState() => _PersonEditState();
+  PersonEditState createState() => PersonEditState();
 }
 
 /// Состояние формы редактирования персоны
-class _PersonEditState extends State<PersonEdit> {
+class PersonEditState extends State<PersonEdit> {
   final _familyEdit = TextEditingController();
   final _nameEdit = TextEditingController();
   final _middleNameEdit = TextEditingController();
@@ -73,7 +73,7 @@ class _PersonEditState extends State<PersonEdit> {
           icon: Icons.person,
           validator: validateEmpty,
           textCapitalization: TextCapitalization.words,
-          autofocus: widget.actionType == DataActionType.Insert ? true : false,
+          autofocus: widget.actionType == DataActionType.insert ? true : false,
         ),
         // Имя
         textFormField(
@@ -118,7 +118,7 @@ class _PersonEditState extends State<PersonEdit> {
     } else {
       final bloc = Provider.of<Bloc>(context, listen: false);
       try {
-        if (widget.actionType == DataActionType.Insert) {
+        if (widget.actionType == DataActionType.insert) {
           await bloc.insertPerson(
             family: trim(_familyEdit.text),
             name: trim(_nameEdit.text),

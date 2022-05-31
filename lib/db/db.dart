@@ -625,7 +625,7 @@ class PersonsDao extends DatabaseAccessor<Db> with _$PersonsDaoMixin {
       family: Value(family),
       name: Value(name),
       middleName: Value(middleName),
-      birthday: birthday != null ? Value(birthday) : Value.absent(),
+      birthday: birthday != null ? Value(birthday) : const Value.absent(),
       phone: Value(phone),
       phone2: Value(phone2),
     ));
@@ -924,9 +924,9 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
 
   /// Установка активной организации
   Future setActiveOrg(Org org) async {
-    if (org == null)
+    if (org == null) {
       delete2('activeOrg');
-    else {
+    } else {
       final count = await db._setActiveOrg(org?.id);
       if (count == 0) {
         insert2('activeOrg', ValueType.int, intValue: org?.id);
@@ -945,9 +945,9 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
 
   /// Установка активного графика
   Future setActiveSchedule(Schedule schedule) async {
-    if (schedule == null)
+    if (schedule == null) {
       delete2('activeSchedule');
-    else {
+    } else {
       final count = await db._setActiveSchedule(schedule?.id);
       if (count == 0) {
         insert2('activeSchedule', ValueType.int, intValue: schedule?.id);
@@ -986,9 +986,9 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
 
   /// Установка активного периода
   Future setActivePeriod(DateTime period) async {
-    if (period == null)
+    if (period == null) {
       delete2('activePeriod');
-    else {
+    } else {
       final count = await db._setActivePeriod(period);
       if (count == 0) {
         insert2('activePeriod', ValueType.date, dateValue: period);
