@@ -12,7 +12,9 @@ List<double> parseScheduleCode(String code) {
   final parts = code.split(';');
   if (parts.length > 1) {
     // пн,вт 1ч;чт 2ч
-    parts.forEach((part) => _parseScheduleCode(hours, part));
+    for (var part in parts) {
+      _parseScheduleCode(hours, part);
+    }
   } else {
     // пн,вт 1ч
     _parseScheduleCode(hours, code);

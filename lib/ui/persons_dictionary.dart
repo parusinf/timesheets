@@ -9,10 +9,10 @@ import 'package:timesheets/ui/person_edit.dart';
 class PersonsDictionary extends StatefulWidget {
   const PersonsDictionary({Key key}) : super(key: key);
   @override
-  _PersonsDictionaryState createState() => _PersonsDictionaryState();
+  PersonsDictionaryState createState() => PersonsDictionaryState();
 }
 
-class _PersonsDictionaryState extends State<PersonsDictionary> {
+class PersonsDictionaryState extends State<PersonsDictionary> {
   get bloc => Provider.of<Bloc>(context, listen: false);
   final searchQueryEdit = TextEditingController();
   bool isSearching = false;
@@ -119,7 +119,7 @@ class _PersonsDictionaryState extends State<PersonsDictionary> {
                             .toLowerCase()
                             .contains(searchQuery.toLowerCase()))
                         .toList();
-                    if (list.length > 0) {
+                    if (list.isNotEmpty) {
                       return ListView.builder(
                         itemBuilder: (context, index) =>
                             _PersonCard(list, index, isSearching),
@@ -143,7 +143,7 @@ class _PersonCard extends StatelessWidget {
   final List<PersonView> persons;
   final int index;
   final PersonView entry;
-  final isSearching;
+  final bool isSearching;
 
   _PersonCard(this.persons, this.index, this.isSearching)
       : entry = persons[index];
@@ -178,7 +178,7 @@ class _PersonCard extends StatelessWidget {
                 title: Text(entry.family),
                 subtitle: Text(personName(entry)),
                 trailing: IconButton(
-                  icon: Icon(Icons.edit),
+                  icon: const Icon(Icons.edit),
                   onPressed: () => editPerson(context, entry),
                 ),
               ),

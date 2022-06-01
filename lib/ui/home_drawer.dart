@@ -14,11 +14,11 @@ import 'package:timesheets/ui/settings_edit.dart';
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({Key key}) : super(key: key);
   @override
-  _HomeDrawerState createState() => _HomeDrawerState();
+  HomeDrawerState createState() => HomeDrawerState();
 }
 
 /// Состояние дроувера домашнего экрана
-class _HomeDrawerState extends State<HomeDrawer> {
+class HomeDrawerState extends State<HomeDrawer> {
   get bloc => Provider.of<Bloc>(context, listen: false);
 
   @override
@@ -40,7 +40,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         final orgs = snapshot.data ?? <ActiveOrg>[];
                         return ListView.builder(
                           itemBuilder: (context, index) =>
-                              _OrgCard(orgs, index),
+                              OrgCard(orgs, index),
                           itemCount: orgs.length,
                         );
                       },
@@ -52,24 +52,43 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       builder: (context, snapshot) => snapshot.hasData
                           ? listHeater(Icons.group, L10n.groups,
                               onAddPressed: () async {
-                              await addGroup(context);
-                              Navigator.pop(context);
-                            })
-                          : Spacer()),
+                                final groupView = await addGroup(context);
+                                if (!mounted) return;
+                                // Добавление персон в группу
+                                if (groupView != null) {
+                                  await push(context, const GroupPersonsDictionary());
+                                }
+                                if (!mounted) return;
+                                Navigator.pop(context);
+                              })
+                          : const Spacer()),
                   StreamBuilder<List<ActiveOrg>>(
                       stream: bloc.activeOrgs,
                       builder: (context, snapshot) => snapshot.hasData
                           ? _groupList(orientation, snapshot.data.length)
-                          : Text('')),
-                  Spacer(),
+                          : const Text('')),
+                  const Spacer(),
                   listHeater(Icons.auto_awesome, L10n.holidays,
-                      onHeaderTap: () =>
-                          push(context, HolidaysDictionary(), pop: true)),
+                      onHeaderTap: () async {
+                        await push(context, const HolidaysDictionary());
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                      }
+                  ),
                   listHeater(Icons.settings, L10n.settings,
-                      onHeaderTap: () =>
-                          push(context, SettingsEdit(), pop: true)),
+                      onHeaderTap: () async {
+                        await push(context, const SettingsEdit());
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                      }
+                  ),
                   listHeater(Icons.help, L10n.help,
-                      onHeaderTap: () => push(context, HelpPage(), pop: true)),
+                      onHeaderTap: () async {
+                        await push(context, const HelpPage());
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                      }
+                  ),
                 ],
               ),
             ),
@@ -87,7 +106,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
         child: StreamBuilder<List<ActiveGroup>>(
           stream: bloc.activeGroups,
           builder: (context, snapshot) => ListView.builder(
-            itemBuilder: (context, index) => _GroupCard(snapshot.data, index),
+            itemBuilder: (context, index) => GroupCard(snapshot.data, index),
             itemCount: snapshot.data?.length ?? 0,
           ),
         ),
@@ -95,17 +114,25 @@ class _HomeDrawerState extends State<HomeDrawer> {
 }
 
 /// Карточка организации
-class _OrgCard extends StatelessWidget {
+class OrgCard extends StatefulWidget {
   final List<ActiveOrg> orgs;
   final int index;
   final ActiveOrg entry;
-  _OrgCard(this.orgs, this.index) : entry = orgs[index];
 
+  OrgCard(this.orgs, this.index, {Key key})
+      : entry = orgs[index],
+        super(key: key);
+
+  @override
+  OrgCardState createState() => OrgCardState();
+}
+
+class OrgCardState extends State<OrgCard> {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
         child: Dismissible(
-          confirmDismiss: (direction) async => entry.orgView.groupCount == 0,
+          confirmDismiss: (direction) async => widget.entry.orgView.groupCount == 0,
           background: Material(
             color: Colors.red,
             borderRadius: BorderRadius.circular(borderRadius),
@@ -113,31 +140,36 @@ class _OrgCard extends StatelessWidget {
           ),
           key: UniqueKey(),
           onDismissed: (direction) {
-            orgs.removeAt(index);
-            Provider.of<Bloc>(context, listen: false).deleteOrg(entry.orgView);
+            widget.orgs.removeAt(widget.index);
+            Provider.of<Bloc>(context, listen: false).deleteOrg(widget.entry.orgView);
           },
           child: Material(
-            color: entry.isActive
+            color: widget.entry.isActive
                 ? Colors.lightBlue.withOpacity(activeColorOpacity)
                 : Colors.lightBlue.withOpacity(passiveColorOpacity),
             borderRadius: BorderRadius.circular(borderRadius),
             child: InkWell(
               onTap: () {
                 Provider.of<Bloc>(context, listen: false)
-                    .setActiveOrg(entry.orgView);
+                    .setActiveOrg(widget.entry.orgView);
               },
               onDoubleTap: () async {
-                await editOrg(context, entry.orgView);
+                await editOrg(context, widget.entry.orgView);
+                if (!mounted) return;
                 Navigator.pop(context);
               },
               child: ListTile(
-                title: Text(entry.orgView.name),
+                title: Text(widget.entry.orgView.name),
                 subtitle: Text(
-                    '${isNotEmpty(entry.orgView.inn) ? entry.orgView.inn : L10n.withoutInn}'),
+                    '${isNotEmpty(widget.entry.orgView.inn) ?
+                    widget.entry.orgView.inn :
+                    L10n.withoutInn}'
+                ),
                 trailing: IconButton(
-                  icon: Icon(Icons.article),
+                  icon: const Icon(Icons.article),
                   onPressed: () async {
-                    await push(context, OrgReport());
+                    await push(context, const OrgReport());
+                    if (!mounted) return;
                     Navigator.pop(context);
                   },
                 ),
@@ -149,17 +181,21 @@ class _OrgCard extends StatelessWidget {
 }
 
 /// Карточка группы
-class _GroupCard extends StatelessWidget {
+class GroupCard extends StatefulWidget {
   final List<ActiveGroup> groups;
   final int index;
   final ActiveGroup entry;
-  _GroupCard(this.groups, this.index) : entry = groups[index];
+  GroupCard(this.groups, this.index, {Key key}) : entry = groups[index], super(key: key);
+  @override
+  GroupCardState createState() => GroupCardState();
+}
 
+class GroupCardState extends State<GroupCard> {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
         child: Dismissible(
-          confirmDismiss: (direction) async => entry.groupView.personCount == 0,
+          confirmDismiss: (direction) async => widget.entry.groupView.personCount == 0,
           background: Material(
             color: Colors.red,
             borderRadius: BorderRadius.circular(borderRadius),
@@ -167,32 +203,34 @@ class _GroupCard extends StatelessWidget {
           ),
           key: UniqueKey(),
           onDismissed: (direction) {
-            groups.removeAt(index);
+            widget.groups.removeAt(widget.index);
             Provider.of<Bloc>(context, listen: false)
-                .deleteGroup(entry.groupView);
+                .deleteGroup(widget.entry.groupView);
           },
           child: Material(
-            color: entry.isActive
+            color: widget.entry.isActive
                 ? Colors.lightGreen.withOpacity(activeColorOpacity)
                 : Colors.lightGreen.withOpacity(passiveColorOpacity),
             borderRadius: BorderRadius.circular(borderRadius),
             child: InkWell(
               onTap: () {
                 Provider.of<Bloc>(context, listen: false)
-                    .setActiveGroup(entry.groupView);
+                    .setActiveGroup(widget.entry.groupView);
                 Navigator.pop(context);
               },
               onDoubleTap: () async {
-                await editGroup(context, entry.groupView);
+                await editGroup(context, widget.entry.groupView);
+                if (!mounted) return;
                 Navigator.pop(context);
               },
               child: ListTile(
-                title: Text(entry.groupView.name),
-                subtitle: Text(entry.groupView.schedule.code),
+                title: Text(widget.entry.groupView.name),
+                subtitle: Text(widget.entry.groupView.schedule.code),
                 trailing: IconButton(
-                  icon: Icon(Icons.group_add),
+                  icon: const Icon(Icons.group_add),
                   onPressed: () async {
-                    await push(context, GroupPersonsDictionary());
+                    await push(context, const GroupPersonsDictionary());
+                    if (!mounted) return;
                     Navigator.pop(context);
                   },
                 ),

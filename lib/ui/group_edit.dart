@@ -3,16 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/schedules_dictionary.dart';
-import 'package:timesheets/ui/group_persons_dictionary.dart';
 
 /// Добавление группы
 Future addGroup(BuildContext context) async {
   // Добавление группы
-  final groupView = await push(context, GroupEdit(null));
-  // Добавление персон в группу
-  if (groupView != null) {
-    await push(context, GroupPersonsDictionary());
-  }
+  return await push(context, const GroupEdit(null));
 }
 
 /// Исправление группы
@@ -24,15 +19,15 @@ class GroupEdit extends StatefulWidget {
   final GroupView groupView;
   final DataActionType actionType;
   const GroupEdit(this.groupView, {Key key})
-      : this.actionType =
-            groupView == null ? DataActionType.Insert : DataActionType.Update,
+      : actionType =
+            groupView == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
   @override
-  _GroupEditState createState() => _GroupEditState();
+  GroupEditState createState() => GroupEditState();
 }
 
 /// Состояние формы редактирования группы
-class _GroupEditState extends State<GroupEdit> {
+class GroupEditState extends State<GroupEdit> {
   final _nameEdit = TextEditingController();
   final _scheduleEdit = TextEditingController();
   Schedule _schedule;
@@ -49,8 +44,7 @@ class _GroupEditState extends State<GroupEdit> {
     _nameEdit.text = widget.groupView?.name;
     _schedule = widget.groupView?.schedule ?? _bloc.activeSchedule.valueWrapper?.value;
     _scheduleEdit.text = _schedule?.code;
-    _meals = widget.groupView?.meals ??
-        0; // 0 - Без питания, 1 - До 2 лет, 2 - От 3 лет
+    _meals = widget.groupView?.meals ?? 0; // 0 - Без питания, 1 - До 2 лет, 2 - От 3 лет
   }
 
   @override
@@ -76,7 +70,7 @@ class _GroupEditState extends State<GroupEdit> {
           icon: Icons.group,
           validator: validateEmpty,
           textCapitalization: TextCapitalization.words,
-          autofocus: widget.actionType == DataActionType.Insert ? true : false,
+          autofocus: widget.actionType == DataActionType.insert ? true : false,
           maxLength: 20,
         ),
         // График
@@ -105,7 +99,7 @@ class _GroupEditState extends State<GroupEdit> {
 
   /// Выбор графика из словаря
   Future _selectSchedule() async {
-    _schedule = await push(context, SchedulesDictionary()) ??
+    _schedule = await push(context, const SchedulesDictionary()) ??
         _bloc.activeSchedule?.valueWrapper?.value;
     _scheduleEdit.text = _schedule?.code ?? _scheduleEdit.text;
   }
@@ -116,12 +110,13 @@ class _GroupEditState extends State<GroupEdit> {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
-        if (widget.actionType == DataActionType.Insert) {
+        if (widget.actionType == DataActionType.insert) {
           final groupView = await _bloc.insertGroup(
             name: trim(_nameEdit.text),
             schedule: _schedule,
             meals: _meals,
           );
+          if (!mounted) return;
           Navigator.of(context).pop(groupView);
         } else {
           await _bloc.updateGroup(Group(
@@ -131,6 +126,7 @@ class _GroupEditState extends State<GroupEdit> {
             scheduleId: _schedule?.id ?? widget.groupView.schedule,
             meals: _meals,
           ));
+          if (!mounted) return;
           Navigator.of(context).pop();
         }
       } catch (e) {

@@ -10,10 +10,10 @@ import 'package:timesheets/ui/group_person_edit.dart';
 class GroupPersonsDictionary extends StatefulWidget {
   const GroupPersonsDictionary({Key key}) : super(key: key);
   @override
-  _GroupPersonsDictionaryState createState() => _GroupPersonsDictionaryState();
+  GroupPersonsDictionaryState createState() => GroupPersonsDictionaryState();
 }
 
-class _GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
+class GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
   get bloc => Provider.of<Bloc>(context, listen: false);
   final searchQueryEdit = TextEditingController();
   bool isSearching = false;
@@ -128,7 +128,7 @@ class _GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
                                 .toLowerCase()
                                 .contains(searchQuery.toLowerCase()))
                         .toList();
-                    if (list.length > 0) {
+                    if (list.isNotEmpty) {
                       return ListView.builder(
                         itemBuilder: (context, index) =>
                             _GroupPersonCard(list, index),
@@ -180,7 +180,7 @@ class _GroupPersonCard extends StatelessWidget {
                 subtitle: Text(
                     datesToString(context, entry.beginDate, entry.endDate)),
                 trailing: IconButton(
-                  icon: Icon(Icons.edit),
+                  icon: const Icon(Icons.edit),
                   onPressed: () => editGroupPerson(context, entry),
                 ),
               ),

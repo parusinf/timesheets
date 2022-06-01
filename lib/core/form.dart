@@ -13,6 +13,22 @@ Widget form({
   List<Widget> fields,
   Widget child,
 }) {
+  /*final fieldsWithFirstDivider = <Widget>[];
+  fieldsWithFirstDivider.add(divider(height: padding2));
+  fieldsWithFirstDivider.addAll(fields);
+  final formChild = child != null ?
+      Padding(
+        padding: const EdgeInsets.fromLTRB(padding1, padding2, padding1, 0.0),
+        child: child,
+      )
+      :
+      Scrollbar(
+        child: SingleChildScrollView(
+          dragStartBehavior: DragStartBehavior.down,
+          padding: const EdgeInsets.symmetric(horizontal: padding1),
+          child: Column(children: fieldsWithFirstDivider),
+        ),
+      );*/
   var formChild;
   if (child != null) {
     formChild = Padding(
@@ -42,9 +58,9 @@ Widget form({
     ),
     key: scaffoldKey,
     body: Form(
-      child: formChild,
       key: formKey,
       autovalidateMode: autovalidateMode,
+      child: formChild,
     ),
   );
 }
@@ -100,7 +116,7 @@ Widget boolFormField({
                 const EdgeInsets.fromLTRB(0.0, padding2, padding1, padding2),
             child: Icon(icon, color: Colors.black54)),
         text(labelText, fontSize: 16.0),
-        Spacer(),
+        const Spacer(),
         CupertinoSwitch(
           value: initialValue,
           onChanged: onChanged,
@@ -126,8 +142,8 @@ Widget intFormField({
         0.0, 0.0, 0.0, (maxLength ?? 0) > 0 ? 0.0 : dividerHeight),
     child: TextFormField(
       controller: controller,
-      initialValue: initialValue != null ? initialValue.toString() : null,
-      keyboardType: TextInputType.numberWithOptions(),
+      initialValue: initialValue?.toString(),
+      keyboardType: const TextInputType.numberWithOptions(),
       inputFormatters: IntFormatters.formatters,
       decoration: InputDecoration(
         icon: Icon(icon),
@@ -158,7 +174,7 @@ Widget realFormField({
     child: TextFormField(
       controller: controller,
       initialValue: initialValue != null ? doubleToString(initialValue) : null,
-      keyboardType: TextInputType.numberWithOptions(),
+      keyboardType: const TextInputType.numberWithOptions(),
       decoration: InputDecoration(
         icon: Icon(icon),
         labelText: labelText,
@@ -183,7 +199,7 @@ Widget dateFormField({
   return TextFormField(
     controller: controller,
     initialValue: initialValue != null ? dateToString(initialValue) : null,
-    keyboardType: TextInputType.numberWithOptions(),
+    keyboardType: const TextInputType.numberWithOptions(),
     inputFormatters: DateFormatters.formatters,
     decoration: InputDecoration(
       icon: const Icon(Icons.event),
@@ -217,7 +233,7 @@ Widget phoneFormField({
   return TextFormField(
     controller: controller,
     initialValue: initialValue,
-    keyboardType: TextInputType.numberWithOptions(),
+    keyboardType: const TextInputType.numberWithOptions(),
     onChanged: onChanged,
     decoration: InputDecoration(
       icon: const Icon(Icons.phone),
@@ -227,7 +243,7 @@ Widget phoneFormField({
         icon: const Icon(Icons.phone_in_talk),
         onPressed: () async {
           phone = controller.text ?? initialValue;
-          launchUrl(scaffoldKey, 'tel:${L10n.countryPhoneCode}$phone');
+          launchUrl2(scaffoldKey, 'tel:${L10n.countryPhoneCode}$phone');
         },
         color: Colors.green,
       ),

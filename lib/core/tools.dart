@@ -14,9 +14,9 @@ final List<String> abbrWeekdays = [
 
 /// Тип действия с данными
 enum DataActionType {
-  Insert,
-  Update,
-  Delete,
+  insert,
+  update,
+  delete,
 }
 
 /// Последний день месяца
@@ -38,6 +38,6 @@ String personName(Person person, {showMiddleName = true}) => person != null
 /// Заглавная первая буква в строке
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${this.substring(1)}";
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

@@ -1,12 +1,10 @@
 import 'dart:io';
-import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
 /// Выбор CSV файла и загрузка табеля посещаемости
-Future pickAndReceiveTimesheetFromFile(BuildContext context) async {
+Future pickAndReceiveTimesheetFromFile(Bloc bloc) async {
   FilePickerResult result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['csv'],
@@ -14,25 +12,24 @@ Future pickAndReceiveTimesheetFromFile(BuildContext context) async {
   if (result == null) {
     throw L10n.fileNotSelected;
   }
-  await receiveTimesheetFromFile(context, File(result.files.single.path));
+  receiveTimesheetFromFile(bloc, File(result.files.single.path));
 }
 
 /// Загрузка CSV файла
-Future receiveTimesheetFromFile(BuildContext context, File file) async {
+Future receiveTimesheetFromFile(Bloc bloc, File file) async {
   final content = decodeCp1251(file.readAsBytesSync());
-  await receiveTimesheetFromContent(context, content);
+  await receiveTimesheetFromContent(bloc, content);
 }
 
 /// Разбор и загрузка контента
-Future receiveTimesheetFromContent(BuildContext context, String content) async {
-  final bloc = Provider.of<Bloc>(context, listen: false);
+Future receiveTimesheetFromContent(Bloc bloc, String content) async {
   final lines = content.split('\n');
   if (lines.length < 4) {
     throw L10n.fileFormatError;
   }
 
   // Период
-  final period = stringToPeriod(context, lines[0].split(';')[0]);
+  final period = stringToPeriod(lines[0].split(';')[0]);
   if (period == null) {
     throw L10n.fileFormatError;
   }
@@ -65,9 +62,7 @@ Future receiveTimesheetFromContent(BuildContext context, String content) async {
   }
   // График
   var schedule = await bloc.db.schedulesDao.find(scheduleCode);
-  if (schedule == null) {
-    schedule = await bloc.insertSchedule(code: scheduleCode, createDays: true);
-  }
+  schedule ??= await bloc.insertSchedule(scheduleCode);
   var group = await bloc.db.groupsDao.find(groupName, org, schedule);
   if (group == null) {
     group = await bloc.insertGroup(

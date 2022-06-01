@@ -22,10 +22,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
   Intl.defaultLocale = 'ru_RU';
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Provider<Bloc>(
@@ -35,14 +37,14 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         onGenerateTitle: (BuildContext context) => L10n.timesheets,
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        supportedLocales: [
-          const Locale('ru'),
+        supportedLocales: const [
+          Locale('ru'),
         ],
         theme: ThemeData(
           primarySwatch: Colors.lightBlue,
           typography: Typography.material2018(),
         ),
-        home: HomePage(),
+        home: const HomePage(),
       ),
     );
   }

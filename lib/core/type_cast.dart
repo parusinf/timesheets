@@ -9,8 +9,8 @@ import 'package:timesheets/core.dart';
 DateTime stringToDate(String value) {
   DateTime result = isNotEmpty(value) ? DateTime.tryParse(value.trim()) : null;
   if (result == null) {
-    final _parseFormat = RegExp(r'^(\d\d)\.(\d\d)\.(\d\d\d\d)$');
-    Match match = _parseFormat.firstMatch(value);
+    final parseFormat = RegExp(r'^(\d\d)\.(\d\d)\.(\d\d\d\d)$');
+    Match match = parseFormat.firstMatch(value);
     if (match != null) {
       final day = int.parse(match[1]);
       final month = int.parse(match[2]);
@@ -52,7 +52,7 @@ String abbrWeekday(DateTime date) {
 }
 
 /// Преобразование строки периода в дату
-DateTime stringToPeriod(BuildContext context, String period) {
+DateTime stringToPeriod(String period) {
   final monthList = dateTimeSymbolMap()[L10n.languageCode]
       .STANDALONEMONTHS
       .map((month) => month.toLowerCase())

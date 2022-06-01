@@ -22,8 +22,8 @@ Future sendTimesheet(
   // Запись файла
   RegExp exp = RegExp(r'[\s.№]+');
   final periodString = periodToString(period);
-  final filename = '${org.name}_${group.name}_$periodString\_Приложение'
-      .replaceAll(exp, '_') + '.csv';
+  final filename = '${'${org.name}_${group.name}_${periodString}_Приложение'
+      .replaceAll(exp, '_')}.csv';
   final directory = await getTemporaryDirectory();
   final filepath = p.join(directory.path, filename);
   final file = File(filepath);
@@ -40,7 +40,7 @@ Future sendTimesheet(
     if (response.statusCode == 202) {
       result = await response.stream.bytesToString();
     } else {
-      result = 'Ошибка отправки табеля посещаемости в Парус: ' + response.reasonPhrase;
+      result = 'Ошибка отправки табеля посещаемости в Парус: ${response.reasonPhrase}';
     }
   } else {
     // Отправка файла
@@ -62,7 +62,7 @@ createContent(
     List<GroupPersonView> groupPersons,
     List<Attendance> attendances,
 ) {
-  final buffer = new StringBuffer();
+  final buffer = StringBuffer();
   final periodString = periodToString(period);
 
   // Период

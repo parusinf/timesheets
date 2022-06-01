@@ -5,6 +5,8 @@ import 'package:timesheets/core.dart';
 
 /// Справка
 class HelpPage extends StatefulWidget {
+  const HelpPage({Key key}) : super(key: key);
+
   @override
   HelpPageState createState() => HelpPageState();
 }
@@ -23,17 +25,17 @@ class HelpPageState extends State<HelpPage> {
             IconButton(
               icon: const Icon(Icons.help),
               onPressed: () =>
-                  launchUrl(_scaffoldKey, 'https://github.com/parusinf/timesheets'),
+                  launchUrl2(_scaffoldKey, 'https://github.com/parusinf/timesheets'),
             ),
             IconButton(
               icon: const Icon(Icons.live_help),
-              onPressed: () => launchUrl(_scaffoldKey,
+              onPressed: () => launchUrl2(_scaffoldKey,
                   'https://t.me/timesheets_support'),
             ),
             IconButton(
               icon: const Icon(Icons.ondemand_video),
               onPressed: () =>
-                  launchUrl(_scaffoldKey, 'https://youtu.be/vvLaug6BrWo'),
+                  launchUrl2(_scaffoldKey, 'https://youtu.be/vvLaug6BrWo'),
             ),
           ],
         ),

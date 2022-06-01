@@ -6,7 +6,7 @@ import 'package:timesheets/ui/persons_dictionary.dart';
 
 /// Добавление персоны
 Future addGroupPerson(BuildContext context) async =>
-    push(context, GroupPersonEdit(null));
+    push(context, const GroupPersonEdit(null));
 
 /// Исправление персоны
 Future editGroupPerson(
@@ -18,15 +18,15 @@ class GroupPersonEdit extends StatefulWidget {
   final GroupPersonView groupPerson;
   final DataActionType actionType;
   const GroupPersonEdit(this.groupPerson, {Key key})
-      : this.actionType =
-            groupPerson == null ? DataActionType.Insert : DataActionType.Update,
+      : actionType =
+            groupPerson == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
   @override
-  _GroupPersonEditState createState() => _GroupPersonEditState();
+  GroupPersonEditState createState() => GroupPersonEditState();
 }
 
 /// Состояние формы редактирования персоны в группе
-class _GroupPersonEditState extends State<GroupPersonEdit> {
+class GroupPersonEditState extends State<GroupPersonEdit> {
   final _personEdit = TextEditingController();
   final _beginDateEdit = TextEditingController();
   final _endDateEdit = TextEditingController();
@@ -70,7 +70,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
           icon: Icons.person,
           onTap: _selectPerson,
           validator: validateEmpty,
-          autofocus: widget.actionType == DataActionType.Insert ? true : false,
+          autofocus: widget.actionType == DataActionType.insert ? true : false,
           readOnly: true,
         ),
         // Дата поступления в группу
@@ -89,7 +89,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
 
   /// Выбор персоны из словаря
   Future _selectPerson() async {
-    _person = await push(context, PersonsDictionary());
+    _person = await push(context, const PersonsDictionary());
     _personEdit.text =
         _person != null ? personFullName(_person) : _personEdit.text;
   }
@@ -100,7 +100,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
-        if (widget.actionType == DataActionType.Insert) {
+        if (widget.actionType == DataActionType.insert) {
           await bloc.insertGroupPerson(
             group: bloc.activeGroup.valueWrapper?.value,
             person: _person,
@@ -116,6 +116,7 @@ class _GroupPersonEditState extends State<GroupPersonEdit> {
             endDate: stringToDate(_endDateEdit.text),
           ));
         }
+        if (!mounted) return;
         Navigator.of(context).pop();
       } catch (e) {
         showMessage(_scaffoldKey, e.toString());

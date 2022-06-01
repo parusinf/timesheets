@@ -5,7 +5,7 @@ import 'package:timesheets/db/db.dart';
 
 /// Добавление праздника
 Future addHoliday(BuildContext context) async =>
-    push(context, HolidayEdit(null));
+    push(context, const HolidayEdit(null));
 
 /// Исправление праздника
 Future editHoliday(BuildContext context, Holiday holiday) async =>
@@ -16,15 +16,15 @@ class HolidayEdit extends StatefulWidget {
   final Holiday holiday;
   final DataActionType actionType;
   const HolidayEdit(this.holiday, {Key key})
-      : this.actionType =
-            holiday == null ? DataActionType.Insert : DataActionType.Update,
+      : actionType =
+            holiday == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
   @override
-  _HolidayEditState createState() => _HolidayEditState();
+  HolidayEditState createState() => HolidayEditState();
 }
 
 /// Состояние формы редактирования праздника
-class _HolidayEditState extends State<HolidayEdit> {
+class HolidayEditState extends State<HolidayEdit> {
   final _holidayEdit = TextEditingController();
   final _workdayEdit = TextEditingController();
 
@@ -77,7 +77,7 @@ class _HolidayEditState extends State<HolidayEdit> {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
-        if (widget.actionType == DataActionType.Insert) {
+        if (widget.actionType == DataActionType.insert) {
           await _bloc.insertHoliday(
             date: stringToDate(_holidayEdit.text),
             workday: stringToDate(_workdayEdit.text),
@@ -89,6 +89,7 @@ class _HolidayEditState extends State<HolidayEdit> {
             workday: stringToDate(_workdayEdit.text),
           ));
         }
+        if (!mounted) return;
         Navigator.of(context).pop();
       } catch (e) {
         showMessage(_scaffoldKey, e.toString());

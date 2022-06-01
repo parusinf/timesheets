@@ -81,18 +81,17 @@ Widget button(String label, {VoidCallback onPressed, ButtonStyle style}) =>
     );
 
 /// Переход на страницу
-Future<T> push<T extends Object>(BuildContext context, Widget page,
-    {bool pop = false}) async {
+Future<T> push<T extends Object>(BuildContext context, Widget page) async {
   final result = await Navigator.push(
       context, MaterialPageRoute(builder: (context) => page));
-  if (pop) {
-    Navigator.pop(context);
-  }
   return result;
 }
 
 /// Вызов ссылки
-Future launchUrl(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
+Future launchUrl2(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
+  /*final uri = Uri.parse(url);
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri);*/
   if (await canLaunch(url)) {
     await launch(url);
   } else {
@@ -105,7 +104,7 @@ double getHoursNorm(Bloc bloc, DateTime date) {
   final weekdayNumber = abbrWeekdays.indexOf(abbrWeekday(date));
   final scheduleDays = bloc.scheduleDays.valueWrapper?.value;
   var hoursNorm = 0.0;
-  if (scheduleDays.length > 0) {
+  if (scheduleDays.isNotEmpty) {
     hoursNorm = scheduleDays[weekdayNumber].hoursNorm;
     // Обнуление нормы часов по графику для праздничного дня
     if (!isHoliday(bloc, date)) {
@@ -121,9 +120,13 @@ double getHoursNorm(Bloc bloc, DateTime date) {
 
 /// Поиск нормы часов первого дня активного графика
 double getFirstHoursNorm(Bloc bloc) {
-  final firstDay =
-      bloc.scheduleDays.valueWrapper?.value?.firstWhere((day) => day.hoursNorm > 0.0);
-  return firstDay != null ? firstDay.hoursNorm : 0;
+  final days = bloc.scheduleDays.valueWrapper?.value;
+  for (var day in days) {
+    if (day.hoursNorm > 0.0) {
+      return day.hoursNorm;
+    }
+  }
+  return 0.0;
 }
 
 /// Диалог подтверждения

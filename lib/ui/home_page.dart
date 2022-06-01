@@ -51,7 +51,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Scaffold(
       key: _scaffoldKey,
       appBar: _createAppBar(),
-      drawer: HomeDrawer(),
+      drawer: const HomeDrawer(),
       body: StreamBuilder<String>(
         stream: _bloc.content,
         builder: (context, snapshot) {
@@ -71,7 +71,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         builder: (context, snapshot) => snapshot.hasData
             ? InkWell(
                 onTap: () async {
-                  await push(context, GroupPersonsDictionary());
+                  await push(context, const GroupPersonsDictionary());
                 },
                 child: text(snapshot.data.name),
               )
@@ -83,7 +83,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         child: text(snapshot.data.name),
                       )
                     : InkWell(
-                        onTap: () => push(context, HelpPage()),
+                        onTap: () => push(context, const HelpPage()),
                         child: text(L10n.timesheets),
                       )),
       ),
@@ -106,12 +106,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ],
             onChanged: (String value) {
               setState(() {
-                if (L10n.sendTimesheet == value)
+                if (L10n.sendTimesheet == value) {
                   _sendTimesheet();
-                else if (L10n.receiveTimesheetFromParus == value)
-                  launchUrl(_scaffoldKey, 'https://t.me/timesheets_parus_bot');
-                else if (L10n.receiveTimesheetFromFile == value)
+                } else if (L10n.receiveTimesheetFromParus == value) {
+                  launchUrl2(_scaffoldKey, 'https://t.me/timesheets_parus_bot');
+                } else if (L10n.receiveTimesheetFromFile == value) {
                   _pickAndReceiveTimesheetFromFile();
+                }
               });
             },
           ),
@@ -174,9 +175,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       if (content != null) {
         if (content.contains('content://')) {
           File file = await toFile(content);
-          await receiveTimesheetFromFile(context, file);
+          await receiveTimesheetFromFile(_bloc, file);
         } else {
-          await receiveTimesheetFromContent(context, content);
+          await receiveTimesheetFromContent(_bloc, content);
         }
       }
     } catch (e) {
@@ -187,7 +188,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// Загрузка из CSV файла
   Future _pickAndReceiveTimesheetFromFile() async {
     try {
-      await pickAndReceiveTimesheetFromFile(context);
+      await pickAndReceiveTimesheetFromFile(_bloc);
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());
     }
@@ -237,7 +238,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     color: Colors.lightBlue,
                     fontSize: 14.0,
                   )
-                : Text('')),
+                : const Text('')),
       ),
     ];
     // Количество присутствующих персон на период
@@ -260,7 +261,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 wrap: false,
               );
             } else {
-              return Text('');
+              return const Text('');
             }
           }),
     );
@@ -296,7 +297,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   wrap: false,
                 );
               } else {
-                return Text('');
+                return const Text('');
               }
             }),
       );
@@ -307,17 +308,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// Создание ячейки таблицы
   Widget _createCell(
     String title, {
-    width: columnWidth,
-    alignment: Alignment.center,
-    leftPadding: 0.0,
-    borderStyle: BorderStyle.solid,
-    color: Colors.black87,
-    fontSize: 14.0,
-    fontWeight: FontWeight.normal,
+    width = columnWidth,
+    alignment = Alignment.center,
+    leftPadding = 0.0,
+    borderStyle = BorderStyle.solid,
+    color = Colors.black87,
+    fontSize = 14.0,
+    fontWeight = FontWeight.normal,
   }) =>
       Container(
-        child: text(title,
-            color: color, fontSize: fontSize, fontWeight: fontWeight),
         width: width,
         height: rowHeight,
         padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
@@ -327,19 +326,21 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               left:
                   BorderSide(color: lineColor, width: 0.5, style: borderStyle)),
         ),
+        child: text(title,
+            color: color, fontSize: fontSize, fontWeight: fontWeight),
       );
 
   /// Создание фиксированной ячейки
   Widget _createFixedCell(
     String title,
     String subtitle, {
-    double width: columnWidth,
-    alignment: Alignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    titleColor: Colors.black87,
-    subtitleColor: Colors.black54,
-    leftPadding: 0.0,
-    borderStyle: BorderStyle.none,
+    double width = columnWidth,
+    alignment = Alignment.center,
+    crossAxisAlignment = CrossAxisAlignment.center,
+    titleColor = Colors.black87,
+    subtitleColor = Colors.black54,
+    leftPadding = 0.0,
+    borderStyle = BorderStyle.none,
     Function() onTap,
     wrap = true,
   }) {
@@ -349,19 +350,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         color: titleColor,
         fontWeight: wrap ? FontWeight.bold : FontWeight.normal));
     if (!wrap) columnRows.add(divider(height: padding3));
-    if (subtitle != null)
+    if (subtitle != null) {
       columnRows.add(text(subtitle, fontSize: 16.0, color: subtitleColor));
+    }
 
     return InkWell(
       onTap: onTap ?? () => {},
       child: Container(
-        child: wrap
-            ? Wrap(children: columnRows)
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: crossAxisAlignment,
-                children: columnRows,
-              ),
         width: width,
         height: rowHeight,
         alignment: alignment,
@@ -371,6 +366,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               left:
                   BorderSide(color: lineColor, width: 0.5, style: borderStyle)),
         ),
+        child: wrap
+            ? Wrap(children: columnRows)
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: crossAxisAlignment,
+                children: columnRows,
+              ),
       ),
     );
   }
@@ -442,12 +444,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         rowCells.add(
           InkWell(
             onTap: () {
-              if (!_bloc.doubleTapInTimesheet)
+              if (!_bloc.doubleTapInTimesheet) {
                 _insertAttendance(groupPerson, date, hoursNorm);
+              }
             },
             onDoubleTap: () {
-              if (_bloc.doubleTapInTimesheet)
+              if (_bloc.doubleTapInTimesheet) {
                 _insertAttendance(groupPerson, date, hoursNorm);
+              }
             },
             child: _createCell(
               hoursNormStr,
