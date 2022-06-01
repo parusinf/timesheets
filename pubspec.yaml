@@ -16,6 +16,7 @@ dependencies:
   sqflite:
   drift:
   sqlite3_flutter_libs:
+  path:
   path_provider:
   rxdart:
   provider:
@@ -27,6 +28,7 @@ dependencies:
   file_picker:
   uri_to_file:
   http:
+  http_parser:
 
 dev_dependencies:
   drift_dev:
