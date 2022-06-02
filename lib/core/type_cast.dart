@@ -5,28 +5,41 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:timesheets/core.dart';
 
-/// Преобразование строки в дату
-DateTime stringToDate(String value) {
-  DateTime result = isNotEmpty(value) ? DateTime.tryParse(value.trim()) : null;
+/// Преобразование строки в дату либо null в случае ошибки преобразования
+DateTime? stringToDateOrNull(String value) {
+  DateTime? result = isNotEmpty(value) ? DateTime.tryParse(value.trim()) : null;
   if (result == null) {
     final parseFormat = RegExp(r'^(\d\d)\.(\d\d)\.(\d\d\d\d)$');
-    Match match = parseFormat.firstMatch(value);
+    RegExpMatch? match = parseFormat.firstMatch(value);
     if (match != null) {
-      final day = int.parse(match[1]);
-      final month = int.parse(match[2]);
-      final year = int.parse(match[3]);
-      result = DateTime(year, month, day);
+      final dayStr = match[1];
+      final monthStr = match[2];
+      final yearStr = match[3];
+      final day = dayStr != null ? int.parse(dayStr) : 0;
+      final month = monthStr != null ? int.parse(monthStr) : 0;
+      final year = yearStr != null ? int.parse(yearStr) : 0;
+      if (day + month + year > 0) {
+        result = DateTime(year, month, day);
+      } else {
+        result = null;
+      }
     }
   }
   return result;
 }
 
+
+/// Преобразование строки в дату либо DateTime(1900, 1, 1)
+DateTime stringToDate(String value) {
+  return stringToDateOrNull(value) ?? DateTime(1900, 1, 1);
+}
+
 /// Преобразование строки в число
-double stringToDouble(String value) =>
+double? stringToDouble(String value) =>
     isNotEmpty(value) ? double.tryParse(value.trim()) : null;
 
 /// Преобразование строки в целое
-int stringToInt(String value) =>
+int? stringToInt(String value) =>
     isNotEmpty(value) ? int.tryParse(value.trim()) : null;
 
 /// Преобразование числа с плавающей точкой в строку
@@ -36,7 +49,7 @@ String doubleToString(double number) {
 }
 
 /// Преобразование даты в строку
-String dateToString(DateTime date) =>
+String dateToString(DateTime? date) =>
     date != null ? DateFormat('dd.MM.yyyy').format(date) : '';
 
 /// Преобразование даты периода в строку
@@ -52,7 +65,7 @@ String abbrWeekday(DateTime date) {
 }
 
 /// Преобразование строки периода в дату
-DateTime stringToPeriod(String period) {
+DateTime? stringToPeriod(String period) {
   final monthList = dateTimeSymbolMap()[L10n.languageCode]
       .STANDALONEMONTHS
       .map((month) => month.toLowerCase())
@@ -71,7 +84,7 @@ DateTime stringToPeriod(String period) {
 
 /// Преобразование диапазона дат в строку
 String datesToString(
-    BuildContext context, DateTime beginDate, DateTime endDate) {
+    BuildContext context, DateTime? beginDate, DateTime? endDate) {
   final begin = dateToString(beginDate);
   final end = dateToString(endDate);
   return begin != ''

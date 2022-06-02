@@ -6,7 +6,7 @@ import 'package:timesheets/ui/holiday_edit.dart';
 
 /// Словарь праздников
 class HolidaysDictionary extends StatelessWidget {
-  const HolidaysDictionary({Key key}) : super(key: key);
+  const HolidaysDictionary({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -26,11 +26,11 @@ class HolidaysDictionary extends StatelessWidget {
                 stream: Provider.of<Bloc>(context).holidays,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    if (snapshot.data.isNotEmpty) {
+                    if (snapshot.data!.isNotEmpty) {
                       return ListView.builder(
                         itemBuilder: (context, index) =>
-                            _HolidayCard(snapshot.data, index),
-                        itemCount: snapshot.data.length,
+                            _HolidayCard(snapshot.data!, index),
+                        itemCount: snapshot.data!.length,
                       );
                     } else {
                       return centerButton(L10n.addHoliday,

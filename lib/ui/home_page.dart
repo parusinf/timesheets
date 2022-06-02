@@ -18,7 +18,7 @@ import 'package:timesheets/ui/help_page.dart';
 
 /// Табели
 class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
   @override
   HomePageState createState() => HomePageState();
 }
@@ -27,8 +27,8 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   get _bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<GroupPersonView> _groupPeriodPersons;
-  List<Attendance> _groupAttendances;
+  List<GroupPersonView>? _groupPeriodPersons;
+  List<Attendance>? _groupAttendances;
   static const fixedColumnWidth = 150.0;
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
@@ -37,12 +37,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
   
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -52,11 +52,11 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       key: _scaffoldKey,
       appBar: _createAppBar(),
       drawer: const HomeDrawer(),
-      body: StreamBuilder<String>(
+      body: StreamBuilder<String?>(
         stream: _bloc.content,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            _receiveTimesheetFromContent(snapshot.data);
+            _receiveTimesheetFromContent(snapshot.data!);
           }
           return _createBody();
         },
@@ -64,23 +64,23 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _createAppBar() {
+  PreferredSizeWidget? _createAppBar() {
     return AppBar(
-      title: StreamBuilder<Group>(
+      title: StreamBuilder<GroupView?>(
         stream: _bloc.activeGroup,
         builder: (context, snapshot) => snapshot.hasData
             ? InkWell(
                 onTap: () async {
                   await push(context, const GroupPersonsDictionary());
                 },
-                child: text(snapshot.data.name),
+                child: text(snapshot.data!.name),
               )
-            : StreamBuilder<Org>(
+            : StreamBuilder<OrgView?>(
                 stream: _bloc.activeOrg,
                 builder: (context, snapshot) => snapshot.hasData
                     ? InkWell(
                         onTap: () => editOrg(context, _bloc.activeOrg.valueWrapper?.value),
-                        child: text(snapshot.data.name),
+                        child: text(snapshot.data!.name),
                       )
                     : InkWell(
                         onTap: () => push(context, const HelpPage()),
@@ -104,7 +104,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 child: const Icon(Icons.file_download),
               ),
             ],
-            onChanged: (String value) {
+            onChanged: (String? value) {
               setState(() {
                 if (L10n.sendTimesheet == value) {
                   _sendTimesheet();
@@ -151,7 +151,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           headerWidgets: _createTitleRow(),
                           leftSideItemBuilder: _createFixedColumn,
                           rightSideItemBuilder: _createTableRow,
-                          itemCount: _groupPeriodPersons.length,
+                          itemCount: _groupPeriodPersons!.length,
                           rowSeparatorWidget:
                               const Divider(color: lineColor, height: 0.5),
                         );
@@ -171,17 +171,17 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// Получение табеля из переданного контента
   Future _receiveTimesheetFromContent(String content) async {
-    try {
-      if (content != null) {
+    if (isNotEmpty(content)) {
+      try {
         if (content.contains('content://')) {
           File file = await toFile(content);
           await receiveTimesheetFromFile(_bloc, file);
         } else {
           await receiveTimesheetFromContent(_bloc, content);
         }
+      } catch (e) {
+        showMessage(_scaffoldKey, e.toString());
       }
-    } catch (e) {
-      showMessage(_scaffoldKey, e.toString());
     }
   }
 
@@ -210,8 +210,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           org,
           group,
           _bloc.activePeriod.valueWrapper?.value,
-          _groupPeriodPersons,
-          _groupAttendances,
+          _groupPeriodPersons!,
+          _groupAttendances!,
           _bloc.parusIntegration,
         );
         showMessage(_scaffoldKey, result);
@@ -225,13 +225,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   List<Widget> _createTitleRow() {
     final DateTime period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[
-      StreamBuilder<DateTime>(
+      StreamBuilder<DateTime?>(
         stream: _bloc.activePeriod,
         builder: (context, snapshot) => InkWell(
             onTap: _selectPeriod,
             child: snapshot.hasData
                 ? _createCell(
-                    periodToString(snapshot.data),
+                    periodToString(snapshot.data!),
                     width: fixedColumnWidth,
                     alignment: Alignment.centerLeft,
                     leftPadding: leftPadding,
@@ -243,10 +243,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     ];
     // Количество присутствующих персон на период
     final daysCount =
-        _groupAttendances.where((e) => e.hoursFact > 0.0).toList().length;
+        _groupAttendances?.where((e) => e.hoursFact > 0.0).toList().length;
     // Дней посещения персоны за период
     rowCells.add(
-      StreamBuilder<DateTime>(
+      StreamBuilder<DateTime?>(
           stream: _bloc.activePeriod,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -271,17 +271,17 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       final hoursNorm = getHoursNorm(_bloc, date);
       // Количество присутствующих персон на дату
       final dateCount = _groupAttendances
-          .where((e) => e.date == date && e.hoursFact > 0.0)
+          ?.where((e) => e.date == date && e.hoursFact > 0.0)
           .toList()
           .length;
-      final dateCountStr = dateCount > 0.0
+      final dateCountStr = dateCount! > 0.0
           ? dateCount.toString()
           : hoursNorm > 0.0
               ? '0'
               : '';
       // Добавление ячейки в строку
       rowCells.add(
-        StreamBuilder<DateTime>(
+        StreamBuilder<DateTime?>(
             stream: _bloc.activePeriod,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -333,7 +333,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// Создание фиксированной ячейки
   Widget _createFixedCell(
     String title,
-    String subtitle, {
+    String? subtitle, {
     double width = columnWidth,
     alignment = Alignment.center,
     crossAxisAlignment = CrossAxisAlignment.center,
@@ -341,7 +341,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     subtitleColor = Colors.black54,
     leftPadding = 0.0,
     borderStyle = BorderStyle.none,
-    Function() onTap,
+    Function()? onTap,
     wrap = true,
   }) {
     final columnRows = <Widget>[];
@@ -379,7 +379,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// Создание фиксированной колонки
   Widget _createFixedColumn(BuildContext context, int index) {
-    final person = _groupPeriodPersons[index].person;
+    final person = _groupPeriodPersons![index].person;
     return _createFixedCell(
       '${person.family} ',
       personName(person, showMiddleName: false),
@@ -393,29 +393,33 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// Создание строки таблицы
   Widget _createTableRow(BuildContext context, int index) {
-    final groupPerson = _groupPeriodPersons[index];
+    final groupPerson = _groupPeriodPersons![index];
     final personAttendances = _groupAttendances
-        .where((attendance) => attendance.groupPersonId == groupPerson?.id);
+        ?.where((attendance) => attendance.groupPersonId == groupPerson.id);
     final period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[];
     // Итог по персоне за период
-    rowCells.add(_createCell(personAttendances.length.toString(),
+    rowCells.add(_createCell(personAttendances!.length.toString(),
         color: Colors.black54, fontSize: 16.0));
     // Цикл по дням текущего периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
-      final attendance = personAttendances?.firstWhere(
-          (attendance) => attendance.date == date,
-          orElse: () => null);
+      Attendance? attendance;
+      for (var a in personAttendances) {
+        if (date == a.date) {
+          attendance = a;
+          break;
+        }
+      }
       // Есть посещаемость в этот день, её можно удалить
       if (attendance != null) {
         rowCells.add(
           InkWell(
             onTap: () {
-              if (!_bloc.doubleTapInTimesheet) _deleteAttendance(attendance);
+              if (!_bloc.doubleTapInTimesheet) _deleteAttendance(attendance!);
             },
             onDoubleTap: () {
-              if (_bloc.doubleTapInTimesheet) _deleteAttendance(attendance);
+              if (_bloc.doubleTapInTimesheet) _deleteAttendance(attendance!);
             },
             child: _createCell(
               doubleToString(attendance.hoursFact),
@@ -426,15 +430,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ),
           ),
         );
-        // Посещаемости нет, её можно добавить
+      // Посещаемости нет, её можно добавить
       } else {
         // Норма часов на дату
         var hoursNorm = getHoursNorm(_bloc, date);
         final hoursNormStr = (hoursNorm > 0.0 &&
                 (groupPerson.beginDate == null ||
-                    groupPerson.beginDate.compareTo(date) <= 0) &&
+                    groupPerson.beginDate!.compareTo(date) <= 0) &&
                 (groupPerson.endDate == null ||
-                    groupPerson.endDate.compareTo(date) >= 0))
+                    groupPerson.endDate!.compareTo(date) >= 0))
             ? doubleToString(hoursNorm)
             : '';
         if (hoursNorm == 0.0) {

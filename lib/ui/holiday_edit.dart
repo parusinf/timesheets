@@ -13,11 +13,10 @@ Future editHoliday(BuildContext context, Holiday holiday) async =>
 
 /// Форма редактирования праздника
 class HolidayEdit extends StatefulWidget {
-  final Holiday holiday;
+  final Holiday? holiday;
   final DataActionType actionType;
-  const HolidayEdit(this.holiday, {Key key})
-      : actionType =
-            holiday == null ? DataActionType.insert : DataActionType.update,
+  const HolidayEdit(this.holiday, {Key? key})
+      : actionType = holiday == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
   @override
   HolidayEditState createState() => HolidayEditState();
@@ -73,20 +72,20 @@ class HolidayEditState extends State<HolidayEdit> {
 
   /// Обработка формы
   Future _onSubmit() async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
         if (widget.actionType == DataActionType.insert) {
           await _bloc.insertHoliday(
-            date: stringToDate(_holidayEdit.text),
-            workday: stringToDate(_workdayEdit.text),
+            date: stringToDateOrNull(_holidayEdit.text),
+            workday: stringToDateOrNull(_workdayEdit.text),
           );
         } else {
           await _bloc.updateHoliday(Holiday(
-            id: widget.holiday?.id,
+            id: widget.holiday?.id ?? 0,
             date: stringToDate(_holidayEdit.text),
-            workday: stringToDate(_workdayEdit.text),
+            workday: stringToDateOrNull(_workdayEdit.text),
           ));
         }
         if (!mounted) return;

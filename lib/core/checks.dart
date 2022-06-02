@@ -3,17 +3,17 @@ import 'type_cast.dart';
 import 'bloc.dart';
 
 /// Удаление концевых пробелов из строки
-String trim(String value) => isNotEmpty(value) ? value.trim() : '';
+String? trim(String? value) => isNotEmpty(value) ? value!.trim() : '';
 
 /// Проверка строки на пустое значение
-bool isEmpty(String value) => value == null || value.trim().isEmpty;
+bool isEmpty(String? value) => value == null || value.trim().isEmpty;
 
 /// Проверка строки на непустое значение
-bool isNotEmpty(String value) => !isEmpty(value);
+bool isNotEmpty(String? value) => !isEmpty(value);
 
 /// Дата является днём рождения
-bool isBirthday(DateTime date, DateTime birthday) =>
-    date?.day == birthday?.day && date?.month == birthday?.month;
+bool isBirthday(DateTime date, DateTime? birthday) =>
+    date.day == birthday?.day && date.month == birthday?.month;
 
 /// Дата является праздничным или выходным днём
 bool isHoliday(Bloc bloc, DateTime date) {
@@ -21,20 +21,20 @@ bool isHoliday(Bloc bloc, DateTime date) {
   final weekdayIndex = abbrWeekdays.indexOf(weekday);
   return !isTransWorkday(bloc, date) &&
       ([5, 6].contains(weekdayIndex) ||
-          bloc.holidaysDateList.valueWrapper.value.contains(date));
+          bloc.holidaysDateList.valueWrapper!.value.contains(date));
 }
 
 /// Дата является переносом рабочего дня
 bool isTransWorkday(Bloc bloc, DateTime date) =>
-    bloc.workdaysDateList.valueWrapper.value.contains(date);
+    bloc.workdaysDateList.valueWrapper!.value.contains(date);
 
 /// Строка нуждается в исправлении
-bool isEqual(String oldValue, String newValue) =>
+bool isEqual(String? oldValue, String? newValue) =>
     !(trim(oldValue) == '' && trim(newValue) != '' ||
       trim(oldValue) != '' && trim(newValue) != '' &&
       trim(oldValue) != trim(newValue));
 
 /// Дата нуждается в исправлении
-bool isDateEqual(DateTime oldValue, DateTime newValue) =>
+bool isDateEqual(DateTime? oldValue, DateTime? newValue) =>
     !(oldValue == null && newValue != null ||
       oldValue != null && newValue != null && oldValue != newValue);

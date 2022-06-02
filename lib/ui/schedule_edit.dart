@@ -17,9 +17,9 @@ Future editSchedule(BuildContext context, Schedule schedule) async {
 
 /// Форма редактирования графика
 class ScheduleEdit extends StatefulWidget {
-  final Schedule schedule;
+  final Schedule? schedule;
   final DataActionType actionType;
-  const ScheduleEdit(this.schedule, {Key key})
+  const ScheduleEdit(this.schedule, {Key? key})
       : actionType =
             schedule == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
@@ -64,7 +64,7 @@ class ScheduleEditState extends State<ScheduleEdit> {
         stream: _bloc.scheduleDays,
         builder: (context, snapshot) => ListView.builder(
           itemBuilder: (context, index) =>
-              _scheduleDayCard(snapshot.data, index),
+              _scheduleDayCard(snapshot.data!, index),
           itemCount: snapshot.data?.length ?? 0,
         ),
       ),
@@ -78,7 +78,7 @@ class ScheduleEditState extends State<ScheduleEdit> {
       labelText: abbrWeekdays[scheduleDays[index].dayNumber],
       icon: Icons.watch_later,
       validator: (value) {
-        if (value.isNotEmpty) {
+        if (value!.isNotEmpty) {
           final hoursNorm = double.tryParse(value);
           if (hoursNorm == null || hoursNorm > 24.0) {
             return L10n.invalidHoursNorm;
@@ -96,7 +96,7 @@ class ScheduleEditState extends State<ScheduleEdit> {
 
   /// Обработка формы
   Future _onSubmit() async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
@@ -112,7 +112,7 @@ class ScheduleEditState extends State<ScheduleEdit> {
             await _bloc.insertSchedule(createScheduleCode(hours));
           } else {
             await _bloc.updateSchedule(Schedule(
-              id: widget.schedule?.id,
+              id: widget.schedule?.id ?? 0,
               code: createScheduleCode(hours),
             ));
             _bloc.scheduleDays.valueWrapper?.value?.forEach(

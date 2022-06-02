@@ -11,7 +11,7 @@ Future editSettings(BuildContext context) async {
 
 /// Форма исправления настроек
 class SettingsEdit extends StatefulWidget {
-  const SettingsEdit({Key key}) : super(key: key);
+  const SettingsEdit({Key? key}) : super(key: key);
   @override
   SettingsEditState createState() => SettingsEditState();
 }
@@ -35,7 +35,7 @@ class SettingsEditState extends State<SettingsEdit> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final settings = snapshot.data;
-              _addSetting(settings, L10n.eraseAllData);
+              _addSetting(settings!, L10n.eraseAllData);
               return ListView.builder(
                 itemBuilder: (context, index) => _settingCard(settings, index),
                 itemCount: settings.length,
@@ -53,7 +53,7 @@ class SettingsEditState extends State<SettingsEdit> {
       settings.add(Setting(
         id: 0,
         name: L10n.eraseAllData,
-        valueType: null,
+        valueType: ValueType.button,
         isUserSetting: true,
       ));
     }
@@ -109,11 +109,11 @@ class SettingsEditState extends State<SettingsEdit> {
           labelText: setting.name,
           onChanged: (value) {
             settings[index] =
-                settings[index].copyWith(dateValue: stringToDate(value));
+                settings[index].copyWith(dateValue: stringToDateOrNull(value));
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
-      default:
+      case ValueType.button:
         if (setting.name == L10n.eraseAllData) {
           return button(
             setting.name,
@@ -126,11 +126,11 @@ class SettingsEditState extends State<SettingsEdit> {
             },
             style: ButtonStyle(
               backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.red[500]),
+                  MaterialStateProperty.all<Color>(Colors.red[500]!),
             ),
           );
         }
     }
-    return null;
+    throw UnsupportedError(setting.valueType.toString());
   }
 }

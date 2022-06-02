@@ -12,7 +12,7 @@ import 'package:timesheets/ui/settings_edit.dart';
 
 /// Дроувер домашнего экрана
 class HomeDrawer extends StatefulWidget {
-  const HomeDrawer({Key key}) : super(key: key);
+  const HomeDrawer({Key? key}) : super(key: key);
   @override
   HomeDrawerState createState() => HomeDrawerState();
 }
@@ -47,7 +47,7 @@ class HomeDrawerState extends State<HomeDrawer> {
                     ),
                   ),
                   // Список групп активной организации
-                  StreamBuilder<Org>(
+                  StreamBuilder<OrgView?>(
                       stream: bloc.activeOrg,
                       builder: (context, snapshot) => snapshot.hasData
                           ? listHeater(Icons.group, L10n.groups,
@@ -65,7 +65,7 @@ class HomeDrawerState extends State<HomeDrawer> {
                   StreamBuilder<List<ActiveOrg>>(
                       stream: bloc.activeOrgs,
                       builder: (context, snapshot) => snapshot.hasData
-                          ? _groupList(orientation, snapshot.data.length)
+                          ? _groupList(orientation, snapshot.data!.length)
                           : const Text('')),
                   const Spacer(),
                   listHeater(Icons.auto_awesome, L10n.holidays,
@@ -106,7 +106,7 @@ class HomeDrawerState extends State<HomeDrawer> {
         child: StreamBuilder<List<ActiveGroup>>(
           stream: bloc.activeGroups,
           builder: (context, snapshot) => ListView.builder(
-            itemBuilder: (context, index) => GroupCard(snapshot.data, index),
+            itemBuilder: (context, index) => GroupCard(snapshot.data!, index),
             itemCount: snapshot.data?.length ?? 0,
           ),
         ),
@@ -119,7 +119,7 @@ class OrgCard extends StatefulWidget {
   final int index;
   final ActiveOrg entry;
 
-  OrgCard(this.orgs, this.index, {Key key})
+  OrgCard(this.orgs, this.index, {Key? key})
       : entry = orgs[index],
         super(key: key);
 
@@ -185,7 +185,7 @@ class GroupCard extends StatefulWidget {
   final List<ActiveGroup> groups;
   final int index;
   final ActiveGroup entry;
-  GroupCard(this.groups, this.index, {Key key}) : entry = groups[index], super(key: key);
+  GroupCard(this.groups, this.index, {Key? key}) : entry = groups[index], super(key: key);
   @override
   GroupCardState createState() => GroupCardState();
 }
@@ -225,7 +225,7 @@ class GroupCardState extends State<GroupCard> {
               },
               child: ListTile(
                 title: Text(widget.entry.groupView.name),
-                subtitle: Text(widget.entry.groupView.schedule.code),
+                subtitle: Text(widget.entry.groupView.schedule!.code),
                 trailing: IconButton(
                   icon: const Icon(Icons.group_add),
                   onPressed: () async {

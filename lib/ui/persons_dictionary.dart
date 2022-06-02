@@ -7,7 +7,7 @@ import 'package:timesheets/ui/person_edit.dart';
 
 /// Словарь персон
 class PersonsDictionary extends StatefulWidget {
-  const PersonsDictionary({Key key}) : super(key: key);
+  const PersonsDictionary({Key? key}) : super(key: key);
   @override
   PersonsDictionaryState createState() => PersonsDictionaryState();
 }
@@ -20,7 +20,7 @@ class PersonsDictionaryState extends State<PersonsDictionary> {
 
   void _startSearch() {
     ModalRoute.of(context)
-        .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+        ?.addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
     setState(() {
       isSearching = true;
     });
@@ -81,7 +81,7 @@ class PersonsDictionaryState extends State<PersonsDictionary> {
         IconButton(
           icon: const Icon(Icons.clear),
           onPressed: () {
-            if (searchQueryEdit == null || searchQueryEdit.text.isEmpty) {
+            if (searchQueryEdit.text.isEmpty) {
               Navigator.pop(context);
               return;
             }
@@ -115,11 +115,11 @@ class PersonsDictionaryState extends State<PersonsDictionary> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final list = snapshot.data
-                        .where((person) => personFullName(person)
+                        ?.where((person) => personFullName(person)!
                             .toLowerCase()
                             .contains(searchQuery.toLowerCase()))
                         .toList();
-                    if (list.isNotEmpty) {
+                    if (list!.isNotEmpty) {
                       return ListView.builder(
                         itemBuilder: (context, index) =>
                             _PersonCard(list, index, isSearching),

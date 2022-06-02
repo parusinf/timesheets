@@ -8,7 +8,7 @@ import 'package:timesheets/ui/org_edit.dart';
 
 /// Отчёт по организации
 class OrgReport extends StatefulWidget {
-  const OrgReport({Key key}) : super(key: key);
+  const OrgReport({Key? key}) : super(key: key);
   @override
   OrgReportState createState() => OrgReportState();
 }
@@ -17,9 +17,9 @@ class OrgReport extends StatefulWidget {
 class OrgReportState extends State<OrgReport> {
   get _bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<ActiveGroup> _activeGroups;
-  List<GroupView> _orgMeals;
-  List<AttendanceView> _orgAttendances;
+  List<ActiveGroup>? _activeGroups;
+  List<GroupView>? _orgMeals;
+  List<AttendanceView>? _orgAttendances;
   static const fixedColumnWidth = 150.0;
   static const rowHeight = 56.0;
   static const columnWidth = 56.0;
@@ -30,12 +30,12 @@ class OrgReportState extends State<OrgReport> {
   Widget build(BuildContext context) => Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: StreamBuilder<Org>(
+          title: StreamBuilder<Org?>(
             stream: _bloc.activeOrg,
             builder: (context, snapshot) => snapshot.hasData
                 ? InkWell(
-                    onTap: () async => await editOrg(context, snapshot.data),
-                    child: text(snapshot.data.name),
+                    onTap: () async => await editOrg(context, snapshot.data!),
+                    child: text(snapshot.data!.name),
                   )
                 : text(''),
           ),
@@ -96,7 +96,7 @@ class OrgReportState extends State<OrgReport> {
                                       headerWidgets: _createTitleRow(),
                                       leftSideItemBuilder: _createFixedColumn,
                                       rightSideItemBuilder: _createTableRow,
-                                      itemCount: _activeGroups.length,
+                                      itemCount: _activeGroups!.length,
                                       rowSeparatorWidget: const Divider(
                                           color: lineColor, height: 0.5),
                                     );
@@ -128,7 +128,7 @@ class OrgReportState extends State<OrgReport> {
                                       headerWidgets: _createTitleRow(),
                                       leftSideItemBuilder: _createFixedColumn,
                                       rightSideItemBuilder: _createTableRow,
-                                      itemCount: _orgMeals.length,
+                                      itemCount: _orgMeals!.length,
                                       rowSeparatorWidget: const Divider(
                                           color: lineColor, height: 0.5),
                                     );
@@ -149,13 +149,13 @@ class OrgReportState extends State<OrgReport> {
   List<Widget> _createTitleRow() {
     final DateTime period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[
-      StreamBuilder<DateTime>(
+      StreamBuilder<DateTime?>(
         stream: _bloc.activePeriod,
         builder: (context, snapshot) => InkWell(
             onTap: _selectPeriod,
             child: snapshot.hasData
                 ? _createCell(
-                    periodToString(snapshot.data),
+                    periodToString(snapshot.data!),
                     width: fixedColumnWidth,
                     alignment: Alignment.centerLeft,
                     leftPadding: leftPadding,
@@ -167,10 +167,10 @@ class OrgReportState extends State<OrgReport> {
     ];
     // Количество присутствующих персон на период
     final daysCount =
-        _orgAttendances.where((e) => e.hoursFact > 0.0).toList().length;
+        _orgAttendances!.where((e) => e.hoursFact > 0.0).toList().length;
     // Дней посещения персоны за период
     rowCells.add(
-      StreamBuilder<DateTime>(
+      StreamBuilder<DateTime?>(
           stream: _bloc.activePeriod,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -194,7 +194,7 @@ class OrgReportState extends State<OrgReport> {
       final date = DateTime(period.year, period.month, day);
       final hoursNorm = getHoursNorm(_bloc, date);
       // Количество присутствующих персон на дату
-      final dateCount = _orgAttendances
+      final dateCount = _orgAttendances!
           .where((attendance) => attendance.date == date)
           .toList()
           .length;
@@ -205,7 +205,7 @@ class OrgReportState extends State<OrgReport> {
               : '';
       // Добавление ячейки в строку
       rowCells.add(
-        StreamBuilder<DateTime>(
+        StreamBuilder<DateTime?>(
             stream: _bloc.activePeriod,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -265,7 +265,7 @@ class OrgReportState extends State<OrgReport> {
     subtitleColor = Colors.black54,
     leftPadding = 0.0,
     borderStyle = BorderStyle.none,
-    Function() onTap,
+    Function()? onTap,
     wrap = true,
   }) =>
       InkWell(
@@ -302,8 +302,8 @@ class OrgReportState extends State<OrgReport> {
   /// Создание фиксированной колонки
   Widget _createFixedColumn(BuildContext context, int index) {
     final name = _grouping == 0
-        ? _activeGroups[index].groupView.name
-        : mealsNames[_orgMeals[index].meals];
+        ? _activeGroups![index].groupView.name
+        : mealsNames[_orgMeals![index].meals!];
     return _createFixedCell(
       name,
       '',
@@ -317,10 +317,10 @@ class OrgReportState extends State<OrgReport> {
   /// Создание строки таблицы
   Widget _createTableRow(BuildContext context, int index) {
     final attendances = _grouping == 0
-        ? _orgAttendances.where((attendance) =>
-            attendance.groupId == _activeGroups[index].groupView?.id)
-        : _orgAttendances
-            .where((attendance) => attendance.meals == _orgMeals[index].meals);
+        ? _orgAttendances!.where((attendance) =>
+            attendance.groupId == _activeGroups![index].groupView.id)
+        : _orgAttendances!
+            .where((attendance) => attendance.meals == _orgMeals![index].meals);
     final period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[];
     // Итог по персоне за период

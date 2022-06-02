@@ -16,11 +16,10 @@ Future editGroup(BuildContext context, GroupView groupView) async =>
 
 /// Форма редактирования группы
 class GroupEdit extends StatefulWidget {
-  final GroupView groupView;
+  final GroupView? groupView;
   final DataActionType actionType;
-  const GroupEdit(this.groupView, {Key key})
-      : actionType =
-            groupView == null ? DataActionType.insert : DataActionType.update,
+  const GroupEdit(this.groupView, {Key? key})
+      : actionType = groupView == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
   @override
   GroupEditState createState() => GroupEditState();
@@ -30,8 +29,8 @@ class GroupEdit extends StatefulWidget {
 class GroupEditState extends State<GroupEdit> {
   final _nameEdit = TextEditingController();
   final _scheduleEdit = TextEditingController();
-  Schedule _schedule;
-  int _meals;
+  Schedule? _schedule;
+  int? _meals;
 
   get _bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -41,9 +40,9 @@ class GroupEditState extends State<GroupEdit> {
   @override
   void initState() {
     super.initState();
-    _nameEdit.text = widget.groupView?.name;
+    _nameEdit.text = widget.groupView?.name ?? '';
     _schedule = widget.groupView?.schedule ?? _bloc.activeSchedule.valueWrapper?.value;
-    _scheduleEdit.text = _schedule?.code;
+    _scheduleEdit.text = _schedule?.code ?? '';
     _meals = widget.groupView?.meals ?? 0; // 0 - Без питания, 1 - До 2 лет, 2 - От 3 лет
   }
 
@@ -106,7 +105,7 @@ class GroupEditState extends State<GroupEdit> {
 
   /// Обработка формы
   Future _onSubmit() async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
@@ -120,10 +119,10 @@ class GroupEditState extends State<GroupEdit> {
           Navigator.of(context).pop(groupView);
         } else {
           await _bloc.updateGroup(Group(
-            id: widget.groupView?.id,
-            orgId: widget.groupView.orgId,
-            name: trim(_nameEdit.text),
-            scheduleId: _schedule?.id ?? widget.groupView.schedule,
+            id: widget.groupView?.id ?? 0,
+            orgId: widget.groupView?.orgId ?? 0,
+            name: trim(_nameEdit.text) ?? '',
+            scheduleId: _schedule?.id ?? widget.groupView?.schedule?.id ?? 0,
             meals: _meals,
           ));
           if (!mounted) return;

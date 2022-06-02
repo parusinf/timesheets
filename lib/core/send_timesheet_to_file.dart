@@ -72,7 +72,7 @@ createContent(
   buffer.write('${org.name};${trim(org.inn)};\n');
 
   // Группа
-  buffer.write('${group.name};${group.schedule.code};${group.meals ?? 0};\n');
+  buffer.write('${group.name};${group.schedule?.code};${group.meals ?? 0};\n');
 
   // Заголовок табеля
   buffer.write(
@@ -88,7 +88,7 @@ createContent(
   for (final groupPerson in groupPersons) {
     final person = groupPerson.person;
     final personAttendances = attendances
-        .where((attendance) => attendance.groupPersonId == groupPerson?.id);
+        .where((attendance) => attendance.groupPersonId == groupPerson.id);
     final dates =
     personAttendances.map((attendance) => attendance.date).toList();
 

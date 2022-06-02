@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:drift/drift.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core.dart';
@@ -39,22 +38,22 @@ class Bloc {
   final Db db;
 
   // Активная организация
-  final activeOrg = BehaviorSubject<Org>();
+  final activeOrg = BehaviorSubject<OrgView?>();
 
   // Активный график
-  final activeSchedule = BehaviorSubject<Schedule>();
+  final activeSchedule = BehaviorSubject<ScheduleView?>();
 
   // Активная группа
-  final activeGroup = BehaviorSubject<GroupView>();
+  final activeGroup = BehaviorSubject<GroupView?>();
 
   // Активный период
-  final activePeriod = BehaviorSubject<DateTime>();
+  final activePeriod = BehaviorSubject<DateTime?>();
 
   // Активная группа и период
-  final activeGroupPeriod = BehaviorSubject<GroupPeriod>();
+  final activeGroupPeriod = BehaviorSubject<GroupPeriod?>();
 
   // Активная организация и период
-  final activeOrgPeriod = BehaviorSubject<OrgPeriod>();
+  final activeOrgPeriod = BehaviorSubject<OrgPeriod?>();
 
   // Организации с признаком активности
   final activeOrgs = BehaviorSubject<List<ActiveOrg>>();
@@ -72,7 +71,7 @@ class Bloc {
   final holidaysDateList = BehaviorSubject<List<DateTime>>();
 
   // Рабочие дни
-  final workdaysDateList = BehaviorSubject<List<DateTime>>();
+  final workdaysDateList = BehaviorSubject<List<DateTime?>>();
 
   // Группы с признаком активности
   final activeGroups = BehaviorSubject<List<ActiveGroup>>();
@@ -84,16 +83,16 @@ class Bloc {
   final groupPeriodPersons = BehaviorSubject<List<GroupPersonView>>();
 
   // Группы активной организации
-  Stream<List<GroupView>> groups;
+  Stream<List<GroupView>>? groups;
 
   // Питания активной организации
   final meals = BehaviorSubject<List<GroupView>>();
 
   // Посещаемость персон активной группы в активном периоде
-  Stream<List<Attendance>> attendances;
+  Stream<List<Attendance>>? attendances;
 
   // Посещаемость активной организации в активном периоде
-  Stream<List<AttendanceView>> orgAttendances;
+  Stream<List<AttendanceView>>? orgAttendances;
 
   // Пользовательские настройки
   final userSettings = BehaviorSubject<List<Setting>>();
@@ -140,17 +139,17 @@ class Bloc {
     Rx.concat([activeOrg.switchMap(db.groupsDao.watchMeals)]).listen(meals.add);
 
     // Отслеживание активной группы и периода
-    Rx.combineLatest2<Group, DateTime, GroupPeriod>(
+    Rx.combineLatest2<Group?, DateTime?, GroupPeriod?>(
       activeGroup,
       activePeriod,
-      (group, period) => GroupPeriod(group, period),
+      (group, period) => group != null && period != null ? GroupPeriod(group, period) : null,
     ).listen(activeGroupPeriod.add);
 
     // Отслеживание активной организации и периода
-    Rx.combineLatest2<Org, DateTime, OrgPeriod>(
+    Rx.combineLatest2<Org?, DateTime?, OrgPeriod?>(
       activeOrg,
       activePeriod,
-      (org, period) => OrgPeriod(org, period),
+      (org, period) => org != null && period != null ? OrgPeriod(org, period) : null,
     ).listen(activeOrgPeriod.add);
 
     // Отслеживание посещаемости персон в группе за период
@@ -161,28 +160,28 @@ class Bloc {
         activeOrgPeriod.switchMap(db.attendancesDao.watchOrgPeriod);
 
     // Формирование признака активности организаций
-    Rx.combineLatest2<List<Org>, Org, List<ActiveOrg>>(
+    Rx.combineLatest2<List<OrgView>, OrgView?, List<ActiveOrg>>(
         db.orgsDao.watch(),
         activeOrg,
         (orgs, selected) => orgs
-            .map((org) => ActiveOrg(org, org?.id == selected?.id))
+            .map((org) => ActiveOrg(org, org.id == selected?.id))
             .toList()).listen(activeOrgs.add);
 
     // Формирование признака активности графиков
-    Rx.combineLatest2<List<Schedule>, Schedule, List<ActiveSchedule>>(
+    Rx.combineLatest2<List<ScheduleView>, ScheduleView?, List<ActiveSchedule>>(
         db.schedulesDao.watch(),
         activeSchedule,
         (schedules, selected) => schedules
             .map((schedule) =>
-                ActiveSchedule(schedule, schedule?.id == selected?.id))
+                ActiveSchedule(schedule, schedule.id == selected?.id))
             .toList()).listen(activeSchedules.add);
 
     // Формирование признака активности групп
-    Rx.combineLatest2<List<GroupView>, Group, List<ActiveGroup>>(
-        groups,
+    Rx.combineLatest2<List<GroupView>, GroupView?, List<ActiveGroup>>(
+        groups!,
         activeGroup,
         (groups, selected) => groups
-            .map((group) => ActiveGroup(group, group?.id == selected?.id))
+            .map((group) => ActiveGroup(group, group.id == selected?.id))
             .toList()).listen(activeGroups.add);
 
     // Отслеживание персон в активной группе
@@ -206,7 +205,7 @@ class Bloc {
   /// Получение контента при запуске приложения
   Future<String> startUri() async {
     try {
-      return methodChannel.invokeMethod('initialLink');
+      return (await methodChannel.invokeMethod('initialLink')).toString();
     } on PlatformException catch (e) {
       return "Failed to Invoke: '${e.message}'.";
     }
@@ -242,11 +241,11 @@ class Bloc {
 
   // Организации ---------------------------------------------------------------
   /// Установка активной организации
-  Future setActiveOrg(Org org) async =>
+  Future setActiveOrg(Org? org) async =>
       await db.settingsDao.setActiveOrg(org);
 
   /// Добавление организации
-  Future<Org> insertOrg({@required String name, String inn}) async {
+  Future<Org> insertOrg({required String name, String? inn}) async {
     var org = await db.orgsDao.find(name);
     if (org != null) {
       throw Exception(L10n.dupOrgName);
@@ -297,8 +296,8 @@ class Bloc {
   // Праздники -----------------------------------------------------------------
   /// Добавление праздника
   Future<Holiday> insertHoliday({
-    @required DateTime date,
-    DateTime workday,
+    required DateTime date,
+    DateTime? workday,
   }) async {
     return await db.holidaysDao.insert2(
       date: date,
@@ -317,7 +316,7 @@ class Bloc {
 
   // Группы --------------------------------------------------------------------
   /// Установка активной группы и установка активным её графика
-  Future setActiveGroup(Group group) async {
+  Future setActiveGroup(Group? group) async {
     await db.settingsDao.setActiveGroup(activeOrg.valueWrapper?.value, group);
     if (group != null) {
       final schedule = await db.schedulesDao.get(group.scheduleId);
@@ -327,9 +326,9 @@ class Bloc {
 
   /// Добавление группы
   Future<GroupView> insertGroup({
-    @required String name,
-    @required Schedule schedule,
-    int meals,
+    required String name,
+    required Schedule schedule,
+    int? meals,
   }) async {
     final groupView = await db.groupsDao.insert2(
       org: activeOrg.valueWrapper?.value,
@@ -359,12 +358,12 @@ class Bloc {
   // Персоны -------------------------------------------------------------------
   /// Добавление персоны
   Future<Person> insertPerson({
-    @required String family,
-    @required String name,
-    String middleName,
-    DateTime birthday,
-    String phone,
-    String phone2,
+    required String family,
+    required String name,
+    String? middleName,
+    DateTime? birthday,
+    String? phone,
+    String? phone2,
   }) async =>
       await db.personsDao.insert2(
         family: family,
@@ -386,10 +385,10 @@ class Bloc {
   // Персоны в группе ----------------------------------------------------------
   /// Добавление персоны в группу
   Future<GroupPerson> insertGroupPerson(
-          {@required Group group,
-          @required Person person,
-          DateTime beginDate,
-          DateTime endDate}) async =>
+          {required Group group,
+          required Person person,
+          DateTime? beginDate,
+          DateTime? endDate}) async =>
       await db.groupPersonsDao.insert2(group, person, beginDate, endDate);
 
   /// Исправление персоны в группе
@@ -403,9 +402,9 @@ class Bloc {
   // Посещаемость --------------------------------------------------------------
   /// Добавление посещаемости
   Future<Attendance> insertAttendance({
-    @required GroupPerson groupPerson,
-    @required DateTime date,
-    @required double hoursFact,
+    required GroupPerson groupPerson,
+    required DateTime date,
+    required double hoursFact,
   }) async =>
       await db.attendancesDao.insert2(
         groupPerson: groupPerson,
@@ -423,7 +422,7 @@ class Bloc {
 
   // Настройки -----------------------------------------------------------------
   Setting getSetting(String name) =>
-      userSettings.valueWrapper.value.firstWhere((e) => e.name == name);
+      userSettings.valueWrapper!.value.firstWhere((e) => e.name == name);
 
   get doubleTapInTimesheet => getSetting(L10n.doubleTapInTimesheet).boolValue;
 
@@ -442,16 +441,16 @@ class Bloc {
     activePeriod.add(null);
     activeGroupPeriod.add(null);
     activeOrgPeriod.add(null);
-    activeOrgs.add(null);
-    activeSchedules.add(null);
-    scheduleDays.add(null);
-    holidays.add(null);
-    holidaysDateList.add(null);
-    workdaysDateList.add(null);
-    activeGroups.add(null);
-    groupPersons.add(null);
-    groupPeriodPersons.add(null);
-    meals.add(null);
-    userSettings.add(null);
+    activeOrgs.add([]);
+    activeSchedules.add([]);
+    scheduleDays.add([]);
+    holidays.add([]);
+    holidaysDateList.add([]);
+    workdaysDateList.add([]);
+    activeGroups.add([]);
+    groupPersons.add([]);
+    groupPeriodPersons.add([]);
+    meals.add([]);
+    userSettings.add([]);
   }
 }

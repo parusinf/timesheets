@@ -15,9 +15,9 @@ Future editGroupPerson(
 
 /// Форма редактирования персоны в группе
 class GroupPersonEdit extends StatefulWidget {
-  final GroupPersonView groupPerson;
+  final GroupPersonView? groupPerson;
   final DataActionType actionType;
-  const GroupPersonEdit(this.groupPerson, {Key key})
+  const GroupPersonEdit(this.groupPerson, {Key? key})
       : actionType =
             groupPerson == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
@@ -30,7 +30,7 @@ class GroupPersonEditState extends State<GroupPersonEdit> {
   final _personEdit = TextEditingController();
   final _beginDateEdit = TextEditingController();
   final _endDateEdit = TextEditingController();
-  Person _person;
+  Person? _person;
 
   get bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -41,7 +41,7 @@ class GroupPersonEditState extends State<GroupPersonEdit> {
   void initState() {
     super.initState();
     _person = widget.groupPerson?.person;
-    _personEdit.text = personFullName(_person);
+    _personEdit.text = personFullName(_person) ?? '';
     _beginDateEdit.text = dateToString(widget.groupPerson?.beginDate);
     _endDateEdit.text = dateToString(widget.groupPerson?.endDate);
   }
@@ -91,12 +91,12 @@ class GroupPersonEditState extends State<GroupPersonEdit> {
   Future _selectPerson() async {
     _person = await push(context, const PersonsDictionary());
     _personEdit.text =
-        _person != null ? personFullName(_person) : _personEdit.text;
+        _person != null ? personFullName(_person)! : _personEdit.text;
   }
 
   /// Обработка формы
   Future _onSubmit() async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
@@ -104,16 +104,16 @@ class GroupPersonEditState extends State<GroupPersonEdit> {
           await bloc.insertGroupPerson(
             group: bloc.activeGroup.valueWrapper?.value,
             person: _person,
-            beginDate: stringToDate(_beginDateEdit.text),
-            endDate: stringToDate(_endDateEdit.text),
+            beginDate: stringToDateOrNull(_beginDateEdit.text),
+            endDate: stringToDateOrNull(_endDateEdit.text),
           );
         } else {
           await bloc.updateGroupPerson(GroupPersonView(
-            id: widget.groupPerson?.id,
-            groupId: widget.groupPerson.groupId,
-            person: _person ?? widget.groupPerson.person,
-            beginDate: stringToDate(_beginDateEdit.text),
-            endDate: stringToDate(_endDateEdit.text),
+            id: widget.groupPerson?.id ?? 0,
+            groupId: widget.groupPerson?.groupId ?? 0,
+            person: _person ?? widget.groupPerson!.person,
+            beginDate: stringToDateOrNull(_beginDateEdit.text),
+            endDate: stringToDateOrNull(_endDateEdit.text),
           ));
         }
         if (!mounted) return;

@@ -24,7 +24,6 @@ List<double> parseScheduleCode(String code) {
 
 /// Формирование кода графика по списку часов
 String createScheduleCode(List<double> hours) {
-  assert(hours.every((e) => e != null));
   assert(hours.reduce((a, b) => a + b) != 0.0);
   final parts = <String>[];
   final week = _createOneWeekDays(hours, 0);
@@ -99,7 +98,7 @@ _createOneWeekDays(List<double> hours, int offset) {
   });
   for (int day = offset; day < offset + 7; day++) {
     if (hoursMap.containsKey(hours[day])) {
-      hoursMap[hours[day]].add(abbrWeekdays[day % 7]);
+      hoursMap[hours[day]]?.add(abbrWeekdays[day % 7]);
     }
   }
   return hoursMap;

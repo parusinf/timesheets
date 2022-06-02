@@ -25,7 +25,7 @@ DateTime lastDayOfMonth(DateTime date) => date.month < 12
     : DateTime(date.year + 1, 1, 0);
 
 /// Фамилия Имя Отчество
-String personFullName(Person person) =>
+String? personFullName(Person? person) =>
     person != null ? '${person.family} ${personName(person)}' : '';
 
 /// Имя Отчество

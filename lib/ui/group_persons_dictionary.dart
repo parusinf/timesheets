@@ -8,7 +8,7 @@ import 'package:timesheets/ui/group_person_edit.dart';
 
 /// Словарь персон в группе
 class GroupPersonsDictionary extends StatefulWidget {
-  const GroupPersonsDictionary({Key key}) : super(key: key);
+  const GroupPersonsDictionary({Key? key}) : super(key: key);
   @override
   GroupPersonsDictionaryState createState() => GroupPersonsDictionaryState();
 }
@@ -21,7 +21,7 @@ class GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
 
   void _startSearch() {
     ModalRoute.of(context)
-        .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+        ?.addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
     setState(() {
       isSearching = true;
     });
@@ -50,12 +50,12 @@ class GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: horizontalTitleAlignment,
         children: <Widget>[
-          StreamBuilder<Group>(
+          StreamBuilder<GroupView?>(
               stream: bloc.activeGroup,
               builder: (context, snapshot) => snapshot.hasData
                   ? InkWell(
                       onTap: () => editGroup(context, bloc.activeGroup.valueWrapper?.value),
-                      child: text(snapshot.data.name),
+                      child: text(snapshot.data!.name),
                     )
                   : text('')),
         ],
@@ -89,7 +89,7 @@ class GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
         IconButton(
           icon: const Icon(Icons.clear),
           onPressed: () {
-            if (searchQueryEdit == null || searchQueryEdit.text.isEmpty) {
+            if (searchQueryEdit.text.isEmpty) {
               Navigator.pop(context);
               return;
             }
@@ -123,12 +123,12 @@ class GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final list = snapshot.data
-                        .where((groupPerson) =>
-                            personFullName(groupPerson.person)
+                        ?.where((groupPerson) =>
+                            personFullName(groupPerson.person)!
                                 .toLowerCase()
                                 .contains(searchQuery.toLowerCase()))
                         .toList();
-                    if (list.isNotEmpty) {
+                    if (list!.isNotEmpty) {
                       return ListView.builder(
                         itemBuilder: (context, index) =>
                             _GroupPersonCard(list, index),
@@ -176,9 +176,10 @@ class _GroupPersonCard extends StatelessWidget {
               onTap: () => editGroupPerson(context, entry),
               onDoubleTap: () => editGroupPerson(context, entry),
               child: ListTile(
-                title: Text(personFullName(entry.person)),
+                title: Text(personFullName(entry.person)!),
                 subtitle: Text(
-                    datesToString(context, entry.beginDate, entry.endDate)),
+                    datesToString(context, entry.beginDate, entry.endDate)
+                ),
                 trailing: IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () => editGroupPerson(context, entry),

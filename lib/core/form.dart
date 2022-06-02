@@ -5,31 +5,15 @@ import 'package:timesheets/core.dart';
 
 /// Форма
 Widget form({
-  String title,
-  Key scaffoldKey,
-  Key formKey,
-  AutovalidateMode autovalidateMode,
-  VoidCallback onSubmit,
-  List<Widget> fields,
-  Widget child,
+  required String title,
+  required Key scaffoldKey,
+  required Key formKey,
+  required AutovalidateMode autovalidateMode,
+  VoidCallback? onSubmit,
+  List<Widget>? fields,
+  Widget? child,
 }) {
-  /*final fieldsWithFirstDivider = <Widget>[];
-  fieldsWithFirstDivider.add(divider(height: padding2));
-  fieldsWithFirstDivider.addAll(fields);
-  final formChild = child != null ?
-      Padding(
-        padding: const EdgeInsets.fromLTRB(padding1, padding2, padding1, 0.0),
-        child: child,
-      )
-      :
-      Scrollbar(
-        child: SingleChildScrollView(
-          dragStartBehavior: DragStartBehavior.down,
-          padding: const EdgeInsets.symmetric(horizontal: padding1),
-          child: Column(children: fieldsWithFirstDivider),
-        ),
-      );*/
-  var formChild;
+  Widget formChild;
   if (child != null) {
     formChild = Padding(
       padding: const EdgeInsets.fromLTRB(padding1, padding2, padding1, 0.0),
@@ -38,7 +22,7 @@ Widget form({
   } else {
     final fieldsWithFirstDivider = <Widget>[];
     fieldsWithFirstDivider.add(divider(height: padding2));
-    fieldsWithFirstDivider.addAll(fields);
+    fieldsWithFirstDivider.addAll(fields ?? []);
     formChild = Scrollbar(
       child: SingleChildScrollView(
         dragStartBehavior: DragStartBehavior.down,
@@ -67,15 +51,15 @@ Widget form({
 
 /// Поле формы с текстом
 Widget textFormField({
-  TextEditingController controller,
-  String initialValue,
-  String labelText,
+  TextEditingController? controller,
+  String? initialValue,
+  String? labelText,
   IconData icon = Icons.text_fields,
-  ValueChanged<String> onChanged,
-  VoidCallback onTap,
-  FormFieldValidator<String> validator,
+  ValueChanged<String>? onChanged,
+  VoidCallback? onTap,
+  FormFieldValidator<String>? validator,
   TextCapitalization textCapitalization = TextCapitalization.none,
-  int maxLength,
+  int? maxLength,
   bool autofocus = false,
   bool readOnly = false,
 }) {
@@ -102,10 +86,10 @@ Widget textFormField({
 
 /// Поле формы с логическим значением
 Widget boolFormField({
-  bool initialValue,
-  String labelText,
+  bool? initialValue,
+  required String labelText,
   IconData icon = Icons.done,
-  ValueChanged<bool> onChanged,
+  ValueChanged<bool>? onChanged,
 }) {
   return Padding(
     padding: const EdgeInsets.fromLTRB(0.0, padding2, 0.0, 32.0),
@@ -118,7 +102,7 @@ Widget boolFormField({
         text(labelText, fontSize: 16.0),
         const Spacer(),
         CupertinoSwitch(
-          value: initialValue,
+          value: initialValue ?? false,
           onChanged: onChanged,
         ),
       ],
@@ -128,13 +112,13 @@ Widget boolFormField({
 
 /// Поле формы с целым числом
 Widget intFormField({
-  TextEditingController controller,
-  int initialValue,
-  String labelText,
+  TextEditingController? controller,
+  int? initialValue,
+  String? labelText,
   IconData icon = Icons.looks_one_outlined,
-  ValueChanged<String> onChanged,
-  FormFieldValidator<String> validator,
-  int maxLength,
+  ValueChanged<String>? onChanged,
+  FormFieldValidator<String>? validator,
+  int? maxLength,
   bool autofocus = false,
 }) {
   return Padding(
@@ -159,13 +143,13 @@ Widget intFormField({
 
 /// Поле формы с числом
 Widget realFormField({
-  TextEditingController controller,
-  double initialValue,
-  String labelText,
+  TextEditingController? controller,
+  double? initialValue,
+  String? labelText,
   IconData icon = Icons.looks_one,
-  ValueChanged<String> onChanged,
-  FormFieldValidator<String> validator,
-  int maxLength,
+  ValueChanged<String>? onChanged,
+  FormFieldValidator<String>? validator,
+  int? maxLength,
   bool autofocus = false,
 }) {
   return Padding(
@@ -189,11 +173,11 @@ Widget realFormField({
 
 /// Поле формы с датой
 Widget dateFormField({
-  TextEditingController controller,
-  DateTime initialValue,
-  String labelText,
-  ValueChanged<String> onChanged,
-  FormFieldValidator<String> validator,
+  TextEditingController? controller,
+  DateTime? initialValue,
+  String? labelText,
+  ValueChanged<String>? onChanged,
+  FormFieldValidator<String>? validator,
   bool autofocus = false,
 }) {
   return TextFormField(
@@ -208,7 +192,7 @@ Widget dateFormField({
     maxLength: 10,
     onChanged: onChanged,
     validator: (value) {
-      if (value.isNotEmpty && stringToDate(value) == null) {
+      if (isNotEmpty(value) && stringToDateOrNull(value!) == null) {
         return L10n.invalidDate;
       }
       if (validator != null) {
@@ -222,12 +206,12 @@ Widget dateFormField({
 
 /// Поле формы с телефоном
 Widget phoneFormField({
-  TextEditingController controller,
-  String initialValue,
-  String labelText,
-  ValueChanged<String> onChanged,
-  Key scaffoldKey,
-  String phone,
+  TextEditingController? controller,
+  String? initialValue,
+  String? labelText,
+  ValueChanged<String>? onChanged,
+  required GlobalKey<ScaffoldState> scaffoldKey,
+  String? phone,
   bool autofocus = false,
 }) {
   return TextFormField(
@@ -242,7 +226,7 @@ Widget phoneFormField({
       suffix: IconButton(
         icon: const Icon(Icons.phone_in_talk),
         onPressed: () async {
-          phone = controller.text ?? initialValue;
+          phone = controller?.text ?? initialValue;
           launchUrl2(scaffoldKey, 'tel:${L10n.countryPhoneCode}$phone');
         },
         color: Colors.green,
@@ -255,10 +239,10 @@ Widget phoneFormField({
 
 /// Поле формы с выбором вариантов
 Widget chooseFormField({
-  int initialValue,
-  List<String> names,
+  int? initialValue,
+  required List<String> names,
   IconData icon = Icons.auto_awesome_motion,
-  Function(bool, int) onChanged,
+  required Function(bool, int) onChanged,
 }) {
   final chips = <Widget>[];
   for (int index = 0; index < names.length; index++) {
@@ -280,7 +264,7 @@ Widget chooseFormField({
 }
 
 /// Проверка строки на отсутствие значения
-String validateEmpty(String value) {
+String? validateEmpty(String? value) {
   if (isEmpty(value)) {
     return L10n.noValue;
   }
@@ -288,8 +272,8 @@ String validateEmpty(String value) {
 }
 
 /// Проверка даты
-String validateDate(String value) {
-  if (value.isNotEmpty && stringToDate(value) == null) {
+String? validateDate(String value) {
+  if (isNotEmpty(value) && stringToDateOrNull(value) == null) {
     return L10n.invalidDate;
   }
   return null;
@@ -306,8 +290,12 @@ Widget formElement(IconData icon, Widget widget) {
 }
 
 /// Заголовок списка с кнопкой добавления
-Widget listHeater(IconData icon, String title,
-    {VoidCallback onAddPressed, VoidCallback onHeaderTap}) {
+Widget listHeater(
+    IconData icon,
+    String title,
+    {VoidCallback? onAddPressed,
+      VoidCallback? onHeaderTap}
+) {
   final items = (formElement(icon, text(title.toUpperCase())) as Row).children;
   if (onAddPressed != null) {
     items.addAll(<Widget>[

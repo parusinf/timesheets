@@ -12,9 +12,9 @@ Future editOrg(BuildContext context, Org org) async =>
 
 /// Форма редактирования организации
 class OrgEdit extends StatefulWidget {
-  final Org org;
+  final Org? org;
   final DataActionType actionType;
-  const OrgEdit(this.org, {Key key})
+  const OrgEdit(this.org, {Key? key})
       : actionType =
             org == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
@@ -34,8 +34,8 @@ class OrgEditState extends State<OrgEdit> {
   @override
   void initState() {
     super.initState();
-    _nameEdit.text = widget.org?.name;
-    _innEdit.text = widget.org?.inn;
+    _nameEdit.text = widget.org?.name ?? '';
+    _innEdit.text = widget.org?.inn ?? '';
   }
 
   @override
@@ -70,7 +70,7 @@ class OrgEditState extends State<OrgEdit> {
           labelText: L10n.inn,
           validator: (value) {
             final regexp = RegExp(r'^\d{10}$');
-            if (value.isNotEmpty && !regexp.hasMatch(value)) {
+            if (value!.isNotEmpty && !regexp.hasMatch(value)) {
               return L10n.innLength;
             }
             return null;
@@ -83,7 +83,7 @@ class OrgEditState extends State<OrgEdit> {
 
   /// Обработка формы
   Future _onSubmit() async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       try {
@@ -96,10 +96,10 @@ class OrgEditState extends State<OrgEdit> {
           Navigator.of(context).pop(org);
         } else {
           await bloc.updateOrg(Org(
-            id: widget.org?.id,
-            name: trim(_nameEdit.text),
+            id: widget.org?.id ?? 0,
+            name: trim(_nameEdit.text) ?? '',
             inn: trim(_innEdit.text),
-            activeGroupId: widget.org.activeGroupId,
+            activeGroupId: widget.org!.activeGroupId,
           ));
           if (!mounted) return;
           Navigator.of(context).pop();

@@ -12,9 +12,9 @@ Future editPerson(BuildContext context, Person person) async =>
 
 /// Форма редактирования персоны
 class PersonEdit extends StatefulWidget {
-  final Person person;
+  final Person? person;
   final DataActionType actionType;
-  const PersonEdit(this.person, {Key key})
+  const PersonEdit(this.person, {Key? key})
       : actionType =
             person == null ? DataActionType.insert : DataActionType.update,
         super(key: key);
@@ -38,12 +38,12 @@ class PersonEditState extends State<PersonEdit> {
   @override
   void initState() {
     super.initState();
-    _familyEdit.text = widget.person?.family;
-    _nameEdit.text = widget.person?.name;
-    _middleNameEdit.text = widget.person?.middleName;
+    _familyEdit.text = widget.person?.family ?? '';
+    _nameEdit.text = widget.person?.name ?? '';
+    _middleNameEdit.text = widget.person?.middleName ?? '';
     _birthdayEdit.text = dateToString(widget.person?.birthday);
-    _phoneEdit.text = widget.person?.phone;
-    _phone2Edit.text = widget.person?.phone2;
+    _phoneEdit.text = widget.person?.phone ?? '';
+    _phone2Edit.text = widget.person?.phone2 ?? '';
   }
 
   @override
@@ -113,27 +113,27 @@ class PersonEditState extends State<PersonEdit> {
 
   /// Обработка формы
   Future _onSubmit() async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       _autovalidateMode = AutovalidateMode.onUserInteraction;
     } else {
       final bloc = Provider.of<Bloc>(context, listen: false);
       try {
         if (widget.actionType == DataActionType.insert) {
           await bloc.insertPerson(
-            family: trim(_familyEdit.text),
-            name: trim(_nameEdit.text),
+            family: trim(_familyEdit.text) ?? '',
+            name: trim(_nameEdit.text) ?? '',
             middleName: trim(_middleNameEdit.text),
-            birthday: stringToDate(_birthdayEdit.text),
+            birthday: stringToDateOrNull(_birthdayEdit.text),
             phone: trim(_phoneEdit.text),
             phone2: trim(_phone2Edit.text),
           );
         } else {
           await bloc.updatePerson(Person(
-            id: widget.person?.id,
-            family: trim(_familyEdit.text),
-            name: trim(_nameEdit.text),
+            id: widget.person?.id ?? 0,
+            family: trim(_familyEdit.text) ?? '',
+            name: trim(_nameEdit.text) ?? '',
             middleName: trim(_middleNameEdit.text),
-            birthday: stringToDate(_birthdayEdit.text),
+            birthday: stringToDateOrNull(_birthdayEdit.text),
             phone: trim(_phoneEdit.text),
             phone2: trim(_phone2Edit.text),
           ));

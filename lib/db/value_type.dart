@@ -4,4 +4,5 @@ enum ValueType {
   int,
   real,
   date,
+  button,
 }

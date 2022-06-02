@@ -5,14 +5,14 @@ import 'package:timesheets/db/db.dart';
 
 /// Выбор CSV файла и загрузка табеля посещаемости
 Future pickAndReceiveTimesheetFromFile(Bloc bloc) async {
-  FilePickerResult result = await FilePicker.platform.pickFiles(
+  FilePickerResult? result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['csv'],
   );
   if (result == null) {
     throw L10n.fileNotSelected;
   }
-  receiveTimesheetFromFile(bloc, File(result.files.single.path));
+  receiveTimesheetFromFile(bloc, File(result.files.single.path ?? ''));
 }
 
 /// Загрузка CSV файла
@@ -89,7 +89,7 @@ Future receiveTimesheetFromContent(Bloc bloc, String content) async {
     final personFamily = trim(personColumns[0]);
     final personName = trim(personColumns[1]);
     final personMiddleName = trim(personColumns[2]);
-    final personBirthday = stringToDate(personColumns[3]);
+    final personBirthday = stringToDateOrNull(personColumns[3]);
     final personPhone = trim(personColumns[4]);
     final personPhone2 = trim(personColumns[5]);
     if (personFamily == null || personName == null) {
@@ -110,7 +110,7 @@ Future receiveTimesheetFromContent(Bloc bloc, String content) async {
       if (!isEqual(person.phone, personPhone) ||
           !isEqual(person.phone2, personPhone2)) {
         bloc.db.personsDao.update2(Person(
-          id: person?.id,
+          id: person.id,
           family: person.family,
           name: person.name,
           middleName: person.middleName,
@@ -126,8 +126,8 @@ Future receiveTimesheetFromContent(Bloc bloc, String content) async {
     }
 
     // Персона в группе
-    final groupPersonBeginDate = stringToDate(personColumns[6]);
-    final groupPersonEndDate = stringToDate(personColumns[7]);
+    final groupPersonBeginDate = stringToDateOrNull(personColumns[6]);
+    final groupPersonEndDate = stringToDateOrNull(personColumns[7]);
     var groupPerson = await bloc.db.groupPersonsDao.find(group, person);
     if (groupPerson == null) {
       groupPerson = await bloc.insertGroupPerson(
@@ -164,7 +164,7 @@ Future receiveTimesheetFromContent(Bloc bloc, String content) async {
         attendance = await bloc.insertAttendance(
           groupPerson: groupPerson,
           date: date,
-          hoursFact: hoursFact,
+          hoursFact: hoursFact ?? 0.0,
         );
       } else {
         if (attendance != null) {

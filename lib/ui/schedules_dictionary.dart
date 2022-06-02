@@ -5,7 +5,7 @@ import 'package:timesheets/ui/schedule_edit.dart';
 
 /// Словарь графиков
 class SchedulesDictionary extends StatefulWidget {
-  const SchedulesDictionary({Key key}) : super(key: key);
+  const SchedulesDictionary({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => SchedulesDictionaryState();
 }
@@ -34,11 +34,11 @@ class SchedulesDictionaryState extends State<SchedulesDictionary> {
                   .activeSchedules,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data.isNotEmpty) {
+                  if (snapshot.data!.isNotEmpty) {
                     return ListView.builder(
                       itemBuilder: (context, index) =>
-                          ScheduleCard(snapshot.data, index),
-                      itemCount: snapshot.data.length,
+                          ScheduleCard(snapshot.data!, index),
+                      itemCount: snapshot.data!.length,
                     );
                   } else {
                     return centerButton(
@@ -64,7 +64,7 @@ class ScheduleCard extends StatefulWidget {
   final int index;
   final ActiveSchedule entry;
 
-  ScheduleCard(this.schedules, this.index, {Key key})
+  ScheduleCard(this.schedules, this.index, {Key? key})
       : entry = schedules[index],
         super(key: key);
 

@@ -5,7 +5,7 @@ import 'package:timesheets/core.dart';
 
 /// Справка
 class HelpPage extends StatefulWidget {
-  const HelpPage({Key key}) : super(key: key);
+  const HelpPage({Key? key}) : super(key: key);
 
   @override
   HelpPageState createState() => HelpPageState();
@@ -173,7 +173,7 @@ Copyright (c) 2020 Павел Никитин
 
 ## 7. Выпуск
 
-2022.5.31
+2022.6.2
 ''';
   }
 }
