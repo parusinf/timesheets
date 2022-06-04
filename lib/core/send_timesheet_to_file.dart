@@ -1,11 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core.dart';
+import 'package:dio/dio.dart';
+
 
 /// Отправка табеля в Парус или вфайл
 Future sendTimesheet(
@@ -18,44 +19,47 @@ Future sendTimesheet(
     ) async
 {
   final content = createContent(org, group, period, groupPersons, attendances);
-
-  // Запись файла
   RegExp exp = RegExp(r'[\s.№]+');
   final periodString = periodToString(period);
-  final filename = '${'${org.name}_${group.name}_${periodString}_Приложение'
-      .replaceAll(exp, '_')}.csv';
-  final directory = await getTemporaryDirectory();
-  final filepath = p.join(directory.path, filename);
-  final file = File(filepath);
-  file.writeAsBytesSync(content, flush: true);
+  final filename = '${'${org.name}_${group.name}_$periodString'.replaceAll(exp, '_')}.csv';
 
   var result = '';
-  if (parusIntegration) {
-    final uri = Uri.parse('https://api.parusinf.ru/c7cb76df-cd86-4c55-833b-6671a7f5d4d8');
-    final request = http.MultipartRequest('POST', uri)
-      ..files.add(await http.MultipartFile.fromPath(
-          'package', filepath,
-          contentType: MediaType('application', 'octet-stream')));
-    final response = await request.send();
+  /*if (parusIntegration) {
+    const url = 'https://api.parusinf.ru/c7cb76df-cd86-4c55-833b-6671a7f5d4d8';
+    final encoded = encodeCp1251(content);
+    final dio = Dio();
+    final formData = FormData.fromMap(
+        {'package': MultipartFile.fromBytes(encoded, filename: filename)});
+    final response = await dio.post(
+      url,
+      data: formData,
+      options: Options(headers: {Headers.contentLengthHeader: encoded.length}),
+    );
     if (response.statusCode == 202) {
-      result = await response.stream.bytesToString();
+      result = response.data;
     } else {
-      result = 'Ошибка отправки табеля посещаемости в Парус: ${response.reasonPhrase}';
+      result = '${L10n.sendToParusError}: ${response.statusMessage}';
     }
-  } else {
-    // Отправка файла
-    await Share.shareFiles([file.path]);
-    result = 'Табель посещаемости успешно выгружен в файл';
-  }
-
-  // Удаление файла
-  await file.delete();
+  } else {*/
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      await Share.share(content);
+    } else {
+      final directory = await getTemporaryDirectory();
+      final filepath = p.join(directory.path, filename);
+      final file = File(filepath);
+      final encoded = encodeCp1251(content);
+      file.writeAsBytesSync(encoded, flush: true);
+      await Share.shareFiles([file.path]);
+      await file.delete();
+    }
+    result = L10n.successUnloadToFile;
+  //}
 
   return result;
 }
 
 /// Формирование табеля в CSV формате
-createContent(
+String createContent(
     Org org,
     GroupView group,
     DateTime period,
@@ -112,5 +116,5 @@ createContent(
     }
     buffer.write('\n');
   }
-  return encodeCp1251(buffer.toString());
+  return buffer.toString();
 }
