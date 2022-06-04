@@ -76,9 +76,11 @@ class L10n {
       'schedules': 'Графики',
       'selectPerson': 'Выберите персону',
       'selectSchedule': 'Выберите график',
+      'sendToParusError': 'Ошибка отправки табеля посещаемости в Парус',
       'sendTimesheet': 'Отправить табель',
       'settings': 'Настройки',
       'su': 'вс',
+      'successUnloadToFile': 'Табель посещаемости успешно выгружен в файл',
       'th': 'чт',
       'timesheet': 'Табель посещаемости',
       'timesheets': 'Табели посещаемости',
@@ -168,9 +170,11 @@ class L10n {
   static get schedules => _l10n[languageCode]!['schedules'];
   static get selectPerson => _l10n[languageCode]!['selectPerson'];
   static get selectSchedule => _l10n[languageCode]!['selectSchedule'];
+  static get sendToParusError => _l10n[languageCode]!['sendToParusError'];
   static get sendTimesheet => _l10n[languageCode]!['sendTimesheet'];
   static get settings => _l10n[languageCode]!['settings'];
   static get su => _l10n[languageCode]!['su'];
+  static get successUnloadToFile => _l10n[languageCode]!['successUnloadToFile'];
   static get th => _l10n[languageCode]!['th'];
   static get timesheet => _l10n[languageCode]!['timesheet'];
   static get timesheets => _l10n[languageCode]!['timesheets'];

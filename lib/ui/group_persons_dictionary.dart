@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/group_edit.dart';
@@ -42,8 +43,8 @@ class GroupPersonsDictionaryState extends State<GroupPersonsDictionary> {
   }
 
   Widget _buildTitle(BuildContext context) {
-    var horizontalTitleAlignment =
-        Platform.isIOS ? CrossAxisAlignment.center : CrossAxisAlignment.start;
+    var horizontalTitleAlignment = defaultTargetPlatform == TargetPlatform.iOS?
+        CrossAxisAlignment.center : CrossAxisAlignment.start;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Column(

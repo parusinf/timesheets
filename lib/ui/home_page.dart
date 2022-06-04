@@ -171,7 +171,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// Получение табеля из переданного контента
   Future _receiveTimesheetFromContent(String content) async {
-    if (isNotEmpty(content)) {
+    if (isNotEmpty(content) && content != 'null') {
       try {
         if (content.contains('content://')) {
           File file = await toFile(content);

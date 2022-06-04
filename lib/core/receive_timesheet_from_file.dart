@@ -8,11 +8,15 @@ Future pickAndReceiveTimesheetFromFile(Bloc bloc) async {
   FilePickerResult? result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['csv'],
+    allowMultiple: false,
   );
-  if (result == null) {
+  if (result != null && result.files.isNotEmpty) {
+    final fileBytes = result.files.first.bytes;
+    final content = decodeCp1251(fileBytes!);
+    await receiveTimesheetFromContent(bloc, content);
+  } else {
     throw L10n.fileNotSelected;
   }
-  receiveTimesheetFromFile(bloc, File(result.files.single.path ?? ''));
 }
 
 /// Загрузка CSV файла

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core.dart';
 
@@ -28,8 +29,10 @@ class ActiveGroup {
 /// Компонент бизнес логики (блок) приложения
 class Bloc {
   // Отслеживание контента
-  static const eventChannel = EventChannel('receive_content/events');
-  static const methodChannel = MethodChannel('receive_content/channel');
+  final eventChannel = defaultTargetPlatform == TargetPlatform.android?
+    const EventChannel('receive_content/events') : null;
+  final methodChannel = defaultTargetPlatform == TargetPlatform.android?
+    const MethodChannel('receive_content/channel') : null;
   final StreamController<String> _contentController = StreamController();
   Stream<String> get content => _contentController.stream;
   Sink<String> get contentSink => _contentController.sink;
@@ -103,7 +106,7 @@ class Bloc {
     startUri().then(_onRedirected);
 
     // Отслеживание контента во время работы приложения
-    eventChannel.receiveBroadcastStream().listen((d) => _onRedirected(d));
+    eventChannel?.receiveBroadcastStream().listen((d) => _onRedirected(d));
 
     // Отслеживание активной организации из настройки
     Rx.concat([db.settingsDao.watchActiveOrg()]).listen(activeOrg.add);
@@ -205,7 +208,7 @@ class Bloc {
   /// Получение контента при запуске приложения
   Future<String> startUri() async {
     try {
-      return (await methodChannel.invokeMethod('initialLink')).toString();
+      return (await methodChannel?.invokeMethod('initialLink')).toString();
     } on PlatformException catch (e) {
       return "Failed to Invoke: '${e.message}'.";
     }

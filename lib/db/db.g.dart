@@ -2551,6 +2551,7 @@ class Settings extends Table with TableInfo<Settings, Setting> {
 
 abstract class _$Db extends GeneratedDatabase {
   _$Db(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  _$Db.connect(DatabaseConnection c) : super.connect(c);
   late final Orgs orgs = Orgs(this);
   late final Index orgsIndex =
       Index('orgs_index', 'CREATE UNIQUE INDEX orgs_index ON orgs (name);');

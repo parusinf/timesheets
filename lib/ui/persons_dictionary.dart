@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
@@ -41,8 +41,8 @@ class PersonsDictionaryState extends State<PersonsDictionary> {
   }
 
   Widget _buildTitle(BuildContext context) {
-    var horizontalTitleAlignment =
-        Platform.isIOS ? CrossAxisAlignment.center : CrossAxisAlignment.start;
+    var horizontalTitleAlignment = defaultTargetPlatform == TargetPlatform.iOS?
+        CrossAxisAlignment.center : CrossAxisAlignment.start;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Column(
