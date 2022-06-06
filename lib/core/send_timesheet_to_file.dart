@@ -24,7 +24,7 @@ Future sendTimesheet(
   final filename = '${'${org.name}_${group.name}_$periodString'.replaceAll(exp, '_')}.csv';
 
   var result = '';
-  /*if (parusIntegration) {
+  if (parusIntegration) {
     const url = 'https://api.parusinf.ru/c7cb76df-cd86-4c55-833b-6671a7f5d4d8';
     final encoded = encodeCp1251(content);
     final dio = Dio();
@@ -40,7 +40,7 @@ Future sendTimesheet(
     } else {
       result = '${L10n.sendToParusError}: ${response.statusMessage}';
     }
-  } else {*/
+  } else {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       await Share.share(content);
     } else {
@@ -53,7 +53,7 @@ Future sendTimesheet(
       await file.delete();
     }
     result = L10n.successUnloadToFile;
-  //}
+  }
 
   return result;
 }
