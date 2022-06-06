@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:http_parser/http_parser.dart';
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core.dart';
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 
 
 /// Отправка табеля в Парус или вфайл
@@ -26,19 +27,17 @@ Future sendTimesheet(
   var result = '';
   if (parusIntegration) {
     const url = 'https://api.parusinf.ru/c7cb76df-cd86-4c55-833b-6671a7f5d4d8';
+    final uri = Uri.parse(url);
     final encoded = encodeCp1251(content);
-    final dio = Dio();
-    final formData = FormData.fromMap(
-        {'package': MultipartFile.fromBytes(encoded, filename: filename)});
-    final response = await dio.post(
-      url,
-      data: formData,
-      options: Options(headers: {Headers.contentLengthHeader: encoded.length}),
-    );
+    final request = http.MultipartRequest('POST', uri)
+      ..files.add(http.MultipartFile.fromBytes(
+          'package', encoded, filename: filename,
+          contentType: MediaType('application', 'octet-stream')));
+    final response = await request.send();
     if (response.statusCode == 202) {
-      result = response.data;
+      result = await response.stream.bytesToString();
     } else {
-      result = '${L10n.sendToParusError}: ${response.statusMessage}';
+      result = '${L10n.sendToParusError}: ${response.reasonPhrase}';
     }
   } else {
     if (defaultTargetPlatform == TargetPlatform.iOS) {

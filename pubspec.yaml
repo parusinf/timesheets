@@ -30,7 +30,6 @@ dependencies:
   uri_to_file:
   http:
   http_parser:
-  dio:
 
 dev_dependencies:
   drift_dev:
