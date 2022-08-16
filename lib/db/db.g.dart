@@ -3,7 +3,7 @@
 part of 'db.dart';
 
 // **************************************************************************
-// MoorGenerator
+// DriftDatabaseGenerator
 // **************************************************************************
 
 // ignore_for_file: type=lint
@@ -12,30 +12,18 @@ class Org extends DataClass implements Insertable<Org> {
   final String name;
   final String? inn;
   final int? activeGroupId;
-  Org({required this.id, required this.name, this.inn, this.activeGroupId});
-  factory Org.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Org(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      inn: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}inn']),
-      activeGroupId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}activeGroupId']),
-    );
-  }
+  const Org(
+      {required this.id, required this.name, this.inn, this.activeGroupId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || inn != null) {
-      map['inn'] = Variable<String?>(inn);
+      map['inn'] = Variable<String>(inn);
     }
     if (!nullToAbsent || activeGroupId != null) {
-      map['activeGroupId'] = Variable<int?>(activeGroupId);
+      map['activeGroupId'] = Variable<int>(activeGroupId);
     }
     return map;
   }
@@ -72,11 +60,17 @@ class Org extends DataClass implements Insertable<Org> {
     };
   }
 
-  Org copyWith({int? id, String? name, String? inn, int? activeGroupId}) => Org(
+  Org copyWith(
+          {int? id,
+          String? name,
+          Value<String?> inn = const Value.absent(),
+          Value<int?> activeGroupId = const Value.absent()}) =>
+      Org(
         id: id ?? this.id,
         name: name ?? this.name,
-        inn: inn ?? this.inn,
-        activeGroupId: activeGroupId ?? this.activeGroupId,
+        inn: inn.present ? inn.value : this.inn,
+        activeGroupId:
+            activeGroupId.present ? activeGroupId.value : this.activeGroupId,
       );
   @override
   String toString() {
@@ -121,8 +115,8 @@ class OrgsCompanion extends UpdateCompanion<Org> {
   static Insertable<Org> custom({
     Expression<int>? id,
     Expression<String>? name,
-    Expression<String?>? inn,
-    Expression<int?>? activeGroupId,
+    Expression<String>? inn,
+    Expression<int>? activeGroupId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -155,10 +149,10 @@ class OrgsCompanion extends UpdateCompanion<Org> {
       map['name'] = Variable<String>(name.value);
     }
     if (inn.present) {
-      map['inn'] = Variable<String?>(inn.value);
+      map['inn'] = Variable<String>(inn.value);
     }
     if (activeGroupId.present) {
-      map['activeGroupId'] = Variable<int?>(activeGroupId.value);
+      map['activeGroupId'] = Variable<int>(activeGroupId.value);
     }
     return map;
   }
@@ -181,28 +175,28 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
   final String? _alias;
   Orgs(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _innMeta = const VerificationMeta('inn');
-  late final GeneratedColumn<String?> inn = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> inn = GeneratedColumn<String>(
       'inn', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _activeGroupIdMeta =
       const VerificationMeta('activeGroupId');
-  late final GeneratedColumn<int?> activeGroupId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> activeGroupId = GeneratedColumn<int>(
       'activeGroupId', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
@@ -242,8 +236,17 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Org map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Org.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Org(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      inn: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}inn']),
+      activeGroupId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}activeGroupId']),
+    );
   }
 
   @override
@@ -258,16 +261,7 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
 class Schedule extends DataClass implements Insertable<Schedule> {
   final int id;
   final String code;
-  Schedule({required this.id, required this.code});
-  factory Schedule.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Schedule(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-    );
-  }
+  const Schedule({required this.id, required this.code});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -377,15 +371,15 @@ class Schedules extends Table with TableInfo<Schedules, Schedule> {
   final String? _alias;
   Schedules(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -415,8 +409,13 @@ class Schedules extends Table with TableInfo<Schedules, Schedule> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Schedule map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Schedule.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Schedule(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      code: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+    );
   }
 
   @override
@@ -433,24 +432,11 @@ class ScheduleDay extends DataClass implements Insertable<ScheduleDay> {
   final int scheduleId;
   final int dayNumber;
   final double hoursNorm;
-  ScheduleDay(
+  const ScheduleDay(
       {required this.id,
       required this.scheduleId,
       required this.dayNumber,
       required this.hoursNorm});
-  factory ScheduleDay.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return ScheduleDay(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      scheduleId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}scheduleId'])!,
-      dayNumber: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}dayNumber'])!,
-      hoursNorm: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}hoursNorm'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -604,28 +590,28 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
   final String? _alias;
   ScheduleDays(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _scheduleIdMeta = const VerificationMeta('scheduleId');
-  late final GeneratedColumn<int?> scheduleId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> scheduleId = GeneratedColumn<int>(
       'scheduleId', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints:
           'NOT NULL REFERENCES schedules (id) ON DELETE CASCADE');
   final VerificationMeta _dayNumberMeta = const VerificationMeta('dayNumber');
-  late final GeneratedColumn<int?> dayNumber = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> dayNumber = GeneratedColumn<int>(
       'dayNumber', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _hoursNormMeta = const VerificationMeta('hoursNorm');
-  late final GeneratedColumn<double?> hoursNorm = GeneratedColumn<double?>(
+  late final GeneratedColumn<double> hoursNorm = GeneratedColumn<double>(
       'hoursNorm', aliasedName, false,
-      type: const RealType(),
+      type: DriftSqlType.double,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -669,8 +655,17 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   ScheduleDay map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return ScheduleDay.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ScheduleDay(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      scheduleId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}scheduleId'])!,
+      dayNumber: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}dayNumber'])!,
+      hoursNorm: attachedDatabase.options.types
+          .read(DriftSqlType.double, data['${effectivePrefix}hoursNorm'])!,
+    );
   }
 
   @override
@@ -686,25 +681,14 @@ class Holiday extends DataClass implements Insertable<Holiday> {
   final int id;
   final DateTime date;
   final DateTime? workday;
-  Holiday({required this.id, required this.date, this.workday});
-  factory Holiday.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Holiday(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      date: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date'])!,
-      workday: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}workday']),
-    );
-  }
+  const Holiday({required this.id, required this.date, this.workday});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['date'] = Variable<DateTime>(date);
     if (!nullToAbsent || workday != null) {
-      map['workday'] = Variable<DateTime?>(workday);
+      map['workday'] = Variable<DateTime>(workday);
     }
     return map;
   }
@@ -738,10 +722,14 @@ class Holiday extends DataClass implements Insertable<Holiday> {
     };
   }
 
-  Holiday copyWith({int? id, DateTime? date, DateTime? workday}) => Holiday(
+  Holiday copyWith(
+          {int? id,
+          DateTime? date,
+          Value<DateTime?> workday = const Value.absent()}) =>
+      Holiday(
         id: id ?? this.id,
         date: date ?? this.date,
-        workday: workday ?? this.workday,
+        workday: workday.present ? workday.value : this.workday,
       );
   @override
   String toString() {
@@ -781,7 +769,7 @@ class HolidaysCompanion extends UpdateCompanion<Holiday> {
   static Insertable<Holiday> custom({
     Expression<int>? id,
     Expression<DateTime>? date,
-    Expression<DateTime?>? workday,
+    Expression<DateTime>? workday,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -809,7 +797,7 @@ class HolidaysCompanion extends UpdateCompanion<Holiday> {
       map['date'] = Variable<DateTime>(date.value);
     }
     if (workday.present) {
-      map['workday'] = Variable<DateTime?>(workday.value);
+      map['workday'] = Variable<DateTime>(workday.value);
     }
     return map;
   }
@@ -831,21 +819,21 @@ class Holidays extends Table with TableInfo<Holidays, Holiday> {
   final String? _alias;
   Holidays(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _dateMeta = const VerificationMeta('date');
-  late final GeneratedColumn<DateTime?> date = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
       'date', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.dateTime,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _workdayMeta = const VerificationMeta('workday');
-  late final GeneratedColumn<DateTime?> workday = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> workday = GeneratedColumn<DateTime>(
       'workday', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
@@ -879,8 +867,15 @@ class Holidays extends Table with TableInfo<Holidays, Holiday> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Holiday map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Holiday.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Holiday(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      date: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
+      workday: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}workday']),
+    );
   }
 
   @override
@@ -898,27 +893,12 @@ class Group extends DataClass implements Insertable<Group> {
   final String name;
   final int scheduleId;
   final int? meals;
-  Group(
+  const Group(
       {required this.id,
       required this.orgId,
       required this.name,
       required this.scheduleId,
       this.meals});
-  factory Group.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Group(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      orgId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}orgId'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      scheduleId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}scheduleId'])!,
-      meals: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}meals']),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -927,7 +907,7 @@ class Group extends DataClass implements Insertable<Group> {
     map['name'] = Variable<String>(name);
     map['scheduleId'] = Variable<int>(scheduleId);
     if (!nullToAbsent || meals != null) {
-      map['meals'] = Variable<int?>(meals);
+      map['meals'] = Variable<int>(meals);
     }
     return map;
   }
@@ -967,13 +947,17 @@ class Group extends DataClass implements Insertable<Group> {
   }
 
   Group copyWith(
-          {int? id, int? orgId, String? name, int? scheduleId, int? meals}) =>
+          {int? id,
+          int? orgId,
+          String? name,
+          int? scheduleId,
+          Value<int?> meals = const Value.absent()}) =>
       Group(
         id: id ?? this.id,
         orgId: orgId ?? this.orgId,
         name: name ?? this.name,
         scheduleId: scheduleId ?? this.scheduleId,
-        meals: meals ?? this.meals,
+        meals: meals.present ? meals.value : this.meals,
       );
   @override
   String toString() {
@@ -1027,7 +1011,7 @@ class GroupsCompanion extends UpdateCompanion<Group> {
     Expression<int>? orgId,
     Expression<String>? name,
     Expression<int>? scheduleId,
-    Expression<int?>? meals,
+    Expression<int>? meals,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1069,7 +1053,7 @@ class GroupsCompanion extends UpdateCompanion<Group> {
       map['scheduleId'] = Variable<int>(scheduleId.value);
     }
     if (meals.present) {
-      map['meals'] = Variable<int?>(meals.value);
+      map['meals'] = Variable<int>(meals.value);
     }
     return map;
   }
@@ -1093,33 +1077,33 @@ class Groups extends Table with TableInfo<Groups, Group> {
   final String? _alias;
   Groups(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _orgIdMeta = const VerificationMeta('orgId');
-  late final GeneratedColumn<int?> orgId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> orgId = GeneratedColumn<int>(
       'orgId', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL REFERENCES orgs (id)');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _scheduleIdMeta = const VerificationMeta('scheduleId');
-  late final GeneratedColumn<int?> scheduleId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> scheduleId = GeneratedColumn<int>(
       'scheduleId', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL REFERENCES schedules (id)');
   final VerificationMeta _mealsMeta = const VerificationMeta('meals');
-  late final GeneratedColumn<int?> meals = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> meals = GeneratedColumn<int>(
       'meals', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
@@ -1167,8 +1151,19 @@ class Groups extends Table with TableInfo<Groups, Group> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Group map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Group.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Group(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      orgId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}orgId'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      scheduleId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}scheduleId'])!,
+      meals: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}meals']),
+    );
   }
 
   @override
@@ -1188,7 +1183,7 @@ class Person extends DataClass implements Insertable<Person> {
   final DateTime? birthday;
   final String? phone;
   final String? phone2;
-  Person(
+  const Person(
       {required this.id,
       required this.family,
       required this.name,
@@ -1196,25 +1191,6 @@ class Person extends DataClass implements Insertable<Person> {
       this.birthday,
       this.phone,
       this.phone2});
-  factory Person.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Person(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      family: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}family'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      middleName: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}middleName']),
-      birthday: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}birthday']),
-      phone: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}phone']),
-      phone2: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}phone2']),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1222,16 +1198,16 @@ class Person extends DataClass implements Insertable<Person> {
     map['family'] = Variable<String>(family);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || middleName != null) {
-      map['middleName'] = Variable<String?>(middleName);
+      map['middleName'] = Variable<String>(middleName);
     }
     if (!nullToAbsent || birthday != null) {
-      map['birthday'] = Variable<DateTime?>(birthday);
+      map['birthday'] = Variable<DateTime>(birthday);
     }
     if (!nullToAbsent || phone != null) {
-      map['phone'] = Variable<String?>(phone);
+      map['phone'] = Variable<String>(phone);
     }
     if (!nullToAbsent || phone2 != null) {
-      map['phone2'] = Variable<String?>(phone2);
+      map['phone2'] = Variable<String>(phone2);
     }
     return map;
   }
@@ -1285,18 +1261,18 @@ class Person extends DataClass implements Insertable<Person> {
           {int? id,
           String? family,
           String? name,
-          String? middleName,
-          DateTime? birthday,
-          String? phone,
-          String? phone2}) =>
+          Value<String?> middleName = const Value.absent(),
+          Value<DateTime?> birthday = const Value.absent(),
+          Value<String?> phone = const Value.absent(),
+          Value<String?> phone2 = const Value.absent()}) =>
       Person(
         id: id ?? this.id,
         family: family ?? this.family,
         name: name ?? this.name,
-        middleName: middleName ?? this.middleName,
-        birthday: birthday ?? this.birthday,
-        phone: phone ?? this.phone,
-        phone2: phone2 ?? this.phone2,
+        middleName: middleName.present ? middleName.value : this.middleName,
+        birthday: birthday.present ? birthday.value : this.birthday,
+        phone: phone.present ? phone.value : this.phone,
+        phone2: phone2.present ? phone2.value : this.phone2,
       );
   @override
   String toString() {
@@ -1359,10 +1335,10 @@ class PersonsCompanion extends UpdateCompanion<Person> {
     Expression<int>? id,
     Expression<String>? family,
     Expression<String>? name,
-    Expression<String?>? middleName,
-    Expression<DateTime?>? birthday,
-    Expression<String?>? phone,
-    Expression<String?>? phone2,
+    Expression<String>? middleName,
+    Expression<DateTime>? birthday,
+    Expression<String>? phone,
+    Expression<String>? phone2,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1407,16 +1383,16 @@ class PersonsCompanion extends UpdateCompanion<Person> {
       map['name'] = Variable<String>(name.value);
     }
     if (middleName.present) {
-      map['middleName'] = Variable<String?>(middleName.value);
+      map['middleName'] = Variable<String>(middleName.value);
     }
     if (birthday.present) {
-      map['birthday'] = Variable<DateTime?>(birthday.value);
+      map['birthday'] = Variable<DateTime>(birthday.value);
     }
     if (phone.present) {
-      map['phone'] = Variable<String?>(phone.value);
+      map['phone'] = Variable<String>(phone.value);
     }
     if (phone2.present) {
-      map['phone2'] = Variable<String?>(phone2.value);
+      map['phone2'] = Variable<String>(phone2.value);
     }
     return map;
   }
@@ -1442,45 +1418,45 @@ class Persons extends Table with TableInfo<Persons, Person> {
   final String? _alias;
   Persons(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _familyMeta = const VerificationMeta('family');
-  late final GeneratedColumn<String?> family = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> family = GeneratedColumn<String>(
       'family', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _middleNameMeta = const VerificationMeta('middleName');
-  late final GeneratedColumn<String?> middleName = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> middleName = GeneratedColumn<String>(
       'middleName', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _birthdayMeta = const VerificationMeta('birthday');
-  late final GeneratedColumn<DateTime?> birthday = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> birthday = GeneratedColumn<DateTime>(
       'birthday', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _phoneMeta = const VerificationMeta('phone');
-  late final GeneratedColumn<String?> phone = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
       'phone', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _phone2Meta = const VerificationMeta('phone2');
-  late final GeneratedColumn<String?> phone2 = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> phone2 = GeneratedColumn<String>(
       'phone2', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
@@ -1535,8 +1511,23 @@ class Persons extends Table with TableInfo<Persons, Person> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Person map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Person.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Person(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      family: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}family'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      middleName: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}middleName']),
+      birthday: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}birthday']),
+      phone: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}phone']),
+      phone2: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}phone2']),
+    );
   }
 
   @override
@@ -1554,27 +1545,12 @@ class GroupPerson extends DataClass implements Insertable<GroupPerson> {
   final int personId;
   final DateTime? beginDate;
   final DateTime? endDate;
-  GroupPerson(
+  const GroupPerson(
       {required this.id,
       required this.groupId,
       required this.personId,
       this.beginDate,
       this.endDate});
-  factory GroupPerson.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return GroupPerson(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      groupId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}groupId'])!,
-      personId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}personId'])!,
-      beginDate: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}beginDate']),
-      endDate: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}endDate']),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1582,10 +1558,10 @@ class GroupPerson extends DataClass implements Insertable<GroupPerson> {
     map['groupId'] = Variable<int>(groupId);
     map['personId'] = Variable<int>(personId);
     if (!nullToAbsent || beginDate != null) {
-      map['beginDate'] = Variable<DateTime?>(beginDate);
+      map['beginDate'] = Variable<DateTime>(beginDate);
     }
     if (!nullToAbsent || endDate != null) {
-      map['endDate'] = Variable<DateTime?>(endDate);
+      map['endDate'] = Variable<DateTime>(endDate);
     }
     return map;
   }
@@ -1631,14 +1607,14 @@ class GroupPerson extends DataClass implements Insertable<GroupPerson> {
           {int? id,
           int? groupId,
           int? personId,
-          DateTime? beginDate,
-          DateTime? endDate}) =>
+          Value<DateTime?> beginDate = const Value.absent(),
+          Value<DateTime?> endDate = const Value.absent()}) =>
       GroupPerson(
         id: id ?? this.id,
         groupId: groupId ?? this.groupId,
         personId: personId ?? this.personId,
-        beginDate: beginDate ?? this.beginDate,
-        endDate: endDate ?? this.endDate,
+        beginDate: beginDate.present ? beginDate.value : this.beginDate,
+        endDate: endDate.present ? endDate.value : this.endDate,
       );
   @override
   String toString() {
@@ -1690,8 +1666,8 @@ class GroupPersonsCompanion extends UpdateCompanion<GroupPerson> {
     Expression<int>? id,
     Expression<int>? groupId,
     Expression<int>? personId,
-    Expression<DateTime?>? beginDate,
-    Expression<DateTime?>? endDate,
+    Expression<DateTime>? beginDate,
+    Expression<DateTime>? endDate,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1730,10 +1706,10 @@ class GroupPersonsCompanion extends UpdateCompanion<GroupPerson> {
       map['personId'] = Variable<int>(personId.value);
     }
     if (beginDate.present) {
-      map['beginDate'] = Variable<DateTime?>(beginDate.value);
+      map['beginDate'] = Variable<DateTime>(beginDate.value);
     }
     if (endDate.present) {
-      map['endDate'] = Variable<DateTime?>(endDate.value);
+      map['endDate'] = Variable<DateTime>(endDate.value);
     }
     return map;
   }
@@ -1757,33 +1733,33 @@ class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
   final String? _alias;
   GroupPersons(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _groupIdMeta = const VerificationMeta('groupId');
-  late final GeneratedColumn<int?> groupId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> groupId = GeneratedColumn<int>(
       'groupId', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL REFERENCES "groups" (id)');
   final VerificationMeta _personIdMeta = const VerificationMeta('personId');
-  late final GeneratedColumn<int?> personId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> personId = GeneratedColumn<int>(
       'personId', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL REFERENCES persons (id)');
   final VerificationMeta _beginDateMeta = const VerificationMeta('beginDate');
-  late final GeneratedColumn<DateTime?> beginDate = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> beginDate = GeneratedColumn<DateTime>(
       'beginDate', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _endDateMeta = const VerificationMeta('endDate');
-  late final GeneratedColumn<DateTime?> endDate = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> endDate = GeneratedColumn<DateTime>(
       'endDate', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
@@ -1828,8 +1804,19 @@ class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   GroupPerson map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return GroupPerson.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GroupPerson(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      groupId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}groupId'])!,
+      personId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}personId'])!,
+      beginDate: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}beginDate']),
+      endDate: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}endDate']),
+    );
   }
 
   @override
@@ -1846,24 +1833,11 @@ class Attendance extends DataClass implements Insertable<Attendance> {
   final int groupPersonId;
   final DateTime date;
   final double hoursFact;
-  Attendance(
+  const Attendance(
       {required this.id,
       required this.groupPersonId,
       required this.date,
       required this.hoursFact});
-  factory Attendance.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Attendance(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      groupPersonId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}groupPersonId'])!,
-      date: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date'])!,
-      hoursFact: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}hoursFact'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2017,29 +1991,29 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
   final String? _alias;
   Attendances(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _groupPersonIdMeta =
       const VerificationMeta('groupPersonId');
-  late final GeneratedColumn<int?> groupPersonId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> groupPersonId = GeneratedColumn<int>(
       'groupPersonId', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints:
           'NOT NULL REFERENCES group_persons (id) ON DELETE CASCADE');
   final VerificationMeta _dateMeta = const VerificationMeta('date');
-  late final GeneratedColumn<DateTime?> date = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
       'date', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.dateTime,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _hoursFactMeta = const VerificationMeta('hoursFact');
-  late final GeneratedColumn<double?> hoursFact = GeneratedColumn<double?>(
+  late final GeneratedColumn<double> hoursFact = GeneratedColumn<double>(
       'hoursFact', aliasedName, false,
-      type: const RealType(),
+      type: DriftSqlType.double,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -2083,8 +2057,17 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Attendance map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Attendance.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Attendance(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      groupPersonId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}groupPersonId'])!,
+      date: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
+      hoursFact: attachedDatabase.options.types
+          .read(DriftSqlType.double, data['${effectivePrefix}hoursFact'])!,
+    );
   }
 
   @override
@@ -2106,7 +2089,7 @@ class Setting extends DataClass implements Insertable<Setting> {
   final double? realValue;
   final DateTime? dateValue;
   final bool isUserSetting;
-  Setting(
+  const Setting(
       {required this.id,
       required this.name,
       required this.valueType,
@@ -2116,29 +2099,6 @@ class Setting extends DataClass implements Insertable<Setting> {
       this.realValue,
       this.dateValue,
       required this.isUserSetting});
-  factory Setting.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Setting(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      valueType: Settings.$converter0.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}valueType']))!,
-      textValue: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}textValue']),
-      boolValue: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}boolValue']),
-      intValue: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}intValue']),
-      realValue: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}realValue']),
-      dateValue: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}dateValue']),
-      isUserSetting: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}isUserSetting'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2146,22 +2106,22 @@ class Setting extends DataClass implements Insertable<Setting> {
     map['name'] = Variable<String>(name);
     {
       final converter = Settings.$converter0;
-      map['valueType'] = Variable<int>(converter.mapToSql(valueType)!);
+      map['valueType'] = Variable<int>(converter.toSql(valueType));
     }
     if (!nullToAbsent || textValue != null) {
-      map['textValue'] = Variable<String?>(textValue);
+      map['textValue'] = Variable<String>(textValue);
     }
     if (!nullToAbsent || boolValue != null) {
-      map['boolValue'] = Variable<bool?>(boolValue);
+      map['boolValue'] = Variable<bool>(boolValue);
     }
     if (!nullToAbsent || intValue != null) {
-      map['intValue'] = Variable<int?>(intValue);
+      map['intValue'] = Variable<int>(intValue);
     }
     if (!nullToAbsent || realValue != null) {
-      map['realValue'] = Variable<double?>(realValue);
+      map['realValue'] = Variable<double>(realValue);
     }
     if (!nullToAbsent || dateValue != null) {
-      map['dateValue'] = Variable<DateTime?>(dateValue);
+      map['dateValue'] = Variable<DateTime>(dateValue);
     }
     map['isUserSetting'] = Variable<bool>(isUserSetting);
     return map;
@@ -2226,21 +2186,21 @@ class Setting extends DataClass implements Insertable<Setting> {
           {int? id,
           String? name,
           ValueType? valueType,
-          String? textValue,
-          bool? boolValue,
-          int? intValue,
-          double? realValue,
-          DateTime? dateValue,
+          Value<String?> textValue = const Value.absent(),
+          Value<bool?> boolValue = const Value.absent(),
+          Value<int?> intValue = const Value.absent(),
+          Value<double?> realValue = const Value.absent(),
+          Value<DateTime?> dateValue = const Value.absent(),
           bool? isUserSetting}) =>
       Setting(
         id: id ?? this.id,
         name: name ?? this.name,
         valueType: valueType ?? this.valueType,
-        textValue: textValue ?? this.textValue,
-        boolValue: boolValue ?? this.boolValue,
-        intValue: intValue ?? this.intValue,
-        realValue: realValue ?? this.realValue,
-        dateValue: dateValue ?? this.dateValue,
+        textValue: textValue.present ? textValue.value : this.textValue,
+        boolValue: boolValue.present ? boolValue.value : this.boolValue,
+        intValue: intValue.present ? intValue.value : this.intValue,
+        realValue: realValue.present ? realValue.value : this.realValue,
+        dateValue: dateValue.present ? dateValue.value : this.dateValue,
         isUserSetting: isUserSetting ?? this.isUserSetting,
       );
   @override
@@ -2313,12 +2273,12 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
   static Insertable<Setting> custom({
     Expression<int>? id,
     Expression<String>? name,
-    Expression<ValueType>? valueType,
-    Expression<String?>? textValue,
-    Expression<bool?>? boolValue,
-    Expression<int?>? intValue,
-    Expression<double?>? realValue,
-    Expression<DateTime?>? dateValue,
+    Expression<int>? valueType,
+    Expression<String>? textValue,
+    Expression<bool>? boolValue,
+    Expression<int>? intValue,
+    Expression<double>? realValue,
+    Expression<DateTime>? dateValue,
     Expression<bool>? isUserSetting,
   }) {
     return RawValuesInsertable({
@@ -2368,22 +2328,22 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     }
     if (valueType.present) {
       final converter = Settings.$converter0;
-      map['valueType'] = Variable<int>(converter.mapToSql(valueType.value)!);
+      map['valueType'] = Variable<int>(converter.toSql(valueType.value));
     }
     if (textValue.present) {
-      map['textValue'] = Variable<String?>(textValue.value);
+      map['textValue'] = Variable<String>(textValue.value);
     }
     if (boolValue.present) {
-      map['boolValue'] = Variable<bool?>(boolValue.value);
+      map['boolValue'] = Variable<bool>(boolValue.value);
     }
     if (intValue.present) {
-      map['intValue'] = Variable<int?>(intValue.value);
+      map['intValue'] = Variable<int>(intValue.value);
     }
     if (realValue.present) {
-      map['realValue'] = Variable<double?>(realValue.value);
+      map['realValue'] = Variable<double>(realValue.value);
     }
     if (dateValue.present) {
-      map['dateValue'] = Variable<DateTime?>(dateValue.value);
+      map['dateValue'] = Variable<DateTime>(dateValue.value);
     }
     if (isUserSetting.present) {
       map['isUserSetting'] = Variable<bool>(isUserSetting.value);
@@ -2414,59 +2374,59 @@ class Settings extends Table with TableInfo<Settings, Setting> {
   final String? _alias;
   Settings(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _valueTypeMeta = const VerificationMeta('valueType');
-  late final GeneratedColumnWithTypeConverter<ValueType, int?> valueType =
-      GeneratedColumn<int?>('valueType', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<ValueType, int> valueType =
+      GeneratedColumn<int>('valueType', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<ValueType>(Settings.$converter0);
   final VerificationMeta _textValueMeta = const VerificationMeta('textValue');
-  late final GeneratedColumn<String?> textValue = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> textValue = GeneratedColumn<String>(
       'textValue', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _boolValueMeta = const VerificationMeta('boolValue');
-  late final GeneratedColumn<bool?> boolValue = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> boolValue = GeneratedColumn<bool>(
       'boolValue', aliasedName, true,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _intValueMeta = const VerificationMeta('intValue');
-  late final GeneratedColumn<int?> intValue = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> intValue = GeneratedColumn<int>(
       'intValue', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _realValueMeta = const VerificationMeta('realValue');
-  late final GeneratedColumn<double?> realValue = GeneratedColumn<double?>(
+  late final GeneratedColumn<double> realValue = GeneratedColumn<double>(
       'realValue', aliasedName, true,
-      type: const RealType(),
+      type: DriftSqlType.double,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _dateValueMeta = const VerificationMeta('dateValue');
-  late final GeneratedColumn<DateTime?> dateValue = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> dateValue = GeneratedColumn<DateTime>(
       'dateValue', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _isUserSettingMeta =
       const VerificationMeta('isUserSetting');
-  late final GeneratedColumn<bool?> isUserSetting = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> isUserSetting = GeneratedColumn<bool>(
       'isUserSetting', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT FALSE',
       defaultValue: const CustomExpression<bool>('FALSE'));
@@ -2534,8 +2494,27 @@ class Settings extends Table with TableInfo<Settings, Setting> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Setting map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Setting.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Setting(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      valueType: Settings.$converter0.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}valueType'])!),
+      textValue: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}textValue']),
+      boolValue: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}boolValue']),
+      intValue: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}intValue']),
+      realValue: attachedDatabase.options.types
+          .read(DriftSqlType.double, data['${effectivePrefix}realValue']),
+      dateValue: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}dateValue']),
+      isUserSetting: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}isUserSetting'])!,
+    );
   }
 
   @override
@@ -2550,39 +2529,39 @@ class Settings extends Table with TableInfo<Settings, Setting> {
 }
 
 abstract class _$Db extends GeneratedDatabase {
-  _$Db(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  _$Db(QueryExecutor e) : super(e);
   _$Db.connect(DatabaseConnection c) : super.connect(c);
   late final Orgs orgs = Orgs(this);
   late final Index orgsIndex =
-      Index('orgs_index', 'CREATE UNIQUE INDEX orgs_index ON orgs (name);');
+      Index('orgs_index', 'CREATE UNIQUE INDEX orgs_index ON orgs (name)');
   late final Schedules schedules = Schedules(this);
   late final Index schedulesIndex = Index('schedules_index',
-      'CREATE UNIQUE INDEX schedules_index ON schedules (code);');
+      'CREATE UNIQUE INDEX schedules_index ON schedules (code)');
   late final ScheduleDays scheduleDays = ScheduleDays(this);
   late final Index scheduleDaysIndex = Index('schedule_days_index',
-      'CREATE UNIQUE INDEX schedule_days_index ON schedule_days (scheduleId, dayNumber);');
+      'CREATE UNIQUE INDEX schedule_days_index ON schedule_days (scheduleId, dayNumber)');
   late final Holidays holidays = Holidays(this);
   late final Index holidaysIndex = Index('holidays_index',
-      'CREATE UNIQUE INDEX holidays_index ON holidays (date);');
+      'CREATE UNIQUE INDEX holidays_index ON holidays (date)');
   late final Index holidaysWorkdayIndex = Index('holidays_workday_index',
-      'CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);');
+      'CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday)');
   late final Groups groups = Groups(this);
   late final Index groupsIndex = Index('groups_index',
-      'CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name);');
+      'CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name)');
   late final Index groupsScheduleIndex = Index('groups_schedule_index',
-      'CREATE INDEX groups_schedule_index ON "groups" (scheduleId);');
+      'CREATE INDEX groups_schedule_index ON "groups" (scheduleId)');
   late final Persons persons = Persons(this);
   late final Index personsIndex = Index('persons_index',
-      'CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName, birthday);');
+      'CREATE UNIQUE INDEX persons_index ON persons (family, name, middleName, birthday)');
   late final GroupPersons groupPersons = GroupPersons(this);
   late final Index groupPersonsIndex = Index('group_persons_index',
-      'CREATE UNIQUE INDEX group_persons_index ON group_persons (groupId, personId);');
+      'CREATE UNIQUE INDEX group_persons_index ON group_persons (groupId, personId)');
   late final Attendances attendances = Attendances(this);
   late final Index attendancesIndex = Index('attendances_index',
-      'CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonId, date);');
+      'CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonId, date)');
   late final Settings settings = Settings(this);
   late final Index settingsIndex = Index('settings_index',
-      'CREATE UNIQUE INDEX settings_index ON settings (name);');
+      'CREATE UNIQUE INDEX settings_index ON settings (name)');
   late final OrgsDao orgsDao = OrgsDao(this as Db);
   late final SchedulesDao schedulesDao = SchedulesDao(this as Db);
   late final ScheduleDaysDao scheduleDaysDao = ScheduleDaysDao(this as Db);
@@ -2593,90 +2572,89 @@ abstract class _$Db extends GeneratedDatabase {
   late final AttendancesDao attendancesDao = AttendancesDao(this as Db);
   late final SettingsDao settingsDao = SettingsDao(this as Db);
   Selectable<ScheduleDay> _daysInSchedule(int scheduleId) {
-    return customSelect(
-        'SELECT *\n  FROM schedule_days\n WHERE scheduleId = :scheduleId',
+    return customSelect('SELECT * FROM schedule_days WHERE scheduleId = ?1',
         variables: [
           Variable<int>(scheduleId)
         ],
         readsFrom: {
           scheduleDays,
-        }).map(scheduleDays.mapFromRow);
+        }).asyncMap(scheduleDays.mapFromRow);
   }
 
   Selectable<Org> _firstOrg() {
     return customSelect(
-        'SELECT *\n  FROM orgs\n WHERE name =\n       (\n         SELECT MIN(name)\n           FROM orgs\n       )',
+        'SELECT * FROM orgs WHERE name = (SELECT MIN(name) FROM orgs)',
         variables: [],
         readsFrom: {
           orgs,
-        }).map(orgs.mapFromRow);
+        }).asyncMap(orgs.mapFromRow);
   }
 
   Selectable<Org> _previousOrg(String orgName) {
     return customSelect(
-        'SELECT *\n  FROM orgs\n WHERE name =\n       (\n         SELECT MAX(name)\n           FROM orgs\n          WHERE name < :orgName\n       )',
+        'SELECT * FROM orgs WHERE name = (SELECT MAX(name) FROM orgs WHERE name < ?1)',
         variables: [
           Variable<String>(orgName)
         ],
         readsFrom: {
           orgs,
-        }).map(orgs.mapFromRow);
+        }).asyncMap(orgs.mapFromRow);
   }
 
   Selectable<Schedule> _firstSchedule() {
     return customSelect(
-        'SELECT *\n  FROM schedules\n WHERE code =\n       (\n         SELECT MIN(code)\n           FROM schedules\n       )',
+        'SELECT * FROM schedules WHERE code = (SELECT MIN(code) FROM schedules)',
         variables: [],
         readsFrom: {
           schedules,
-        }).map(schedules.mapFromRow);
+        }).asyncMap(schedules.mapFromRow);
   }
 
   Selectable<Schedule> _previousSchedule(String scheduleCode) {
     return customSelect(
-        'SELECT *\n  FROM schedules\n WHERE code =\n       (\n         SELECT MAX(code)\n           FROM schedules\n          WHERE code < :scheduleCode\n       )',
+        'SELECT * FROM schedules WHERE code = (SELECT MAX(code) FROM schedules WHERE code < ?1)',
         variables: [
           Variable<String>(scheduleCode)
         ],
         readsFrom: {
           schedules,
-        }).map(schedules.mapFromRow);
+        }).asyncMap(schedules.mapFromRow);
   }
 
   Selectable<Holiday> _holidaysWorkdays() {
-    return customSelect('SELECT *\n  FROM holidays\n WHERE workday IS NOT NULL',
+    return customSelect('SELECT * FROM holidays WHERE workday IS NOT NULL',
         variables: [],
         readsFrom: {
           holidays,
-        }).map(holidays.mapFromRow);
+        }).asyncMap(holidays.mapFromRow);
   }
 
   Selectable<Group> _firstGroup(int orgId) {
     return customSelect(
-        'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MIN(name)\n           FROM "groups"\n          WHERE orgId = :orgId\n       )',
+        'SELECT * FROM "groups" WHERE orgId = ?1 AND name = (SELECT MIN(name) FROM "groups" WHERE orgId = ?1)',
         variables: [
           Variable<int>(orgId)
         ],
         readsFrom: {
           groups,
-        }).map(groups.mapFromRow);
+        }).asyncMap(groups.mapFromRow);
   }
 
   Selectable<Group> _previousGroup(int orgId, String groupName) {
     return customSelect(
-        'SELECT *\n  FROM "groups"\n WHERE orgId = :orgId\n   AND name =\n       (\n         SELECT MAX(name)\n           FROM "groups"\n          WHERE name < :groupName\n       )',
+        'SELECT * FROM "groups" WHERE orgId = ?1 AND name = (SELECT MAX(name) FROM "groups" WHERE name < ?2)',
         variables: [
           Variable<int>(orgId),
           Variable<String>(groupName)
         ],
         readsFrom: {
           groups,
-        }).map(groups.mapFromRow);
+        }).asyncMap(groups.mapFromRow);
   }
 
   Selectable<OrgsViewResult> _orgsView() {
     return customSelect(
-        'SELECT O.id,\n       O.name,\n       O.inn,\n       O.activeGroupId,\n       CAST((SELECT COUNT(*) FROM "groups" WHERE orgId = O.id) AS INT) AS groupCount\n  FROM orgs O\n ORDER BY\n       O.name,\n       O.inn',
+        'SELECT O.id, O.name, O.inn, O.activeGroupId, CAST((SELECT COUNT(*) FROM "groups" WHERE orgId = O.id) AS INT) AS groupCount FROM orgs AS O ORDER BY O.name, O.inn',
         variables: [],
         readsFrom: {
           orgs,
@@ -2685,8 +2663,8 @@ abstract class _$Db extends GeneratedDatabase {
       return OrgsViewResult(
         id: row.read<int>('id'),
         name: row.read<String>('name'),
-        inn: row.read<String?>('inn'),
-        activeGroupId: row.read<int?>('activeGroupId'),
+        inn: row.readNullable<String>('inn'),
+        activeGroupId: row.readNullable<int>('activeGroupId'),
         groupCount: row.read<int>('groupCount'),
       );
     });
@@ -2694,7 +2672,7 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<SchedulesViewResult> _schedulesView() {
     return customSelect(
-        'SELECT S.id,\n       S.code,\n       CAST((SELECT COUNT(*) FROM "groups" WHERE scheduleId = S.id) AS INT) AS groupCount\n  FROM schedules S\n ORDER BY\n       S.code',
+        'SELECT S.id, S.code, CAST((SELECT COUNT(*) FROM "groups" WHERE scheduleId = S.id) AS INT) AS groupCount FROM schedules AS S ORDER BY S.code',
         variables: [],
         readsFrom: {
           schedules,
@@ -2710,7 +2688,7 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<GroupsViewResult> _groupsView(int orgId) {
     return customSelect(
-        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       G.meals,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM "groups" G\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE G.orgId = :orgId\n ORDER BY\n       G.name,\n       S.code',
+        'SELECT G.id, G.orgId, G.name, G.scheduleId, S.code AS scheduleCode, G.meals, CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount FROM "groups" AS G INNER JOIN schedules AS S ON S.id = G.scheduleId WHERE G.orgId = ?1 ORDER BY G.name, S.code',
         variables: [
           Variable<int>(orgId)
         ],
@@ -2725,7 +2703,7 @@ abstract class _$Db extends GeneratedDatabase {
         name: row.read<String>('name'),
         scheduleId: row.read<int>('scheduleId'),
         scheduleCode: row.read<String>('scheduleCode'),
-        meals: row.read<int?>('meals'),
+        meals: row.readNullable<int>('meals'),
         personCount: row.read<int>('personCount'),
       );
     });
@@ -2733,7 +2711,7 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<OrgMealsResult> _orgMeals(int orgId) {
     return customSelect(
-        'SELECT G.orgId,\n       G.meals\n  FROM "groups" G\n WHERE G.orgId = :orgId\n GROUP BY\n       G.orgId,\n       G.meals\n ORDER BY\n       G.orgId,\n       G.meals',
+        'SELECT G.orgId, G.meals FROM "groups" AS G WHERE G.orgId = ?1 GROUP BY G.orgId, G.meals ORDER BY G.orgId, G.meals',
         variables: [
           Variable<int>(orgId)
         ],
@@ -2742,14 +2720,14 @@ abstract class _$Db extends GeneratedDatabase {
         }).map((QueryRow row) {
       return OrgMealsResult(
         orgId: row.read<int>('orgId'),
-        meals: row.read<int?>('meals'),
+        meals: row.readNullable<int>('meals'),
       );
     });
   }
 
   Selectable<PersonsViewResult> _personsView() {
     return customSelect(
-        'SELECT P.id,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE personId = P.id) AS INT) AS groupCount\n  FROM persons P\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        'SELECT P.id, P.family, P.name, P.middleName, P.birthday, P.phone, P.phone2, CAST((SELECT COUNT(*) FROM group_persons WHERE personId = P.id) AS INT) AS groupCount FROM persons AS P ORDER BY P.family, P.name, P.middleName, P.birthday',
         variables: [],
         readsFrom: {
           persons,
@@ -2759,10 +2737,10 @@ abstract class _$Db extends GeneratedDatabase {
         id: row.read<int>('id'),
         family: row.read<String>('family'),
         name: row.read<String>('name'),
-        middleName: row.read<String?>('middleName'),
-        birthday: row.read<DateTime?>('birthday'),
-        phone: row.read<String?>('phone'),
-        phone2: row.read<String?>('phone2'),
+        middleName: row.readNullable<String>('middleName'),
+        birthday: row.readNullable<DateTime>('birthday'),
+        phone: row.readNullable<String>('phone'),
+        phone2: row.readNullable<String>('phone2'),
         groupCount: row.read<int>('groupCount'),
       );
     });
@@ -2771,21 +2749,21 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<Person> _findPerson(
       String family, String name, String? middleName, DateTime? birthday) {
     return customSelect(
-        'SELECT P.id,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2\n  FROM persons P\n WHERE P.family = :family\n   AND P.name = :name\n   AND (:middleName IS NULL OR :middleName = \'\' OR P.middleName = :middleName)\n   AND (:birthday IS NULL OR P.birthday = :birthday)',
+        'SELECT P.id, P.family, P.name, P.middleName, P.birthday, P.phone, P.phone2 FROM persons AS P WHERE P.family = ?1 AND P.name = ?2 AND(?3 IS NULL OR ?3 = \'\' OR P.middleName = ?3)AND(?4 IS NULL OR P.birthday = ?4)',
         variables: [
           Variable<String>(family),
           Variable<String>(name),
-          Variable<String?>(middleName),
-          Variable<DateTime?>(birthday)
+          Variable<String>(middleName),
+          Variable<DateTime>(birthday)
         ],
         readsFrom: {
           persons,
-        }).map(persons.mapFromRow);
+        }).asyncMap(persons.mapFromRow);
   }
 
   Selectable<PersonsInGroupResult> _personsInGroup(int groupId) {
     return customSelect(
-        'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        'SELECT L.id, L.groupId, L.personId, L.beginDate, L.endDate, P.family, P.name, P.middleName, P.birthday, P.phone, P.phone2, CAST((SELECT COUNT(*) FROM attendances AS T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount FROM group_persons AS L INNER JOIN persons AS P ON P.id = L.personId WHERE L.groupId = ?1 ORDER BY P.family, P.name, P.middleName, P.birthday',
         variables: [
           Variable<int>(groupId)
         ],
@@ -2798,14 +2776,14 @@ abstract class _$Db extends GeneratedDatabase {
         id: row.read<int>('id'),
         groupId: row.read<int>('groupId'),
         personId: row.read<int>('personId'),
-        beginDate: row.read<DateTime?>('beginDate'),
-        endDate: row.read<DateTime?>('endDate'),
+        beginDate: row.readNullable<DateTime>('beginDate'),
+        endDate: row.readNullable<DateTime>('endDate'),
         family: row.read<String>('family'),
         name: row.read<String>('name'),
-        middleName: row.read<String?>('middleName'),
-        birthday: row.read<DateTime?>('birthday'),
-        phone: row.read<String?>('phone'),
-        phone2: row.read<String?>('phone2'),
+        middleName: row.readNullable<String>('middleName'),
+        birthday: row.readNullable<DateTime>('birthday'),
+        phone: row.readNullable<String>('phone'),
+        phone2: row.readNullable<String>('phone2'),
         attendanceCount: row.read<int>('attendanceCount'),
       );
     });
@@ -2814,11 +2792,11 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<PersonsInGroupPeriodResult> _personsInGroupPeriod(
       int groupId, DateTime? periodBegin, DateTime? periodEnd) {
     return customSelect(
-        'SELECT L.id,\n       L.groupId,\n       L.personId,\n       L.beginDate,\n       L.endDate,\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday,\n       P.phone,\n       P.phone2,\n       CAST((SELECT COUNT(*) FROM attendances T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount\n  FROM group_persons L\n INNER JOIN persons P ON P.id = L.personId\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n ORDER BY\n       P.family,\n       P.name,\n       P.middleName,\n       P.birthday',
+        'SELECT L.id, L.groupId, L.personId, L.beginDate, L.endDate, P.family, P.name, P.middleName, P.birthday, P.phone, P.phone2, CAST((SELECT COUNT(*) FROM attendances AS T WHERE T.groupPersonId = L.id) AS INT) AS attendanceCount FROM group_persons AS L INNER JOIN persons AS P ON P.id = L.personId WHERE L.groupId = ?1 AND(L.endDate IS NULL OR L.endDate >= ?2)AND(L.beginDate IS NULL OR L.beginDate <= ?3)ORDER BY P.family, P.name, P.middleName, P.birthday',
         variables: [
           Variable<int>(groupId),
-          Variable<DateTime?>(periodBegin),
-          Variable<DateTime?>(periodEnd)
+          Variable<DateTime>(periodBegin),
+          Variable<DateTime>(periodEnd)
         ],
         readsFrom: {
           groupPersons,
@@ -2829,14 +2807,14 @@ abstract class _$Db extends GeneratedDatabase {
         id: row.read<int>('id'),
         groupId: row.read<int>('groupId'),
         personId: row.read<int>('personId'),
-        beginDate: row.read<DateTime?>('beginDate'),
-        endDate: row.read<DateTime?>('endDate'),
+        beginDate: row.readNullable<DateTime>('beginDate'),
+        endDate: row.readNullable<DateTime>('endDate'),
         family: row.read<String>('family'),
         name: row.read<String>('name'),
-        middleName: row.read<String?>('middleName'),
-        birthday: row.read<DateTime?>('birthday'),
-        phone: row.read<String?>('phone'),
-        phone2: row.read<String?>('phone2'),
+        middleName: row.readNullable<String>('middleName'),
+        birthday: row.readNullable<DateTime>('birthday'),
+        phone: row.readNullable<String>('phone'),
+        phone2: row.readNullable<String>('phone2'),
         attendanceCount: row.read<int>('attendanceCount'),
       );
     });
@@ -2845,7 +2823,7 @@ abstract class _$Db extends GeneratedDatabase {
   Selectable<Attendance> _groupPersonAttendances(
       int groupId, DateTime periodBegin, DateTime periodEnd) {
     return customSelect(
-        'SELECT T.*\n  FROM group_persons L\n INNER JOIN attendances T ON T.groupPersonId = L.id\n WHERE L.groupId = :groupId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n   AND T.date >= :periodBegin\n   AND T.date <= :periodEnd',
+        'SELECT T.* FROM group_persons AS L INNER JOIN attendances AS T ON T.groupPersonId = L.id WHERE L.groupId = ?1 AND(L.endDate IS NULL OR L.endDate >= ?2)AND(L.beginDate IS NULL OR L.beginDate <= ?3)AND T.date >= ?2 AND T.date <= ?3',
         variables: [
           Variable<int>(groupId),
           Variable<DateTime>(periodBegin),
@@ -2854,13 +2832,13 @@ abstract class _$Db extends GeneratedDatabase {
         readsFrom: {
           groupPersons,
           attendances,
-        }).map(attendances.mapFromRow);
+        }).asyncMap(attendances.mapFromRow);
   }
 
   Selectable<OrgAttendancesResult> _orgAttendances(
       int orgId, DateTime periodBegin, DateTime periodEnd) {
     return customSelect(
-        'SELECT L.groupId,\n       G.meals,\n       T.*\n  FROM "groups" G\n INNER JOIN group_persons L ON L.groupId = G.id\n INNER JOIN attendances T ON T.groupPersonId = L.id\n WHERE G.orgId = :orgId\n   AND (L.endDate IS NULL OR L.endDate >= :periodBegin)\n   AND (L.beginDate IS NULL OR L.beginDate <= :periodEnd)\n   AND T.date >= :periodBegin\n   AND T.date <= :periodEnd',
+        'SELECT L.groupId, G.meals, T.* FROM "groups" AS G INNER JOIN group_persons AS L ON L.groupId = G.id INNER JOIN attendances AS T ON T.groupPersonId = L.id WHERE G.orgId = ?1 AND(L.endDate IS NULL OR L.endDate >= ?2)AND(L.beginDate IS NULL OR L.beginDate <= ?3)AND T.date >= ?2 AND T.date <= ?3',
         variables: [
           Variable<int>(orgId),
           Variable<DateTime>(periodBegin),
@@ -2873,7 +2851,7 @@ abstract class _$Db extends GeneratedDatabase {
         }).map((QueryRow row) {
       return OrgAttendancesResult(
         groupId: row.read<int>('groupId'),
-        meals: row.read<int?>('meals'),
+        meals: row.readNullable<int>('meals'),
         id: row.read<int>('id'),
         groupPersonId: row.read<int>('groupPersonId'),
         date: row.read<DateTime>('date'),
@@ -2884,18 +2862,18 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<Org> _activeOrg() {
     return customSelect(
-        'SELECT O.*\n  FROM settings S\n INNER JOIN orgs O ON O.id = S.intValue\n WHERE S.name = \'activeOrg\'',
+        'SELECT O.* FROM settings AS S INNER JOIN orgs AS O ON O.id = S.intValue WHERE S.name = \'activeOrg\'',
         variables: [],
         readsFrom: {
           settings,
           orgs,
-        }).map(orgs.mapFromRow);
+        }).asyncMap(orgs.mapFromRow);
   }
 
   Future<int> _setActiveOrg(int? id) {
     return customUpdate(
-      'UPDATE settings SET intValue = :id WHERE name = \'activeOrg\'',
-      variables: [Variable<int?>(id)],
+      'UPDATE settings SET intValue = ?1 WHERE name = \'activeOrg\'',
+      variables: [Variable<int>(id)],
       updates: {settings},
       updateKind: UpdateKind.update,
     );
@@ -2903,18 +2881,18 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<Schedule> _activeSchedule() {
     return customSelect(
-        'SELECT SCH.*\n  FROM settings S\n INNER JOIN schedules SCH ON SCH.id = S.intValue\n WHERE S.name = \'activeSchedule\'',
+        'SELECT SCH.* FROM settings AS S INNER JOIN schedules AS SCH ON SCH.id = S.intValue WHERE S.name = \'activeSchedule\'',
         variables: [],
         readsFrom: {
           settings,
           schedules,
-        }).map(schedules.mapFromRow);
+        }).asyncMap(schedules.mapFromRow);
   }
 
   Future<int> _setActiveSchedule(int? id) {
     return customUpdate(
-      'UPDATE settings SET intValue = :id WHERE name = \'activeSchedule\'',
-      variables: [Variable<int?>(id)],
+      'UPDATE settings SET intValue = ?1 WHERE name = \'activeSchedule\'',
+      variables: [Variable<int>(id)],
       updates: {settings},
       updateKind: UpdateKind.update,
     );
@@ -2922,7 +2900,7 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<ActiveGroupResult> _activeGroup(int orgId) {
     return customSelect(
-        'SELECT G.id,\n       G.orgId,\n       G.name,\n       G.scheduleId,\n       S.code AS scheduleCode,\n       G.meals,\n       CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount\n  FROM orgs O\n INNER JOIN "groups" G ON G.id = O.activeGroupId\n INNER JOIN schedules S ON S.id = G.scheduleId\n WHERE O.id = :orgId',
+        'SELECT G.id, G.orgId, G.name, G.scheduleId, S.code AS scheduleCode, G.meals, CAST((SELECT COUNT(*) FROM group_persons WHERE groupId = G.id) AS INT) AS personCount FROM orgs AS O INNER JOIN "groups" AS G ON G.id = O.activeGroupId INNER JOIN schedules AS S ON S.id = G.scheduleId WHERE O.id = ?1',
         variables: [
           Variable<int>(orgId)
         ],
@@ -2938,7 +2916,7 @@ abstract class _$Db extends GeneratedDatabase {
         name: row.read<String>('name'),
         scheduleId: row.read<int>('scheduleId'),
         scheduleCode: row.read<String>('scheduleCode'),
-        meals: row.read<int?>('meals'),
+        meals: row.readNullable<int>('meals'),
         personCount: row.read<int>('personCount'),
       );
     });
@@ -2946,8 +2924,8 @@ abstract class _$Db extends GeneratedDatabase {
 
   Future<int> _setActiveGroup(int? activeGroupId, int orgId) {
     return customUpdate(
-      'UPDATE orgs SET activeGroupId = :activeGroupId WHERE id = :orgId',
-      variables: [Variable<int?>(activeGroupId), Variable<int>(orgId)],
+      'UPDATE orgs SET activeGroupId = ?1 WHERE id = ?2',
+      variables: [Variable<int>(activeGroupId), Variable<int>(orgId)],
       updates: {orgs},
       updateKind: UpdateKind.update,
     );
@@ -2955,24 +2933,25 @@ abstract class _$Db extends GeneratedDatabase {
 
   Selectable<DateTime?> _activePeriod() {
     return customSelect(
-        'SELECT S.dateValue\n  FROM settings S\n WHERE S.name = \'activePeriod\'',
+        'SELECT S.dateValue FROM settings AS S WHERE S.name = \'activePeriod\'',
         variables: [],
         readsFrom: {
           settings,
-        }).map((QueryRow row) => row.read<DateTime?>('dateValue'));
+        }).map((QueryRow row) => row.readNullable<DateTime>('dateValue'));
   }
 
   Future<int> _setActivePeriod(DateTime? activePeriod) {
     return customUpdate(
-      'UPDATE settings SET dateValue = :activePeriod WHERE name = \'activePeriod\'',
-      variables: [Variable<DateTime?>(activePeriod)],
+      'UPDATE settings SET dateValue = ?1 WHERE name = \'activePeriod\'',
+      variables: [Variable<DateTime>(activePeriod)],
       updates: {settings},
       updateKind: UpdateKind.update,
     );
   }
 
   @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  Iterable<TableInfo<Table, dynamic>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         orgs,

@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
@@ -68,7 +69,7 @@ class SettingsEditState extends State<SettingsEdit> {
           initialValue: setting.textValue,
           labelText: setting.name,
           onChanged: (value) {
-            settings[index] = settings[index].copyWith(textValue: value);
+            settings[index] = settings[index].copyWith(textValue: Value(value));
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
@@ -78,7 +79,7 @@ class SettingsEditState extends State<SettingsEdit> {
           labelText: setting.name,
           onChanged: (value) {
             setState(() {
-              settings[index] = settings[index].copyWith(boolValue: value);
+              settings[index] = settings[index].copyWith(boolValue: Value(value));
               _bloc.db.settingsDao.update2(settings[index]);
             });
           },
@@ -89,7 +90,7 @@ class SettingsEditState extends State<SettingsEdit> {
           labelText: setting.name,
           onChanged: (value) {
             settings[index] =
-                settings[index].copyWith(intValue: stringToInt(value));
+                settings[index].copyWith(intValue: Value(stringToInt(value)));
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
@@ -99,7 +100,7 @@ class SettingsEditState extends State<SettingsEdit> {
           labelText: setting.name,
           onChanged: (value) {
             settings[index] =
-                settings[index].copyWith(realValue: stringToDouble(value));
+                settings[index].copyWith(realValue: Value(stringToDouble(value)));
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
@@ -109,7 +110,7 @@ class SettingsEditState extends State<SettingsEdit> {
           labelText: setting.name,
           onChanged: (value) {
             settings[index] =
-                settings[index].copyWith(dateValue: stringToDateOrNull(value));
+                settings[index].copyWith(dateValue: Value(stringToDateOrNull(value)));
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );

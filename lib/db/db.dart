@@ -480,7 +480,7 @@ class HolidaysDao extends DatabaseAccessor<Db> with _$HolidaysDaoMixin {
 
   /// Отслеживание праздников
   Stream<List<Holiday>> watch() =>
-      (select(db.holidays)..orderBy([(t) => OrderingTerm.asc(t.date)])).watch();
+      (select(db.holidays)..orderBy([(t) => OrderingTerm(expression: t.date)])).watch();
 
   /// Отслеживание праздничных дней
   Stream<List<DateTime>> watchHolidays() =>
