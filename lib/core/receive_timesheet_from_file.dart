@@ -11,9 +11,8 @@ Future pickAndReceiveTimesheetFromFile(Bloc bloc) async {
     allowMultiple: false,
   );
   if (result != null && result.files.isNotEmpty) {
-    final fileBytes = result.files.first.bytes;
-    final content = decodeCp1251(fileBytes!);
-    await receiveTimesheetFromContent(bloc, content);
+    final file = File(result.files.first.path!);
+    await receiveTimesheetFromFile(bloc, file);
   } else {
     throw L10n.fileNotSelected;
   }

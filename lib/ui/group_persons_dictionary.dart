@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
@@ -156,38 +155,40 @@ class _GroupPersonCard extends StatelessWidget {
   _GroupPersonCard(this.groupPersons, this.index) : entry = groupPersons[index];
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
-        child: Dismissible(
-          confirmDismiss: (direction) async => entry.attendanceCount == 0,
-          background: Material(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(borderRadius),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          key: UniqueKey(),
-          onDismissed: (direction) {
-            groupPersons.removeAt(index);
-            Provider.of<Bloc>(context, listen: false).deleteGroupPerson(entry);
-          },
-          child: Material(
-            color: Colors.lightGreen.withOpacity(passiveColorOpacity),
-            borderRadius: BorderRadius.circular(borderRadius),
-            child: InkWell(
-              onTap: () => editGroupPerson(context, entry),
-              onDoubleTap: () => editGroupPerson(context, entry),
-              child: ListTile(
-                title: Text(personFullName(entry.person)!),
-                subtitle: Text(
-                    datesToString(context, entry.beginDate, entry.endDate)
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () => editGroupPerson(context, entry),
-                ),
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
+      child: Dismissible(
+        confirmDismiss: (direction) async => entry.attendanceCount == 0,
+        background: Material(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: const Icon(Icons.delete, color: Colors.white),
+        ),
+        key: UniqueKey(),
+        onDismissed: (direction) {
+          groupPersons.removeAt(index);
+          Provider.of<Bloc>(context, listen: false).deleteGroupPerson(entry);
+        },
+        child: Material(
+          color: Colors.lightGreen.withOpacity(passiveColorOpacity),
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: InkWell(
+            onTap: () => editGroupPerson(context, entry),
+            onDoubleTap: () => editGroupPerson(context, entry),
+            child: ListTile(
+              title: Text('${index + 1}. ${personFullName(entry.person)!}'),
+              subtitle: Text(
+                  datesToString(context, entry.beginDate, entry.endDate)
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () => editGroupPerson(context, entry),
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }

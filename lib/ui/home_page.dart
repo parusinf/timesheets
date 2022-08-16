@@ -381,7 +381,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget _createFixedColumn(BuildContext context, int index) {
     final person = _groupPeriodPersons![index].person;
     return _createFixedCell(
-      '${person.family} ',
+      '${index + 1}. ${person.family} ',
       personName(person, showMiddleName: false),
       width: fixedColumnWidth,
       alignment: Alignment.centerLeft,

@@ -53,39 +53,41 @@ class _HolidayCard extends StatelessWidget {
   _HolidayCard(this.holidays, this.index) : holiday = holidays[index];
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
-        child: Dismissible(
-          background: Material(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(borderRadius),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          key: UniqueKey(),
-          onDismissed: (direction) {
-            holidays.removeAt(index);
-            Provider.of<Bloc>(context, listen: false).deleteHoliday(holiday);
-          },
-          child: Material(
-            color: Colors.lightGreen.withOpacity(passiveColorOpacity),
-            borderRadius: BorderRadius.circular(borderRadius),
-            child: InkWell(
-              onTap: () {
-                Navigator.pop(context, holiday);
-              },
-              onDoubleTap: () => editHoliday(context, holiday),
-              child: ListTile(
-                title: Text(dateToString(holiday.date)),
-                subtitle: holiday.workday != null
-                    ? Text('${L10n.workday} ${dateToString(holiday.workday)}')
-                    : null,
-                trailing: IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () => editHoliday(context, holiday),
-                ),
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
+      child: Dismissible(
+        background: Material(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: const Icon(Icons.delete, color: Colors.white),
+        ),
+        key: UniqueKey(),
+        onDismissed: (direction) {
+          holidays.removeAt(index);
+          Provider.of<Bloc>(context, listen: false).deleteHoliday(holiday);
+        },
+        child: Material(
+          color: Colors.lightGreen.withOpacity(passiveColorOpacity),
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: InkWell(
+            onTap: () {
+              Navigator.pop(context, holiday);
+            },
+            onDoubleTap: () => editHoliday(context, holiday),
+            child: ListTile(
+              title: Text(dateToString(holiday.date)),
+              subtitle: holiday.workday != null
+                  ? Text('${L10n.workday} ${dateToString(holiday.workday)}')
+                  : null,
+              trailing: IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () => editHoliday(context, holiday),
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }

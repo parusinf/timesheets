@@ -101,41 +101,43 @@ class PersonsDictionaryState extends State<PersonsDictionary> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          leading: isSearching ? const BackButton() : null,
-          title: isSearching ? _buildSearchField() : _buildTitle(context),
-          actions: _buildActions(),
-        ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(padding1),
-            child: StreamBuilder<List<PersonView>>(
-                stream: Provider.of<Bloc>(context).db.personsDao.watch(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final list = snapshot.data
-                        ?.where((person) => personFullName(person)!
-                            .toLowerCase()
-                            .contains(searchQuery.toLowerCase()))
-                        .toList();
-                    if (list!.isNotEmpty) {
-                      return ListView.builder(
-                        itemBuilder: (context, index) =>
-                            _PersonCard(list, index, isSearching),
-                        itemCount: list.length,
-                      );
-                    } else {
-                      return centerButton(L10n.addPerson,
-                          onPressed: () => addPerson(context));
-                    }
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: isSearching ? const BackButton() : null,
+        title: isSearching ? _buildSearchField() : _buildTitle(context),
+        actions: _buildActions(),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(padding1),
+          child: StreamBuilder<List<PersonView>>(
+              stream: Provider.of<Bloc>(context).db.personsDao.watch(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final list = snapshot.data
+                      ?.where((person) => personFullName(person)!
+                      .toLowerCase()
+                      .contains(searchQuery.toLowerCase()))
+                      .toList();
+                  if (list!.isNotEmpty) {
+                    return ListView.builder(
+                      itemBuilder: (context, index) =>
+                          _PersonCard(list, index, isSearching),
+                      itemCount: list.length,
+                    );
                   } else {
-                    return centerMessage(context, L10n.dataLoading);
+                    return centerButton(L10n.addPerson,
+                        onPressed: () => addPerson(context));
                   }
-                }),
-          ),
+                } else {
+                  return centerMessage(context, L10n.dataLoading);
+                }
+              }),
         ),
-      );
+      ),
+    );
+  }
 }
 
 /// Карточка персоны
@@ -149,41 +151,43 @@ class _PersonCard extends StatelessWidget {
       : entry = persons[index];
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
-        child: Dismissible(
-          confirmDismiss: (direction) async => entry.groupCount == 0,
-          background: Material(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(borderRadius),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          key: UniqueKey(),
-          onDismissed: (direction) {
-            persons.removeAt(index);
-            Provider.of<Bloc>(context, listen: false).deletePerson(entry);
-          },
-          child: Material(
-            color: Colors.lightGreen.withOpacity(passiveColorOpacity),
-            borderRadius: BorderRadius.circular(borderRadius),
-            child: InkWell(
-              onTap: () {
-                if (isSearching) {
-                  Navigator.pop(context);
-                }
-                Navigator.pop(context, entry);
-              },
-              onDoubleTap: () => editPerson(context, entry),
-              child: ListTile(
-                title: Text(entry.family),
-                subtitle: Text(personName(entry)),
-                trailing: IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () => editPerson(context, entry),
-                ),
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, padding2),
+      child: Dismissible(
+        confirmDismiss: (direction) async => entry.groupCount == 0,
+        background: Material(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: const Icon(Icons.delete, color: Colors.white),
+        ),
+        key: UniqueKey(),
+        onDismissed: (direction) {
+          persons.removeAt(index);
+          Provider.of<Bloc>(context, listen: false).deletePerson(entry);
+        },
+        child: Material(
+          color: Colors.lightGreen.withOpacity(passiveColorOpacity),
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: InkWell(
+            onTap: () {
+              if (isSearching) {
+                Navigator.pop(context);
+              }
+              Navigator.pop(context, entry);
+            },
+            onDoubleTap: () => editPerson(context, entry),
+            child: ListTile(
+              title: Text('${index + 1}. ${entry.family}'),
+              subtitle: Text(personName(entry)),
+              trailing: IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () => editPerson(context, entry),
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }
