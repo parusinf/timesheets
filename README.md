@@ -75,7 +75,7 @@
 1. Скачайте и разархивируйте файл http://timesheets.parusinf.ru/linux/timesheets.zip (если ссылка не открывается, скопируйте и вставьте её в отдельное окно браузера)
 2. Запустите **timesheets/timesheets**
 
-#### 2.2.5 Windows x64
+#### 2.2.5 Windows 10 x64
 
 1. Скачайте и разархивируйте файл http://timesheets.parusinf.ru/windows/timesheets-windows.zip (если ссылка не открывается, скопируйте и вставьте её в отдельное окно браузера)
 2. Запустите **timesheets/timesheets.exe** (если SmartScreen блокирует запуск, нажмите **Всё равно выполнить**)
