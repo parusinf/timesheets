@@ -42,6 +42,15 @@ flutter_icons:
   android: "ic_launcher"
   ios: true
   image_path: "assets/icons/ic_timesheets_512.png"
+  web:
+    generate: true
+    image_path: "assets/icons/ic_timesheets_512.png"
+    background_color: "#ffffff"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/icons/ic_timesheets_512.png"
+    icon_size: 256 # min:48, max:256, default: 48
 
 flutter:
   uses-material-design: true
