@@ -9,7 +9,7 @@ import 'package:timesheets/core.dart';
 import 'package:http/http.dart' as http;
 
 
-/// Отправка табеля в Парус или вфайл
+/// Отправка табеля в Парус или в файл
 Future sendTimesheet(
     Org org,
     GroupView group,

@@ -31,6 +31,7 @@ class L10n {
       'fileNotSelected': 'Файл не выбран',
       'fileOrgError': 'Во 2-й строке файла должен быть мнемокод учреждения и ИНН',
       'filePeriodError': 'В 1-й строке файла должен быть период в формате МЕСЯЦ ГОД',
+      'fillPresenceOfAllPersons': 'Заполнить присутствие всех персон',
       'fr': 'пт',
       'from': 'с',
       'group': 'Группа',
@@ -76,8 +77,8 @@ class L10n {
       'schedules': 'Графики',
       'selectPerson': 'Выберите персону',
       'selectSchedule': 'Выберите график',
-      'sendToParusError': 'Ошибка отправки табеля посещаемости в Парус',
       'sendTimesheet': 'Отправить табель',
+      'sendToParusError': 'Ошибка отправки табеля посещаемости в Парус',
       'settings': 'Настройки',
       'su': 'вс',
       'successUnloadToFile': 'Табель посещаемости успешно выгружен в файл',
@@ -126,6 +127,7 @@ class L10n {
   static get fileNotSelected => _l10n[languageCode]!['fileNotSelected'];
   static get fileOrgError => _l10n[languageCode]!['fileOrgError'];
   static get filePeriodError => _l10n[languageCode]!['filePeriodError'];
+  static get fillPresenceOfAllPersons => _l10n[languageCode]!['fillPresenceOfAllPersons'];
   static get fr => _l10n[languageCode]!['fr'];
   static get from => _l10n[languageCode]!['from'];
   static get group => _l10n[languageCode]!['group'];
@@ -170,8 +172,8 @@ class L10n {
   static get schedules => _l10n[languageCode]!['schedules'];
   static get selectPerson => _l10n[languageCode]!['selectPerson'];
   static get selectSchedule => _l10n[languageCode]!['selectSchedule'];
-  static get sendToParusError => _l10n[languageCode]!['sendToParusError'];
   static get sendTimesheet => _l10n[languageCode]!['sendTimesheet'];
+  static get sendToParusError => _l10n[languageCode]!['sendToParusError'];
   static get settings => _l10n[languageCode]!['settings'];
   static get su => _l10n[languageCode]!['su'];
   static get successUnloadToFile => _l10n[languageCode]!['successUnloadToFile'];

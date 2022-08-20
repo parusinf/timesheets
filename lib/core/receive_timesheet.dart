@@ -4,7 +4,7 @@ import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 
 /// Выбор CSV файла и загрузка табеля посещаемости
-Future pickAndReceiveTimesheetFromFile(Bloc bloc) async {
+Future pickAndReceiveFromFile(Bloc bloc) async {
   FilePickerResult? result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['csv'],
@@ -12,20 +12,20 @@ Future pickAndReceiveTimesheetFromFile(Bloc bloc) async {
   );
   if (result != null && result.files.isNotEmpty) {
     final file = File(result.files.first.path!);
-    await receiveTimesheetFromFile(bloc, file);
+    await receiveFromFile(bloc, file);
   } else {
     throw L10n.fileNotSelected;
   }
 }
 
 /// Загрузка CSV файла
-Future receiveTimesheetFromFile(Bloc bloc, File file) async {
+Future receiveFromFile(Bloc bloc, File file) async {
   final content = decodeCp1251(file.readAsBytesSync());
-  await receiveTimesheetFromContent(bloc, content);
+  await receiveFromContent(bloc, content);
 }
 
 /// Разбор и загрузка контента
-Future receiveTimesheetFromContent(Bloc bloc, String content) async {
+Future receiveFromContent(Bloc bloc, String content) async {
   final lines = content.split('\n');
   if (lines.length < 4) {
     throw L10n.fileFormatError;

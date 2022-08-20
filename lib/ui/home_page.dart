@@ -6,8 +6,8 @@ import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:uri_to_file/uri_to_file.dart';
 import 'package:timesheets/core.dart';
-import 'package:timesheets/core/send_timesheet_to_file.dart';
-import 'package:timesheets/core/receive_timesheet_from_file.dart';
+import 'package:timesheets/core/send_timesheet.dart';
+import 'package:timesheets/core/receive_timesheet.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/home_drawer.dart';
 import 'package:timesheets/ui/org_edit.dart';
@@ -50,21 +50,21 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _createAppBar(),
+      appBar: createAppBar(),
       drawer: const HomeDrawer(),
       body: StreamBuilder<String?>(
         stream: _bloc.content,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            _receiveTimesheetFromContent(snapshot.data!);
+            receiveContent(snapshot.data!);
           }
-          return _createBody();
+          return createBody();
         },
       ),
     );
   }
 
-  PreferredSizeWidget? _createAppBar() {
+  PreferredSizeWidget? createAppBar() {
     return AppBar(
       title: StreamBuilder<GroupView?>(
         stream: _bloc.activeGroup,
@@ -107,11 +107,11 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             onChanged: (String? value) {
               setState(() {
                 if (L10n.sendTimesheet == value) {
-                  _sendTimesheet();
+                  send();
                 } else if (L10n.receiveTimesheetFromParus == value) {
                   launchUrl2(_scaffoldKey, 'https://t.me/timesheets_parus_bot');
                 } else if (L10n.receiveTimesheetFromFile == value) {
-                  _pickAndReceiveTimesheetFromFile();
+                  receiveFile();
                 }
               });
             },
@@ -121,7 +121,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _createBody() {
+  Widget createBody() {
     return StreamBuilder<List<GroupPersonView>>(
         stream: _bloc.groupPeriodPersons,
         builder: (context, snapshot) {
@@ -148,9 +148,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           rightHandSideColumnWidth:
                               columnWidth * (_bloc.activePeriod.valueWrapper.value.day + 1),
                           isFixedHeader: true,
-                          headerWidgets: _createTitleRow(),
-                          leftSideItemBuilder: _createFixedColumn,
-                          rightSideItemBuilder: _createTableRow,
+                          headerWidgets: createTitleRow(),
+                          leftSideItemBuilder: createFixedColumn,
+                          rightSideItemBuilder: createTableRow,
                           itemCount: _groupPeriodPersons!.length,
                           rowSeparatorWidget:
                               const Divider(color: lineColor, height: 0.5),
@@ -170,14 +170,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   /// Получение табеля из переданного контента
-  Future _receiveTimesheetFromContent(String content) async {
+  Future receiveContent(String content) async {
     if (isNotEmpty(content) && content != 'null') {
       try {
         if (content.contains('content://')) {
           File file = await toFile(content);
-          await receiveTimesheetFromFile(_bloc, file);
+          await receiveFromFile(_bloc, file);
         } else {
-          await receiveTimesheetFromContent(_bloc, content);
+          await receiveFromContent(_bloc, content);
         }
       } catch (e) {
         showMessage(_scaffoldKey, e.toString());
@@ -186,16 +186,16 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   /// Загрузка из CSV файла
-  Future _pickAndReceiveTimesheetFromFile() async {
+  Future receiveFile() async {
     try {
-      await pickAndReceiveTimesheetFromFile(_bloc);
+      await pickAndReceiveFromFile(_bloc);
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());
     }
   }
 
   /// Отправка табеля
-  Future _sendTimesheet() async {
+  Future send() async {
     final org = _bloc.activeOrg.valueWrapper?.value;
     final group = _bloc.activeGroup.valueWrapper?.value;
     if (org == null) {
@@ -222,15 +222,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   /// Создание строки заголовка таблицы
-  List<Widget> _createTitleRow() {
+  List<Widget> createTitleRow() {
     final DateTime period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[
       StreamBuilder<DateTime?>(
         stream: _bloc.activePeriod,
         builder: (context, snapshot) => InkWell(
-            onTap: _selectPeriod,
+            onTap: selectPeriod,
             child: snapshot.hasData
-                ? _createCell(
+                ? createCell(
                     periodToString(snapshot.data!),
                     width: fixedColumnWidth,
                     alignment: Alignment.centerLeft,
@@ -250,7 +250,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           stream: _bloc.activePeriod,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return _createFixedCell(
+              return createFixedCell(
                 L10n.days,
                 daysCount.toString(),
                 width: columnWidth,
@@ -285,7 +285,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             stream: _bloc.activePeriod,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return _createFixedCell(
+                return createFixedCell(
                   '${abbrWeekday(date).capitalize()} ${day.toString()}',
                   dateCountStr,
                   width: columnWidth,
@@ -295,6 +295,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       isHoliday(_bloc, date) ? Colors.red : Colors.black87,
                   subtitleColor: Colors.black54,
                   wrap: false,
+                  onTap: () => { fillPresenceOfAllPersonsOnDate(date, hoursNorm) },
                 );
               } else {
                 return const Text('');
@@ -306,7 +307,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   /// Создание ячейки таблицы
-  Widget _createCell(
+  Widget createCell(
     String title, {
     width = columnWidth,
     alignment = Alignment.center,
@@ -331,7 +332,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       );
 
   /// Создание фиксированной ячейки
-  Widget _createFixedCell(
+  Widget createFixedCell(
     String title,
     String? subtitle, {
     double width = columnWidth,
@@ -378,9 +379,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   /// Создание фиксированной колонки
-  Widget _createFixedColumn(BuildContext context, int index) {
+  Widget createFixedColumn(BuildContext context, int index) {
     final person = _groupPeriodPersons![index].person;
-    return _createFixedCell(
+    return createFixedCell(
       '${index + 1}. ${person.family} ',
       personName(person, showMiddleName: false),
       width: fixedColumnWidth,
@@ -392,14 +393,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   /// Создание строки таблицы
-  Widget _createTableRow(BuildContext context, int index) {
+  Widget createTableRow(BuildContext context, int index) {
     final groupPerson = _groupPeriodPersons![index];
     final personAttendances = _groupAttendances
         ?.where((attendance) => attendance.groupPersonId == groupPerson.id);
     final period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[];
     // Итог по персоне за период
-    rowCells.add(_createCell(personAttendances!.length.toString(),
+    rowCells.add(createCell(personAttendances!.length.toString(),
         color: Colors.black54, fontSize: 16.0));
     // Цикл по дням текущего периода
     for (int day = 1; day <= period.day; day++) {
@@ -416,12 +417,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         rowCells.add(
           InkWell(
             onTap: () {
-              if (!_bloc.doubleTapInTimesheet) _deleteAttendance(attendance!);
+              if (!_bloc.doubleTapInTimesheet) deleteAttendance(attendance!);
             },
             onDoubleTap: () {
-              if (_bloc.doubleTapInTimesheet) _deleteAttendance(attendance!);
+              if (_bloc.doubleTapInTimesheet) deleteAttendance(attendance!);
             },
-            child: _createCell(
+            child: createCell(
               doubleToString(attendance.hoursFact),
               color: isBirthday(date, groupPerson.person.birthday)
                   ? Colors.red
@@ -449,15 +450,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           InkWell(
             onTap: () {
               if (!_bloc.doubleTapInTimesheet) {
-                _insertAttendance(groupPerson, date, hoursNorm);
+                insertAttendance(groupPerson, date, hoursNorm);
               }
             },
             onDoubleTap: () {
               if (_bloc.doubleTapInTimesheet) {
-                _insertAttendance(groupPerson, date, hoursNorm);
+                insertAttendance(groupPerson, date, hoursNorm);
               }
             },
-            child: _createCell(
+            child: createCell(
               hoursNormStr,
               color: isBirthday(date, groupPerson.person.birthday)
                   ? Colors.red[200]
@@ -471,7 +472,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   /// Выбор активного периода
-  Future _selectPeriod() async {
+  selectPeriod() async {
     final period = await showMonthPicker(
       context: context,
       firstDate: DateTime(DateTime.now().year - 1),
@@ -484,7 +485,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   /// Добавление посещаемости
-  Future _insertAttendance(
+  insertAttendance(
       GroupPersonView groupPerson, DateTime date, double hoursFact) async {
     try {
       _bloc.insertAttendance(
@@ -495,11 +496,23 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   /// Удаление посещаемости
-  Future _deleteAttendance(Attendance attendance) async {
+  deleteAttendance(Attendance attendance) async {
     try {
       _bloc.deleteAttendance(attendance);
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());
+    }
+  }
+
+  /// Заполнение присутствия всех персон на дату
+  fillPresenceOfAllPersonsOnDate(DateTime date, double hoursNorm) {
+    if (_groupPeriodPersons != null) {
+      final alertMessage = '${L10n.fillPresenceOfAllPersons} ${dateToString(date)}';
+      showAlertDialog(context, alertMessage, () async {
+        for (var groupPerson in _groupPeriodPersons!) {
+          insertAttendance(groupPerson, date, hoursNorm);
+        }
+      });
     }
   }
 }
