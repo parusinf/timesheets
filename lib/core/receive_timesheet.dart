@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:timesheets/core.dart';
@@ -7,7 +8,7 @@ import 'package:timesheets/db/db.dart';
 Future pickAndReceiveFromFile(Bloc bloc) async {
   FilePickerResult? result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
-    allowedExtensions: ['csv'],
+    allowedExtensions: ['csv', 'txt'],
     allowMultiple: false,
   );
   if (result != null && result.files.isNotEmpty) {
@@ -20,8 +21,22 @@ Future pickAndReceiveFromFile(Bloc bloc) async {
 
 /// Загрузка CSV файла
 Future receiveFromFile(Bloc bloc, File file) async {
-  final content = decodeCp1251(file.readAsBytesSync());
+  final bytes = file.readAsBytesSync();
+  var content = decodeCp1251(bytes);
+  var monthStr = content.substring(0, content.indexOf(' '));
+  if (!isMonth(monthStr)) {
+    content = utf8.decode(bytes);
+    monthStr = content.substring(0, content.indexOf(' '));
+    if (!isMonth(monthStr)) {
+      throw L10n.fileFormatError;
+    }
+  }
   await receiveFromContent(bloc, content);
+}
+
+bool isMonth(String str) {
+  return ['ЯНВАРЬ', 'ФЕВРАЛЬ', 'МАРТ', 'АПРЕЛЬ', 'МАЙ', 'ИЮНЬ', 'ИЮЛЬ',
+    'АВГУСТ', 'СЕНТЯБРЬ', 'ОКТЯБРЬ', 'НОЯБРЬ', 'ДЕКАБРЬ'].contains(str);
 }
 
 /// Разбор и загрузка контента
