@@ -21,8 +21,6 @@ dependencies:
   path_provider:
   rxdart:
   provider:
-  month_picker_dialog:
-  horizontal_data_table:
   flutter_markdown:
   url_launcher:
   share:

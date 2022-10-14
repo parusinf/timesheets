@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:month_picker_dialog/month_picker_dialog.dart';
-import 'package:horizontal_data_table/horizontal_data_table.dart';
+import 'package:timesheets/packages/month_picker_dialog/month_picker_dialog.dart';
+import 'package:timesheets/packages/horizontal_data_table/horizontal_data_table.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/ui/org_edit.dart';
@@ -44,7 +44,6 @@ class OrgReportState extends State<OrgReport> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             divider(height: padding3),
-            // Группировка
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: padding2),
               child: formElement(
@@ -75,7 +74,6 @@ class OrgReportState extends State<OrgReport> {
               ),
             ),
             divider(height: padding3),
-            // Посещаемость
             _grouping == 0
                 ? StreamBuilder<List<ActiveGroup>>(
                     stream: _bloc.activeGroups,
