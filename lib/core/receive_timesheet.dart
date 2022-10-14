@@ -79,8 +79,8 @@ Future receiveFromContent(Bloc bloc, String content) async {
     throw L10n.fileFormatError;
   }
   // График
-  var schedule = await bloc.db.schedulesDao.find(scheduleCode);
-  schedule ??= await bloc.insertSchedule(scheduleCode);
+  final schedule = await bloc.db.schedulesDao.find(scheduleCode) ??
+      await bloc.insertSchedule(scheduleCode);
   var group = await bloc.db.groupsDao.find(groupName, org, schedule);
   if (group == null) {
     group = await bloc.insertGroup(

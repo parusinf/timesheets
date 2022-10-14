@@ -1,6 +1,7 @@
 import 'db.dart';
 import 'value_type.dart';
 import 'package:timesheets/core.dart';
+import 'schedule_helper.dart';
 
 /// Список праздников и переносов выходных дней
 final _initHolidays = <Holiday>[
@@ -37,6 +38,11 @@ Future _initUserSettings(Db db) async {
       boolValue: true, isUserSetting: true);
 }
 
+/// Создание графика по умолчанию
+Future createDefaultSchedule(Db db) async {
+  await db.schedulesDao.insert2(code: defaultScheduleCode, createDays: true);
+}
+
 /// Инициализация новой базы данных
 Future initNewDb(Db db) async {
   await db.settingsDao.setActivePeriod(lastDayOfMonth(DateTime.now()));
@@ -44,4 +50,5 @@ Future initNewDb(Db db) async {
     await db.holidaysDao.insert2(date: holiday.date, workday: holiday.workday);
   }
   await _initUserSettings(db);
+  await createDefaultSchedule(db);
 }

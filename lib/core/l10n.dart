@@ -97,6 +97,8 @@ class L10n {
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
       'workday': 'Перенос рабочего дня на',
+      'scheduleHourSumException': 'Сумма часов в графике должна быть больше ноля',
+      'scheduleCodeException': 'Ошибка разбора мнемокода графика',
     }
   };
   static get addGroup => _l10n[languageCode]!['addGroup'];
@@ -192,4 +194,6 @@ class L10n {
   static get withoutInn => _l10n[languageCode]!['withoutInn'];
   static get withoutTime => _l10n[languageCode]!['withoutTime'];
   static get workday => _l10n[languageCode]!['workday'];
+  static get scheduleHourSumException => _l10n[languageCode]!['scheduleHourSumException'];
+  static get scheduleCodeException => _l10n[languageCode]!['scheduleCodeException'];
 }

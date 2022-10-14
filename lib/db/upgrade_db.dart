@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:timesheets/core.dart';
 import 'db.dart';
 import 'value_type.dart';
+import 'init_new_db.dart';
 
 Future upgradeDb(Db db, Migrator m, int from, int to) async {
   if (from < 2) {
@@ -40,5 +41,8 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
   if (from < 6) {
     await db.settingsDao.insert2(L10n.parusIntegration, ValueType.bool,
         boolValue: true, isUserSetting: true);
+  }
+  if (from < 7) {
+    await createDefaultSchedule(db);
   }
 }

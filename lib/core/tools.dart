@@ -29,11 +29,10 @@ String? personFullName(Person? person) =>
     person != null ? '${person.family} ${personName(person)}' : '';
 
 /// Имя Отчество
-String personName(Person person, {showMiddleName = true}) => person != null
-    ? (person.middleName == null || !showMiddleName)
+String personName(Person person, {showMiddleName = true}) =>
+    (person.middleName == null || !showMiddleName)
         ? person.name
-        : '${person.name} ${person.middleName}'
-    : '';
+        : '${person.name} ${person.middleName}';
 
 /// Заглавная первая буква в строке
 extension StringExtension on String {

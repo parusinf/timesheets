@@ -1,6 +1,8 @@
 import 'dart:collection';
 import 'package:timesheets/core.dart';
 
+const defaultScheduleCode = 'пн-вс 1ч';
+
 /// Формирование списка часов по коду графика
 List<double> parseScheduleCode(String code) {
   var hours = <double>[];
@@ -24,7 +26,9 @@ List<double> parseScheduleCode(String code) {
 
 /// Формирование кода графика по списку часов
 String createScheduleCode(List<double> hours) {
-  assert(hours.reduce((a, b) => a + b) != 0.0);
+  if (hours.reduce((a, b) => a + b) == 0.0) {
+    throw FormatException(L10n.scheduleHourSumException);
+  }
   final parts = <String>[];
   final week = _createOneWeekDays(hours, 0);
   if (hours.length == 7) {
@@ -58,15 +62,21 @@ void _parseScheduleCode(List<double> hours, String code) {
     final daysHour = code
         .replaceFirst('${L10n.everyOtherWeek} ', '')
         .split(' '); // ['вт/ср','1ч']
-    assert(daysHour.length == 2);
+    if (daysHour.length != 2) {
+      throw FormatException('${L10n.scheduleCodeException}: $code');
+    }
     final weeks = daysHour[0].split('/'); // ['вт','ср']
-    assert(weeks.length == 2);
+    if (weeks.length != 2) {
+      throw FormatException('${L10n.scheduleCodeException}: $code');
+    }
     _parseWeek(hours, weeks[0], daysHour[1], 0);
     _parseWeek(hours, weeks[1], daysHour[1], 7);
   } else {
     // пн,вт 1ч
     final daysHour = code.split(' '); // ['пн,вт','1ч']
-    assert(daysHour.length == 2);
+    if (daysHour.length != 2) {
+      throw FormatException('${L10n.scheduleCodeException}: $code');
+    }
     if (daysHour.length == 1) {
       _parseWeek(hours, '', daysHour[1], 0);
     } else {
@@ -83,9 +93,30 @@ void _parseWeek(
     List<double> hours, String daysString, String hourString, int shift) {
   final hour = double.parse(
       hourString.replaceFirst(L10n.hourLetter, '').replaceFirst(',', '.'));
-  for (int day = 0; day < 7; day++) {
-    if (daysString == '' || daysString.contains(abbrWeekdays[day])) {
-      hours[day + shift] = hour;
+  // пн-вс
+  if (daysString.contains('-')) {
+    final dayRange = daysString.split('-');
+    final startDay = abbrWeekdays.indexOf(dayRange[0]);
+    final endDay = abbrWeekdays.indexOf(dayRange[1]);
+    if (startDay <= endDay) {
+      for (int day = startDay; day <= endDay; day++) {
+        hours[day + shift] = hour;
+      }
+    // вс-пн
+    } else {
+      for (int day = startDay; day < 7; day++) {
+        hours[day + shift] = hour;
+      }
+      for (int day = 0; day <= endDay; day++) {
+        hours[day + shift] = hour;
+      }
+    }
+  // пн,вт,ср
+  } else {
+    for (int day = 0; day < 7; day++) {
+      if (daysString == '' || daysString.contains(abbrWeekdays[day])) {
+        hours[day + shift] = hour;
+      }
     }
   }
 }

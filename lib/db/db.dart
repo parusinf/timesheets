@@ -183,7 +183,7 @@ class Db extends _$Db {
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   /// Обновление структуры базы данных
   @override
@@ -331,18 +331,26 @@ class SchedulesDao extends DatabaseAccessor<Db> with _$SchedulesDaoMixin {
     required String code,
     bool createDays = false,
   }) async {
-    final id =
-        await into(db.schedules).insert(SchedulesCompanion(code: Value(code)));
-    final schedule = Schedule(id: id, code: code);
+    int id;
+    Schedule schedule;
     if (createDays) {
-      final hoursByDays = parseScheduleCode(code);
-      for (int dayNumber = 0; dayNumber < hoursByDays.length; dayNumber++) {
-        db.scheduleDaysDao.insert2(
-          schedule: schedule,
-          dayNumber: dayNumber,
-          hoursNorm: hoursByDays[dayNumber],
-        );
+      try {
+        final hoursByDays = parseScheduleCode(code);
+        id = await into(db.schedules).insert(SchedulesCompanion(code: Value(code)));
+        schedule = Schedule(id: id, code: code);
+        for (int dayNumber = 0; dayNumber < hoursByDays.length; dayNumber++) {
+          db.scheduleDaysDao.insert2(
+            schedule: schedule,
+            dayNumber: dayNumber,
+            hoursNorm: hoursByDays[dayNumber],
+          );
+        }
+      } on FormatException catch(_) {
+        schedule = await find(defaultScheduleCode);
       }
+    } else {
+      id = await into(db.schedules).insert(SchedulesCompanion(code: Value(code)));
+      schedule = Schedule(id: id, code: code);
     }
     return schedule;
   }

@@ -279,7 +279,7 @@ class Bloc {
 
   /// Добавление графика
   Future<Schedule> insertSchedule(String code) async {
-    final schedule = await db.schedulesDao.insert2(code: code, createDays: true);
+    var schedule = await db.schedulesDao.insert2(code: code, createDays: true);
     await setActiveSchedule(schedule);
     return schedule;
   }
