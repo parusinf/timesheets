@@ -9,7 +9,11 @@ CREATE TABLE orgs (
   -- ИНН
   inn                TEXT,
   -- Активная группа
-  activeGroupId      INT
+  activeGroupId      INT,
+  -- Дата последней оплаты
+  lastPay            DATE,
+  -- Итоговая сумма оплаты
+  totalSum           REAL
 );
 CREATE UNIQUE INDEX orgs_index ON orgs (name);
 

@@ -45,4 +45,8 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
   if (from < 7) {
     await createDefaultSchedule(db);
   }
+  if (from < 8) {
+    await m.addColumn(db.orgs, db.orgs.lastPay);
+    await m.addColumn(db.orgs, db.orgs.totalSum);
+  }
 }
