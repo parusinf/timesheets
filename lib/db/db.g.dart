@@ -12,8 +12,15 @@ class Org extends DataClass implements Insertable<Org> {
   final String name;
   final String? inn;
   final int? activeGroupId;
+  final DateTime? lastPay;
+  final double? totalSum;
   const Org(
-      {required this.id, required this.name, this.inn, this.activeGroupId});
+      {required this.id,
+      required this.name,
+      this.inn,
+      this.activeGroupId,
+      this.lastPay,
+      this.totalSum});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -24,6 +31,12 @@ class Org extends DataClass implements Insertable<Org> {
     }
     if (!nullToAbsent || activeGroupId != null) {
       map['activeGroupId'] = Variable<int>(activeGroupId);
+    }
+    if (!nullToAbsent || lastPay != null) {
+      map['lastPay'] = Variable<DateTime>(lastPay);
+    }
+    if (!nullToAbsent || totalSum != null) {
+      map['totalSum'] = Variable<double>(totalSum);
     }
     return map;
   }
@@ -36,6 +49,12 @@ class Org extends DataClass implements Insertable<Org> {
       activeGroupId: activeGroupId == null && nullToAbsent
           ? const Value.absent()
           : Value(activeGroupId),
+      lastPay: lastPay == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastPay),
+      totalSum: totalSum == null && nullToAbsent
+          ? const Value.absent()
+          : Value(totalSum),
     );
   }
 
@@ -47,6 +66,8 @@ class Org extends DataClass implements Insertable<Org> {
       name: serializer.fromJson<String>(json['name']),
       inn: serializer.fromJson<String?>(json['inn']),
       activeGroupId: serializer.fromJson<int?>(json['activeGroupId']),
+      lastPay: serializer.fromJson<DateTime?>(json['lastPay']),
+      totalSum: serializer.fromJson<double?>(json['totalSum']),
     );
   }
   @override
@@ -57,6 +78,8 @@ class Org extends DataClass implements Insertable<Org> {
       'name': serializer.toJson<String>(name),
       'inn': serializer.toJson<String?>(inn),
       'activeGroupId': serializer.toJson<int?>(activeGroupId),
+      'lastPay': serializer.toJson<DateTime?>(lastPay),
+      'totalSum': serializer.toJson<double?>(totalSum),
     };
   }
 
@@ -64,13 +87,17 @@ class Org extends DataClass implements Insertable<Org> {
           {int? id,
           String? name,
           Value<String?> inn = const Value.absent(),
-          Value<int?> activeGroupId = const Value.absent()}) =>
+          Value<int?> activeGroupId = const Value.absent(),
+          Value<DateTime?> lastPay = const Value.absent(),
+          Value<double?> totalSum = const Value.absent()}) =>
       Org(
         id: id ?? this.id,
         name: name ?? this.name,
         inn: inn.present ? inn.value : this.inn,
         activeGroupId:
             activeGroupId.present ? activeGroupId.value : this.activeGroupId,
+        lastPay: lastPay.present ? lastPay.value : this.lastPay,
+        totalSum: totalSum.present ? totalSum.value : this.totalSum,
       );
   @override
   String toString() {
@@ -78,13 +105,16 @@ class Org extends DataClass implements Insertable<Org> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('inn: $inn, ')
-          ..write('activeGroupId: $activeGroupId')
+          ..write('activeGroupId: $activeGroupId, ')
+          ..write('lastPay: $lastPay, ')
+          ..write('totalSum: $totalSum')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, inn, activeGroupId);
+  int get hashCode =>
+      Object.hash(id, name, inn, activeGroupId, lastPay, totalSum);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -92,7 +122,9 @@ class Org extends DataClass implements Insertable<Org> {
           other.id == this.id &&
           other.name == this.name &&
           other.inn == this.inn &&
-          other.activeGroupId == this.activeGroupId);
+          other.activeGroupId == this.activeGroupId &&
+          other.lastPay == this.lastPay &&
+          other.totalSum == this.totalSum);
 }
 
 class OrgsCompanion extends UpdateCompanion<Org> {
@@ -100,29 +132,39 @@ class OrgsCompanion extends UpdateCompanion<Org> {
   final Value<String> name;
   final Value<String?> inn;
   final Value<int?> activeGroupId;
+  final Value<DateTime?> lastPay;
+  final Value<double?> totalSum;
   const OrgsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.inn = const Value.absent(),
     this.activeGroupId = const Value.absent(),
+    this.lastPay = const Value.absent(),
+    this.totalSum = const Value.absent(),
   });
   OrgsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     this.inn = const Value.absent(),
     this.activeGroupId = const Value.absent(),
+    this.lastPay = const Value.absent(),
+    this.totalSum = const Value.absent(),
   }) : name = Value(name);
   static Insertable<Org> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? inn,
     Expression<int>? activeGroupId,
+    Expression<DateTime>? lastPay,
+    Expression<double>? totalSum,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (inn != null) 'inn': inn,
       if (activeGroupId != null) 'activeGroupId': activeGroupId,
+      if (lastPay != null) 'lastPay': lastPay,
+      if (totalSum != null) 'totalSum': totalSum,
     });
   }
 
@@ -130,12 +172,16 @@ class OrgsCompanion extends UpdateCompanion<Org> {
       {Value<int>? id,
       Value<String>? name,
       Value<String?>? inn,
-      Value<int?>? activeGroupId}) {
+      Value<int?>? activeGroupId,
+      Value<DateTime?>? lastPay,
+      Value<double?>? totalSum}) {
     return OrgsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       inn: inn ?? this.inn,
       activeGroupId: activeGroupId ?? this.activeGroupId,
+      lastPay: lastPay ?? this.lastPay,
+      totalSum: totalSum ?? this.totalSum,
     );
   }
 
@@ -154,6 +200,12 @@ class OrgsCompanion extends UpdateCompanion<Org> {
     if (activeGroupId.present) {
       map['activeGroupId'] = Variable<int>(activeGroupId.value);
     }
+    if (lastPay.present) {
+      map['lastPay'] = Variable<DateTime>(lastPay.value);
+    }
+    if (totalSum.present) {
+      map['totalSum'] = Variable<double>(totalSum.value);
+    }
     return map;
   }
 
@@ -163,7 +215,9 @@ class OrgsCompanion extends UpdateCompanion<Org> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('inn: $inn, ')
-          ..write('activeGroupId: $activeGroupId')
+          ..write('activeGroupId: $activeGroupId, ')
+          ..write('lastPay: $lastPay, ')
+          ..write('totalSum: $totalSum')
           ..write(')'))
         .toString();
   }
@@ -199,8 +253,21 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
+  final VerificationMeta _lastPayMeta = const VerificationMeta('lastPay');
+  late final GeneratedColumn<DateTime> lastPay = GeneratedColumn<DateTime>(
+      'lastPay', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  final VerificationMeta _totalSumMeta = const VerificationMeta('totalSum');
+  late final GeneratedColumn<double> totalSum = GeneratedColumn<double>(
+      'totalSum', aliasedName, true,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      $customConstraints: '');
   @override
-  List<GeneratedColumn> get $columns => [id, name, inn, activeGroupId];
+  List<GeneratedColumn> get $columns =>
+      [id, name, inn, activeGroupId, lastPay, totalSum];
   @override
   String get aliasedName => _alias ?? 'orgs';
   @override
@@ -229,6 +296,14 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
           activeGroupId.isAcceptableOrUnknown(
               data['activeGroupId']!, _activeGroupIdMeta));
     }
+    if (data.containsKey('lastPay')) {
+      context.handle(_lastPayMeta,
+          lastPay.isAcceptableOrUnknown(data['lastPay']!, _lastPayMeta));
+    }
+    if (data.containsKey('totalSum')) {
+      context.handle(_totalSumMeta,
+          totalSum.isAcceptableOrUnknown(data['totalSum']!, _totalSumMeta));
+    }
     return context;
   }
 
@@ -246,6 +321,10 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
           .read(DriftSqlType.string, data['${effectivePrefix}inn']),
       activeGroupId: attachedDatabase.options.types
           .read(DriftSqlType.int, data['${effectivePrefix}activeGroupId']),
+      lastPay: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}lastPay']),
+      totalSum: attachedDatabase.options.types
+          .read(DriftSqlType.double, data['${effectivePrefix}totalSum']),
     );
   }
 
