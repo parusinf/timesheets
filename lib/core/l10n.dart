@@ -99,6 +99,7 @@ class L10n {
       'workday': 'Перенос рабочего дня на',
       'scheduleHourSumException': 'Сумма часов в графике должна быть больше ноля',
       'scheduleCodeException': 'Ошибка разбора мнемокода графика',
+      'support': 'Техподдержка',
     }
   };
   static get addGroup => _l10n[languageCode]!['addGroup'];
@@ -196,4 +197,5 @@ class L10n {
   static get workday => _l10n[languageCode]!['workday'];
   static get scheduleHourSumException => _l10n[languageCode]!['scheduleHourSumException'];
   static get scheduleCodeException => _l10n[languageCode]!['scheduleCodeException'];
+  static get support => _l10n[languageCode]!['support'];
 }

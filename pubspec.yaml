@@ -28,6 +28,7 @@ dependencies:
   uri_to_file:
   http:
   http_parser:
+  flutter_inappwebview:
 
 dev_dependencies:
   drift_dev:

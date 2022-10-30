@@ -6,6 +6,7 @@ import 'package:timesheets/ui/org_edit.dart';
 import 'package:timesheets/ui/group_edit.dart';
 import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/help_page.dart';
+import 'package:timesheets/ui/pay_page.dart';
 import 'package:timesheets/ui/org_report.dart';
 import 'package:timesheets/ui/holidays_dictionary.dart';
 import 'package:timesheets/ui/settings_edit.dart';
@@ -85,6 +86,13 @@ class HomeDrawerState extends State<HomeDrawer> {
                   listHeater(Icons.help, L10n.help,
                       onHeaderTap: () async {
                         await push(context, const HelpPage());
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                      }
+                  ),
+                  listHeater(Icons.account_balance_wallet, L10n.support,
+                      onHeaderTap: () async {
+                        await push(context, const PayPage());
                         if (!mounted) return;
                         Navigator.pop(context);
                       }
