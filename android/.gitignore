@@ -5,5 +5,5 @@ gradle-wrapper.jar
 /gradlew.bat
 /local.properties
 GeneratedPluginRegistrant.java
-codemagic.keystore
-client_secret_827268107848-u15cnojp49koj0f24b6p4dugiaa9sph7.apps.googleusercontent.com
+/codemagic.keystore
+/client_secret_827268107848-u15cnojp49koj0f24b6p4dugiaa9sph7.apps.googleusercontent.com.json
