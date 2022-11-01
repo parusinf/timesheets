@@ -5,5 +5,5 @@ gradle-wrapper.jar
 /gradlew.bat
 /local.properties
 GeneratedPluginRegistrant.java
-/app/codemagic.keystore
+/app/key.jks
 /app/pc-api-7669123551730261246-918-15d53e2655a9.json
