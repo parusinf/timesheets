@@ -80,29 +80,34 @@ class OrgReportState extends State<OrgReport> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         _activeGroups = snapshot.data;
-                        return Flexible(
-                            child: StreamBuilder<List<AttendanceView>>(
-                                stream: _bloc.orgAttendances,
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    _orgAttendances = snapshot.data;
-                                    return HorizontalDataTable(
-                                      leftHandSideColumnWidth: fixedColumnWidth,
-                                      rightHandSideColumnWidth: columnWidth *
-                                          (_bloc.activePeriod.valueWrapper.value.day + 1),
-                                      isFixedHeader: true,
-                                      headerWidgets: _createTitleRow(),
-                                      leftSideItemBuilder: _createFixedColumn,
-                                      rightSideItemBuilder: _createTableRow,
-                                      itemCount: _activeGroups!.length,
-                                      rowSeparatorWidget: const Divider(
-                                          color: lineColor, height: 0.5),
-                                    );
-                                  } else {
-                                    return centerMessage(
-                                        context, L10n.dataLoading);
-                                  }
-                                }));
+                        if (_activeGroups!.isEmpty) {
+                          return centerMessage(context, L10n.addGroup);
+                        } else {
+                          return Flexible(
+                              child: StreamBuilder<List<AttendanceView>>(
+                                  stream: _bloc.orgAttendances,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      _orgAttendances = snapshot.data;
+                                      return HorizontalDataTable(
+                                        leftHandSideColumnWidth: fixedColumnWidth,
+                                        rightHandSideColumnWidth: columnWidth *
+                                            (_bloc.activePeriod.valueWrapper
+                                                .value.day + 1),
+                                        isFixedHeader: true,
+                                        headerWidgets: _createTitleRow(),
+                                        leftSideItemBuilder: _createFixedColumn,
+                                        rightSideItemBuilder: _createTableRow,
+                                        itemCount: _activeGroups!.length,
+                                        rowSeparatorWidget: const Divider(
+                                            color: lineColor, height: 0.5),
+                                      );
+                                    } else {
+                                      return centerMessage(
+                                          context, L10n.dataLoading);
+                                    }
+                                  }));
+                        }
                       } else {
                         return centerMessage(context, L10n.dataLoading);
                       }
@@ -112,29 +117,34 @@ class OrgReportState extends State<OrgReport> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         _orgMeals = snapshot.data;
-                        return Flexible(
-                            child: StreamBuilder<List<AttendanceView>>(
-                                stream: _bloc.orgAttendances,
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    _orgAttendances = snapshot.data;
-                                    return HorizontalDataTable(
-                                      leftHandSideColumnWidth: fixedColumnWidth,
-                                      rightHandSideColumnWidth: columnWidth *
-                                          (_bloc.activePeriod.valueWrapper.value.day + 1),
-                                      isFixedHeader: true,
-                                      headerWidgets: _createTitleRow(),
-                                      leftSideItemBuilder: _createFixedColumn,
-                                      rightSideItemBuilder: _createTableRow,
-                                      itemCount: _orgMeals!.length,
-                                      rowSeparatorWidget: const Divider(
-                                          color: lineColor, height: 0.5),
-                                    );
-                                  } else {
-                                    return centerMessage(
-                                        context, L10n.dataLoading);
-                                  }
-                                }));
+                        if (_activeGroups!.isEmpty) {
+                          return centerMessage(context, L10n.addGroup);
+                        } else {
+                          return Flexible(
+                              child: StreamBuilder<List<AttendanceView>>(
+                                  stream: _bloc.orgAttendances,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      _orgAttendances = snapshot.data;
+                                      return HorizontalDataTable(
+                                        leftHandSideColumnWidth: fixedColumnWidth,
+                                        rightHandSideColumnWidth: columnWidth *
+                                            (_bloc.activePeriod.valueWrapper
+                                                .value.day + 1),
+                                        isFixedHeader: true,
+                                        headerWidgets: _createTitleRow(),
+                                        leftSideItemBuilder: _createFixedColumn,
+                                        rightSideItemBuilder: _createTableRow,
+                                        itemCount: _orgMeals!.length,
+                                        rowSeparatorWidget: const Divider(
+                                            color: lineColor, height: 0.5),
+                                      );
+                                    } else {
+                                      return centerMessage(
+                                          context, L10n.dataLoading);
+                                    }
+                                  }));
+                        }
                       } else {
                         return centerMessage(context, L10n.dataLoading);
                       }
