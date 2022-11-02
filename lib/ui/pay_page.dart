@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
+import 'dart:io' show Platform;
 
 /// Форма оплаты
 class PayPage extends StatefulWidget {
@@ -19,18 +20,42 @@ class PayPageState extends State<PayPage> {
   @override
   Widget build(BuildContext context) {
     final org = bloc.activeOrg.valueWrapper?.value;
-    final startSupport = DateTime.now();
-    final endSupport = startSupport.add(const Duration(days: 365));
-    final description = 'Оплата техподдержки электронных табелей посещамости для ${org.name} ИНН ${org.inn} до ${dateToString(endSupport)}';
-
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(L10n.support),
-      ),
-      body: InAppWebView(
-        initialData: InAppWebViewInitialData(
-            data: '''<HTML>
+    if (org == null) {
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(L10n.support),
+        ),
+        body: centerMessage(context, L10n.addOrg),
+      );
+    } else if (isEmpty(org?.inn)) {
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(L10n.support),
+        ),
+        body: centerMessage(context, L10n.setInn),
+      );
+    } else if (Platform.isWindows) {
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(L10n.support),
+        ),
+        body: centerMessage(context, L10n.payOnWindowsIsNotSupport),
+      );
+    } else {
+      final startSupport = DateTime.now();
+      final endSupport = startSupport.add(const Duration(days: 365));
+      final description = 'Оплата техподдержки электронных табелей посещамости для ${org?.name} ИНН ${org?.inn} до ${dateToString(endSupport)}';
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(L10n.support),
+        ),
+        body: InAppWebView(
+          initialData: InAppWebViewInitialData(
+              data: '''<HTML>
 <HEAD>
 <style>
   .tinkoffPayRow {
@@ -67,8 +92,9 @@ class PayPageState extends State<PayPage> {
 </BODY>
 </HTML>
 '''
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 }

@@ -100,6 +100,8 @@ class L10n {
       'scheduleHourSumException': 'Сумма часов в графике должна быть больше ноля',
       'scheduleCodeException': 'Ошибка разбора мнемокода графика',
       'support': 'Техподдержка',
+      'payOnWindowsIsNotSupport': 'Оплата в Windows пока не поддерживается',
+      'setInn': 'Для оплаты требуется ИНН организации',
     }
   };
   static get addGroup => _l10n[languageCode]!['addGroup'];
@@ -198,4 +200,6 @@ class L10n {
   static get scheduleHourSumException => _l10n[languageCode]!['scheduleHourSumException'];
   static get scheduleCodeException => _l10n[languageCode]!['scheduleCodeException'];
   static get support => _l10n[languageCode]!['support'];
+  static get payOnWindowsIsNotSupport => _l10n[languageCode]!['payOnWindowsIsNotSupport'];
+  static get setInn => _l10n[languageCode]!['setInn'];
 }
