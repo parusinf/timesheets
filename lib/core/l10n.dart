@@ -4,8 +4,11 @@ class L10n {
   static const Map<String, Map<String, String>> _l10n = {
     'ru': {
       'addGroup': 'Добавьте группу',
+      'addGroupAsInParus': 'Добавьте группу с мнемокодом в точности как в Парусе',
       'addHoliday': 'Добавьте праздник',
+      'addInn': 'Добавьте ИНН организации',
       'addOrg': 'Добавьте организацию',
+      'addOrgWithInn': 'Добавьте организацию с ИНН',
       'addPerson': 'Добавьте персону',
       'addPersonToGroup': 'Добавьте персону в группу',
       'addSchedule': 'Добавьте график',
@@ -70,18 +73,23 @@ class L10n {
       'personName': 'Имя',
       'persons': 'Персоны',
       'phone': 'Телефон',
-      'receiveTimesheetFromFile': 'Получить табель из файла',
-      'receiveTimesheetFromParus': 'Получить табель из Паруса',
+      'receiveFromParusError': 'Ошибка получения табеля посещаемости из Паруса',
+      'receiveTimesheet': 'Получить табель',
       'sa': 'сб',
       'schedule': 'График',
+      'scheduleCodeException': 'Ошибка разбора мнемокода графика',
+      'scheduleHourSumException': 'Сумма часов в графике должна быть больше ноля',
       'schedules': 'Графики',
       'selectPerson': 'Выберите персону',
       'selectSchedule': 'Выберите график',
       'sendTimesheet': 'Отправить табель',
       'sendToParusError': 'Ошибка отправки табеля посещаемости в Парус',
+      'setInn': 'Для оплаты требуется ИНН организации',
       'settings': 'Настройки',
       'su': 'вс',
+      'successLoadFromParus': 'Табель посещаемости успешно загружен из Паруса',
       'successUnloadToFile': 'Табель посещаемости успешно выгружен в файл',
+      'support': 'Техподдержка',
       'th': 'чт',
       'timesheet': 'Табель посещаемости',
       'timesheets': 'Табели посещаемости',
@@ -97,16 +105,15 @@ class L10n {
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
       'workday': 'Перенос рабочего дня на',
-      'scheduleHourSumException': 'Сумма часов в графике должна быть больше ноля',
-      'scheduleCodeException': 'Ошибка разбора мнемокода графика',
-      'support': 'Техподдержка',
-      'payOnWindowsIsNotSupport': 'Оплата в Windows пока не поддерживается',
-      'setInn': 'Для оплаты требуется ИНН организации',
+      'supportPayment': 'Оплата техподдержки',
     }
   };
   static get addGroup => _l10n[languageCode]!['addGroup'];
+  static get addGroupAsInParus => _l10n[languageCode]!['addGroupAsInParus'];
   static get addHoliday => _l10n[languageCode]!['addHoliday'];
+  static get addInn => _l10n[languageCode]!['addInn'];
   static get addOrg => _l10n[languageCode]!['addOrg'];
+  static get addOrgWithInn => _l10n[languageCode]!['addOrgWithInn'];
   static get addPerson => _l10n[languageCode]!['addPerson'];
   static get addPersonToGroup => _l10n[languageCode]!['addPersonToGroup'];
   static get addSchedule => _l10n[languageCode]!['addSchedule'];
@@ -170,18 +177,23 @@ class L10n {
   static get personName => _l10n[languageCode]!['personName'];
   static get persons => _l10n[languageCode]!['persons'];
   static get phone => _l10n[languageCode]!['phone'];
-  static get receiveTimesheetFromFile => _l10n[languageCode]!['receiveTimesheetFromFile'];
-  static get receiveTimesheetFromParus => _l10n[languageCode]!['receiveTimesheetFromParus'];
+  static get receiveFromParusError => _l10n[languageCode]!['receiveFromParusError'];
+  static get receiveTimesheet => _l10n[languageCode]!['receiveTimesheet'];
   static get sa => _l10n[languageCode]!['sa'];
   static get schedule => _l10n[languageCode]!['schedule'];
+  static get scheduleCodeException => _l10n[languageCode]!['scheduleCodeException'];
+  static get scheduleHourSumException => _l10n[languageCode]!['scheduleHourSumException'];
   static get schedules => _l10n[languageCode]!['schedules'];
   static get selectPerson => _l10n[languageCode]!['selectPerson'];
   static get selectSchedule => _l10n[languageCode]!['selectSchedule'];
   static get sendTimesheet => _l10n[languageCode]!['sendTimesheet'];
   static get sendToParusError => _l10n[languageCode]!['sendToParusError'];
+  static get setInn => _l10n[languageCode]!['setInn'];
   static get settings => _l10n[languageCode]!['settings'];
   static get su => _l10n[languageCode]!['su'];
+  static get successLoadFromParus => _l10n[languageCode]!['successLoadFromParus'];
   static get successUnloadToFile => _l10n[languageCode]!['successUnloadToFile'];
+  static get support => _l10n[languageCode]!['support'];
   static get th => _l10n[languageCode]!['th'];
   static get timesheet => _l10n[languageCode]!['timesheet'];
   static get timesheets => _l10n[languageCode]!['timesheets'];
@@ -197,9 +209,5 @@ class L10n {
   static get withoutInn => _l10n[languageCode]!['withoutInn'];
   static get withoutTime => _l10n[languageCode]!['withoutTime'];
   static get workday => _l10n[languageCode]!['workday'];
-  static get scheduleHourSumException => _l10n[languageCode]!['scheduleHourSumException'];
-  static get scheduleCodeException => _l10n[languageCode]!['scheduleCodeException'];
-  static get support => _l10n[languageCode]!['support'];
-  static get payOnWindowsIsNotSupport => _l10n[languageCode]!['payOnWindowsIsNotSupport'];
-  static get setInn => _l10n[languageCode]!['setInn'];
+  static get supportPayment => _l10n[languageCode]!['supportPayment'];
 }

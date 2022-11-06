@@ -96,11 +96,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 child: const Icon(Icons.file_upload),
               ),
               DropdownMenuItem(
-                value: L10n.receiveTimesheetFromParus,
-                child: const Icon(Icons.adb),
-              ),
-              DropdownMenuItem(
-                value: L10n.receiveTimesheetFromFile,
+                value: L10n.receiveTimesheet,
                 child: const Icon(Icons.file_download),
               ),
             ],
@@ -108,10 +104,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               setState(() {
                 if (L10n.sendTimesheet == value) {
                   send();
-                } else if (L10n.receiveTimesheetFromParus == value) {
-                  launchUrl2(_scaffoldKey, 'https://t.me/timesheets_parus_bot');
-                } else if (L10n.receiveTimesheetFromFile == value) {
-                  receiveFile();
+                } else if (L10n.receiveTimesheet == value) {
+                  receive();
                 }
               });
             },
@@ -185,10 +179,16 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  /// Загрузка из CSV файла
-  Future receiveFile() async {
+  /// Получение табеля
+  Future receive() async {
     try {
-      await pickAndReceiveFromFile(_bloc);
+      var result = '';
+      if (_bloc.parusIntegration) {
+        result = await receiveFromParus(_bloc);
+      } else {
+        result = await pickAndReceiveFromFile(_bloc);
+      }
+      showMessage(_scaffoldKey, result);
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());
     }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
-import 'dart:io' show Platform;
+import 'package:qr_flutter/qr_flutter.dart';
+
+const sum = 3000;
 
 /// Форма оплаты
 class PayPage extends StatefulWidget {
@@ -24,75 +25,34 @@ class PayPageState extends State<PayPage> {
       return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(L10n.support),
+          title: Text(L10n.supportPayment),
         ),
         body: centerMessage(context, L10n.addOrg),
       );
-    } else if (isEmpty(org?.inn)) {
+    } else if (isEmpty(org.inn)) {
       return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(L10n.support),
+          title: Text(L10n.supportPayment),
         ),
         body: centerMessage(context, L10n.setInn),
-      );
-    } else if (Platform.isWindows) {
-      return Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text(L10n.support),
-        ),
-        body: centerMessage(context, L10n.payOnWindowsIsNotSupport),
       );
     } else {
       final startSupport = DateTime.now();
       final endSupport = startSupport.add(const Duration(days: 365));
-      final description = 'Оплата техподдержки электронных табелей посещамости для ${org?.name} ИНН ${org?.inn} до ${dateToString(endSupport)}';
+      final purpose = 'Оплата техподдержки электронных табелей посещамости для ${org.name} ИНН ${org.inn} до ${dateToString(endSupport)}';
+      final qrText = 'ST00012|Name=ИП Никитин Павел Александрович|PersonalAcc=40802810900002686224|BankName=АО «Тинькофф Банк»|BIC=044525974|CorrespAcc=30101810145250000974|PayeeINN=667341199471|Purpose=$purpose|TechCode=15|Sum=${sum}00';
       return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(L10n.support),
+          title: Text(L10n.supportPayment),
         ),
-        body: InAppWebView(
-          initialData: InAppWebViewInitialData(
-              data: '''<HTML>
-<HEAD>
-<style>
-  .tinkoffPayRow {
-    display:block;
-    margin:5%;
-    padding: 12px 12px;
-    border: 12px solid var(--input-border);
-    border-radius: 12px;
-    width:90%;
-    font-size: 3em;
-    font-family: sans-serif;
-  }
-  input[type="submit"] {
-    line-height: 60px;
-  }
-</style>
-<link rel="stylesheet" href="./html/payForm/static/css/t-widget.css" type="text/css">
-<script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
-</HEAD>
-<BODY>
-<form name="TinkoffPayForm" onsubmit="pay(this); return false;">
-	<input class="tinkoffPayRow" type="hidden" name="terminalkey" value="1666686688281" >
-	<input class="tinkoffPayRow" type="hidden" name="frame" value="true">
-	<input class="tinkoffPayRow" type="hidden" name="language" value="ru">
-	<input class="tinkoffPayRow" type="text" readonly placeholder="Сумма годовой техподдержки" name="amount" value="3000" required>
-	<input class="tinkoffPayRow" type="hidden" placeholder="Номер заказа" name="order">
-	<input class="tinkoffPayRow" type="hidden" placeholder="Описание заказа" name="description" value="$description">
-	<textarea class="tinkoffPayRow" rows="4" readonly>$description</textarea>
-	<input class="tinkoffPayRow" type="hidden" placeholder="ФИО плательщика" name="name">
-	<input class="tinkoffPayRow" type="hidden" placeholder="E-mail" name="email">
-	<input class="tinkoffPayRow" type="hidden" placeholder="Контактный телефон" name="phone">
-	<input class="tinkoffPayRow" type="submit" value="Оплатить">
-</form>
-</BODY>
-</HTML>
-'''
-          ),
+        body: Center(
+          child: QrImage(
+            data: qrText,
+            version: QrVersions.auto,
+            size: 300.0,
+          )
         ),
       );
     }

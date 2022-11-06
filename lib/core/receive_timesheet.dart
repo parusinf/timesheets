@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
+import 'package:http/http.dart' as http;
 
 /// Выбор CSV файла и загрузка табеля посещаемости
 Future pickAndReceiveFromFile(Bloc bloc) async {
@@ -34,6 +35,35 @@ Future receiveFromFile(Bloc bloc, File file) async {
   await receiveFromContent(bloc, content);
 }
 
+Future receiveFromParus(Bloc bloc) async {
+  final org = bloc.activeOrg.valueWrapper?.value;
+  if (org == null) {
+    throw L10n.addOrgWithInn;
+  }
+  if (isEmpty(org.inn)) {
+    throw L10n.addInn;
+  }
+  final group = bloc.activeGroup.valueWrapper?.value;
+  if (group == null) {
+    throw L10n.addGroupAsInParus;
+  }
+  final url = 'https://api.parusinf.ru/c7cb76df-cd86-4c55-833b-6671a7f5d4d8/receive?org_inn=${org.inn}&group=${group.name}';
+  final uri = Uri.parse(url);
+  final request = http.MultipartRequest('GET', uri);
+  final response = await request.send();
+  var result = '';
+  if (response.statusCode == 200) {
+    final encoded = await response.stream.toBytes();
+    final lines = decodeCp1251(encoded).split('\n');
+    final content = lines.getRange(5, lines.length-2).join('\n');
+    await receiveFromContent(bloc, content);
+    result = L10n.successLoadFromParus;
+  } else {
+    result = '${L10n.receiveFromParusError}: ${response.reasonPhrase}';
+  }
+  return result;
+}
+
 bool isMonth(String str) {
   return ['ЯНВАРЬ', 'ФЕВРАЛЬ', 'МАРТ', 'АПРЕЛЬ', 'МАЙ', 'ИЮНЬ', 'ИЮЛЬ',
     'АВГУСТ', 'СЕНТЯБРЬ', 'ОКТЯБРЬ', 'НОЯБРЬ', 'ДЕКАБРЬ'].contains(str);
@@ -60,13 +90,13 @@ Future receiveFromContent(Bloc bloc, String content) async {
   if (orgName == null) {
     throw L10n.fileFormatError;
   }
-  var org = await bloc.db.orgsDao.find(orgName);
+  var org = await bloc.db.orgsDao.findByInn(orgInn);
   if (org == null) {
     org = await bloc.insertOrg(name: orgName, inn: orgInn);
   } else {
     bloc.setActiveOrg(org);
-    if (!isEqual(org.inn, orgInn)) {
-      bloc.db.orgsDao.update2(Org(id: org.id, name: orgName, inn: orgInn));
+    if (!isEqual(org.name, orgName)) {
+      await bloc.db.orgsDao.update2(Org(id: org.id, name: orgName, inn: orgInn));
     }
   }
 
@@ -81,18 +111,19 @@ Future receiveFromContent(Bloc bloc, String content) async {
   // График
   final schedule = await bloc.db.schedulesDao.find(scheduleCode) ??
       await bloc.insertSchedule(scheduleCode);
-  var group = await bloc.db.groupsDao.find(groupName, org, schedule);
+  var group = await bloc.db.groupsDao.find(groupName, org);
   if (group == null) {
     group = await bloc.insertGroup(
         name: groupName, schedule: schedule, meals: groupMeals);
   } else {
-    bloc.setActiveGroup(group);
-    if (group.meals != groupMeals) {
-      bloc.db.groupsDao.update2(Group(
+    await bloc.setActiveGroup(group);
+    await bloc.setActiveSchedule(schedule);
+    if (group.scheduleId != schedule.id || group.meals != groupMeals) {
+      await bloc.db.groupsDao.update2(Group(
           id: group?.id,
           orgId: group.orgId,
           name: group.name,
-          scheduleId: group.scheduleId,
+          scheduleId: schedule.id,
           meals: groupMeals));
     }
   }
@@ -126,19 +157,18 @@ Future receiveFromContent(Bloc bloc, String content) async {
       );
     } else {
       if (!isEqual(person.phone, personPhone) ||
-          !isEqual(person.phone2, personPhone2)) {
-        bloc.db.personsDao.update2(Person(
+          !isEqual(person.phone2, personPhone2) ||
+          !isEqual(person.middleName, personMiddleName) ||
+          !isDateEqual(person.birthday, personBirthday))
+      {
+        await bloc.db.personsDao.update2(Person(
           id: person.id,
           family: person.family,
           name: person.name,
-          middleName: person.middleName,
-          birthday: person.birthday,
-          phone: !isEqual(person.phone, personPhone)
-              ? personPhone
-              : person.phone,
-          phone2: !isEqual(person.phone2, personPhone2)
-              ? personPhone2
-              : person.phone2,
+          middleName: personMiddleName,
+          birthday: personBirthday,
+          phone: personPhone,
+          phone2: personPhone2,
         ));
       }
     }
@@ -157,7 +187,7 @@ Future receiveFromContent(Bloc bloc, String content) async {
     } else {
       if (!isDateEqual(groupPerson.beginDate, groupPersonBeginDate) ||
           !isDateEqual(groupPerson.endDate, groupPersonEndDate)) {
-        bloc.db.groupPersonsDao.update2(GroupPerson(
+        await bloc.db.groupPersonsDao.update2(GroupPerson(
           id: groupPerson.id,
           groupId: groupPerson.groupId,
           personId: groupPerson.personId,

@@ -1,7 +1,7 @@
 name: timesheets
 description: Табели посещаемости
 
-version: 2022.11.2
+version: 2022.11.6
 
 environment:
   sdk: ">=2.12.0 <4.0.0"
@@ -28,7 +28,7 @@ dependencies:
   uri_to_file:
   http:
   http_parser:
-  flutter_inappwebview:
+  qr_flutter:
 
 dev_dependencies:
   drift_dev:

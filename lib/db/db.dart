@@ -316,8 +316,19 @@ class OrgsDao extends DatabaseAccessor<Db> with _$OrgsDaoMixin {
 
   /// Поиск организации
   Future<Org?> find(String name) async {
-      return await (select(db.orgs)..where((e) => e.name.equals(name)))
+    return await (select(db.orgs)..where((e) => e.name.equals(name)))
+        .getSingleOrNull();
+  }
+
+  /// Поиск организации по ИНН
+  Future<Org?> findByInn(String? inn) async {
+    if (inn == null) {
+      return null;
+    } else {
+      return await (select(db.orgs)
+        ..where((e) => e.inn.equals(inn)))
           .getSingleOrNull();
+    }
   }
 }
 
@@ -595,12 +606,11 @@ class GroupsDao extends DatabaseAccessor<Db> with _$GroupsDaoMixin {
   }
 
   /// Поиск группы
-  find(String name, Org org, Schedule schedule) async {
+  find(String name, Org org) async {
       return await (select(db.groups)
             ..where((e) =>
                 e.name.equals(name) &
-                e.orgId.equals(org.id) &
-                e.scheduleId.equals(schedule.id)))
+                e.orgId.equals(org.id)))
           .getSingleOrNull();
   }
 }
