@@ -59,7 +59,8 @@ Future receiveFromParus(Bloc bloc) async {
     await receiveFromContent(bloc, content);
     result = L10n.successLoadFromParus;
   } else {
-    result = '${L10n.receiveFromParusError}: ${response.reasonPhrase}';
+    final responseText = await response.stream.bytesToString();
+    result = '${L10n.receiveFromParusError}: $responseText';
   }
   return result;
 }
