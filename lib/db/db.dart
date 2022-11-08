@@ -18,11 +18,11 @@ class OrgView extends Org {
     int? activeGroupId,
     this.groupCount = 0,
   }) : super(
-          id: id,
-          name: name,
-          inn: inn,
-          activeGroupId: activeGroupId,
-        );
+    id: id,
+    name: name,
+    inn: inn,
+    activeGroupId: activeGroupId,
+  );
 }
 
 /// Представление графика
@@ -34,9 +34,9 @@ class ScheduleView extends Schedule {
     required String code,
     this.groupCount = 0,
   }) : super(
-          id: id,
-          code: code,
-        );
+    id: id,
+    code: code,
+  );
 }
 
 /// Представление персоны
@@ -53,14 +53,14 @@ class PersonView extends Person {
     String? phone2,
     this.groupCount = 0,
   }) : super(
-          id: id,
-          family: family,
-          name: name,
-          middleName: middleName,
-          birthday: birthday,
-          phone: phone,
-          phone2: phone2,
-        );
+    id: id,
+    family: family,
+    name: name,
+    middleName: middleName,
+    birthday: birthday,
+    phone: phone,
+    phone2: phone2,
+  );
 }
 
 /// Представление группы
@@ -76,22 +76,26 @@ class GroupView extends Group {
     int? meals,
     this.personCount = 0,
   }) : super(
-          id: id,
-          orgId: orgId,
-          name: name,
-          scheduleId: schedule?.id ?? 0,
-          meals: meals,
-        );
+    id: id,
+    orgId: orgId,
+    name: name,
+    scheduleId: schedule?.id ?? 0,
+    meals: meals,
+  );
 
-  GroupView copy(
-          {int? id, int? orgId, String? name, Schedule? schedule, int? meals}) =>
-      GroupView(
-        id: id ?? this.id,
-        orgId: orgId ?? this.orgId,
-        name: name ?? this.name,
-        schedule: schedule ?? this.schedule,
-        meals: meals ?? this.meals,
-      );
+  GroupView copy({
+    int? id,
+    int? orgId,
+    String? name,
+    Schedule? schedule,
+    int? meals
+  }) => GroupView(
+    id: id ?? this.id,
+    orgId: orgId ?? this.orgId,
+    name: name ?? this.name,
+    schedule: schedule ?? this.schedule,
+    meals: meals ?? this.meals,
+  );
 }
 
 /// Персона группы
@@ -107,19 +111,19 @@ class GroupPersonView extends GroupPerson {
     DateTime? endDate,
     this.attendanceCount = 0,
   }) : super(
-          id: id,
-          groupId: groupId,
-          personId: person.id,
-          beginDate: beginDate,
-          endDate: endDate,
-        );
+    id: id,
+    groupId: groupId,
+    personId: person.id,
+    beginDate: beginDate,
+    endDate: endDate,
+  );
 
-  GroupPersonView copy(
-          {int? id,
-          int? groupId,
-          Person? person,
-          DateTime? beginDate,
-          DateTime? endDate}) =>
+  GroupPersonView copy({
+    int? id,
+    int? groupId,
+    Person? person,
+    DateTime? beginDate,
+    DateTime? endDate}) =>
       GroupPersonView(
         id: id ?? this.id,
         groupId: groupId ?? this.groupId,
@@ -139,14 +143,16 @@ class AttendanceView extends Attendance {
     required int groupPersonId,
     required DateTime date,
     required double hoursFact,
+    required bool isIllness,
     required this.groupId,
     required this.meals,
   }) : super(
-          id: id,
-          groupPersonId: groupPersonId,
-          date: date,
-          hoursFact: hoursFact,
-        );
+    id: id,
+    groupPersonId: groupPersonId,
+    date: date,
+    hoursFact: hoursFact,
+    isIllness: isIllness,
+  );
 }
 
 /// Группа и период
@@ -183,7 +189,7 @@ class Db extends _$Db {
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   /// Обновление структуры базы данных
   @override
@@ -791,12 +797,14 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
     required GroupPerson groupPerson,
     required DateTime date,
     required double hoursFact,
+    required bool isIllness,
   }) async {
     final id = await into(db.attendances).insert(
       AttendancesCompanion(
-        groupPersonId: Value(groupPerson.id),
-        date: Value(date),
-        hoursFact: Value(hoursFact),
+          groupPersonId: Value(groupPerson.id),
+          date: Value(date),
+          hoursFact: Value(hoursFact),
+          isIllness: Value(isIllness),
       ),
       mode: InsertMode.insertOrReplace,
     );
@@ -804,16 +812,20 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
         id: id,
         groupPersonId: groupPerson.id,
         date: date,
-        hoursFact: hoursFact);
+        hoursFact: hoursFact,
+        isIllness: isIllness,
+    );
   }
 
   /// Исправление посещаемости
-  Future<bool> update2(Attendance attendance) async =>
-      await update(db.attendances).replace(attendance);
+  Future<bool> update2(Attendance attendance) async {
+    return await update(db.attendances).replace(attendance);
+  }
 
   /// Удаление посещаемости
-  Future<bool> delete2(Attendance attendance) async =>
-      (await delete(db.attendances).delete(attendance)) > 0 ? true : false;
+  Future<bool> delete2(Attendance attendance) async {
+    return (await delete(db.attendances).delete(attendance)) > 0 ? true : false;
+  }
 
   /// Отслеживание посещаемости персон в группе за период
   Stream<List<Attendance>> watch(GroupPeriod? groupPeriod) {
@@ -823,10 +835,11 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
       groupPeriod?.period ?? DateTime(1900, 0, 0),
     ).map((row) =>
         Attendance(
-          id: row.id,
-          groupPersonId: row.groupPersonId,
-          date: row.date,
-          hoursFact: row.hoursFact,
+            id: row.id,
+            groupPersonId: row.groupPersonId,
+            date: row.date,
+            hoursFact: row.hoursFact,
+            isIllness: row.isIllness,
         )).watch();
   }
 
@@ -842,10 +855,10 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
           groupPersonId: row.groupPersonId,
           date: row.date,
           hoursFact: row.hoursFact,
+          isIllness: row.isIllness,
           groupId: row.groupId,
           meals: row.meals!,
-        ))
-        .watch();
+        )).watch();
   }
 
   /// Поиск посещаемости

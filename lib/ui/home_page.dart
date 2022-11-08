@@ -39,7 +39,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
   }
-  
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -70,22 +70,22 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         stream: _bloc.activeGroup,
         builder: (context, snapshot) => snapshot.hasData
             ? InkWell(
-                onTap: () async {
-                  await push(context, const GroupPersonsDictionary());
-                },
-                child: text(snapshot.data!.name),
-              )
+          onTap: () async {
+            await push(context, const GroupPersonsDictionary());
+          },
+          child: text(snapshot.data!.name),
+        )
             : StreamBuilder<OrgView?>(
-                stream: _bloc.activeOrg,
-                builder: (context, snapshot) => snapshot.hasData
-                    ? InkWell(
-                        onTap: () => editOrg(context, _bloc.activeOrg.valueWrapper?.value),
-                        child: text(snapshot.data!.name),
-                      )
-                    : InkWell(
-                        onTap: () => push(context, const HelpPage()),
-                        child: text(L10n.timesheets),
-                      )),
+            stream: _bloc.activeOrg,
+            builder: (context, snapshot) => snapshot.hasData
+                ? InkWell(
+              onTap: () => editOrg(context, _bloc.activeOrg.valueWrapper?.value),
+              child: text(snapshot.data!.name),
+            )
+                : InkWell(
+              onTap: () => push(context, const HelpPage()),
+              child: text(L10n.timesheets),
+            )),
       ),
       actions: <Widget>[
         DropdownButtonHideUnderline(
@@ -140,14 +140,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         return HorizontalDataTable(
                           leftHandSideColumnWidth: fixedColumnWidth,
                           rightHandSideColumnWidth:
-                              columnWidth * (_bloc.activePeriod.valueWrapper.value.day + 1),
+                          columnWidth * (_bloc.activePeriod.valueWrapper.value.day + 1),
                           isFixedHeader: true,
                           headerWidgets: createTitleRow(),
                           leftSideItemBuilder: createFixedColumn,
                           rightSideItemBuilder: createTableRow,
                           itemCount: _groupPeriodPersons!.length,
                           rowSeparatorWidget:
-                              const Divider(color: lineColor, height: 0.5),
+                          const Divider(color: lineColor, height: 0.5),
                         );
                         // Посещаемость загружаются
                       } else {
@@ -182,8 +182,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// Получение табеля
   Future receive() async {
     try {
-      var result = '';
-      if (_bloc.parusIntegration) {
+      String result = '';
+      if (_bloc.useParusIntegration) {
         result = await receiveFromParus(_bloc);
       } else {
         result = await pickAndReceiveFromFile(_bloc);
@@ -212,7 +212,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           _bloc.activePeriod.valueWrapper?.value,
           _groupPeriodPersons!,
           _groupAttendances!,
-          _bloc.parusIntegration,
+          _bloc.useParusIntegration,
         );
         showMessage(_scaffoldKey, result);
       } catch (e) {
@@ -231,13 +231,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             onTap: selectPeriod,
             child: snapshot.hasData
                 ? createCell(
-                    periodToString(snapshot.data!),
-                    width: fixedColumnWidth,
-                    alignment: Alignment.centerLeft,
-                    leftPadding: leftPadding,
-                    color: Colors.lightBlue,
-                    fontSize: 14.0,
-                  )
+              periodToString(snapshot.data!),
+              width: fixedColumnWidth,
+              alignment: Alignment.centerLeft,
+              leftPadding: leftPadding,
+              color: Colors.lightBlue,
+              fontSize: 14.0,
+            )
                 : const Text('')),
       ),
     ];
@@ -277,8 +277,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       final dateCountStr = dateCount! > 0.0
           ? dateCount.toString()
           : hoursNorm > 0.0
-              ? '0'
-              : '';
+          ? '0'
+          : '';
       // Добавление ячейки в строку
       rowCells.add(
         StreamBuilder<DateTime?>(
@@ -292,7 +292,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   alignment: Alignment.center,
                   borderStyle: BorderStyle.solid,
                   titleColor:
-                      isHoliday(_bloc, date) ? Colors.red : Colors.black87,
+                  isHoliday(_bloc, date) ? Colors.red : Colors.black87,
                   subtitleColor: Colors.black54,
                   wrap: false,
                   onTap: () => { fillPresenceOfAllPersonsOnDate(date, hoursNorm) },
@@ -308,43 +308,44 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   /// Создание ячейки таблицы
   Widget createCell(
-    String title, {
-    width = columnWidth,
-    alignment = Alignment.center,
-    leftPadding = 0.0,
-    borderStyle = BorderStyle.solid,
-    color = Colors.black87,
-    fontSize = 14.0,
-    fontWeight = FontWeight.normal,
-  }) =>
-      Container(
-        width: width,
-        height: rowHeight,
-        padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
-        alignment: alignment,
-        decoration: BoxDecoration(
-          border: Border(
-              left:
-                  BorderSide(color: lineColor, width: 0.5, style: borderStyle)),
-        ),
-        child: text(title,
-            color: color, fontSize: fontSize, fontWeight: fontWeight),
-      );
+      String title, {
+        width = columnWidth,
+        alignment = Alignment.center,
+        leftPadding = 0.0,
+        borderStyle = BorderStyle.solid,
+        color = Colors.black87,
+        fontSize = 14.0,
+        fontWeight = FontWeight.normal,
+      }) {
+    return Container(
+      width: width,
+      height: rowHeight,
+      padding: EdgeInsets.fromLTRB(leftPadding, 0.0, 0.0, 0.0),
+      alignment: alignment,
+      decoration: BoxDecoration(
+        border: Border(
+            left:
+            BorderSide(color: lineColor, width: 0.5, style: borderStyle)),
+      ),
+      child: text(title,
+          color: color, fontSize: fontSize, fontWeight: fontWeight),
+    );
+  }
 
   /// Создание фиксированной ячейки
   Widget createFixedCell(
-    String title,
-    String? subtitle, {
-    double width = columnWidth,
-    alignment = Alignment.center,
-    crossAxisAlignment = CrossAxisAlignment.center,
-    titleColor = Colors.black87,
-    subtitleColor = Colors.black54,
-    leftPadding = 0.0,
-    borderStyle = BorderStyle.none,
-    Function()? onTap,
-    wrap = true,
-  }) {
+      String title,
+      String? subtitle, {
+        double width = columnWidth,
+        alignment = Alignment.center,
+        crossAxisAlignment = CrossAxisAlignment.center,
+        titleColor = Colors.black87,
+        subtitleColor = Colors.black54,
+        leftPadding = 0.0,
+        borderStyle = BorderStyle.none,
+        Function()? onTap,
+        wrap = true,
+      }) {
     final columnRows = <Widget>[];
     columnRows.add(text(title,
         fontSize: 16.0,
@@ -365,15 +366,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         decoration: BoxDecoration(
           border: Border(
               left:
-                  BorderSide(color: lineColor, width: 0.5, style: borderStyle)),
+              BorderSide(color: lineColor, width: 0.5, style: borderStyle)),
         ),
         child: wrap
             ? Wrap(children: columnRows)
             : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: crossAxisAlignment,
-                children: columnRows,
-              ),
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: crossAxisAlignment,
+          children: columnRows,
+        ),
       ),
     );
   }
@@ -400,46 +401,31 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[];
     // Итог по персоне за период
-    rowCells.add(createCell(personAttendances!.length.toString(),
+    final daysCount =
+        personAttendances?.where((e) => e.hoursFact > 0.0).toList().length;
+    rowCells.add(createCell(daysCount.toString(),
         color: Colors.black54, fontSize: 16.0));
     // Цикл по дням текущего периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
       Attendance? attendance;
-      for (var a in personAttendances) {
-        if (date == a.date) {
-          attendance = a;
-          break;
+      if (personAttendances != null) {
+        for (var a in personAttendances) {
+          if (date == a.date) {
+            attendance = a;
+            break;
+          }
         }
       }
-      // Есть посещаемость в этот день, её можно удалить
-      if (attendance != null) {
-        rowCells.add(
-          InkWell(
-            onTap: () {
-              if (!_bloc.doubleTapInTimesheet) deleteAttendance(attendance!);
-            },
-            onDoubleTap: () {
-              if (_bloc.doubleTapInTimesheet) deleteAttendance(attendance!);
-            },
-            child: createCell(
-              doubleToString(attendance.hoursFact),
-              color: isBirthday(date, groupPerson.person.birthday)
-                  ? Colors.red
-                  : Colors.green,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        );
-      // Посещаемости нет, её можно добавить
-      } else {
+      // Посещаемости нет в этот день, её можно добавить
+      if (attendance == null) {
         // Норма часов на дату
         var hoursNorm = getHoursNorm(_bloc, date);
         final hoursNormStr = (hoursNorm > 0.0 &&
-                (groupPerson.beginDate == null ||
-                    groupPerson.beginDate!.compareTo(date) <= 0) &&
-                (groupPerson.endDate == null ||
-                    groupPerson.endDate!.compareTo(date) >= 0))
+            (groupPerson.beginDate == null ||
+                groupPerson.beginDate!.compareTo(date) <= 0) &&
+            (groupPerson.endDate == null ||
+                groupPerson.endDate!.compareTo(date) >= 0))
             ? doubleToString(hoursNorm)
             : '';
         if (hoursNorm == 0.0) {
@@ -450,12 +436,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           InkWell(
             onTap: () {
               if (!_bloc.doubleTapInTimesheet) {
-                insertAttendance(groupPerson, date, hoursNorm);
+                insertAttendance(groupPerson, date, hoursNorm, false);
               }
             },
             onDoubleTap: () {
               if (_bloc.doubleTapInTimesheet) {
-                insertAttendance(groupPerson, date, hoursNorm);
+                insertAttendance(groupPerson, date, hoursNorm, false);
               }
             },
             child: createCell(
@@ -463,6 +449,78 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               color: isBirthday(date, groupPerson.person.birthday)
                   ? Colors.red[200]
                   : Colors.black12,
+            ),
+          ),
+        );
+      // Включена настройка типа дня
+      } else if (_bloc.useIsIllness) {
+        // Есть посещаемость, её можно переключить на отсутствие по болезни
+        if (attendance.hoursFact > 0.0) {
+          rowCells.add(
+            InkWell(
+              onTap: () {
+                if (!_bloc.doubleTapInTimesheet) {
+                  switchToIllness(attendance!);
+                }
+              },
+              onDoubleTap: () {
+                if (_bloc.doubleTapInTimesheet) {
+                  switchToIllness(attendance!);
+                }
+              },
+              child: createCell(
+                doubleToString(attendance.hoursFact),
+                color: isBirthday(date, groupPerson.person.birthday)
+                    ? Colors.red
+                    : Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        // Есть отсутствие по болезни, его можно удалить
+        } else {
+          rowCells.add(
+            InkWell(
+              onTap: () {
+                if (!_bloc.doubleTapInTimesheet) {
+                  deleteAttendance(attendance!);
+                }
+              },
+              onDoubleTap: () {
+                if (_bloc.doubleTapInTimesheet) {
+                  deleteAttendance(attendance!);
+                }
+              },
+              child: createCell(
+                L10n.b,
+                color: isBirthday(date, groupPerson.person.birthday)
+                    ? Colors.red
+                    : Colors.amber,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        }
+      // Настройка типа дня выключена, посещаемость можно удалить
+      } else {
+        rowCells.add(
+          InkWell(
+            onTap: () {
+              if (!_bloc.doubleTapInTimesheet) {
+                deleteAttendance(attendance!);
+              }
+            },
+            onDoubleTap: () {
+              if (_bloc.doubleTapInTimesheet) {
+                deleteAttendance(attendance!);
+              }
+            },
+            child: createCell(
+              doubleToString(attendance.hoursFact),
+              color: isBirthday(date, groupPerson.person.birthday)
+                  ? Colors.red
+                  : Colors.green,
+              fontWeight: FontWeight.bold,
             ),
           ),
         );
@@ -480,16 +538,40 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       initialDate: _bloc.activePeriod.valueWrapper?.value,
     );
     if (period != null) {
-      _bloc.setActivePeriod(lastDayOfMonth(period));
+      await _bloc.setActivePeriod(lastDayOfMonth(period));
     }
   }
 
   /// Добавление посещаемости
   insertAttendance(
-      GroupPersonView groupPerson, DateTime date, double hoursFact) async {
+      GroupPersonView groupPerson,
+      DateTime date,
+      double hoursFact,
+      bool isIllness,
+      ) async {
     try {
-      _bloc.insertAttendance(
-          groupPerson: groupPerson, date: date, hoursFact: hoursFact);
+      await _bloc.insertAttendance(
+        groupPerson: groupPerson,
+        date: date,
+        hoursFact: hoursFact,
+        isIllness: isIllness,
+      );
+    } catch (e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
+  }
+
+  /// Переключение на тип дня Б
+  switchToIllness(Attendance attendance) async {
+    try {
+      final newAttendance = Attendance(
+        id: attendance.id,
+        groupPersonId: attendance.groupPersonId,
+        date: attendance.date,
+        hoursFact: 0.0,
+        isIllness: true,
+      );
+      await _bloc.updateAttendance(newAttendance);
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());
     }
@@ -498,7 +580,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   /// Удаление посещаемости
   deleteAttendance(Attendance attendance) async {
     try {
-      _bloc.deleteAttendance(attendance);
+      await _bloc.deleteAttendance(attendance);
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());
     }
@@ -510,7 +592,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       final alertMessage = '${L10n.fillPresenceOfAllPersons} ${dateToString(date)}';
       showAlertDialog(context, alertMessage, () async {
         for (var groupPerson in _groupPeriodPersons!) {
-          insertAttendance(groupPerson, date, hoursNorm);
+          insertAttendance(groupPerson, date, hoursNorm, false);
         }
       });
     }

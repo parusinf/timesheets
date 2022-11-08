@@ -16,7 +16,7 @@ Future sendTimesheet(
     DateTime period,
     List<GroupPersonView> groupPersons,
     List<Attendance> attendances,
-    bool parusIntegration,
+    bool useParusIntegration,
     ) async
 {
   final content = createContent(org, group, period, groupPersons, attendances);
@@ -25,7 +25,7 @@ Future sendTimesheet(
   final filename = '${'${org.name}_${group.name}_$periodString'.replaceAll(exp, '_')}.csv';
 
   var result = '';
-  if (parusIntegration) {
+  if (useParusIntegration) {
     const url = 'https://api.parusinf.ru/c7cb76df-cd86-4c55-833b-6671a7f5d4d8';
     final uri = Uri.parse(url);
     final encoded = encodeCp1251(content);
@@ -90,10 +90,8 @@ String createContent(
   // Цикл по персонам в группе
   for (final groupPerson in groupPersons) {
     final person = groupPerson.person;
-    final personAttendances = attendances
-        .where((attendance) => attendance.groupPersonId == groupPerson.id);
-    final dates =
-    personAttendances.map((attendance) => attendance.date).toList();
+    final personAttendances = attendances.where((attendance) => attendance.groupPersonId == groupPerson.id);
+    final dates = personAttendances.map((attendance) => attendance.date).toList();
 
     // Персона в группе
     buffer.write('${person.family};${person.name};${trim(person.middleName)};');
@@ -107,9 +105,12 @@ String createContent(
       final date = DateTime(period.year, period.month, day);
       // Есть посещаемость в этот день
       if (dates.contains(date)) {
-        final attendance = personAttendances
-            .firstWhere((attendance) => attendance.date == date);
-        buffer.write(doubleToString(attendance.hoursFact));
+        final attendance = personAttendances.firstWhere((attendance) => attendance.date == date);
+        if (attendance.isIllness) {
+          buffer.write(L10n.b);
+        } else {
+          buffer.write(doubleToString(attendance.hoursFact));
+        }
       }
       buffer.write(';');
     }

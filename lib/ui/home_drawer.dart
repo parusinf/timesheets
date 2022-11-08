@@ -69,16 +69,16 @@ class HomeDrawerState extends State<HomeDrawer> {
                           ? _groupList(orientation, snapshot.data!.length)
                           : const Text('')),
                   const Spacer(),
-                  listHeater(Icons.auto_awesome, L10n.holidays,
+                  listHeater(Icons.settings, L10n.settings,
                       onHeaderTap: () async {
-                        await push(context, const HolidaysDictionary());
+                        await push(context, const SettingsEdit());
                         if (!mounted) return;
                         Navigator.pop(context);
                       }
                   ),
-                  listHeater(Icons.settings, L10n.settings,
+                  listHeater(Icons.auto_awesome, L10n.holidays,
                       onHeaderTap: () async {
-                        await push(context, const SettingsEdit());
+                        await push(context, const HolidaysDictionary());
                         if (!mounted) return;
                         Navigator.pop(context);
                       }

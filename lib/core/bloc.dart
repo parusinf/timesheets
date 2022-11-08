@@ -408,20 +408,24 @@ class Bloc {
     required GroupPerson groupPerson,
     required DateTime date,
     required double hoursFact,
+    required bool isIllness,
   }) async =>
       await db.attendancesDao.insert2(
-        groupPerson: groupPerson,
-        date: date,
-        hoursFact: hoursFact,
+          groupPerson: groupPerson,
+          date: date,
+          hoursFact: hoursFact,
+          isIllness: isIllness,
       );
 
   /// Исправление посещаемости
-  Future<bool> updateAttendance(Attendance attendance) async =>
-      await db.attendancesDao.update2(attendance);
+  Future<bool> updateAttendance(Attendance attendance) async {
+    return await db.attendancesDao.update2(attendance);
+  }
 
   /// Удаление посещаемости
-  Future<bool> deleteAttendance(Attendance attendance) async =>
-      await db.attendancesDao.delete2(attendance);
+  Future<bool> deleteAttendance(Attendance attendance) async {
+    return await db.attendancesDao.delete2(attendance);
+  }
 
   // Настройки -----------------------------------------------------------------
   Setting getSetting(String name) =>
@@ -429,7 +433,9 @@ class Bloc {
 
   get doubleTapInTimesheet => getSetting(L10n.doubleTapInTimesheet).boolValue;
 
-  get parusIntegration => getSetting(L10n.parusIntegration).boolValue;
+  get useParusIntegration => getSetting(L10n.useParusIntegration).boolValue;
+
+  get useIsIllness => getSetting(L10n.isIllness).boolValue;
 
   /// Исправление настройки
   Future<bool> updateSetting(Setting setting) async =>

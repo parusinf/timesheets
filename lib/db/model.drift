@@ -111,7 +111,9 @@ CREATE TABLE attendances (
   -- Дата посещения
   date               DATE NOT NULL,
   -- Количество часов
-  hoursFact          REAL NOT NULL
+  hoursFact          REAL NOT NULL,
+  -- Отсутствие по болезни
+  isIllness          BOOL NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonId, date);
 

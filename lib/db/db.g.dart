@@ -1912,11 +1912,13 @@ class Attendance extends DataClass implements Insertable<Attendance> {
   final int groupPersonId;
   final DateTime date;
   final double hoursFact;
+  final bool isIllness;
   const Attendance(
       {required this.id,
       required this.groupPersonId,
       required this.date,
-      required this.hoursFact});
+      required this.hoursFact,
+      required this.isIllness});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1924,6 +1926,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
     map['groupPersonId'] = Variable<int>(groupPersonId);
     map['date'] = Variable<DateTime>(date);
     map['hoursFact'] = Variable<double>(hoursFact);
+    map['isIllness'] = Variable<bool>(isIllness);
     return map;
   }
 
@@ -1933,6 +1936,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
       groupPersonId: Value(groupPersonId),
       date: Value(date),
       hoursFact: Value(hoursFact),
+      isIllness: Value(isIllness),
     );
   }
 
@@ -1944,6 +1948,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
       groupPersonId: serializer.fromJson<int>(json['groupPersonId']),
       date: serializer.fromJson<DateTime>(json['date']),
       hoursFact: serializer.fromJson<double>(json['hoursFact']),
+      isIllness: serializer.fromJson<bool>(json['isIllness']),
     );
   }
   @override
@@ -1954,16 +1959,22 @@ class Attendance extends DataClass implements Insertable<Attendance> {
       'groupPersonId': serializer.toJson<int>(groupPersonId),
       'date': serializer.toJson<DateTime>(date),
       'hoursFact': serializer.toJson<double>(hoursFact),
+      'isIllness': serializer.toJson<bool>(isIllness),
     };
   }
 
   Attendance copyWith(
-          {int? id, int? groupPersonId, DateTime? date, double? hoursFact}) =>
+          {int? id,
+          int? groupPersonId,
+          DateTime? date,
+          double? hoursFact,
+          bool? isIllness}) =>
       Attendance(
         id: id ?? this.id,
         groupPersonId: groupPersonId ?? this.groupPersonId,
         date: date ?? this.date,
         hoursFact: hoursFact ?? this.hoursFact,
+        isIllness: isIllness ?? this.isIllness,
       );
   @override
   String toString() {
@@ -1971,13 +1982,15 @@ class Attendance extends DataClass implements Insertable<Attendance> {
           ..write('id: $id, ')
           ..write('groupPersonId: $groupPersonId, ')
           ..write('date: $date, ')
-          ..write('hoursFact: $hoursFact')
+          ..write('hoursFact: $hoursFact, ')
+          ..write('isIllness: $isIllness')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, groupPersonId, date, hoursFact);
+  int get hashCode =>
+      Object.hash(id, groupPersonId, date, hoursFact, isIllness);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1985,7 +1998,8 @@ class Attendance extends DataClass implements Insertable<Attendance> {
           other.id == this.id &&
           other.groupPersonId == this.groupPersonId &&
           other.date == this.date &&
-          other.hoursFact == this.hoursFact);
+          other.hoursFact == this.hoursFact &&
+          other.isIllness == this.isIllness);
 }
 
 class AttendancesCompanion extends UpdateCompanion<Attendance> {
@@ -1993,17 +2007,20 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
   final Value<int> groupPersonId;
   final Value<DateTime> date;
   final Value<double> hoursFact;
+  final Value<bool> isIllness;
   const AttendancesCompanion({
     this.id = const Value.absent(),
     this.groupPersonId = const Value.absent(),
     this.date = const Value.absent(),
     this.hoursFact = const Value.absent(),
+    this.isIllness = const Value.absent(),
   });
   AttendancesCompanion.insert({
     this.id = const Value.absent(),
     required int groupPersonId,
     required DateTime date,
     required double hoursFact,
+    this.isIllness = const Value.absent(),
   })  : groupPersonId = Value(groupPersonId),
         date = Value(date),
         hoursFact = Value(hoursFact);
@@ -2012,12 +2029,14 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
     Expression<int>? groupPersonId,
     Expression<DateTime>? date,
     Expression<double>? hoursFact,
+    Expression<bool>? isIllness,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (groupPersonId != null) 'groupPersonId': groupPersonId,
       if (date != null) 'date': date,
       if (hoursFact != null) 'hoursFact': hoursFact,
+      if (isIllness != null) 'isIllness': isIllness,
     });
   }
 
@@ -2025,12 +2044,14 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
       {Value<int>? id,
       Value<int>? groupPersonId,
       Value<DateTime>? date,
-      Value<double>? hoursFact}) {
+      Value<double>? hoursFact,
+      Value<bool>? isIllness}) {
     return AttendancesCompanion(
       id: id ?? this.id,
       groupPersonId: groupPersonId ?? this.groupPersonId,
       date: date ?? this.date,
       hoursFact: hoursFact ?? this.hoursFact,
+      isIllness: isIllness ?? this.isIllness,
     );
   }
 
@@ -2049,6 +2070,9 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
     if (hoursFact.present) {
       map['hoursFact'] = Variable<double>(hoursFact.value);
     }
+    if (isIllness.present) {
+      map['isIllness'] = Variable<bool>(isIllness.value);
+    }
     return map;
   }
 
@@ -2058,7 +2082,8 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
           ..write('id: $id, ')
           ..write('groupPersonId: $groupPersonId, ')
           ..write('date: $date, ')
-          ..write('hoursFact: $hoursFact')
+          ..write('hoursFact: $hoursFact, ')
+          ..write('isIllness: $isIllness')
           ..write(')'))
         .toString();
   }
@@ -2095,8 +2120,16 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
       type: DriftSqlType.double,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
+  final VerificationMeta _isIllnessMeta = const VerificationMeta('isIllness');
+  late final GeneratedColumn<bool> isIllness = GeneratedColumn<bool>(
+      'isIllness', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT FALSE',
+      defaultValue: const CustomExpression<bool>('FALSE'));
   @override
-  List<GeneratedColumn> get $columns => [id, groupPersonId, date, hoursFact];
+  List<GeneratedColumn> get $columns =>
+      [id, groupPersonId, date, hoursFact, isIllness];
   @override
   String get aliasedName => _alias ?? 'attendances';
   @override
@@ -2129,6 +2162,10 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
     } else if (isInserting) {
       context.missing(_hoursFactMeta);
     }
+    if (data.containsKey('isIllness')) {
+      context.handle(_isIllnessMeta,
+          isIllness.isAcceptableOrUnknown(data['isIllness']!, _isIllnessMeta));
+    }
     return context;
   }
 
@@ -2146,6 +2183,8 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
       hoursFact: attachedDatabase.options.types
           .read(DriftSqlType.double, data['${effectivePrefix}hoursFact'])!,
+      isIllness: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}isIllness'])!,
     );
   }
 
@@ -2935,6 +2974,7 @@ abstract class _$Db extends GeneratedDatabase {
         groupPersonId: row.read<int>('groupPersonId'),
         date: row.read<DateTime>('date'),
         hoursFact: row.read<double>('hoursFact'),
+        isIllness: row.read<bool>('isIllness'),
       );
     });
   }
@@ -3215,6 +3255,7 @@ class OrgAttendancesResult {
   final int groupPersonId;
   final DateTime date;
   final double hoursFact;
+  final bool isIllness;
   OrgAttendancesResult({
     required this.groupId,
     this.meals,
@@ -3222,6 +3263,7 @@ class OrgAttendancesResult {
     required this.groupPersonId,
     required this.date,
     required this.hoursFact,
+    required this.isIllness,
   });
 }
 

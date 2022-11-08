@@ -14,9 +14,9 @@ Future pickAndReceiveFromFile(Bloc bloc) async {
   );
   if (result != null && result.files.isNotEmpty) {
     final file = File(result.files.first.path!);
-    await receiveFromFile(bloc, file);
+    return await receiveFromFile(bloc, file);
   } else {
-    throw L10n.fileNotSelected;
+    return L10n.fileNotSelected;
   }
 }
 
@@ -33,6 +33,7 @@ Future receiveFromFile(Bloc bloc, File file) async {
     }
   }
   await receiveFromContent(bloc, content);
+  return L10n.successLoadFromFile;
 }
 
 Future receiveFromParus(Bloc bloc) async {
@@ -206,20 +207,41 @@ Future receiveFromContent(Bloc bloc, String content) async {
     // Посещаемость персоны в группе
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
-      final hoursFact = stringToDouble(personColumns[7 + day]);
-      final attendanceSpecified = hoursFact != null && hoursFact > 0.0;
+      final attendanceValue = personColumns[7 + day];
       var attendance = await bloc.db.attendancesDao.find(groupPerson, date);
-      if (attendance == null && attendanceSpecified) {
-        attendance = await bloc.insertAttendance(
-          groupPerson: groupPerson,
-          date: date,
-          hoursFact: hoursFact ?? 0.0,
-        );
-      } else {
-        if (attendance != null) {
-          if (attendanceSpecified && attendance.hoursFact != hoursFact) {
-            await bloc.db.attendancesDao.update2(attendance);
-          }
+
+      // Посещаемость загружена
+      if (isNotEmpty(attendanceValue)) {
+        double hoursFact = 0.0;
+        bool isIllness = false;
+
+        // Пропуск по болезни
+        if (attendanceValue == L10n.b) {
+          isIllness = true;
+        // Часы посещения
+        } else {
+          hoursFact = stringToDouble(attendanceValue)!;
+        }
+
+        // Посещаемости нет - добавляем
+        if (attendance == null) {
+          attendance = await bloc.insertAttendance(
+            groupPerson: groupPerson,
+            date: date,
+            hoursFact: hoursFact,
+            isIllness: isIllness,
+          );
+        // Посещаемость есть, но отличается - исправляем
+        } else if (attendance.hoursFact != hoursFact) {
+          await bloc.db.attendancesDao.update2(
+            Attendance(
+              id: attendance.id,
+              groupPersonId: attendance.groupPersonId,
+              date: date,
+              hoursFact: hoursFact,
+              isIllness: isIllness,
+            )
+          );
         }
       }
     }

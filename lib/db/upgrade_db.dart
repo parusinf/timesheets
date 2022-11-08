@@ -39,7 +39,7 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
         boolValue: false, isUserSetting: true);
   }
   if (from < 6) {
-    await db.settingsDao.insert2(L10n.parusIntegration, ValueType.bool,
+    await db.settingsDao.insert2(L10n.useParusIntegration, ValueType.bool,
         boolValue: true, isUserSetting: true);
   }
   if (from < 7) {
@@ -48,5 +48,10 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
   if (from < 8) {
     await m.addColumn(db.orgs, db.orgs.lastPay);
     await m.addColumn(db.orgs, db.orgs.totalSum);
+  }
+  if (from < 9) {
+    await m.addColumn(db.attendances, db.attendances.isIllness);
+    await db.settingsDao.insert2(L10n.isIllness, ValueType.bool,
+        boolValue: true, isUserSetting: true);
   }
 }

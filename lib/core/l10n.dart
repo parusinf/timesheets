@@ -18,6 +18,7 @@ class L10n {
       'continueAction': 'Продолжить',
       'countryPhoneCode': '+7 ',
       'dataLoading': 'Загрузка данных',
+      'isIllness': 'Отсутствие по болезни',
       'days': 'Дней',
       'doubleTapInTimesheet': 'Двойное нажатие в табеле',
       'dupOrgInn': 'Организация с таким ИНН уже добавлена',
@@ -64,7 +65,7 @@ class L10n {
       'noValue': 'Отсутствует значение',
       'org': 'Организация',
       'orgs': 'Организации',
-      'parusIntegration': 'Интеграция с Парусом',
+      'useParusIntegration': 'Интеграция с Парусом',
       'permissionDenied': 'Разрешение не получено',
       'person': 'Персона',
       'personBirthday': 'Дата рождения',
@@ -87,9 +88,11 @@ class L10n {
       'setInn': 'Для оплаты требуется ИНН организации',
       'settings': 'Настройки',
       'su': 'вс',
+      'successLoadFromFile': 'Табель посещаемости успешно загружен из файла',
       'successLoadFromParus': 'Табель посещаемости успешно загружен из Паруса',
       'successUnloadToFile': 'Табель посещаемости успешно выгружен в файл',
       'support': 'Техподдержка',
+      'supportPayment': 'Оплата техподдержки',
       'th': 'чт',
       'timesheet': 'Табель посещаемости',
       'timesheets': 'Табели посещаемости',
@@ -105,7 +108,7 @@ class L10n {
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
       'workday': 'Перенос рабочего дня на',
-      'supportPayment': 'Оплата техподдержки',
+      'b': 'Б',
     }
   };
   static get addGroup => _l10n[languageCode]!['addGroup'];
@@ -123,6 +126,7 @@ class L10n {
   static get continueAction => _l10n[languageCode]!['continueAction'];
   static get countryPhoneCode => _l10n[languageCode]!['countryPhoneCode'];
   static get dataLoading => _l10n[languageCode]!['dataLoading'];
+  static get isIllness => _l10n[languageCode]!['isIllness'];
   static get days => _l10n[languageCode]!['days'];
   static get doubleTapInTimesheet => _l10n[languageCode]!['doubleTapInTimesheet'];
   static get dupOrgInn => _l10n[languageCode]!['dupOrgInn'];
@@ -168,7 +172,7 @@ class L10n {
   static get noValue => _l10n[languageCode]!['noValue'];
   static get org => _l10n[languageCode]!['org'];
   static get orgs => _l10n[languageCode]!['orgs'];
-  static get parusIntegration => _l10n[languageCode]!['parusIntegration'];
+  static get useParusIntegration => _l10n[languageCode]!['useParusIntegration'];
   static get permissionDenied => _l10n[languageCode]!['permissionDenied'];
   static get person => _l10n[languageCode]!['person'];
   static get personBirthday => _l10n[languageCode]!['personBirthday'];
@@ -191,9 +195,11 @@ class L10n {
   static get setInn => _l10n[languageCode]!['setInn'];
   static get settings => _l10n[languageCode]!['settings'];
   static get su => _l10n[languageCode]!['su'];
+  static get successLoadFromFile => _l10n[languageCode]!['successLoadFromFile'];
   static get successLoadFromParus => _l10n[languageCode]!['successLoadFromParus'];
   static get successUnloadToFile => _l10n[languageCode]!['successUnloadToFile'];
   static get support => _l10n[languageCode]!['support'];
+  static get supportPayment => _l10n[languageCode]!['supportPayment'];
   static get th => _l10n[languageCode]!['th'];
   static get timesheet => _l10n[languageCode]!['timesheet'];
   static get timesheets => _l10n[languageCode]!['timesheets'];
@@ -209,5 +215,5 @@ class L10n {
   static get withoutInn => _l10n[languageCode]!['withoutInn'];
   static get withoutTime => _l10n[languageCode]!['withoutTime'];
   static get workday => _l10n[languageCode]!['workday'];
-  static get supportPayment => _l10n[languageCode]!['supportPayment'];
+  static get b => _l10n[languageCode]!['b'];
 }
