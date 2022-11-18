@@ -203,7 +203,7 @@ class OrgReportState extends State<OrgReport> {
       final hoursNorm = getHoursNorm(_bloc, date);
       // Количество присутствующих персон на дату
       final dateCount = _orgAttendances!
-          .where((attendance) => attendance.date == date)
+          .where((e) => e.date == date && e.hoursFact > 0.0)
           .toList()
           .length;
       final dateCountStr = dateCount > 0.0
@@ -332,7 +332,9 @@ class OrgReportState extends State<OrgReport> {
     final period = _bloc.activePeriod.valueWrapper?.value;
     final rowCells = <Widget>[];
     // Итог по персоне за период
-    rowCells.add(_createCell(attendances.length.toString(),
+    final daysCount =
+        attendances.where((e) => e.hoursFact > 0.0).toList().length;
+    rowCells.add(_createCell(daysCount.toString(),
         color: Colors.black54, fontSize: 16.0));
     // Цикл по дням текущего периода
     for (int day = 1; day <= period.day; day++) {
