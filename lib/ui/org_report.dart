@@ -341,7 +341,7 @@ class OrgReportState extends State<OrgReport> {
       final date = DateTime(period.year, period.month, day);
       final hoursNorm = getHoursNorm(_bloc, date);
       final hoursFact = attendances
-          .where((attendance) => attendance.date == date)
+          .where((e) => e.date == date && e.hoursFact > 0.0)
           .toList()
           .length;
       final dateCountStr = hoursFact > 0.0

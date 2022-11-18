@@ -63,7 +63,7 @@ class HelpPageState extends State<HelpPage> {
 
 ### 1.4. Текущая версия
 
-2022.11.18
+2022.11.19
 
 ## 2. Жизненный цикл
 
