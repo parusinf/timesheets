@@ -106,24 +106,36 @@ class HelpPageState extends State<HelpPage> {
 
 Страница приложения в **Google Play** https://play.google.com/store/apps/details?id=ru.parusinf.timesheets
 
-#### 2.2.2 Android без Google Play
+#### 2.2.2 iOS
 
-1. Скачайте на смартфон и запустите установочный файл (если ссылка не открывается, скопируйте и вставьте её в отдельное окно браузера) http://timesheets.parusinf.ru/android/timesheets.apk
-2. При сообщении **Заблокировано Play Защитой** нажмите кнопку **ВСЕ РАВНО УСТАНОВИТЬ**.
-3. При необходимости включите в настройках Android разрешение на установку из неизвестных источников.
+1. Откройте на смартфоне приложение **App Store**
+2. В строке поиска введите **Табели посещаемости**
+3. Выберите и установите приложение разработчика **Pavel Nikitin**
 
-#### 2.2.3 Linux
+Страница приложения в **App Store** https://apps.apple.com/ru/app/id1548110226
 
-1. Скачайте и разархивируйте файл http://timesheets.parusinf.ru/linux/timesheets.zip (если ссылка не открывается, скопируйте и вставьте её в отдельное окно браузера)
-2. Запустите **timesheets/timesheets**
-
-#### 2.2.4 Windows 10
+#### 2.2.3 Windows 10
 
 1. Скачайте и разархивируйте файл http://timesheets.parusinf.ru/windows/timesheets-windows.zip
 2. Установите **Распространяемый пакет Visual C++ для Visual Studio 2015-2022** http://timesheets.parusinf.ru/windows/VC_redist.x64.exe
 3. Запустите **timesheets/timesheets.exe** (если SmartScreen блокирует запуск, нажмите **Всё равно выполнить**)
 4. Закрепите ярлык на панели задач
-5. Установите Telegram Desktop для удобного получения табелей из Паруса через телеграм-бот https://desktop.telegram.org/
+
+#### 2.2.4 Android через RuStore
+
+1. Скачайте и установите на телефоне RuStore, если он ещё не установлен https://rustore.ru/download
+2. Установите приложение **Табели посещаемости** https://apps.rustore.ru/app/ru.parusinf.timesheets
+
+#### 2.2.5 Android через apk
+
+1. Скачайте и установите на телефоне apk-файл http://timesheets.parusinf.ru/android/timesheets.apk
+2. При сообщении **Заблокировано Play Защитой** нажмите кнопку **ВСЕ РАВНО УСТАНОВИТЬ**.
+3. При необходимости включите в настройках Android разрешение на установку из неизвестных источников.
+
+#### 2.2.6 Linux
+
+1. Скачайте и разархивируйте файл http://timesheets.parusinf.ru/linux/timesheets.zip
+2. Запустите **timesheets/timesheets**
 
 > если ссылка не открывается, скопируйте и вставьте её в отдельное окно браузера
 
