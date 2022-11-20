@@ -215,6 +215,7 @@ class HelpPageState extends State<HelpPage> {
 
 ### 6.1. Реестры
 
+* RuStore https://apps.rustore.ru/app/ru.parusinf.timesheets
 * Единый реестр российских программ для ЭВМ и баз данных https://reestr.digital.gov.ru/reestr/339496/
 * Роспатент https://www1.fips.ru/ofpstorage/Doc/PrEVM/RUNWPR/000/002/021/613/419/2021613419-00001/DOCUMENT.PDF
 
