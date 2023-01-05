@@ -50,7 +50,7 @@ String getAppCode() {
       .split(' ')
       .map((e) => int.parse(e, radix: 16))
       .map((e) => e ^ int.parse('daceface', radix: 16))
-      .map((e) => e.toRadixString(16));
+      .map((e) => e.toRadixString(16).padLeft(8, '0'));
   return '${c.elementAt(0)}-${insd(c.elementAt(1))}${insd(c.elementAt(2)).substring(0, 9)}${c.elementAt(3)}';
 }
 
