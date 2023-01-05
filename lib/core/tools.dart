@@ -35,10 +35,15 @@ String personName(Person person, {showMiddleName = true}) =>
         ? person.name
         : '${person.name} ${person.middleName}';
 
-/// Заглавная первая буква в строке
 extension StringExtension on String {
+  /// Заглавная первая буква в строке
   String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1)}";
+    return '${this[0].toUpperCase()}${substring(1)}';
+  }
+
+  /// Вставка $sep через каждые $len символов
+  String insSym(int len, String sep) {
+    return replaceAllMapped(RegExp('.{$len}'), (m) => '${m.group(0)}$sep');
   }
 }
 
@@ -46,14 +51,13 @@ String getAppCode() {
   var c = base64.decode('HQWMERdItptZ9Zy/fTsuFvrO')
       .map((e) => e.toRadixString(16).padLeft(2, '0'))
       .join()
-      .replaceAllMapped(RegExp(r'.{8}'), (match) => '${match.group(0)} ')
+      .insSym(8, ' ')
       .split(' ')
       .map((e) => int.parse(e, radix: 16))
       .map((e) => e ^ int.parse('daceface', radix: 16))
       .map((e) => e.toRadixString(16).padLeft(8, '0'));
-  return '${c.elementAt(0)}-${insd(c.elementAt(1))}${insd(c.elementAt(2)).substring(0, 9)}${c.elementAt(3)}';
-}
-
-String insd(String str) {
-  return str.replaceAllMapped(RegExp(r'.{4}'), (match) => '${match.group(0)}-');
+  return '${c.elementAt(0)}-'
+      '${c.elementAt(1).insSym(4, '-')}'
+      '${c.elementAt(2).insSym(4, '-').substring(0, 9)}'
+      '${c.elementAt(3)}';
 }
