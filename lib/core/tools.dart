@@ -1,5 +1,6 @@
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core/l10n.dart';
+import 'dart:convert' show base64;
 
 const externalFiles = '/storage/emulated/0';
 final List<String> abbrWeekdays = [
@@ -39,4 +40,20 @@ extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1)}";
   }
+}
+
+String getAppCode() {
+  var c = base64.decode('HQWMERdItptZ9Zy/fTsuFvrO')
+      .map((e) => e.toRadixString(16).padLeft(2, '0'))
+      .join()
+      .replaceAllMapped(RegExp(r'.{8}'), (match) => '${match.group(0)} ')
+      .split(' ')
+      .map((e) => int.parse(e, radix: 16))
+      .map((e) => e ^ int.parse('daceface', radix: 16))
+      .map((e) => e.toRadixString(16));
+  return '${c.elementAt(0)}-${insd(c.elementAt(1))}${insd(c.elementAt(2)).substring(0, 9)}${c.elementAt(3)}';
+}
+
+String insd(String str) {
+  return str.replaceAllMapped(RegExp(r'.{4}'), (match) => '${match.group(0)}-');
 }

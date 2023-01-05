@@ -48,7 +48,7 @@ Future receiveFromParus(Bloc bloc) async {
   if (group == null) {
     throw L10n.addGroupAsInParus;
   }
-  final url = 'https://api.parusinf.ru/c7cb76df-cd86-4c55-833b-6671a7f5d4d8/receive?org_inn=${org.inn}&group=${group.name}';
+  final url = 'https://api.parusinf.ru/${getAppCode()}/receive?org_inn=${org.inn}&group=${group.name}';
   final uri = Uri.parse(url);
   final request = http.MultipartRequest('GET', uri);
   final response = await request.send();

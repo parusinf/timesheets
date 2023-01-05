@@ -26,7 +26,7 @@ Future sendTimesheet(
 
   var result = '';
   if (useParusIntegration) {
-    const url = 'https://api.parusinf.ru/c7cb76df-cd86-4c55-833b-6671a7f5d4d8';
+    final url = 'https://api.parusinf.ru/${getAppCode()}';
     final uri = Uri.parse(url);
     final encoded = encodeCp1251(content);
     final request = http.MultipartRequest('POST', uri)
