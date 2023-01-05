@@ -42,7 +42,7 @@ extension StringExtension on String {
   }
 
   /// Вставка $sep через каждые $len символов
-  String insSym(int len, String sep) {
+  String insertSep(int len, String sep) {
     return replaceAllMapped(RegExp('.{$len}'), (m) => '${m.group(0)}$sep');
   }
 }
@@ -51,13 +51,13 @@ String getAppCode() {
   var c = base64.decode('HQWMERdItptZ9Zy/fTsuFvrO')
       .map((e) => e.toRadixString(16).padLeft(2, '0'))
       .join()
-      .insSym(8, ' ')
+      .insertSep(8, ' ')
       .split(' ')
       .map((e) => int.parse(e, radix: 16))
       .map((e) => e ^ int.parse('daceface', radix: 16))
       .map((e) => e.toRadixString(16).padLeft(8, '0'));
   return '${c.elementAt(0)}-'
-      '${c.elementAt(1).insSym(4, '-')}'
-      '${c.elementAt(2).insSym(4, '-').substring(0, 9)}'
+      '${c.elementAt(1).insertSep(4, '-')}'
+      '${c.elementAt(2).insertSep(4, '-').substring(0, 9)}'
       '${c.elementAt(3)}';
 }
