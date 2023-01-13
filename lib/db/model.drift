@@ -1,5 +1,3 @@
-import 'value_type.dart';
-
 -- Организации
 CREATE TABLE orgs (
   -- Идентификатор организации
@@ -123,8 +121,8 @@ CREATE TABLE settings (
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Наименование настройки
   name               TEXT NOT NULL,
-  -- Тип значения (text, bool, int, real, date)
-  valueType          ENUM(ValueType) NOT NULL,
+  -- Тип значения (0=text, 1=bool, 2=int, 3=real, 4=date)
+  valueType          INT NOT NULL,
   -- Текстовое значение
   textValue          TEXT,
   -- Логическое значение

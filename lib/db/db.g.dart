@@ -2,11 +2,124 @@
 
 part of 'db.dart';
 
-// **************************************************************************
-// DriftDatabaseGenerator
-// **************************************************************************
-
 // ignore_for_file: type=lint
+class Orgs extends Table with TableInfo<Orgs, Org> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Orgs(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _innMeta = const VerificationMeta('inn');
+  late final GeneratedColumn<String> inn = GeneratedColumn<String>(
+      'inn', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _activeGroupIdMeta =
+      const VerificationMeta('activeGroupId');
+  late final GeneratedColumn<int> activeGroupId = GeneratedColumn<int>(
+      'activeGroupId', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _lastPayMeta =
+      const VerificationMeta('lastPay');
+  late final GeneratedColumn<DateTime> lastPay = GeneratedColumn<DateTime>(
+      'lastPay', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _totalSumMeta =
+      const VerificationMeta('totalSum');
+  late final GeneratedColumn<double> totalSum = GeneratedColumn<double>(
+      'totalSum', aliasedName, true,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, inn, activeGroupId, lastPay, totalSum];
+  @override
+  String get aliasedName => _alias ?? 'orgs';
+  @override
+  String get actualTableName => 'orgs';
+  @override
+  VerificationContext validateIntegrity(Insertable<Org> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('inn')) {
+      context.handle(
+          _innMeta, inn.isAcceptableOrUnknown(data['inn']!, _innMeta));
+    }
+    if (data.containsKey('activeGroupId')) {
+      context.handle(
+          _activeGroupIdMeta,
+          activeGroupId.isAcceptableOrUnknown(
+              data['activeGroupId']!, _activeGroupIdMeta));
+    }
+    if (data.containsKey('lastPay')) {
+      context.handle(_lastPayMeta,
+          lastPay.isAcceptableOrUnknown(data['lastPay']!, _lastPayMeta));
+    }
+    if (data.containsKey('totalSum')) {
+      context.handle(_totalSumMeta,
+          totalSum.isAcceptableOrUnknown(data['totalSum']!, _totalSumMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Org map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Org(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      inn: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}inn']),
+      activeGroupId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}activeGroupId']),
+      lastPay: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}lastPay']),
+      totalSum: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}totalSum']),
+    );
+  }
+
+  @override
+  Orgs createAlias(String alias) {
+    return Orgs(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+}
+
 class Org extends DataClass implements Insertable<Org> {
   final int id;
   final String name;
@@ -223,86 +336,43 @@ class OrgsCompanion extends UpdateCompanion<Org> {
   }
 }
 
-class Orgs extends Table with TableInfo<Orgs, Org> {
+class Schedules extends Table with TableInfo<Schedules, Schedule> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Orgs(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  Schedules(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _innMeta = const VerificationMeta('inn');
-  late final GeneratedColumn<String> inn = GeneratedColumn<String>(
-      'inn', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _activeGroupIdMeta =
-      const VerificationMeta('activeGroupId');
-  late final GeneratedColumn<int> activeGroupId = GeneratedColumn<int>(
-      'activeGroupId', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _lastPayMeta = const VerificationMeta('lastPay');
-  late final GeneratedColumn<DateTime> lastPay = GeneratedColumn<DateTime>(
-      'lastPay', aliasedName, true,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _totalSumMeta = const VerificationMeta('totalSum');
-  late final GeneratedColumn<double> totalSum = GeneratedColumn<double>(
-      'totalSum', aliasedName, true,
-      type: DriftSqlType.double,
-      requiredDuringInsert: false,
-      $customConstraints: '');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, inn, activeGroupId, lastPay, totalSum];
+  List<GeneratedColumn> get $columns => [id, code];
   @override
-  String get aliasedName => _alias ?? 'orgs';
+  String get aliasedName => _alias ?? 'schedules';
   @override
-  String get actualTableName => 'orgs';
+  String get actualTableName => 'schedules';
   @override
-  VerificationContext validateIntegrity(Insertable<Org> instance,
+  VerificationContext validateIntegrity(Insertable<Schedule> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('name')) {
+    if (data.containsKey('code')) {
       context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
     } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('inn')) {
-      context.handle(
-          _innMeta, inn.isAcceptableOrUnknown(data['inn']!, _innMeta));
-    }
-    if (data.containsKey('activeGroupId')) {
-      context.handle(
-          _activeGroupIdMeta,
-          activeGroupId.isAcceptableOrUnknown(
-              data['activeGroupId']!, _activeGroupIdMeta));
-    }
-    if (data.containsKey('lastPay')) {
-      context.handle(_lastPayMeta,
-          lastPay.isAcceptableOrUnknown(data['lastPay']!, _lastPayMeta));
-    }
-    if (data.containsKey('totalSum')) {
-      context.handle(_totalSumMeta,
-          totalSum.isAcceptableOrUnknown(data['totalSum']!, _totalSumMeta));
+      context.missing(_codeMeta);
     }
     return context;
   }
@@ -310,27 +380,19 @@ class Orgs extends Table with TableInfo<Orgs, Org> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Org map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Schedule map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Org(
-      id: attachedDatabase.options.types
+    return Schedule(
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      inn: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}inn']),
-      activeGroupId: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}activeGroupId']),
-      lastPay: attachedDatabase.options.types
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}lastPay']),
-      totalSum: attachedDatabase.options.types
-          .read(DriftSqlType.double, data['${effectivePrefix}totalSum']),
+      code: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
     );
   }
 
   @override
-  Orgs createAlias(String alias) {
-    return Orgs(attachedDatabase, alias);
+  Schedules createAlias(String alias) {
+    return Schedules(attachedDatabase, alias);
   }
 
   @override
@@ -444,42 +506,72 @@ class SchedulesCompanion extends UpdateCompanion<Schedule> {
   }
 }
 
-class Schedules extends Table with TableInfo<Schedules, Schedule> {
+class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Schedules(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  ScheduleDays(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String> code = GeneratedColumn<String>(
-      'code', aliasedName, false,
-      type: DriftSqlType.string,
+  static const VerificationMeta _scheduleIdMeta =
+      const VerificationMeta('scheduleId');
+  late final GeneratedColumn<int> scheduleId = GeneratedColumn<int>(
+      'scheduleId', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL REFERENCES schedules(id)ON DELETE CASCADE');
+  static const VerificationMeta _dayNumberMeta =
+      const VerificationMeta('dayNumber');
+  late final GeneratedColumn<int> dayNumber = GeneratedColumn<int>(
+      'dayNumber', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _hoursNormMeta =
+      const VerificationMeta('hoursNorm');
+  late final GeneratedColumn<double> hoursNorm = GeneratedColumn<double>(
+      'hoursNorm', aliasedName, false,
+      type: DriftSqlType.double,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
-  List<GeneratedColumn> get $columns => [id, code];
+  List<GeneratedColumn> get $columns => [id, scheduleId, dayNumber, hoursNorm];
   @override
-  String get aliasedName => _alias ?? 'schedules';
+  String get aliasedName => _alias ?? 'schedule_days';
   @override
-  String get actualTableName => 'schedules';
+  String get actualTableName => 'schedule_days';
   @override
-  VerificationContext validateIntegrity(Insertable<Schedule> instance,
+  VerificationContext validateIntegrity(Insertable<ScheduleDay> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('code')) {
+    if (data.containsKey('scheduleId')) {
       context.handle(
-          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
+          _scheduleIdMeta,
+          scheduleId.isAcceptableOrUnknown(
+              data['scheduleId']!, _scheduleIdMeta));
     } else if (isInserting) {
-      context.missing(_codeMeta);
+      context.missing(_scheduleIdMeta);
+    }
+    if (data.containsKey('dayNumber')) {
+      context.handle(_dayNumberMeta,
+          dayNumber.isAcceptableOrUnknown(data['dayNumber']!, _dayNumberMeta));
+    } else if (isInserting) {
+      context.missing(_dayNumberMeta);
+    }
+    if (data.containsKey('hoursNorm')) {
+      context.handle(_hoursNormMeta,
+          hoursNorm.isAcceptableOrUnknown(data['hoursNorm']!, _hoursNormMeta));
+    } else if (isInserting) {
+      context.missing(_hoursNormMeta);
     }
     return context;
   }
@@ -487,19 +579,23 @@ class Schedules extends Table with TableInfo<Schedules, Schedule> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Schedule map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ScheduleDay map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Schedule(
-      id: attachedDatabase.options.types
+    return ScheduleDay(
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      code: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      scheduleId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}scheduleId'])!,
+      dayNumber: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}dayNumber'])!,
+      hoursNorm: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}hoursNorm'])!,
     );
   }
 
   @override
-  Schedules createAlias(String alias) {
-    return Schedules(attachedDatabase, alias);
+  ScheduleDays createAlias(String alias) {
+    return ScheduleDays(attachedDatabase, alias);
   }
 
   @override
@@ -663,69 +759,54 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDay> {
   }
 }
 
-class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
+class Holidays extends Table with TableInfo<Holidays, Holiday> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  ScheduleDays(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  Holidays(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _scheduleIdMeta = const VerificationMeta('scheduleId');
-  late final GeneratedColumn<int> scheduleId = GeneratedColumn<int>(
-      'scheduleId', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints:
-          'NOT NULL REFERENCES schedules (id) ON DELETE CASCADE');
-  final VerificationMeta _dayNumberMeta = const VerificationMeta('dayNumber');
-  late final GeneratedColumn<int> dayNumber = GeneratedColumn<int>(
-      'dayNumber', aliasedName, false,
-      type: DriftSqlType.int,
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      'date', aliasedName, false,
+      type: DriftSqlType.dateTime,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _hoursNormMeta = const VerificationMeta('hoursNorm');
-  late final GeneratedColumn<double> hoursNorm = GeneratedColumn<double>(
-      'hoursNorm', aliasedName, false,
-      type: DriftSqlType.double,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _workdayMeta =
+      const VerificationMeta('workday');
+  late final GeneratedColumn<DateTime> workday = GeneratedColumn<DateTime>(
+      'workday', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
   @override
-  List<GeneratedColumn> get $columns => [id, scheduleId, dayNumber, hoursNorm];
+  List<GeneratedColumn> get $columns => [id, date, workday];
   @override
-  String get aliasedName => _alias ?? 'schedule_days';
+  String get aliasedName => _alias ?? 'holidays';
   @override
-  String get actualTableName => 'schedule_days';
+  String get actualTableName => 'holidays';
   @override
-  VerificationContext validateIntegrity(Insertable<ScheduleDay> instance,
+  VerificationContext validateIntegrity(Insertable<Holiday> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('scheduleId')) {
+    if (data.containsKey('date')) {
       context.handle(
-          _scheduleIdMeta,
-          scheduleId.isAcceptableOrUnknown(
-              data['scheduleId']!, _scheduleIdMeta));
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
     } else if (isInserting) {
-      context.missing(_scheduleIdMeta);
+      context.missing(_dateMeta);
     }
-    if (data.containsKey('dayNumber')) {
-      context.handle(_dayNumberMeta,
-          dayNumber.isAcceptableOrUnknown(data['dayNumber']!, _dayNumberMeta));
-    } else if (isInserting) {
-      context.missing(_dayNumberMeta);
-    }
-    if (data.containsKey('hoursNorm')) {
-      context.handle(_hoursNormMeta,
-          hoursNorm.isAcceptableOrUnknown(data['hoursNorm']!, _hoursNormMeta));
-    } else if (isInserting) {
-      context.missing(_hoursNormMeta);
+    if (data.containsKey('workday')) {
+      context.handle(_workdayMeta,
+          workday.isAcceptableOrUnknown(data['workday']!, _workdayMeta));
     }
     return context;
   }
@@ -733,23 +814,21 @@ class ScheduleDays extends Table with TableInfo<ScheduleDays, ScheduleDay> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ScheduleDay map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Holiday map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ScheduleDay(
-      id: attachedDatabase.options.types
+    return Holiday(
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      scheduleId: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}scheduleId'])!,
-      dayNumber: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}dayNumber'])!,
-      hoursNorm: attachedDatabase.options.types
-          .read(DriftSqlType.double, data['${effectivePrefix}hoursNorm'])!,
+      date: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
+      workday: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}workday']),
     );
   }
 
   @override
-  ScheduleDays createAlias(String alias) {
-    return ScheduleDays(attachedDatabase, alias);
+  Holidays createAlias(String alias) {
+    return Holidays(attachedDatabase, alias);
   }
 
   @override
@@ -892,52 +971,80 @@ class HolidaysCompanion extends UpdateCompanion<Holiday> {
   }
 }
 
-class Holidays extends Table with TableInfo<Holidays, Holiday> {
+class Groups extends Table with TableInfo<Groups, Group> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Holidays(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  Groups(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _dateMeta = const VerificationMeta('date');
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
-      'date', aliasedName, false,
-      type: DriftSqlType.dateTime,
+  static const VerificationMeta _orgIdMeta = const VerificationMeta('orgId');
+  late final GeneratedColumn<int> orgId = GeneratedColumn<int>(
+      'orgId', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL REFERENCES orgs(id)');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _workdayMeta = const VerificationMeta('workday');
-  late final GeneratedColumn<DateTime> workday = GeneratedColumn<DateTime>(
-      'workday', aliasedName, true,
-      type: DriftSqlType.dateTime,
+  static const VerificationMeta _scheduleIdMeta =
+      const VerificationMeta('scheduleId');
+  late final GeneratedColumn<int> scheduleId = GeneratedColumn<int>(
+      'scheduleId', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL REFERENCES schedules(id)');
+  static const VerificationMeta _mealsMeta = const VerificationMeta('meals');
+  late final GeneratedColumn<int> meals = GeneratedColumn<int>(
+      'meals', aliasedName, true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
-  List<GeneratedColumn> get $columns => [id, date, workday];
+  List<GeneratedColumn> get $columns => [id, orgId, name, scheduleId, meals];
   @override
-  String get aliasedName => _alias ?? 'holidays';
+  String get aliasedName => _alias ?? 'groups';
   @override
-  String get actualTableName => 'holidays';
+  String get actualTableName => 'groups';
   @override
-  VerificationContext validateIntegrity(Insertable<Holiday> instance,
+  VerificationContext validateIntegrity(Insertable<Group> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('date')) {
+    if (data.containsKey('orgId')) {
       context.handle(
-          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+          _orgIdMeta, orgId.isAcceptableOrUnknown(data['orgId']!, _orgIdMeta));
     } else if (isInserting) {
-      context.missing(_dateMeta);
+      context.missing(_orgIdMeta);
     }
-    if (data.containsKey('workday')) {
-      context.handle(_workdayMeta,
-          workday.isAcceptableOrUnknown(data['workday']!, _workdayMeta));
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('scheduleId')) {
+      context.handle(
+          _scheduleIdMeta,
+          scheduleId.isAcceptableOrUnknown(
+              data['scheduleId']!, _scheduleIdMeta));
+    } else if (isInserting) {
+      context.missing(_scheduleIdMeta);
+    }
+    if (data.containsKey('meals')) {
+      context.handle(
+          _mealsMeta, meals.isAcceptableOrUnknown(data['meals']!, _mealsMeta));
     }
     return context;
   }
@@ -945,21 +1052,25 @@ class Holidays extends Table with TableInfo<Holidays, Holiday> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Holiday map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Group map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Holiday(
-      id: attachedDatabase.options.types
+    return Group(
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      date: attachedDatabase.options.types
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
-      workday: attachedDatabase.options.types
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}workday']),
+      orgId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}orgId'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      scheduleId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}scheduleId'])!,
+      meals: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}meals']),
     );
   }
 
   @override
-  Holidays createAlias(String alias) {
-    return Holidays(attachedDatabase, alias);
+  Groups createAlias(String alias) {
+    return Groups(attachedDatabase, alias);
   }
 
   @override
@@ -1150,60 +1261,76 @@ class GroupsCompanion extends UpdateCompanion<Group> {
   }
 }
 
-class Groups extends Table with TableInfo<Groups, Group> {
+class Persons extends Table with TableInfo<Persons, Person> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Groups(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  Persons(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _orgIdMeta = const VerificationMeta('orgId');
-  late final GeneratedColumn<int> orgId = GeneratedColumn<int>(
-      'orgId', aliasedName, false,
-      type: DriftSqlType.int,
+  static const VerificationMeta _familyMeta = const VerificationMeta('family');
+  late final GeneratedColumn<String> family = GeneratedColumn<String>(
+      'family', aliasedName, false,
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL REFERENCES orgs (id)');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _scheduleIdMeta = const VerificationMeta('scheduleId');
-  late final GeneratedColumn<int> scheduleId = GeneratedColumn<int>(
-      'scheduleId', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL REFERENCES schedules (id)');
-  final VerificationMeta _mealsMeta = const VerificationMeta('meals');
-  late final GeneratedColumn<int> meals = GeneratedColumn<int>(
-      'meals', aliasedName, true,
-      type: DriftSqlType.int,
+  static const VerificationMeta _middleNameMeta =
+      const VerificationMeta('middleName');
+  late final GeneratedColumn<String> middleName = GeneratedColumn<String>(
+      'middleName', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _birthdayMeta =
+      const VerificationMeta('birthday');
+  late final GeneratedColumn<DateTime> birthday = GeneratedColumn<DateTime>(
+      'birthday', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+      'phone', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _phone2Meta = const VerificationMeta('phone2');
+  late final GeneratedColumn<String> phone2 = GeneratedColumn<String>(
+      'phone2', aliasedName, true,
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
-  List<GeneratedColumn> get $columns => [id, orgId, name, scheduleId, meals];
+  List<GeneratedColumn> get $columns =>
+      [id, family, name, middleName, birthday, phone, phone2];
   @override
-  String get aliasedName => _alias ?? 'groups';
+  String get aliasedName => _alias ?? 'persons';
   @override
-  String get actualTableName => 'groups';
+  String get actualTableName => 'persons';
   @override
-  VerificationContext validateIntegrity(Insertable<Group> instance,
+  VerificationContext validateIntegrity(Insertable<Person> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('orgId')) {
-      context.handle(
-          _orgIdMeta, orgId.isAcceptableOrUnknown(data['orgId']!, _orgIdMeta));
+    if (data.containsKey('family')) {
+      context.handle(_familyMeta,
+          family.isAcceptableOrUnknown(data['family']!, _familyMeta));
     } else if (isInserting) {
-      context.missing(_orgIdMeta);
+      context.missing(_familyMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -1211,17 +1338,23 @@ class Groups extends Table with TableInfo<Groups, Group> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('scheduleId')) {
+    if (data.containsKey('middleName')) {
       context.handle(
-          _scheduleIdMeta,
-          scheduleId.isAcceptableOrUnknown(
-              data['scheduleId']!, _scheduleIdMeta));
-    } else if (isInserting) {
-      context.missing(_scheduleIdMeta);
+          _middleNameMeta,
+          middleName.isAcceptableOrUnknown(
+              data['middleName']!, _middleNameMeta));
     }
-    if (data.containsKey('meals')) {
+    if (data.containsKey('birthday')) {
+      context.handle(_birthdayMeta,
+          birthday.isAcceptableOrUnknown(data['birthday']!, _birthdayMeta));
+    }
+    if (data.containsKey('phone')) {
       context.handle(
-          _mealsMeta, meals.isAcceptableOrUnknown(data['meals']!, _mealsMeta));
+          _phoneMeta, phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta));
+    }
+    if (data.containsKey('phone2')) {
+      context.handle(_phone2Meta,
+          phone2.isAcceptableOrUnknown(data['phone2']!, _phone2Meta));
     }
     return context;
   }
@@ -1229,25 +1362,29 @@ class Groups extends Table with TableInfo<Groups, Group> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Group map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Person map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Group(
-      id: attachedDatabase.options.types
+    return Person(
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      orgId: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}orgId'])!,
-      name: attachedDatabase.options.types
+      family: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}family'])!,
+      name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      scheduleId: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}scheduleId'])!,
-      meals: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}meals']),
+      middleName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}middleName']),
+      birthday: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}birthday']),
+      phone: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}phone']),
+      phone2: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}phone2']),
     );
   }
 
   @override
-  Groups createAlias(String alias) {
-    return Groups(attachedDatabase, alias);
+  Persons createAlias(String alias) {
+    return Persons(attachedDatabase, alias);
   }
 
   @override
@@ -1491,97 +1628,80 @@ class PersonsCompanion extends UpdateCompanion<Person> {
   }
 }
 
-class Persons extends Table with TableInfo<Persons, Person> {
+class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Persons(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GroupPersons(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _familyMeta = const VerificationMeta('family');
-  late final GeneratedColumn<String> family = GeneratedColumn<String>(
-      'family', aliasedName, false,
-      type: DriftSqlType.string,
+  static const VerificationMeta _groupIdMeta =
+      const VerificationMeta('groupId');
+  late final GeneratedColumn<int> groupId = GeneratedColumn<int>(
+      'groupId', aliasedName, false,
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string,
+      $customConstraints: 'NOT NULL REFERENCES "groups"(id)');
+  static const VerificationMeta _personIdMeta =
+      const VerificationMeta('personId');
+  late final GeneratedColumn<int> personId = GeneratedColumn<int>(
+      'personId', aliasedName, false,
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _middleNameMeta = const VerificationMeta('middleName');
-  late final GeneratedColumn<String> middleName = GeneratedColumn<String>(
-      'middleName', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _birthdayMeta = const VerificationMeta('birthday');
-  late final GeneratedColumn<DateTime> birthday = GeneratedColumn<DateTime>(
-      'birthday', aliasedName, true,
+      $customConstraints: 'NOT NULL REFERENCES persons(id)');
+  static const VerificationMeta _beginDateMeta =
+      const VerificationMeta('beginDate');
+  late final GeneratedColumn<DateTime> beginDate = GeneratedColumn<DateTime>(
+      'beginDate', aliasedName, true,
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _phoneMeta = const VerificationMeta('phone');
-  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
-      'phone', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _phone2Meta = const VerificationMeta('phone2');
-  late final GeneratedColumn<String> phone2 = GeneratedColumn<String>(
-      'phone2', aliasedName, true,
-      type: DriftSqlType.string,
+  static const VerificationMeta _endDateMeta =
+      const VerificationMeta('endDate');
+  late final GeneratedColumn<DateTime> endDate = GeneratedColumn<DateTime>(
+      'endDate', aliasedName, true,
+      type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns =>
-      [id, family, name, middleName, birthday, phone, phone2];
+      [id, groupId, personId, beginDate, endDate];
   @override
-  String get aliasedName => _alias ?? 'persons';
+  String get aliasedName => _alias ?? 'group_persons';
   @override
-  String get actualTableName => 'persons';
+  String get actualTableName => 'group_persons';
   @override
-  VerificationContext validateIntegrity(Insertable<Person> instance,
+  VerificationContext validateIntegrity(Insertable<GroupPerson> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('family')) {
-      context.handle(_familyMeta,
-          family.isAcceptableOrUnknown(data['family']!, _familyMeta));
+    if (data.containsKey('groupId')) {
+      context.handle(_groupIdMeta,
+          groupId.isAcceptableOrUnknown(data['groupId']!, _groupIdMeta));
     } else if (isInserting) {
-      context.missing(_familyMeta);
+      context.missing(_groupIdMeta);
     }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    if (data.containsKey('personId')) {
+      context.handle(_personIdMeta,
+          personId.isAcceptableOrUnknown(data['personId']!, _personIdMeta));
     } else if (isInserting) {
-      context.missing(_nameMeta);
+      context.missing(_personIdMeta);
     }
-    if (data.containsKey('middleName')) {
-      context.handle(
-          _middleNameMeta,
-          middleName.isAcceptableOrUnknown(
-              data['middleName']!, _middleNameMeta));
+    if (data.containsKey('beginDate')) {
+      context.handle(_beginDateMeta,
+          beginDate.isAcceptableOrUnknown(data['beginDate']!, _beginDateMeta));
     }
-    if (data.containsKey('birthday')) {
-      context.handle(_birthdayMeta,
-          birthday.isAcceptableOrUnknown(data['birthday']!, _birthdayMeta));
-    }
-    if (data.containsKey('phone')) {
-      context.handle(
-          _phoneMeta, phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta));
-    }
-    if (data.containsKey('phone2')) {
-      context.handle(_phone2Meta,
-          phone2.isAcceptableOrUnknown(data['phone2']!, _phone2Meta));
+    if (data.containsKey('endDate')) {
+      context.handle(_endDateMeta,
+          endDate.isAcceptableOrUnknown(data['endDate']!, _endDateMeta));
     }
     return context;
   }
@@ -1589,29 +1709,25 @@ class Persons extends Table with TableInfo<Persons, Person> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Person map(Map<String, dynamic> data, {String? tablePrefix}) {
+  GroupPerson map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Person(
-      id: attachedDatabase.options.types
+    return GroupPerson(
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      family: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}family'])!,
-      name: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      middleName: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}middleName']),
-      birthday: attachedDatabase.options.types
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}birthday']),
-      phone: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}phone']),
-      phone2: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}phone2']),
+      groupId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}groupId'])!,
+      personId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}personId'])!,
+      beginDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}beginDate']),
+      endDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}endDate']),
     );
   }
 
   @override
-  Persons createAlias(String alias) {
-    return Persons(attachedDatabase, alias);
+  GroupPersons createAlias(String alias) {
+    return GroupPersons(attachedDatabase, alias);
   }
 
   @override
@@ -1806,75 +1922,85 @@ class GroupPersonsCompanion extends UpdateCompanion<GroupPerson> {
   }
 }
 
-class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
+class Attendances extends Table with TableInfo<Attendances, Attendance> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  GroupPersons(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  Attendances(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _groupIdMeta = const VerificationMeta('groupId');
-  late final GeneratedColumn<int> groupId = GeneratedColumn<int>(
-      'groupId', aliasedName, false,
+  static const VerificationMeta _groupPersonIdMeta =
+      const VerificationMeta('groupPersonId');
+  late final GeneratedColumn<int> groupPersonId = GeneratedColumn<int>(
+      'groupPersonId', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL REFERENCES "groups" (id)');
-  final VerificationMeta _personIdMeta = const VerificationMeta('personId');
-  late final GeneratedColumn<int> personId = GeneratedColumn<int>(
-      'personId', aliasedName, false,
-      type: DriftSqlType.int,
+      $customConstraints:
+          'NOT NULL REFERENCES group_persons(id)ON DELETE CASCADE');
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      'date', aliasedName, false,
+      type: DriftSqlType.dateTime,
       requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL REFERENCES persons (id)');
-  final VerificationMeta _beginDateMeta = const VerificationMeta('beginDate');
-  late final GeneratedColumn<DateTime> beginDate = GeneratedColumn<DateTime>(
-      'beginDate', aliasedName, true,
-      type: DriftSqlType.dateTime,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _hoursFactMeta =
+      const VerificationMeta('hoursFact');
+  late final GeneratedColumn<double> hoursFact = GeneratedColumn<double>(
+      'hoursFact', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _isIllnessMeta =
+      const VerificationMeta('isIllness');
+  late final GeneratedColumn<bool> isIllness = GeneratedColumn<bool>(
+      'isIllness', aliasedName, false,
+      type: DriftSqlType.bool,
       requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _endDateMeta = const VerificationMeta('endDate');
-  late final GeneratedColumn<DateTime> endDate = GeneratedColumn<DateTime>(
-      'endDate', aliasedName, true,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      $customConstraints: '');
+      $customConstraints: 'NOT NULL DEFAULT FALSE',
+      defaultValue: const CustomExpression('FALSE'));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, groupId, personId, beginDate, endDate];
+      [id, groupPersonId, date, hoursFact, isIllness];
   @override
-  String get aliasedName => _alias ?? 'group_persons';
+  String get aliasedName => _alias ?? 'attendances';
   @override
-  String get actualTableName => 'group_persons';
+  String get actualTableName => 'attendances';
   @override
-  VerificationContext validateIntegrity(Insertable<GroupPerson> instance,
+  VerificationContext validateIntegrity(Insertable<Attendance> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('groupId')) {
-      context.handle(_groupIdMeta,
-          groupId.isAcceptableOrUnknown(data['groupId']!, _groupIdMeta));
+    if (data.containsKey('groupPersonId')) {
+      context.handle(
+          _groupPersonIdMeta,
+          groupPersonId.isAcceptableOrUnknown(
+              data['groupPersonId']!, _groupPersonIdMeta));
     } else if (isInserting) {
-      context.missing(_groupIdMeta);
+      context.missing(_groupPersonIdMeta);
     }
-    if (data.containsKey('personId')) {
-      context.handle(_personIdMeta,
-          personId.isAcceptableOrUnknown(data['personId']!, _personIdMeta));
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
     } else if (isInserting) {
-      context.missing(_personIdMeta);
+      context.missing(_dateMeta);
     }
-    if (data.containsKey('beginDate')) {
-      context.handle(_beginDateMeta,
-          beginDate.isAcceptableOrUnknown(data['beginDate']!, _beginDateMeta));
+    if (data.containsKey('hoursFact')) {
+      context.handle(_hoursFactMeta,
+          hoursFact.isAcceptableOrUnknown(data['hoursFact']!, _hoursFactMeta));
+    } else if (isInserting) {
+      context.missing(_hoursFactMeta);
     }
-    if (data.containsKey('endDate')) {
-      context.handle(_endDateMeta,
-          endDate.isAcceptableOrUnknown(data['endDate']!, _endDateMeta));
+    if (data.containsKey('isIllness')) {
+      context.handle(_isIllnessMeta,
+          isIllness.isAcceptableOrUnknown(data['isIllness']!, _isIllnessMeta));
     }
     return context;
   }
@@ -1882,25 +2008,25 @@ class GroupPersons extends Table with TableInfo<GroupPersons, GroupPerson> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  GroupPerson map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Attendance map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return GroupPerson(
-      id: attachedDatabase.options.types
+    return Attendance(
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      groupId: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}groupId'])!,
-      personId: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}personId'])!,
-      beginDate: attachedDatabase.options.types
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}beginDate']),
-      endDate: attachedDatabase.options.types
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}endDate']),
+      groupPersonId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}groupPersonId'])!,
+      date: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
+      hoursFact: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}hoursFact'])!,
+      isIllness: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}isIllness'])!,
     );
   }
 
   @override
-  GroupPersons createAlias(String alias) {
-    return GroupPersons(attachedDatabase, alias);
+  Attendances createAlias(String alias) {
+    return Attendances(attachedDatabase, alias);
   }
 
   @override
@@ -2089,82 +2215,135 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
   }
 }
 
-class Attendances extends Table with TableInfo<Attendances, Attendance> {
+class Settings extends Table with TableInfo<Settings, Setting> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Attendances(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  Settings(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _groupPersonIdMeta =
-      const VerificationMeta('groupPersonId');
-  late final GeneratedColumn<int> groupPersonId = GeneratedColumn<int>(
-      'groupPersonId', aliasedName, false,
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _valueTypeMeta =
+      const VerificationMeta('valueType');
+  late final GeneratedColumn<int> valueType = GeneratedColumn<int>(
+      'valueType', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
-      $customConstraints:
-          'NOT NULL REFERENCES group_persons (id) ON DELETE CASCADE');
-  final VerificationMeta _dateMeta = const VerificationMeta('date');
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
-      'date', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _hoursFactMeta = const VerificationMeta('hoursFact');
-  late final GeneratedColumn<double> hoursFact = GeneratedColumn<double>(
-      'hoursFact', aliasedName, false,
+  static const VerificationMeta _textValueMeta =
+      const VerificationMeta('textValue');
+  late final GeneratedColumn<String> textValue = GeneratedColumn<String>(
+      'textValue', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _boolValueMeta =
+      const VerificationMeta('boolValue');
+  late final GeneratedColumn<bool> boolValue = GeneratedColumn<bool>(
+      'boolValue', aliasedName, true,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _intValueMeta =
+      const VerificationMeta('intValue');
+  late final GeneratedColumn<int> intValue = GeneratedColumn<int>(
+      'intValue', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _realValueMeta =
+      const VerificationMeta('realValue');
+  late final GeneratedColumn<double> realValue = GeneratedColumn<double>(
+      'realValue', aliasedName, true,
       type: DriftSqlType.double,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _isIllnessMeta = const VerificationMeta('isIllness');
-  late final GeneratedColumn<bool> isIllness = GeneratedColumn<bool>(
-      'isIllness', aliasedName, false,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _dateValueMeta =
+      const VerificationMeta('dateValue');
+  late final GeneratedColumn<DateTime> dateValue = GeneratedColumn<DateTime>(
+      'dateValue', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _isUserSettingMeta =
+      const VerificationMeta('isUserSetting');
+  late final GeneratedColumn<bool> isUserSetting = GeneratedColumn<bool>(
+      'isUserSetting', aliasedName, false,
       type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT FALSE',
-      defaultValue: const CustomExpression<bool>('FALSE'));
+      defaultValue: const CustomExpression('FALSE'));
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, groupPersonId, date, hoursFact, isIllness];
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        valueType,
+        textValue,
+        boolValue,
+        intValue,
+        realValue,
+        dateValue,
+        isUserSetting
+      ];
   @override
-  String get aliasedName => _alias ?? 'attendances';
+  String get aliasedName => _alias ?? 'settings';
   @override
-  String get actualTableName => 'attendances';
+  String get actualTableName => 'settings';
   @override
-  VerificationContext validateIntegrity(Insertable<Attendance> instance,
+  VerificationContext validateIntegrity(Insertable<Setting> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('groupPersonId')) {
+    if (data.containsKey('name')) {
       context.handle(
-          _groupPersonIdMeta,
-          groupPersonId.isAcceptableOrUnknown(
-              data['groupPersonId']!, _groupPersonIdMeta));
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
-      context.missing(_groupPersonIdMeta);
+      context.missing(_nameMeta);
     }
-    if (data.containsKey('date')) {
+    if (data.containsKey('valueType')) {
+      context.handle(_valueTypeMeta,
+          valueType.isAcceptableOrUnknown(data['valueType']!, _valueTypeMeta));
+    } else if (isInserting) {
+      context.missing(_valueTypeMeta);
+    }
+    if (data.containsKey('textValue')) {
+      context.handle(_textValueMeta,
+          textValue.isAcceptableOrUnknown(data['textValue']!, _textValueMeta));
+    }
+    if (data.containsKey('boolValue')) {
+      context.handle(_boolValueMeta,
+          boolValue.isAcceptableOrUnknown(data['boolValue']!, _boolValueMeta));
+    }
+    if (data.containsKey('intValue')) {
+      context.handle(_intValueMeta,
+          intValue.isAcceptableOrUnknown(data['intValue']!, _intValueMeta));
+    }
+    if (data.containsKey('realValue')) {
+      context.handle(_realValueMeta,
+          realValue.isAcceptableOrUnknown(data['realValue']!, _realValueMeta));
+    }
+    if (data.containsKey('dateValue')) {
+      context.handle(_dateValueMeta,
+          dateValue.isAcceptableOrUnknown(data['dateValue']!, _dateValueMeta));
+    }
+    if (data.containsKey('isUserSetting')) {
       context.handle(
-          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
-    } else if (isInserting) {
-      context.missing(_dateMeta);
-    }
-    if (data.containsKey('hoursFact')) {
-      context.handle(_hoursFactMeta,
-          hoursFact.isAcceptableOrUnknown(data['hoursFact']!, _hoursFactMeta));
-    } else if (isInserting) {
-      context.missing(_hoursFactMeta);
-    }
-    if (data.containsKey('isIllness')) {
-      context.handle(_isIllnessMeta,
-          isIllness.isAcceptableOrUnknown(data['isIllness']!, _isIllnessMeta));
+          _isUserSettingMeta,
+          isUserSetting.isAcceptableOrUnknown(
+              data['isUserSetting']!, _isUserSettingMeta));
     }
     return context;
   }
@@ -2172,25 +2351,33 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Attendance map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Setting map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Attendance(
-      id: attachedDatabase.options.types
+    return Setting(
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      groupPersonId: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}groupPersonId'])!,
-      date: attachedDatabase.options.types
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
-      hoursFact: attachedDatabase.options.types
-          .read(DriftSqlType.double, data['${effectivePrefix}hoursFact'])!,
-      isIllness: attachedDatabase.options.types
-          .read(DriftSqlType.bool, data['${effectivePrefix}isIllness'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      valueType: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}valueType'])!,
+      textValue: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}textValue']),
+      boolValue: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}boolValue']),
+      intValue: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}intValue']),
+      realValue: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}realValue']),
+      dateValue: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}dateValue']),
+      isUserSetting: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}isUserSetting'])!,
     );
   }
 
   @override
-  Attendances createAlias(String alias) {
-    return Attendances(attachedDatabase, alias);
+  Settings createAlias(String alias) {
+    return Settings(attachedDatabase, alias);
   }
 
   @override
@@ -2200,7 +2387,7 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
 class Setting extends DataClass implements Insertable<Setting> {
   final int id;
   final String name;
-  final ValueType valueType;
+  final int valueType;
   final String? textValue;
   final bool? boolValue;
   final int? intValue;
@@ -2222,10 +2409,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
-    {
-      final converter = Settings.$converter0;
-      map['valueType'] = Variable<int>(converter.toSql(valueType));
-    }
+    map['valueType'] = Variable<int>(valueType);
     if (!nullToAbsent || textValue != null) {
       map['textValue'] = Variable<String>(textValue);
     }
@@ -2275,7 +2459,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     return Setting(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      valueType: serializer.fromJson<ValueType>(json['valueType']),
+      valueType: serializer.fromJson<int>(json['valueType']),
       textValue: serializer.fromJson<String?>(json['textValue']),
       boolValue: serializer.fromJson<bool?>(json['boolValue']),
       intValue: serializer.fromJson<int?>(json['intValue']),
@@ -2290,7 +2474,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'valueType': serializer.toJson<ValueType>(valueType),
+      'valueType': serializer.toJson<int>(valueType),
       'textValue': serializer.toJson<String?>(textValue),
       'boolValue': serializer.toJson<bool?>(boolValue),
       'intValue': serializer.toJson<int?>(intValue),
@@ -2303,7 +2487,7 @@ class Setting extends DataClass implements Insertable<Setting> {
   Setting copyWith(
           {int? id,
           String? name,
-          ValueType? valueType,
+          int? valueType,
           Value<String?> textValue = const Value.absent(),
           Value<bool?> boolValue = const Value.absent(),
           Value<int?> intValue = const Value.absent(),
@@ -2358,7 +2542,7 @@ class Setting extends DataClass implements Insertable<Setting> {
 class SettingsCompanion extends UpdateCompanion<Setting> {
   final Value<int> id;
   final Value<String> name;
-  final Value<ValueType> valueType;
+  final Value<int> valueType;
   final Value<String?> textValue;
   final Value<bool?> boolValue;
   final Value<int?> intValue;
@@ -2379,7 +2563,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
   SettingsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-    required ValueType valueType,
+    required int valueType,
     this.textValue = const Value.absent(),
     this.boolValue = const Value.absent(),
     this.intValue = const Value.absent(),
@@ -2415,7 +2599,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
   SettingsCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
-      Value<ValueType>? valueType,
+      Value<int>? valueType,
       Value<String?>? textValue,
       Value<bool?>? boolValue,
       Value<int?>? intValue,
@@ -2445,8 +2629,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
       map['name'] = Variable<String>(name.value);
     }
     if (valueType.present) {
-      final converter = Settings.$converter0;
-      map['valueType'] = Variable<int>(converter.toSql(valueType.value));
+      map['valueType'] = Variable<int>(valueType.value);
     }
     if (textValue.present) {
       map['textValue'] = Variable<String>(textValue.value);
@@ -2484,166 +2667,6 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
           ..write(')'))
         .toString();
   }
-}
-
-class Settings extends Table with TableInfo<Settings, Setting> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Settings(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _valueTypeMeta = const VerificationMeta('valueType');
-  late final GeneratedColumnWithTypeConverter<ValueType, int> valueType =
-      GeneratedColumn<int>('valueType', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<ValueType>(Settings.$converter0);
-  final VerificationMeta _textValueMeta = const VerificationMeta('textValue');
-  late final GeneratedColumn<String> textValue = GeneratedColumn<String>(
-      'textValue', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _boolValueMeta = const VerificationMeta('boolValue');
-  late final GeneratedColumn<bool> boolValue = GeneratedColumn<bool>(
-      'boolValue', aliasedName, true,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _intValueMeta = const VerificationMeta('intValue');
-  late final GeneratedColumn<int> intValue = GeneratedColumn<int>(
-      'intValue', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _realValueMeta = const VerificationMeta('realValue');
-  late final GeneratedColumn<double> realValue = GeneratedColumn<double>(
-      'realValue', aliasedName, true,
-      type: DriftSqlType.double,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _dateValueMeta = const VerificationMeta('dateValue');
-  late final GeneratedColumn<DateTime> dateValue = GeneratedColumn<DateTime>(
-      'dateValue', aliasedName, true,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _isUserSettingMeta =
-      const VerificationMeta('isUserSetting');
-  late final GeneratedColumn<bool> isUserSetting = GeneratedColumn<bool>(
-      'isUserSetting', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL DEFAULT FALSE',
-      defaultValue: const CustomExpression<bool>('FALSE'));
-  @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        name,
-        valueType,
-        textValue,
-        boolValue,
-        intValue,
-        realValue,
-        dateValue,
-        isUserSetting
-      ];
-  @override
-  String get aliasedName => _alias ?? 'settings';
-  @override
-  String get actualTableName => 'settings';
-  @override
-  VerificationContext validateIntegrity(Insertable<Setting> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    context.handle(_valueTypeMeta, const VerificationResult.success());
-    if (data.containsKey('textValue')) {
-      context.handle(_textValueMeta,
-          textValue.isAcceptableOrUnknown(data['textValue']!, _textValueMeta));
-    }
-    if (data.containsKey('boolValue')) {
-      context.handle(_boolValueMeta,
-          boolValue.isAcceptableOrUnknown(data['boolValue']!, _boolValueMeta));
-    }
-    if (data.containsKey('intValue')) {
-      context.handle(_intValueMeta,
-          intValue.isAcceptableOrUnknown(data['intValue']!, _intValueMeta));
-    }
-    if (data.containsKey('realValue')) {
-      context.handle(_realValueMeta,
-          realValue.isAcceptableOrUnknown(data['realValue']!, _realValueMeta));
-    }
-    if (data.containsKey('dateValue')) {
-      context.handle(_dateValueMeta,
-          dateValue.isAcceptableOrUnknown(data['dateValue']!, _dateValueMeta));
-    }
-    if (data.containsKey('isUserSetting')) {
-      context.handle(
-          _isUserSettingMeta,
-          isUserSetting.isAcceptableOrUnknown(
-              data['isUserSetting']!, _isUserSettingMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Setting map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Setting(
-      id: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      valueType: Settings.$converter0.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}valueType'])!),
-      textValue: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}textValue']),
-      boolValue: attachedDatabase.options.types
-          .read(DriftSqlType.bool, data['${effectivePrefix}boolValue']),
-      intValue: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}intValue']),
-      realValue: attachedDatabase.options.types
-          .read(DriftSqlType.double, data['${effectivePrefix}realValue']),
-      dateValue: attachedDatabase.options.types
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}dateValue']),
-      isUserSetting: attachedDatabase.options.types
-          .read(DriftSqlType.bool, data['${effectivePrefix}isUserSetting'])!,
-    );
-  }
-
-  @override
-  Settings createAlias(String alias) {
-    return Settings(attachedDatabase, alias);
-  }
-
-  static TypeConverter<ValueType, int> $converter0 =
-      const EnumIndexConverter<ValueType>(ValueType.values);
-  @override
-  bool get dontWriteConstraints => true;
 }
 
 abstract class _$Db extends GeneratedDatabase {
@@ -3069,7 +3092,7 @@ abstract class _$Db extends GeneratedDatabase {
   }
 
   @override
-  Iterable<TableInfo<Table, dynamic>> get allTables =>
+  Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
@@ -3285,10 +3308,6 @@ class ActiveGroupResult {
     required this.personCount,
   });
 }
-
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
 
 mixin _$OrgsDaoMixin on DatabaseAccessor<Db> {}
 mixin _$SchedulesDaoMixin on DatabaseAccessor<Db> {}

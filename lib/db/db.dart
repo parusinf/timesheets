@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 import 'schedule_helper.dart';
-import 'value_type.dart';
 import 'upgrade_db.dart';
 import 'init_new_db.dart';
 import 'connection/connection.dart' as impl;
@@ -877,7 +876,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
 
   /// Добавление настройки
   Future<Setting> insert2(String name,
-      ValueType valueType, {
+      int valueType, {
         String? textValue,
         bool? boolValue,
         int? intValue,
@@ -944,7 +943,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
     } else {
       final count = await db._setActiveOrg(org.id);
       if (count == 0) {
-        insert2('activeOrg', ValueType.int, intValue: org.id);
+        insert2('activeOrg', 2, intValue: org.id);
       }
     }
   }
@@ -965,7 +964,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
     } else {
       final count = await db._setActiveSchedule(schedule.id);
       if (count == 0) {
-        insert2('activeSchedule', ValueType.int, intValue: schedule.id);
+        insert2('activeSchedule', 2, intValue: schedule.id);
       }
     }
   }
@@ -1006,7 +1005,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
     } else {
       final count = await db._setActivePeriod(period);
       if (count == 0) {
-        insert2('activePeriod', ValueType.date, dateValue: period);
+        insert2('activePeriod', 4, dateValue: period);
       }
     }
   }

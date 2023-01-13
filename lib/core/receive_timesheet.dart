@@ -7,13 +7,12 @@ import 'package:http/http.dart' as http;
 
 /// Выбор CSV файла и загрузка табеля посещаемости
 Future pickAndReceiveFromFile(Bloc bloc) async {
-  FilePickerResult? result = await FilePicker.platform.pickFiles(
+  final filePath = await FilePicker.getFilePath(
     type: FileType.custom,
     allowedExtensions: ['csv', 'txt'],
-    allowMultiple: false,
   );
-  if (result != null && result.files.isNotEmpty) {
-    final file = File(result.files.first.path!);
+  if (filePath != '') {
+    final file = File(filePath);
     return await receiveFromFile(bloc, file);
   } else {
     return L10n.fileNotSelected;
@@ -37,14 +36,14 @@ Future receiveFromFile(Bloc bloc, File file) async {
 }
 
 Future receiveFromParus(Bloc bloc) async {
-  final org = bloc.activeOrg.valueWrapper?.value;
+  final org = bloc.activeOrg.valueOrNull;
   if (org == null) {
     throw L10n.addOrgWithInn;
   }
   if (isEmpty(org.inn)) {
     throw L10n.addInn;
   }
-  final group = bloc.activeGroup.valueWrapper?.value;
+  final group = bloc.activeGroup.valueOrNull;
   if (group == null) {
     throw L10n.addGroupAsInParus;
   }

@@ -31,7 +31,7 @@ DatabaseConnection connect() {
       return driftIsolate.connect();
     } else {
       final databaseImpl = NativeDatabase(File(dbPath));
-      return DatabaseConnection.fromExecutor(databaseImpl);
+      return DatabaseConnection(databaseImpl);
     }
   }));
 }
@@ -59,7 +59,7 @@ void _entrypointForDriftIsolate(_IsolateStartRequest request) {
   // We can use DriftIsolate.inCurrent because this function is the entrypoint
   // of a background isolate itself.
   final driftServer = DriftIsolate.inCurrent(
-      () => DatabaseConnection.fromExecutor(databaseImpl));
+      () => DatabaseConnection(databaseImpl));
 
   // Inform the main isolate about the server we just created.
   request.talkToMain.send(driftServer);

@@ -320,7 +320,7 @@ class Bloc {
   // Группы --------------------------------------------------------------------
   /// Установка активной группы и установка активным её графика
   Future setActiveGroup(Group? group) async {
-    await db.settingsDao.setActiveGroup(activeOrg.valueWrapper?.value, group);
+    await db.settingsDao.setActiveGroup(activeOrg.valueOrNull, group);
     if (group != null) {
       final schedule = await db.schedulesDao.get(group.scheduleId);
       await setActiveSchedule(schedule);
@@ -334,7 +334,7 @@ class Bloc {
     int? meals,
   }) async {
     final groupView = await db.groupsDao.insert2(
-      org: activeOrg.valueWrapper?.value,
+      org: activeOrg.valueOrNull,
       name: name,
       schedule: schedule,
       meals: meals,
@@ -353,7 +353,7 @@ class Bloc {
   Future<bool> deleteGroup(Group group) async {
     final result = await db.groupsDao.delete2(group);
     final previousGroup =
-        await db.groupsDao.getPrevious(activeOrg.valueWrapper?.value, group);
+        await db.groupsDao.getPrevious(activeOrg.valueOrNull, group);
     await setActiveGroup(previousGroup);
     return result;
   }
@@ -428,8 +428,9 @@ class Bloc {
   }
 
   // Настройки -----------------------------------------------------------------
-  Setting getSetting(String name) =>
-      userSettings.valueWrapper!.value.firstWhere((e) => e.name == name);
+  Setting getSetting(String name) {
+    return userSettings.value.firstWhere((e) => e.name == name);
+  }
 
   get doubleTapInTimesheet => getSetting(L10n.doubleTapInTimesheet).boolValue;
 

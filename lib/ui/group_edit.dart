@@ -41,7 +41,7 @@ class GroupEditState extends State<GroupEdit> {
   void initState() {
     super.initState();
     _nameEdit.text = widget.groupView?.name ?? '';
-    _schedule = widget.groupView?.schedule ?? _bloc.activeSchedule.valueWrapper?.value;
+    _schedule = widget.groupView?.schedule ?? _bloc.activeSchedule.valueOrNull;
     _scheduleEdit.text = _schedule?.code ?? '';
     _meals = widget.groupView?.meals ?? 0; // 0 - Без питания, 1 - До 2 лет, 2 - От 3 лет
   }
@@ -62,7 +62,6 @@ class GroupEditState extends State<GroupEdit> {
       formKey: _formKey,
       autovalidateMode: _autovalidateMode,
       fields: <Widget>[
-        // Наименование группы
         textFormField(
           controller: _nameEdit,
           labelText: L10n.name,
@@ -72,7 +71,6 @@ class GroupEditState extends State<GroupEdit> {
           autofocus: widget.actionType == DataActionType.insert ? true : false,
           maxLength: 20,
         ),
-        // График
         textFormField(
           controller: _scheduleEdit,
           labelText: L10n.schedule,
@@ -81,7 +79,6 @@ class GroupEditState extends State<GroupEdit> {
           validator: validateEmpty,
           readOnly: true,
         ),
-        // Питание
         chooseFormField(
           initialValue: _meals,
           names: mealsNames,
@@ -99,7 +96,7 @@ class GroupEditState extends State<GroupEdit> {
   /// Выбор графика из словаря
   Future _selectSchedule() async {
     _schedule = await push(context, const SchedulesDictionary()) ??
-        _bloc.activeSchedule?.valueWrapper?.value;
+        _bloc.activeSchedule?.valueOrNull;
     _scheduleEdit.text = _schedule?.code ?? _scheduleEdit.text;
   }
 

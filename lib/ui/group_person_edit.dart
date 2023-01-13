@@ -63,7 +63,6 @@ class GroupPersonEditState extends State<GroupPersonEdit> {
       autovalidateMode: _autovalidateMode,
       onSubmit: _onSubmit,
       fields: <Widget>[
-        // Персона
         textFormField(
           controller: _personEdit,
           labelText: L10n.person,
@@ -73,12 +72,10 @@ class GroupPersonEditState extends State<GroupPersonEdit> {
           autofocus: widget.actionType == DataActionType.insert ? true : false,
           readOnly: true,
         ),
-        // Дата поступления в группу
         dateFormField(
           controller: _beginDateEdit,
           labelText: L10n.beginDate,
         ),
-        // Дата дата выбытия из группы
         dateFormField(
           controller: _endDateEdit,
           labelText: L10n.endDate,
@@ -102,7 +99,7 @@ class GroupPersonEditState extends State<GroupPersonEdit> {
       try {
         if (widget.actionType == DataActionType.insert) {
           await bloc.insertGroupPerson(
-            group: bloc.activeGroup.valueWrapper?.value,
+            group: bloc.activeGroup.valueOrNull,
             person: _person,
             beginDate: stringToDateOrNull(_beginDateEdit.text),
             endDate: stringToDateOrNull(_endDateEdit.text),

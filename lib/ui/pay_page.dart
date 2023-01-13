@@ -20,7 +20,7 @@ class PayPageState extends State<PayPage> {
 
   @override
   Widget build(BuildContext context) {
-    final org = bloc.activeOrg.valueWrapper?.value;
+    final org = bloc.activeOrg.valueOrNull;
     if (org == null) {
       return Scaffold(
         key: _scaffoldKey,

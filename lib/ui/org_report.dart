@@ -92,8 +92,7 @@ class OrgReportState extends State<OrgReport> {
                                       return HorizontalDataTable(
                                         leftHandSideColumnWidth: fixedColumnWidth,
                                         rightHandSideColumnWidth: columnWidth *
-                                            (_bloc.activePeriod.valueWrapper
-                                                .value.day + 1),
+                                            (_bloc.activePeriod.value.day + 1),
                                         isFixedHeader: true,
                                         headerWidgets: _createTitleRow(),
                                         leftSideItemBuilder: _createFixedColumn,
@@ -129,8 +128,7 @@ class OrgReportState extends State<OrgReport> {
                                       return HorizontalDataTable(
                                         leftHandSideColumnWidth: fixedColumnWidth,
                                         rightHandSideColumnWidth: columnWidth *
-                                            (_bloc.activePeriod.valueWrapper
-                                                .value.day + 1),
+                                            (_bloc.activePeriod.value.day + 1),
                                         isFixedHeader: true,
                                         headerWidgets: _createTitleRow(),
                                         leftSideItemBuilder: _createFixedColumn,
@@ -155,7 +153,7 @@ class OrgReportState extends State<OrgReport> {
 
   /// Создание строки заголовка таблицы
   List<Widget> _createTitleRow() {
-    final DateTime period = _bloc.activePeriod.valueWrapper?.value;
+    final DateTime period = _bloc.activePeriod.valueOrNull;
     final rowCells = <Widget>[
       StreamBuilder<DateTime?>(
         stream: _bloc.activePeriod,
@@ -329,7 +327,7 @@ class OrgReportState extends State<OrgReport> {
             attendance.groupId == _activeGroups![index].groupView.id)
         : _orgAttendances!
             .where((attendance) => attendance.meals == _orgMeals![index].meals);
-    final period = _bloc.activePeriod.valueWrapper?.value;
+    final period = _bloc.activePeriod.valueOrNull;
     final rowCells = <Widget>[];
     // Итог по персоне за период
     final daysCount =
@@ -365,7 +363,7 @@ class OrgReportState extends State<OrgReport> {
       context: context,
       firstDate: DateTime(DateTime.now().year - 1),
       lastDate: DateTime(DateTime.now().year + 1),
-      initialDate: _bloc.activePeriod.valueWrapper?.value,
+      initialDate: _bloc.activePeriod.valueOrNull,
     );
     if (period != null) {
       _bloc.setActivePeriod(lastDayOfMonth(period));

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
-import 'package:timesheets/db/value_type.dart';
 
 /// Исправление настроек
 Future editSettings(BuildContext context) async {
@@ -54,7 +53,7 @@ class SettingsEditState extends State<SettingsEdit> {
       settings.add(Setting(
         id: 0,
         name: L10n.eraseAllData,
-        valueType: ValueType.button,
+        valueType: 5,
         isUserSetting: true,
       ));
     }
@@ -64,7 +63,7 @@ class SettingsEditState extends State<SettingsEdit> {
   Widget _settingCard(List<Setting> settings, int index) {
     final setting = settings[index];
     switch (setting.valueType) {
-      case ValueType.text:
+      case 0:
         return textFormField(
           initialValue: setting.textValue,
           labelText: setting.name,
@@ -73,7 +72,7 @@ class SettingsEditState extends State<SettingsEdit> {
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
-      case ValueType.bool:
+      case 1:
         return boolFormField(
           initialValue: setting.boolValue,
           labelText: setting.name,
@@ -84,7 +83,7 @@ class SettingsEditState extends State<SettingsEdit> {
             });
           },
         );
-      case ValueType.int:
+      case 2:
         return intFormField(
           initialValue: setting.intValue,
           labelText: setting.name,
@@ -94,7 +93,7 @@ class SettingsEditState extends State<SettingsEdit> {
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
-      case ValueType.real:
+      case 3:
         return realFormField(
           initialValue: setting.realValue,
           labelText: setting.name,
@@ -104,7 +103,7 @@ class SettingsEditState extends State<SettingsEdit> {
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
-      case ValueType.date:
+      case 4:
         return dateFormField(
           initialValue: setting.dateValue,
           labelText: setting.name,
@@ -114,7 +113,7 @@ class SettingsEditState extends State<SettingsEdit> {
             _bloc.db.settingsDao.update2(settings[index]);
           },
         );
-      case ValueType.button:
+      case 5:
         if (setting.name == L10n.eraseAllData) {
           return button(
             setting.name,

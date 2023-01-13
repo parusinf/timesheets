@@ -102,8 +102,8 @@ class ScheduleEditState extends State<ScheduleEdit> {
       try {
         final hours = <double>[];
 
-        for (int i = 0; i < _bloc.scheduleDays.valueWrapper?.value?.length; i++) {
-          hours.add(_bloc.scheduleDays.valueWrapper?.value[i].hoursNorm);
+        for (int i = 0; i < _bloc.scheduleDays.valueOrNull?.length; i++) {
+          hours.add(_bloc.scheduleDays.valueOrNull?[i].hoursNorm);
         }
         if (hours.reduce((a, b) => a + b) == 0.0) {
           showMessage(_scaffoldKey, L10n.noHoursNorm);
@@ -115,7 +115,7 @@ class ScheduleEditState extends State<ScheduleEdit> {
               id: widget.schedule?.id ?? 0,
               code: createScheduleCode(hours),
             ));
-            _bloc.scheduleDays.valueWrapper?.value?.forEach(
+            _bloc.scheduleDays.valueOrNull?.forEach(
                 (scheduleDay) => _bloc.db.scheduleDaysDao.update2(scheduleDay));
           }
           if (!mounted) return;

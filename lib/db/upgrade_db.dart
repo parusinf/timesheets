@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:timesheets/core.dart';
 import 'db.dart';
-import 'value_type.dart';
 import 'init_new_db.dart';
 
 Future upgradeDb(Db db, Migrator m, int from, int to) async {
@@ -35,11 +34,11 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
         "valueType = ValueType.int WHERE name IN ('activeOrg', 'activeSchedule')");
     await db.customStatement("UPDATE settings SET isUserSetting = FALSE, "
         "valueType = ValueType.date WHERE name IN ('activePeriod')");
-    await db.settingsDao.insert2(L10n.doubleTapInTimesheet, ValueType.bool,
+    await db.settingsDao.insert2(L10n.doubleTapInTimesheet, 1,
         boolValue: false, isUserSetting: true);
   }
   if (from < 6) {
-    await db.settingsDao.insert2(L10n.useParusIntegration, ValueType.bool,
+    await db.settingsDao.insert2(L10n.useParusIntegration, 1,
         boolValue: true, isUserSetting: true);
   }
   if (from < 7) {
@@ -51,7 +50,7 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
   }
   if (from < 9) {
     await m.addColumn(db.attendances, db.attendances.isIllness);
-    await db.settingsDao.insert2(L10n.isIllness, ValueType.bool,
+    await db.settingsDao.insert2(L10n.isIllness, 1,
         boolValue: true, isUserSetting: true);
   }
 }

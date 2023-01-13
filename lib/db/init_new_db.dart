@@ -1,5 +1,4 @@
 import 'db.dart';
-import 'value_type.dart';
 import 'package:timesheets/core.dart';
 import 'schedule_helper.dart';
 
@@ -32,11 +31,11 @@ final _initHolidays = <Holiday>[
 
 /// Создание пользовательских настроек
 Future _initUserSettings(Db db) async {
-  await db.settingsDao.insert2(L10n.doubleTapInTimesheet, ValueType.bool,
+  await db.settingsDao.insert2(L10n.doubleTapInTimesheet, 1,
       boolValue: false, isUserSetting: true);
-  await db.settingsDao.insert2(L10n.useParusIntegration, ValueType.bool,
+  await db.settingsDao.insert2(L10n.useParusIntegration, 1,
       boolValue: true, isUserSetting: true);
-  await db.settingsDao.insert2(L10n.isIllness, ValueType.bool,
+  await db.settingsDao.insert2(L10n.isIllness, 1,
       boolValue: true, isUserSetting: true);
 }
 

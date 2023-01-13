@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:timesheets/core.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const lineColor = Colors.black12;
 const activeColorOpacity = 0.3;
@@ -94,8 +94,8 @@ Future<T?> push<T extends Object>(BuildContext context, Widget page) async {
 
 /// Вызов ссылки
 Future launchUrl2(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
-  if (await canLaunchUrlString(url)) {
-    await launchUrlString(url);
+  if (await canLaunch(url)) {
+    await launch(url);
   } else {
     showMessage(scaffoldKey, L10n.linkNotStart);
   }
@@ -105,9 +105,9 @@ Future launchUrl2(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
 /// Получение нормы часов на дату по активному графику
 double getHoursNorm(Bloc bloc, DateTime date) {
   final weekdayNumber = abbrWeekdays.indexOf(abbrWeekday(date));
-  final scheduleDays = bloc.scheduleDays.valueWrapper?.value;
+  final scheduleDays = bloc.scheduleDays.value;
   var hoursNorm = 0.0;
-  if (scheduleDays != null) {
+  if (scheduleDays.isNotEmpty) {
     hoursNorm = scheduleDays[weekdayNumber].hoursNorm;
     // Обнуление нормы часов по графику для праздничного дня
     if (!isHoliday(bloc, date)) {
@@ -124,7 +124,7 @@ double getHoursNorm(Bloc bloc, DateTime date) {
 
 /// Поиск нормы часов первого дня активного графика
 double getFirstHoursNorm(Bloc bloc) {
-  final days = bloc.scheduleDays.valueWrapper?.value;
+  final days = bloc.scheduleDays.valueOrNull;
   if (days != null) {
     for (var day in days) {
       if (day.hoursNorm > 0.0) {
