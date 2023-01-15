@@ -68,24 +68,33 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return AppBar(
       title: StreamBuilder<GroupView?>(
         stream: bloc.activeGroup,
-        builder: (context, snapshot) => snapshot.hasData
-            ? InkWell(
-          onTap: () async {
-            await push(context, const GroupPersonsDictionary());
-          },
-          child: text(snapshot.data!.name),
-        )
-            : StreamBuilder<OrgView?>(
-            stream: bloc.activeOrg,
-            builder: (context, snapshot) => snapshot.hasData
-                ? InkWell(
-              onTap: () => editOrg(context, bloc.activeOrg.value),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return InkWell(
+              onTap: () async {
+                await push(context, const GroupPersonsDictionary());
+              },
               child: text(snapshot.data!.name),
-            )
-                : InkWell(
-              onTap: () => push(context, const HelpPage()),
-              child: text(L10n.timesheets),
-            )),
+            );
+          } else {
+            return StreamBuilder<OrgView?>(
+              stream: bloc.activeOrg,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return InkWell(
+                    onTap: () => editOrg(context, bloc.activeOrg.value),
+                    child: text(snapshot.data!.name),
+                  );
+                } else {
+                  return InkWell(
+                    onTap: () => push(context, const HelpPage()),
+                    child: text(L10n.timesheets),
+                  );
+                }
+              }
+            );
+          }
+        }
       ),
       actions: <Widget>[
         DropdownButtonHideUnderline(
@@ -120,11 +129,11 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         stream: bloc.groupPeriodPersons,
         builder: (context, snapshot) {
           // Добавить организацию
-          if (!bloc.activeOrg.hasValue) {
+          if (bloc.activeOrg.valueOrNull == null) {
             return centerButton(L10n.addOrg, onPressed: () => addOrg(context));
           } else {
             // Добавить группу
-            if (!bloc.activeGroup.hasValue) {
+            if (bloc.activeGroup.valueOrNull == null) {
               return centerButton(L10n.addGroup,
                   onPressed: () => addGroup(context));
             } else {
@@ -149,7 +158,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           rowSeparatorWidget:
                           const Divider(color: lineColor, height: 0.5),
                         );
-                        // Посещаемость загружаются
+                        // Посещаемость загружается
                       } else {
                         return centerMessage(context, L10n.dataLoading);
                       }

@@ -22,13 +22,13 @@ dependencies:
   rxdart:
   provider:
   flutter_markdown:
-  url_launcher:
   share:
-  file_picker:
   uri_to_file:
   http:
   http_parser:
   qr_flutter:
+  url_launcher: ^6.1.7
+  file_picker: ^5.2.5
 
 dev_dependencies:
   drift_dev:

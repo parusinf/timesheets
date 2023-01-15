@@ -7,12 +7,13 @@ import 'package:http/http.dart' as http;
 
 /// Выбор CSV файла и загрузка табеля посещаемости
 Future pickAndReceiveFromFile(Bloc bloc) async {
-  final filePath = await FilePicker.getFilePath(
+  FilePickerResult? result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['csv', 'txt'],
+    allowMultiple: false,
   );
-  if (filePath != '') {
-    final file = File(filePath);
+  if (result != null && result.files.isNotEmpty) {
+    final file = File(result.files.first.path!);
     return await receiveFromFile(bloc, file);
   } else {
     return L10n.fileNotSelected;
