@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:timesheets/core.dart';
+import 'package:http/http.dart' as http;
 
 /// Организация с признаком активности
 class ActiveOrg {
@@ -52,6 +54,9 @@ class Bloc {
   // Активный период
   final activePeriod = BehaviorSubject<DateTime?>();
 
+  // Выходные дни активного года
+  final activeYearDayOff = BehaviorSubject<String?>();
+
   // Активная группа и период
   final activeGroupPeriod = BehaviorSubject<GroupPeriod?>();
 
@@ -66,15 +71,6 @@ class Bloc {
 
   // Дни активного графика
   final scheduleDays = BehaviorSubject<List<ScheduleDay>>();
-
-  // Праздники
-  final holidays = BehaviorSubject<List<Holiday>>();
-
-  // Праздничные дни
-  final holidaysDateList = BehaviorSubject<List<DateTime>>();
-
-  // Рабочие дни
-  final workdaysDateList = BehaviorSubject<List<DateTime?>>();
 
   // Группы с признаком активности
   final activeGroups = BehaviorSubject<List<ActiveGroup>>();
@@ -120,20 +116,14 @@ class Bloc {
         .listen(activeGroup.add);
 
     // Отслеживание активного периода из настройки
-    Rx.concat([db.settingsDao.watchActivePeriod()]).listen(activePeriod.add);
+    Rx.concat([db.settingsDao.watchActivePeriod()]).listen(onChangeActivePeriod);
+
+    // Отслеживание выходных дней активного года из настройки
+    Rx.concat([db.settingsDao.watchActiveYearDayOff()]).listen(activeYearDayOff.add);
 
     // Отслеживание дней активного графика
     Rx.concat([activeSchedule.switchMap(db.scheduleDaysDao.watch)])
         .listen(scheduleDays.add);
-
-    // Отслеживание праздников
-    Rx.concat([db.holidaysDao.watch()]).listen(holidays.add);
-
-    // Отслеживание праздничных дней
-    Rx.concat([db.holidaysDao.watchHolidays()]).listen(holidaysDateList.add);
-
-    // Отслеживание рабочих дней
-    Rx.concat([db.holidaysDao.watchWorkdays()]).listen(workdaysDateList.add);
 
     // Отслеживание групп в активной организации
     groups = activeOrg.switchMap(db.groupsDao.watch);
@@ -192,12 +182,35 @@ class Bloc {
         .listen(groupPersons.add);
 
     // Отслеживание персон в активной группе в активном периоде
-    Rx.concat(
-            [activeGroupPeriod.switchMap(db.groupPersonsDao.watchGroupPeriod)])
+    Rx.concat([activeGroupPeriod.switchMap(db.groupPersonsDao.watchGroupPeriod)])
         .listen(groupPeriodPersons.add);
 
     // Отслеживание пользовательских настроек
     Rx.concat([db.settingsDao.watchUserSettings()]).listen(userSettings.add);
+  }
+
+  /// При смене года активного периода меняем выходные дни года
+  void onChangeActivePeriod(DateTime? date) async {
+    activePeriod.add(date);
+    if (date != null) {
+      String? yearDayOff = await db.settingsDao.getActiveYearDayOff();
+      final activeYearStr = date.year.toString();
+      if (yearDayOff == null
+          || yearDayOff.substring(0, 4) != activeYearStr) {
+        final url = 'https://isdayoff.ru/api/getdata?year=$activeYearStr';
+        final uri = Uri.parse(url);
+        final request = http.MultipartRequest('GET', uri);
+        final response = await request.send();
+        if (response.statusCode == 200) {
+          final responseBytes = await response.stream.toBytes();
+          final responseStr = utf8.decode(responseBytes);
+          yearDayOff = '$activeYearStr$responseStr';
+        } else {
+          yearDayOff = null;
+        }
+        await db.settingsDao.setActiveYearDayOff(yearDayOff);
+      }
+    }
   }
 
   /// Перенаправление контента в поток БЛоКа
@@ -221,15 +234,13 @@ class Bloc {
     activeSchedule.close();
     activeGroup.close();
     activePeriod.close();
+    activeYearDayOff.close();
     activeGroupPeriod.close();
     activeOrgPeriod.close();
     activeOrgs.close();
     activeSchedules.close();
     activeGroups.close();
     scheduleDays.close();
-    holidays.close();
-    holidaysDateList.close();
-    workdaysDateList.close();
     groupPersons.close();
     groupPeriodPersons.close();
     meals.close();
@@ -294,27 +305,6 @@ class Bloc {
     final previousSchedule = await db.schedulesDao.getPrevious(schedule);
     await setActiveSchedule(previousSchedule);
     return result;
-  }
-
-  // Праздники -----------------------------------------------------------------
-  /// Добавление праздника
-  Future<Holiday> insertHoliday({
-    required DateTime date,
-    DateTime? workday,
-  }) async {
-    return await db.holidaysDao.insert2(
-      date: date,
-      workday: workday,
-    );
-  }
-
-  /// Исправление праздника
-  Future<bool> updateHoliday(Holiday holiday) async =>
-      await db.holidaysDao.update2(holiday);
-
-  /// Удаление праздника
-  Future<bool> deleteHoliday(Holiday holiday) async {
-    return await db.holidaysDao.delete2(holiday);
   }
 
   // Группы --------------------------------------------------------------------
@@ -449,14 +439,12 @@ class Bloc {
     activeSchedule.add(null);
     activeGroup.add(null);
     activePeriod.add(null);
+    activeYearDayOff.add(null);
     activeGroupPeriod.add(null);
     activeOrgPeriod.add(null);
     activeOrgs.add([]);
     activeSchedules.add([]);
     scheduleDays.add([]);
-    holidays.add([]);
-    holidaysDateList.add([]);
-    workdaysDateList.add([]);
     activeGroups.add([]);
     groupPersons.add([]);
     groupPeriodPersons.add([]);

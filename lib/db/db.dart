@@ -169,26 +169,26 @@ class OrgPeriod {
 }
 
 /// База данных
-@DriftDatabase(include: {
-  'model.drift'
-}, daos: [
-  OrgsDao,
-  SchedulesDao,
-  ScheduleDaysDao,
-  HolidaysDao,
-  GroupsDao,
-  PersonsDao,
-  GroupPersonsDao,
-  AttendancesDao,
-  SettingsDao
-])
+@DriftDatabase(
+  include: {'model.drift'},
+  daos: [
+    OrgsDao,
+    SchedulesDao,
+    ScheduleDaysDao,
+    GroupsDao,
+    PersonsDao,
+    GroupPersonsDao,
+    AttendancesDao,
+    SettingsDao,
+  ]
+)
 class Db extends _$Db {
   /// Асинхронная база данных
   Db() : super.connect(impl.connect());
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   /// Обновление структуры базы данных
   @override
@@ -471,48 +471,6 @@ class ScheduleDaysDao extends DatabaseAccessor<Db> with _$ScheduleDaysDaoMixin {
           dayNumber: row.dayNumber,
           hoursNorm: row.hoursNorm))
       .watch();
-}
-
-// Праздники -------------------------------------------------------------------
-@DriftAccessor(tables: [Holidays])
-class HolidaysDao extends DatabaseAccessor<Db> with _$HolidaysDaoMixin {
-  HolidaysDao(Db db) : super(db);
-
-  /// Добавление праздника
-  Future<Holiday> insert2({
-    required DateTime date,
-    DateTime? workday,
-  }) async {
-    final id = await into(db.holidays).insert(HolidaysCompanion(
-      date: Value(date),
-      workday: Value(workday),
-    ));
-    return Holiday(
-      id: id,
-      date: date,
-      workday: workday,
-    );
-  }
-
-  /// Исправление праздника
-  Future<bool> update2(Holiday holiday) async =>
-      await update(db.holidays).replace(holiday);
-
-  /// Удаление праздника
-  Future<bool> delete2(Holiday holiday) async =>
-      (await delete(db.holidays).delete(holiday)) > 0 ? true : false;
-
-  /// Отслеживание праздников
-  Stream<List<Holiday>> watch() =>
-      (select(db.holidays)..orderBy([(t) => OrderingTerm(expression: t.date)])).watch();
-
-  /// Отслеживание праздничных дней
-  Stream<List<DateTime>> watchHolidays() =>
-      (select(db.holidays)).map((row) => row.date).watch();
-
-  /// Отслеживание рабочих дней
-  Stream<List<DateTime?>> watchWorkdays() =>
-      db._holidaysWorkdays().map((row) => row.workday).watch();
 }
 
 // Группы ----------------------------------------------------------------------
@@ -989,7 +947,7 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
   Future setActiveGroup(Org? org, Group? group) async =>
       await db._setActiveGroup(group?.id, org?.id ?? 0);
 
-  // Активный период
+  /// Активный период
   Stream<DateTime?> watchActivePeriod() {
       return db._activePeriod().watchSingleOrNull();
   }
@@ -1007,6 +965,23 @@ class SettingsDao extends DatabaseAccessor<Db> with _$SettingsDaoMixin {
       if (count == 0) {
         insert2('activePeriod', 4, dateValue: period);
       }
+    }
+  }
+
+  /// Выходные дни активного года в формате 20231111111100000110000011000001100...
+  Stream<String?> watchActiveYearDayOff() {
+    return db._activeYearDayOff().watchSingleOrNull();
+  }
+
+  getActiveYearDayOff() async {
+    return await db._activeYearDayOff().getSingleOrNull();
+  }
+
+  /// Установка выходных дней активного года
+  Future setActiveYearDayOff(String? yearDayOff) async {
+    final count = await db._setActiveYearDayOff(yearDayOff);
+    if (count == 0) {
+      insert2('activeYearDayOff', 0, textValue: yearDayOff);
     }
   }
 }

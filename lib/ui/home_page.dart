@@ -300,8 +300,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   width: columnWidth,
                   alignment: Alignment.center,
                   borderStyle: BorderStyle.solid,
-                  titleColor:
-                  isHoliday(bloc, date) ? Colors.red : Colors.black87,
+                  titleColor: isDayOff(bloc, date) ? Colors.red : Colors.black87,
                   subtitleColor: Colors.black54,
                   wrap: false,
                   onTap: () => { fillPresenceOfAllPersonsOnDate(date, hoursNorm) },

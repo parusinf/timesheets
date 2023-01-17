@@ -37,18 +37,6 @@ CREATE TABLE schedule_days (
 );
 CREATE UNIQUE INDEX schedule_days_index ON schedule_days (scheduleId, dayNumber);
 
--- Праздники
-CREATE TABLE holidays (
-  -- Идентификатор праздника
-  id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
-  -- Праздничный день
-  date               DATE NOT NULL,
-  -- Рабочий день
-  workday            DATE
-);
-CREATE UNIQUE INDEX holidays_index ON holidays (date);
-CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
-
 -- Группы
 CREATE TABLE "groups" (
   -- Идентификатор группы
@@ -185,12 +173,6 @@ SELECT *
            FROM schedules
           WHERE code < :scheduleCode
        );
-
--- Рабочие дни
-_holidaysWorkdays:
-SELECT *
-  FROM holidays
- WHERE workday IS NOT NULL;
 
 -- Первая группа организации в алфавитном порядке
 _firstGroup:
@@ -420,3 +402,13 @@ SELECT S.dateValue
 -- Установка активного периода
 _setActivePeriod:
 UPDATE settings SET dateValue = :activePeriod WHERE name = 'activePeriod';
+
+-- Выходные дни активного года в формате 20231111111100000110000011000001100...
+_activeYearDayOff:
+SELECT S.textValue
+  FROM settings S
+ WHERE S.name = 'activeYearDayOff';
+
+-- Установка выходных дней активного года
+_setActiveYearDayOff:
+UPDATE settings SET textValue = :activeYearDayOff WHERE name = 'activeYearDayOff';

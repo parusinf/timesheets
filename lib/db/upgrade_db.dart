@@ -23,7 +23,7 @@ CREATE TABLE holidays (
 );
 CREATE UNIQUE INDEX holidays_index ON holidays (date);
 CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
-        ''');
+''');
   }
   if (from < 5) {
     await m.addColumn(db.settings, db.settings.valueType);
@@ -31,9 +31,9 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
     await m.addColumn(db.settings, db.settings.realValue);
     await m.addColumn(db.settings, db.settings.isUserSetting);
     await db.customStatement("UPDATE settings SET isUserSetting = FALSE, "
-        "valueType = ValueType.int WHERE name IN ('activeOrg', 'activeSchedule')");
+        "valueType = 2 WHERE name IN ('activeOrg', 'activeSchedule')");
     await db.customStatement("UPDATE settings SET isUserSetting = FALSE, "
-        "valueType = ValueType.date WHERE name IN ('activePeriod')");
+        "valueType = 4 WHERE name IN ('activePeriod')");
     await db.settingsDao.insert2(L10n.doubleTapInTimesheet, 1,
         boolValue: false, isUserSetting: true);
   }
@@ -52,5 +52,10 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
     await m.addColumn(db.attendances, db.attendances.isIllness);
     await db.settingsDao.insert2(L10n.isIllness, 1,
         boolValue: true, isUserSetting: true);
+  }
+  if (from < 10) {
+    await db.customStatement('DROP TABLE holidays;');
+    await db.settingsDao.insert2('activeYearDayOff', 0,
+        textValue: null, isUserSetting: false);
   }
 }

@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import 'tools.dart';
 import 'type_cast.dart';
 import 'bloc.dart';
@@ -16,16 +18,18 @@ bool isBirthday(DateTime date, DateTime? birthday) =>
     date.day == birthday?.day && date.month == birthday?.month;
 
 /// Дата является праздничным или выходным днём
-bool isHoliday(Bloc bloc, DateTime date) {
+isDayOff(Bloc bloc, DateTime date) {
   final weekday = abbrWeekday(date);
   final weekdayIndex = abbrWeekdays.indexOf(weekday);
-  return !isTransWorkday(bloc, date) &&
-      ([5, 6].contains(weekdayIndex) || bloc.holidaysDateList.value.contains(date));
+  String? yearDayOff = bloc.activeYearDayOff.valueOrNull;
+  if (yearDayOff == null) {
+    return [5, 6].contains(weekdayIndex);
+  } else {
+    final dayOfYear = int.parse(DateFormat('D').format(date));
+    final isDayOff = yearDayOff.substring(dayOfYear + 3, dayOfYear + 4) == '1'? true : false;
+    return isDayOff;
+  }
 }
-
-/// Дата является переносом рабочего дня
-bool isTransWorkday(Bloc bloc, DateTime date) =>
-    bloc.workdaysDateList.value.contains(date);
 
 /// Строка нуждается в исправлении
 bool isEqual(String? oldValue, String? newValue) =>

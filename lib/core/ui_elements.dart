@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:timesheets/core.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 const lineColor = Colors.black12;
 const activeColorOpacity = 0.3;
@@ -94,8 +94,8 @@ Future<T?> push<T extends Object>(BuildContext context, Widget page) async {
 
 /// Вызов ссылки
 Future launchUrl2(GlobalKey<ScaffoldState> scaffoldKey, String url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
+  if (await canLaunchUrlString(url)) {
+    await launchUrlString(url);
   } else {
     showMessage(scaffoldKey, L10n.linkNotStart);
   }
@@ -110,13 +110,13 @@ double getHoursNorm(Bloc bloc, DateTime date) {
   if (scheduleDays.isNotEmpty) {
     hoursNorm = scheduleDays[weekdayNumber].hoursNorm;
     // Обнуление нормы часов по графику для праздничного дня
-    if (!isHoliday(bloc, date)) {
+    /*if (!isHoliday(bloc, date)) {
       // Добавление нормы часов для переноса рабочего дня
       if (isTransWorkday(bloc, date)) {
         // Поиск нормы часов первого дня графика
         hoursNorm = getFirstHoursNorm(bloc);
       }
-    }
+    }*/
   }
   return hoursNorm;
 }

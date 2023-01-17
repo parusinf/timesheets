@@ -759,218 +759,6 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDay> {
   }
 }
 
-class Holidays extends Table with TableInfo<Holidays, Holiday> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Holidays(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
-      'date', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _workdayMeta =
-      const VerificationMeta('workday');
-  late final GeneratedColumn<DateTime> workday = GeneratedColumn<DateTime>(
-      'workday', aliasedName, true,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  @override
-  List<GeneratedColumn> get $columns => [id, date, workday];
-  @override
-  String get aliasedName => _alias ?? 'holidays';
-  @override
-  String get actualTableName => 'holidays';
-  @override
-  VerificationContext validateIntegrity(Insertable<Holiday> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('date')) {
-      context.handle(
-          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
-    } else if (isInserting) {
-      context.missing(_dateMeta);
-    }
-    if (data.containsKey('workday')) {
-      context.handle(_workdayMeta,
-          workday.isAcceptableOrUnknown(data['workday']!, _workdayMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Holiday map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Holiday(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      date: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
-      workday: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}workday']),
-    );
-  }
-
-  @override
-  Holidays createAlias(String alias) {
-    return Holidays(attachedDatabase, alias);
-  }
-
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class Holiday extends DataClass implements Insertable<Holiday> {
-  final int id;
-  final DateTime date;
-  final DateTime? workday;
-  const Holiday({required this.id, required this.date, this.workday});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['date'] = Variable<DateTime>(date);
-    if (!nullToAbsent || workday != null) {
-      map['workday'] = Variable<DateTime>(workday);
-    }
-    return map;
-  }
-
-  HolidaysCompanion toCompanion(bool nullToAbsent) {
-    return HolidaysCompanion(
-      id: Value(id),
-      date: Value(date),
-      workday: workday == null && nullToAbsent
-          ? const Value.absent()
-          : Value(workday),
-    );
-  }
-
-  factory Holiday.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Holiday(
-      id: serializer.fromJson<int>(json['id']),
-      date: serializer.fromJson<DateTime>(json['date']),
-      workday: serializer.fromJson<DateTime?>(json['workday']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'date': serializer.toJson<DateTime>(date),
-      'workday': serializer.toJson<DateTime?>(workday),
-    };
-  }
-
-  Holiday copyWith(
-          {int? id,
-          DateTime? date,
-          Value<DateTime?> workday = const Value.absent()}) =>
-      Holiday(
-        id: id ?? this.id,
-        date: date ?? this.date,
-        workday: workday.present ? workday.value : this.workday,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('Holiday(')
-          ..write('id: $id, ')
-          ..write('date: $date, ')
-          ..write('workday: $workday')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, date, workday);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Holiday &&
-          other.id == this.id &&
-          other.date == this.date &&
-          other.workday == this.workday);
-}
-
-class HolidaysCompanion extends UpdateCompanion<Holiday> {
-  final Value<int> id;
-  final Value<DateTime> date;
-  final Value<DateTime?> workday;
-  const HolidaysCompanion({
-    this.id = const Value.absent(),
-    this.date = const Value.absent(),
-    this.workday = const Value.absent(),
-  });
-  HolidaysCompanion.insert({
-    this.id = const Value.absent(),
-    required DateTime date,
-    this.workday = const Value.absent(),
-  }) : date = Value(date);
-  static Insertable<Holiday> custom({
-    Expression<int>? id,
-    Expression<DateTime>? date,
-    Expression<DateTime>? workday,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (date != null) 'date': date,
-      if (workday != null) 'workday': workday,
-    });
-  }
-
-  HolidaysCompanion copyWith(
-      {Value<int>? id, Value<DateTime>? date, Value<DateTime?>? workday}) {
-    return HolidaysCompanion(
-      id: id ?? this.id,
-      date: date ?? this.date,
-      workday: workday ?? this.workday,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (date.present) {
-      map['date'] = Variable<DateTime>(date.value);
-    }
-    if (workday.present) {
-      map['workday'] = Variable<DateTime>(workday.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('HolidaysCompanion(')
-          ..write('id: $id, ')
-          ..write('date: $date, ')
-          ..write('workday: $workday')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class Groups extends Table with TableInfo<Groups, Group> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -2681,11 +2469,6 @@ abstract class _$Db extends GeneratedDatabase {
   late final ScheduleDays scheduleDays = ScheduleDays(this);
   late final Index scheduleDaysIndex = Index('schedule_days_index',
       'CREATE UNIQUE INDEX schedule_days_index ON schedule_days (scheduleId, dayNumber)');
-  late final Holidays holidays = Holidays(this);
-  late final Index holidaysIndex = Index('holidays_index',
-      'CREATE UNIQUE INDEX holidays_index ON holidays (date)');
-  late final Index holidaysWorkdayIndex = Index('holidays_workday_index',
-      'CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday)');
   late final Groups groups = Groups(this);
   late final Index groupsIndex = Index('groups_index',
       'CREATE UNIQUE INDEX groups_index ON "groups" (orgId, name)');
@@ -2706,7 +2489,6 @@ abstract class _$Db extends GeneratedDatabase {
   late final OrgsDao orgsDao = OrgsDao(this as Db);
   late final SchedulesDao schedulesDao = SchedulesDao(this as Db);
   late final ScheduleDaysDao scheduleDaysDao = ScheduleDaysDao(this as Db);
-  late final HolidaysDao holidaysDao = HolidaysDao(this as Db);
   late final GroupsDao groupsDao = GroupsDao(this as Db);
   late final PersonsDao personsDao = PersonsDao(this as Db);
   late final GroupPersonsDao groupPersonsDao = GroupPersonsDao(this as Db);
@@ -2760,14 +2542,6 @@ abstract class _$Db extends GeneratedDatabase {
         readsFrom: {
           schedules,
         }).asyncMap(schedules.mapFromRow);
-  }
-
-  Selectable<Holiday> _holidaysWorkdays() {
-    return customSelect('SELECT * FROM holidays WHERE workday IS NOT NULL',
-        variables: [],
-        readsFrom: {
-          holidays,
-        }).asyncMap(holidays.mapFromRow);
   }
 
   Selectable<Group> _firstGroup(int orgId) {
@@ -3091,6 +2865,24 @@ abstract class _$Db extends GeneratedDatabase {
     );
   }
 
+  Selectable<String?> _activeYearDayOff() {
+    return customSelect(
+        'SELECT S.textValue FROM settings AS S WHERE S.name = \'activeYearDayOff\'',
+        variables: [],
+        readsFrom: {
+          settings,
+        }).map((QueryRow row) => row.readNullable<String>('textValue'));
+  }
+
+  Future<int> _setActiveYearDayOff(String? activeYearDayOff) {
+    return customUpdate(
+      'UPDATE settings SET textValue = ?1 WHERE name = \'activeYearDayOff\'',
+      variables: [Variable<String>(activeYearDayOff)],
+      updates: {settings},
+      updateKind: UpdateKind.update,
+    );
+  }
+
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3102,9 +2894,6 @@ abstract class _$Db extends GeneratedDatabase {
         schedulesIndex,
         scheduleDays,
         scheduleDaysIndex,
-        holidays,
-        holidaysIndex,
-        holidaysWorkdayIndex,
         groups,
         groupsIndex,
         groupsScheduleIndex,
@@ -3312,7 +3101,6 @@ class ActiveGroupResult {
 mixin _$OrgsDaoMixin on DatabaseAccessor<Db> {}
 mixin _$SchedulesDaoMixin on DatabaseAccessor<Db> {}
 mixin _$ScheduleDaysDaoMixin on DatabaseAccessor<Db> {}
-mixin _$HolidaysDaoMixin on DatabaseAccessor<Db> {}
 mixin _$GroupsDaoMixin on DatabaseAccessor<Db> {}
 mixin _$PersonsDaoMixin on DatabaseAccessor<Db> {}
 mixin _$GroupPersonsDaoMixin on DatabaseAccessor<Db> {}

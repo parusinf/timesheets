@@ -222,7 +222,7 @@ class OrgReportState extends State<OrgReport> {
                   alignment: Alignment.center,
                   borderStyle: BorderStyle.solid,
                   titleColor:
-                      isHoliday(_bloc, date) ? Colors.red : Colors.black87,
+                      isDayOff(_bloc, date) ? Colors.red : Colors.black87,
                   subtitleColor: Colors.black54,
                   wrap: false,
                 );

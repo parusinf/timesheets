@@ -8,7 +8,6 @@ import 'package:timesheets/ui/group_persons_dictionary.dart';
 import 'package:timesheets/ui/help_page.dart';
 import 'package:timesheets/ui/pay_page.dart';
 import 'package:timesheets/ui/org_report.dart';
-import 'package:timesheets/ui/holidays_dictionary.dart';
 import 'package:timesheets/ui/settings_edit.dart';
 
 /// Дроувер домашнего экрана
@@ -31,7 +30,6 @@ class HomeDrawerState extends State<HomeDrawer> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  // Список организаций
                   listHeater(Icons.business, L10n.orgs,
                       onAddPressed: () => addOrg(context)),
                   Flexible(
@@ -47,7 +45,6 @@ class HomeDrawerState extends State<HomeDrawer> {
                       },
                     ),
                   ),
-                  // Список групп активной организации
                   StreamBuilder<OrgView?>(
                       stream: bloc.activeOrg,
                       builder: (context, snapshot) => snapshot.hasData
@@ -72,13 +69,6 @@ class HomeDrawerState extends State<HomeDrawer> {
                   listHeater(Icons.settings, L10n.settings,
                       onHeaderTap: () async {
                         await push(context, const SettingsEdit());
-                        if (!mounted) return;
-                        Navigator.pop(context);
-                      }
-                  ),
-                  listHeater(Icons.auto_awesome, L10n.holidays,
-                      onHeaderTap: () async {
-                        await push(context, const HolidaysDictionary());
                         if (!mounted) return;
                         Navigator.pop(context);
                       }
