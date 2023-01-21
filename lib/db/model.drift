@@ -93,13 +93,13 @@ CREATE TABLE attendances (
   -- Идентификатор посещаемости
   id                 INT NOT NULL PRIMARY KEY AUTOINCREMENT,
   -- Идентификатор связи персоны с группой
-  groupPersonId  INT NOT NULL REFERENCES group_persons (id) ON DELETE CASCADE,
+  groupPersonId      INT NOT NULL REFERENCES group_persons (id) ON DELETE CASCADE,
   -- Дата посещения
   date               DATE NOT NULL,
   -- Количество часов
   hoursFact          REAL NOT NULL,
-  -- Отсутствие по болезни
-  isIllness          BOOL NOT NULL DEFAULT FALSE
+  -- Неявка по уважительной причине
+  isNoShowGoodReason BOOL NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonId, date);
 

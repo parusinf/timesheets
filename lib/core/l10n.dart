@@ -5,7 +5,6 @@ class L10n {
     'ru': {
       'addGroup': 'Добавьте группу',
       'addGroupAsInParus': 'Добавьте группу с мнемокодом в точности как в Парусе',
-      'addHoliday': 'Добавьте праздник',
       'addInn': 'Добавьте ИНН организации',
       'addOrg': 'Добавьте организацию',
       'addOrgWithInn': 'Добавьте организацию с ИНН',
@@ -18,7 +17,6 @@ class L10n {
       'continueAction': 'Продолжить',
       'countryPhoneCode': '+7 ',
       'dataLoading': 'Загрузка данных',
-      'isIllness': 'Отсутствие по болезни',
       'days': 'Дней',
       'doubleTapInTimesheet': 'Двойное нажатие в табеле',
       'dupOrgInn': 'Организация с таким ИНН уже добавлена',
@@ -43,14 +41,15 @@ class L10n {
       'groupUpdating': 'Исправление группы',
       'groups': 'Группы',
       'help': 'Справка',
-      'holiday': 'Праздничный или выходной день',
-      'holidays': 'Праздники',
       'hourLetter': 'ч',
+      'illness': 'Б',
       'inn': 'ИНН',
       'innLength': 'ИНН должен состоять из 10 цифр',
       'invalidDate': 'Формат даты ДД.ММ.ГГГГ',
       'invalidHoursNorm': 'Некорректная норма часов',
       'invalidPhone': 'Формат телефона (###) ###-##-##',
+      'isIllness': 'Отсутствие по болезни',
+      'isNoShowGoodReason': 'Неявка по уважительной причине',
       'linkNotStart': 'Ссылка не запускается',
       'meals': 'Питание',
       'meals0': 'Без питания',
@@ -62,10 +61,10 @@ class L10n {
       'noName': 'Нет наименования',
       'noPersonFamily': 'Нет фамилии',
       'noPersonName': 'Нет имени',
+      'noShowGoodReason': 'НУ',
       'noValue': 'Отсутствует значение',
       'org': 'Организация',
       'orgs': 'Организации',
-      'useParusIntegration': 'Интеграция с Парусом',
       'permissionDenied': 'Разрешение не получено',
       'person': 'Персона',
       'personBirthday': 'Дата рождения',
@@ -104,16 +103,15 @@ class L10n {
       'uniquePerson': 'Уже есть такая персона',
       'uniqueSchedule': 'Уже есть такой график',
       'unknown': 'Неизвестно',
+      'useParusIntegration': 'Интеграция с Парусом',
       'we': 'ср',
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
       'workday': 'Перенос рабочего дня на',
-      'b': 'Б',
     }
   };
   static get addGroup => _l10n[languageCode]!['addGroup'];
   static get addGroupAsInParus => _l10n[languageCode]!['addGroupAsInParus'];
-  static get addHoliday => _l10n[languageCode]!['addHoliday'];
   static get addInn => _l10n[languageCode]!['addInn'];
   static get addOrg => _l10n[languageCode]!['addOrg'];
   static get addOrgWithInn => _l10n[languageCode]!['addOrgWithInn'];
@@ -126,7 +124,6 @@ class L10n {
   static get continueAction => _l10n[languageCode]!['continueAction'];
   static get countryPhoneCode => _l10n[languageCode]!['countryPhoneCode'];
   static get dataLoading => _l10n[languageCode]!['dataLoading'];
-  static get isIllness => _l10n[languageCode]!['isIllness'];
   static get days => _l10n[languageCode]!['days'];
   static get doubleTapInTimesheet => _l10n[languageCode]!['doubleTapInTimesheet'];
   static get dupOrgInn => _l10n[languageCode]!['dupOrgInn'];
@@ -150,14 +147,15 @@ class L10n {
   static get groupPersons => _l10n[languageCode]!['groupPersons'];
   static get groups => _l10n[languageCode]!['groups'];
   static get help => _l10n[languageCode]!['help'];
-  static get holiday => _l10n[languageCode]!['holiday'];
-  static get holidays => _l10n[languageCode]!['holidays'];
   static get hourLetter => _l10n[languageCode]!['hourLetter'];
+  static get illness => _l10n[languageCode]!['illness'];
   static get inn => _l10n[languageCode]!['inn'];
   static get innLength => _l10n[languageCode]!['innLength'];
   static get invalidDate => _l10n[languageCode]!['invalidDate'];
   static get invalidHoursNorm => _l10n[languageCode]!['invalidHoursNorm'];
   static get invalidPhone => _l10n[languageCode]!['invalidPhone'];
+  static get isIllness => _l10n[languageCode]!['isIllness'];
+  static get isNoShowGoodReason => _l10n[languageCode]!['isNoShowGoodReason'];
   static get linkNotStart => _l10n[languageCode]!['linkNotStart'];
   static get meals => _l10n[languageCode]!['meals'];
   static get meals0 => _l10n[languageCode]!['meals0'];
@@ -169,10 +167,10 @@ class L10n {
   static get noName => _l10n[languageCode]!['noName'];
   static get noPersonFamily => _l10n[languageCode]!['noPersonFamily'];
   static get noPersonName => _l10n[languageCode]!['noPersonName'];
+  static get noShowGoodReason => _l10n[languageCode]!['noShowGoodReason'];
   static get noValue => _l10n[languageCode]!['noValue'];
   static get org => _l10n[languageCode]!['org'];
   static get orgs => _l10n[languageCode]!['orgs'];
-  static get useParusIntegration => _l10n[languageCode]!['useParusIntegration'];
   static get permissionDenied => _l10n[languageCode]!['permissionDenied'];
   static get person => _l10n[languageCode]!['person'];
   static get personBirthday => _l10n[languageCode]!['personBirthday'];
@@ -211,9 +209,9 @@ class L10n {
   static get uniquePerson => _l10n[languageCode]!['uniquePerson'];
   static get uniqueSchedule => _l10n[languageCode]!['uniqueSchedule'];
   static get unknown => _l10n[languageCode]!['unknown'];
+  static get useParusIntegration => _l10n[languageCode]!['useParusIntegration'];
   static get we => _l10n[languageCode]!['we'];
   static get withoutInn => _l10n[languageCode]!['withoutInn'];
   static get withoutTime => _l10n[languageCode]!['withoutTime'];
   static get workday => _l10n[languageCode]!['workday'];
-  static get b => _l10n[languageCode]!['b'];
 }

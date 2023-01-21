@@ -106,8 +106,8 @@ String createContent(
       // Есть посещаемость в этот день
       if (dates.contains(date)) {
         final attendance = personAttendances.firstWhere((attendance) => attendance.date == date);
-        if (attendance.isIllness) {
-          buffer.write(L10n.b);
+        if (attendance.isNoShowGoodReason) {
+          buffer.write(L10n.noShowGoodReason);
         } else {
           buffer.write(doubleToString(attendance.hoursFact));
         }

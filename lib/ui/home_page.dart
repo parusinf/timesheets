@@ -461,19 +461,19 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ),
         );
       // Включена настройка типа дня
-      } else if (bloc.useIsIllness) {
-        // Есть посещаемость, её можно переключить на отсутствие по болезни
+      } else if (bloc.useIsNoShowGoodReason) {
+        // Есть посещаемость, её можно переключить на неявку по уважительной причине
         if (attendance.hoursFact > 0.0) {
           rowCells.add(
             InkWell(
               onTap: () {
                 if (!bloc.doubleTapInTimesheet) {
-                  switchToIllness(attendance!);
+                  switchToNoShowGoodReason(attendance!);
                 }
               },
               onDoubleTap: () {
                 if (bloc.doubleTapInTimesheet) {
-                  switchToIllness(attendance!);
+                  switchToNoShowGoodReason(attendance!);
                 }
               },
               child: createCell(
@@ -485,7 +485,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
             ),
           );
-        // Есть отсутствие по болезни, его можно удалить
+        // Есть неявка по уважительной причине, её можно удалить
         } else {
           rowCells.add(
             InkWell(
@@ -500,7 +500,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 }
               },
               child: createCell(
-                L10n.b,
+                L10n.noShowGoodReason,
                 color: isBirthday(date, groupPerson.person.birthday)
                     ? Colors.red
                     : Colors.amber,
@@ -555,14 +555,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       GroupPersonView groupPerson,
       DateTime date,
       double hoursFact,
-      bool isIllness,
+      bool isNoShowGoodReason,
       ) async {
     try {
       await bloc.insertAttendance(
         groupPerson: groupPerson,
         date: date,
         hoursFact: hoursFact,
-        isIllness: isIllness,
+        isNoShowGoodReason: isNoShowGoodReason,
       );
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());
@@ -570,14 +570,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   /// Переключение на тип дня Б
-  switchToIllness(Attendance attendance) async {
+  switchToNoShowGoodReason(Attendance attendance) async {
     try {
       final newAttendance = Attendance(
         id: attendance.id,
         groupPersonId: attendance.groupPersonId,
         date: attendance.date,
         hoursFact: 0.0,
-        isIllness: true,
+        isNoShowGoodReason: true,
       );
       await bloc.updateAttendance(newAttendance);
     } catch (e) {

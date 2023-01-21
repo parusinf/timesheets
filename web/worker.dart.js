@@ -1626,7 +1626,7 @@
       if (unstarred === type$.int)
         isFn = A._isInt;
       else if (unstarred === type$.double || unstarred === type$.num)
-        isFn = A._isNum;
+        isFn = A._isNoShowGoodReasonm;
       else if (unstarred === type$.String)
         isFn = A._isString;
       else
@@ -1664,7 +1664,7 @@
       else if (testRti === type$.Object)
         asFn = A._asObject;
       else {
-        t1 = A.isNullable(testRti);
+        t1 = A.isNoShowGoodReasonllable(testRti);
         if (t1)
           asFn = A._generalNullableAsCheckImplementation;
       }
@@ -1725,7 +1725,7 @@
     _generalAsCheckImplementation(object) {
       var t1, testRti = this;
       if (object == null) {
-        t1 = A.isNullable(testRti);
+        t1 = A.isNoShowGoodReasonllable(testRti);
         if (t1)
           return object;
       } else if (testRti._is(object))
@@ -1836,7 +1836,7 @@
         return object;
       throw A.wrapException(A._TypeError__TypeError$forType(object, "int?"));
     },
-    _isNum(object) {
+    _isNoShowGoodReasonm(object) {
       return typeof object == "number";
     },
     _asNum(object) {
@@ -2130,7 +2130,7 @@
         if (!A.isStrongTopType(baseType))
           if (!(baseType === type$.Null || baseType === type$.JSNull))
             if (baseKind !== 7)
-              t1 = baseKind === 8 && A.isNullable(baseType._primary);
+              t1 = baseKind === 8 && A.isNoShowGoodReasonllable(baseType._primary);
             else
               t1 = true;
           else
@@ -2143,7 +2143,7 @@
           return type$.Null;
         else if (baseKind === 6) {
           starArgument = baseType._primary;
-          if (starArgument._kind === 8 && A.isNullable(starArgument._primary))
+          if (starArgument._kind === 8 && A.isNoShowGoodReasonllable(starArgument._primary))
             return starArgument;
           else
             return A.Rti__getQuestionFromStar(universe, baseType);
@@ -2777,14 +2777,14 @@
       }
       return true;
     },
-    isNullable(t) {
+    isNoShowGoodReasonllable(t) {
       var t1,
         kind = t._kind;
       if (!(t === type$.Null || t === type$.JSNull))
         if (!A.isStrongTopType(t))
           if (kind !== 7)
-            if (!(kind === 6 && A.isNullable(t._primary)))
-              t1 = kind === 8 && A.isNullable(t._primary);
+            if (!(kind === 6 && A.isNoShowGoodReasonllable(t._primary)))
+              t1 = kind === 8 && A.isNoShowGoodReasonllable(t._primary);
             else
               t1 = true;
           else
@@ -5905,7 +5905,7 @@
     get$hashCode(receiver) {
       return 0;
     },
-    $isNull: 1
+    $isNoShowGoodReasonll: 1
   };
   J.JavaScriptObject.prototype = {};
   J.LegacyJavaScriptObject.prototype = {
@@ -6203,7 +6203,7 @@
       return other > 31 ? 0 : receiver >>> other;
     },
     $isdouble: 1,
-    $isnum: 1
+    $isNoShowGoodReasonm: 1
   };
   J.JSInt.prototype = {$isint: 1};
   J.JSNumNotInt.prototype = {};
@@ -12455,7 +12455,7 @@
     $isIterable: 1,
     $isList: 1
   };
-  A.Number.prototype = {$isNumber: 1};
+  A.Number.prototype = {$isNoShowGoodReasonmber: 1};
   A.NumberList.prototype = {
     get$length(receiver) {
       var t1 = receiver.length;

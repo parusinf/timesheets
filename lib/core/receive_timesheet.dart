@@ -213,11 +213,11 @@ Future receiveFromContent(Bloc bloc, String content) async {
       // Посещаемость загружена
       if (isNotEmpty(attendanceValue)) {
         double hoursFact = 0.0;
-        bool isIllness = false;
+        bool isNoShowGoodReason = false;
 
         // Пропуск по болезни
-        if (attendanceValue == L10n.b) {
-          isIllness = true;
+        if ([L10n.noShowGoodReason, L10n.illness].contains(attendanceValue)) {
+          isNoShowGoodReason = true;
         // Часы посещения
         } else {
           hoursFact = stringToDouble(attendanceValue)!;
@@ -229,7 +229,7 @@ Future receiveFromContent(Bloc bloc, String content) async {
             groupPerson: groupPerson,
             date: date,
             hoursFact: hoursFact,
-            isIllness: isIllness,
+            isNoShowGoodReason: isNoShowGoodReason,
           );
         // Посещаемость есть, но отличается - исправляем
         } else if (attendance.hoursFact != hoursFact) {
@@ -239,7 +239,7 @@ Future receiveFromContent(Bloc bloc, String content) async {
               groupPersonId: attendance.groupPersonId,
               date: date,
               hoursFact: hoursFact,
-              isIllness: isIllness,
+              isNoShowGoodReason: isNoShowGoodReason,
             )
           );
         }

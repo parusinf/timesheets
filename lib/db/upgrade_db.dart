@@ -49,7 +49,7 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
     await m.addColumn(db.orgs, db.orgs.totalSum);
   }
   if (from < 9) {
-    await m.addColumn(db.attendances, db.attendances.isIllness);
+    await m.addColumn(db.attendances, db.attendances.isNoShowGoodReason);
     await db.settingsDao.insert2(L10n.isIllness, 1,
         boolValue: true, isUserSetting: true);
   }
@@ -57,5 +57,9 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
     await db.customStatement('DROP TABLE holidays;');
     await db.settingsDao.insert2('activeYearDayOff', 0,
         textValue: null, isUserSetting: false);
+  }
+  if (from < 11) {
+    await db.customStatement('ALTER TABLE attendances RENAME COLUMN isIllness TO isNoShowGoodReason;');
+    await db.customStatement("UPDATE settings SET name='${L10n.isNoShowGoodReason}' WHERE name='${L10n.isIllness}';");
   }
 }

@@ -88,23 +88,21 @@ Widget textFormField({
 Widget boolFormField({
   bool? initialValue,
   required String labelText,
-  IconData icon = Icons.done,
   ValueChanged<bool>? onChanged,
 }) {
   return Padding(
     padding: const EdgeInsets.fromLTRB(0.0, padding2, 0.0, 32.0),
-    child: Row(
+    child: Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: <Widget>[
         Padding(
-            padding:
-                const EdgeInsets.fromLTRB(0.0, padding2, padding1, padding2),
-            child: Icon(icon, color: Colors.black54)),
-        text(labelText, fontSize: 16.0),
-        const Spacer(),
-        CupertinoSwitch(
-          value: initialValue ?? false,
-          onChanged: onChanged,
+          padding: const EdgeInsets.fromLTRB(0.0, 0.0, padding2, 0.0),
+          child: CupertinoSwitch(
+            value: initialValue ?? false,
+            onChanged: onChanged,
+          ),
         ),
+        text(labelText, fontSize: 16.0),
       ],
     ),
   );
