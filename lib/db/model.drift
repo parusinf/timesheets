@@ -99,7 +99,7 @@ CREATE TABLE attendances (
   -- Количество часов
   hoursFact          REAL NOT NULL,
   -- Неявка по уважительной причине
-  isNoShow BOOL NOT NULL DEFAULT FALSE
+  isNoShow           BOOL NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonId, date);
 
