@@ -142,7 +142,7 @@ class AttendanceView extends Attendance {
     required int groupPersonId,
     required DateTime date,
     required double hoursFact,
-    required bool isNoShowGoodReason,
+    required bool isNoShow,
     required this.groupId,
     required this.meals,
   }) : super(
@@ -150,7 +150,7 @@ class AttendanceView extends Attendance {
     groupPersonId: groupPersonId,
     date: date,
     hoursFact: hoursFact,
-    isNoShowGoodReason: isNoShowGoodReason,
+    isNoShow: isNoShow,
   );
 }
 
@@ -188,7 +188,7 @@ class Db extends _$Db {
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   /// Обновление структуры базы данных
   @override
@@ -754,14 +754,14 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
     required GroupPerson groupPerson,
     required DateTime date,
     required double hoursFact,
-    required bool isNoShowGoodReason,
+    required bool isNoShow,
   }) async {
     final id = await into(db.attendances).insert(
       AttendancesCompanion(
           groupPersonId: Value(groupPerson.id),
           date: Value(date),
           hoursFact: Value(hoursFact),
-          isNoShowGoodReason: Value(isNoShowGoodReason),
+          isNoShow: Value(isNoShow),
       ),
       mode: InsertMode.insertOrReplace,
     );
@@ -770,7 +770,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
         groupPersonId: groupPerson.id,
         date: date,
         hoursFact: hoursFact,
-        isNoShowGoodReason: isNoShowGoodReason,
+        isNoShow: isNoShow,
     );
   }
 
@@ -796,7 +796,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
             groupPersonId: row.groupPersonId,
             date: row.date,
             hoursFact: row.hoursFact,
-            isNoShowGoodReason: row.isNoShowGoodReason,
+            isNoShow: row.isNoShow,
         )).watch();
   }
 
@@ -812,7 +812,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
           groupPersonId: row.groupPersonId,
           date: row.date,
           hoursFact: row.hoursFact,
-          isNoShowGoodReason: row.isNoShowGoodReason,
+          isNoShow: row.isNoShow,
           groupId: row.groupId,
           meals: row.meals!,
         )).watch();

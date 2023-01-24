@@ -461,19 +461,19 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ),
         );
       // Включена настройка типа дня
-      } else if (bloc.useIsNoShowGoodReason) {
-        // Есть посещаемость, её можно переключить на неявку по уважительной причине
-        if (attendance.hoursFact > 0.0) {
+      } else if (bloc.useIsNoShow) {
+        // Есть посещаемость, её можно переключить на неявку по неуважительной причине
+        if (attendance.hoursFact > 0.0 && !attendance.isNoShow) {
           rowCells.add(
             InkWell(
               onTap: () {
                 if (!bloc.doubleTapInTimesheet) {
-                  switchToNoShowGoodReason(attendance!);
+                  switchToNoShow(attendance!);
                 }
               },
               onDoubleTap: () {
                 if (bloc.doubleTapInTimesheet) {
-                  switchToNoShowGoodReason(attendance!);
+                  switchToNoShow(attendance!);
                 }
               },
               child: createCell(
@@ -485,7 +485,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
             ),
           );
-        // Есть неявка по уважительной причине, её можно удалить
+        // Есть неявка по неуважительной причине, её можно удалить
         } else {
           rowCells.add(
             InkWell(
@@ -500,7 +500,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 }
               },
               child: createCell(
-                L10n.noShowGoodReason,
+                L10n.noShow,
                 color: isBirthday(date, groupPerson.person.birthday)
                     ? Colors.red
                     : Colors.amber,
@@ -555,29 +555,29 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       GroupPersonView groupPerson,
       DateTime date,
       double hoursFact,
-      bool isNoShowGoodReason,
+      bool isNoShow,
       ) async {
     try {
       await bloc.insertAttendance(
         groupPerson: groupPerson,
         date: date,
         hoursFact: hoursFact,
-        isNoShowGoodReason: isNoShowGoodReason,
+        isNoShow: isNoShow,
       );
     } catch (e) {
       showMessage(_scaffoldKey, e.toString());
     }
   }
 
-  /// Переключение на тип дня Б
-  switchToNoShowGoodReason(Attendance attendance) async {
+  /// Переключение на неявку по неуважительной причине НЯ с сохранением часов
+  switchToNoShow(Attendance attendance) async {
     try {
       final newAttendance = Attendance(
         id: attendance.id,
         groupPersonId: attendance.groupPersonId,
         date: attendance.date,
-        hoursFact: 0.0,
-        isNoShowGoodReason: true,
+        hoursFact: attendance.hoursFact,
+        isNoShow: true,
       );
       await bloc.updateAttendance(newAttendance);
     } catch (e) {

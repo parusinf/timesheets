@@ -1,17 +1,25 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:timesheets/core.dart';
 import 'package:timesheets/db/db.dart';
 import 'package:http/http.dart' as http;
 
 /// Выбор CSV файла и загрузка табеля посещаемости
 Future pickAndReceiveFromFile(Bloc bloc) async {
-  FilePickerResult? result = await FilePicker.platform.pickFiles(
-    type: FileType.custom,
-    allowedExtensions: ['csv', 'txt'],
-    allowMultiple: false,
-  );
+  FilePickerResult? result;
+  try {
+    result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv', 'txt'],
+      allowMultiple: false,
+    );
+  } on PlatformException catch (e) {
+    if (e.code == 'read_external_storage_denied') {
+      return L10n.fileAccessDenied;
+    }
+  }
   if (result != null && result.files.isNotEmpty) {
     final file = File(result.files.first.path!);
     return await receiveFromFile(bloc, file);
@@ -213,33 +221,40 @@ Future receiveFromContent(Bloc bloc, String content) async {
       // Посещаемость загружена
       if (isNotEmpty(attendanceValue)) {
         double hoursFact = 0.0;
-        bool isNoShowGoodReason = false;
+        bool isNoShow = false;
 
-        // Пропуск по болезни
+        // Неявка по уважительной причине
         if ([L10n.noShowGoodReason, L10n.illness].contains(attendanceValue)) {
-          isNoShowGoodReason = true;
+          hoursFact = 0.0;
+        // Неявка по неуважительной причине
+        } else if (attendanceValue.contains(L10n.noShow)) {
+          final hoursFactStr = attendanceValue.replaceAll(L10n.noShow, '');
+          hoursFact = stringToDouble(hoursFactStr) ?? 0.0;
+          isNoShow = true;
         // Часы посещения
         } else {
-          hoursFact = stringToDouble(attendanceValue)!;
+          hoursFact = stringToDouble(attendanceValue) ?? 0.0;
         }
 
         // Посещаемости нет - добавляем
         if (attendance == null) {
-          attendance = await bloc.insertAttendance(
-            groupPerson: groupPerson,
-            date: date,
-            hoursFact: hoursFact,
-            isNoShowGoodReason: isNoShowGoodReason,
-          );
+          if (hoursFact > 0.0 || isNoShow) {
+            attendance = await bloc.insertAttendance(
+              groupPerson: groupPerson,
+              date: date,
+              hoursFact: hoursFact,
+              isNoShow: isNoShow,
+            );
+          }
         // Посещаемость есть, но отличается - исправляем
-        } else if (attendance.hoursFact != hoursFact) {
+        } else if (attendance.hoursFact != hoursFact || attendance.isNoShow != isNoShow) {
           await bloc.db.attendancesDao.update2(
             Attendance(
               id: attendance.id,
               groupPersonId: attendance.groupPersonId,
               date: date,
               hoursFact: hoursFact,
-              isNoShowGoodReason: isNoShowGoodReason,
+              isNoShow: isNoShow,
             )
           );
         }

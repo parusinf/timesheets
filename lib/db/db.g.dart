@@ -1743,17 +1743,17 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
       type: DriftSqlType.double,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  static const VerificationMeta _isNoShowGoodReasonMeta =
-      const VerificationMeta('isNoShowGoodReason');
-  late final GeneratedColumn<bool> isNoShowGoodReason = GeneratedColumn<bool>(
-      'isNoShowGoodReason', aliasedName, false,
+  static const VerificationMeta _isNoShowMeta =
+      const VerificationMeta('isNoShow');
+  late final GeneratedColumn<bool> isNoShow = GeneratedColumn<bool>(
+      'isNoShow', aliasedName, false,
       type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT FALSE',
       defaultValue: const CustomExpression('FALSE'));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, groupPersonId, date, hoursFact, isNoShowGoodReason];
+      [id, groupPersonId, date, hoursFact, isNoShow];
   @override
   String get aliasedName => _alias ?? 'attendances';
   @override
@@ -1786,11 +1786,11 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
     } else if (isInserting) {
       context.missing(_hoursFactMeta);
     }
-    if (data.containsKey('isNoShowGoodReason')) {
+    if (data.containsKey('isNoShow')) {
       context.handle(
-          _isNoShowGoodReasonMeta,
-          isNoShowGoodReason.isAcceptableOrUnknown(
-              data['isNoShowGoodReason']!, _isNoShowGoodReasonMeta));
+          _isNoShowMeta,
+          isNoShow.isAcceptableOrUnknown(
+              data['isNoShow']!, _isNoShowMeta));
     }
     return context;
   }
@@ -1809,8 +1809,8 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
       hoursFact: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}hoursFact'])!,
-      isNoShowGoodReason: attachedDatabase.typeMapping.read(
-          DriftSqlType.bool, data['${effectivePrefix}isNoShowGoodReason'])!,
+      isNoShow: attachedDatabase.typeMapping.read(
+          DriftSqlType.bool, data['${effectivePrefix}isNoShow'])!,
     );
   }
 
@@ -1828,13 +1828,13 @@ class Attendance extends DataClass implements Insertable<Attendance> {
   final int groupPersonId;
   final DateTime date;
   final double hoursFact;
-  final bool isNoShowGoodReason;
+  final bool isNoShow;
   const Attendance(
       {required this.id,
       required this.groupPersonId,
       required this.date,
       required this.hoursFact,
-      required this.isNoShowGoodReason});
+      required this.isNoShow});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1842,7 +1842,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
     map['groupPersonId'] = Variable<int>(groupPersonId);
     map['date'] = Variable<DateTime>(date);
     map['hoursFact'] = Variable<double>(hoursFact);
-    map['isNoShowGoodReason'] = Variable<bool>(isNoShowGoodReason);
+    map['isNoShow'] = Variable<bool>(isNoShow);
     return map;
   }
 
@@ -1852,7 +1852,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
       groupPersonId: Value(groupPersonId),
       date: Value(date),
       hoursFact: Value(hoursFact),
-      isNoShowGoodReason: Value(isNoShowGoodReason),
+      isNoShow: Value(isNoShow),
     );
   }
 
@@ -1864,7 +1864,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
       groupPersonId: serializer.fromJson<int>(json['groupPersonId']),
       date: serializer.fromJson<DateTime>(json['date']),
       hoursFact: serializer.fromJson<double>(json['hoursFact']),
-      isNoShowGoodReason: serializer.fromJson<bool>(json['isNoShowGoodReason']),
+      isNoShow: serializer.fromJson<bool>(json['isNoShow']),
     );
   }
   @override
@@ -1875,7 +1875,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
       'groupPersonId': serializer.toJson<int>(groupPersonId),
       'date': serializer.toJson<DateTime>(date),
       'hoursFact': serializer.toJson<double>(hoursFact),
-      'isNoShowGoodReason': serializer.toJson<bool>(isNoShowGoodReason),
+      'isNoShow': serializer.toJson<bool>(isNoShow),
     };
   }
 
@@ -1884,13 +1884,13 @@ class Attendance extends DataClass implements Insertable<Attendance> {
           int? groupPersonId,
           DateTime? date,
           double? hoursFact,
-          bool? isNoShowGoodReason}) =>
+          bool? isNoShow}) =>
       Attendance(
         id: id ?? this.id,
         groupPersonId: groupPersonId ?? this.groupPersonId,
         date: date ?? this.date,
         hoursFact: hoursFact ?? this.hoursFact,
-        isNoShowGoodReason: isNoShowGoodReason ?? this.isNoShowGoodReason,
+        isNoShow: isNoShow ?? this.isNoShow,
       );
   @override
   String toString() {
@@ -1899,14 +1899,14 @@ class Attendance extends DataClass implements Insertable<Attendance> {
           ..write('groupPersonId: $groupPersonId, ')
           ..write('date: $date, ')
           ..write('hoursFact: $hoursFact, ')
-          ..write('isNoShowGoodReason: $isNoShowGoodReason')
+          ..write('isNoShow: $isNoShow')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, groupPersonId, date, hoursFact, isNoShowGoodReason);
+      Object.hash(id, groupPersonId, date, hoursFact, isNoShow);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1915,7 +1915,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
           other.groupPersonId == this.groupPersonId &&
           other.date == this.date &&
           other.hoursFact == this.hoursFact &&
-          other.isNoShowGoodReason == this.isNoShowGoodReason);
+          other.isNoShow == this.isNoShow);
 }
 
 class AttendancesCompanion extends UpdateCompanion<Attendance> {
@@ -1923,20 +1923,20 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
   final Value<int> groupPersonId;
   final Value<DateTime> date;
   final Value<double> hoursFact;
-  final Value<bool> isNoShowGoodReason;
+  final Value<bool> isNoShow;
   const AttendancesCompanion({
     this.id = const Value.absent(),
     this.groupPersonId = const Value.absent(),
     this.date = const Value.absent(),
     this.hoursFact = const Value.absent(),
-    this.isNoShowGoodReason = const Value.absent(),
+    this.isNoShow = const Value.absent(),
   });
   AttendancesCompanion.insert({
     this.id = const Value.absent(),
     required int groupPersonId,
     required DateTime date,
     required double hoursFact,
-    this.isNoShowGoodReason = const Value.absent(),
+    this.isNoShow = const Value.absent(),
   })  : groupPersonId = Value(groupPersonId),
         date = Value(date),
         hoursFact = Value(hoursFact);
@@ -1945,14 +1945,14 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
     Expression<int>? groupPersonId,
     Expression<DateTime>? date,
     Expression<double>? hoursFact,
-    Expression<bool>? isNoShowGoodReason,
+    Expression<bool>? isNoShow,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (groupPersonId != null) 'groupPersonId': groupPersonId,
       if (date != null) 'date': date,
       if (hoursFact != null) 'hoursFact': hoursFact,
-      if (isNoShowGoodReason != null) 'isNoShowGoodReason': isNoShowGoodReason,
+      if (isNoShow != null) 'isNoShow': isNoShow,
     });
   }
 
@@ -1961,13 +1961,13 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
       Value<int>? groupPersonId,
       Value<DateTime>? date,
       Value<double>? hoursFact,
-      Value<bool>? isNoShowGoodReason}) {
+      Value<bool>? isNoShow}) {
     return AttendancesCompanion(
       id: id ?? this.id,
       groupPersonId: groupPersonId ?? this.groupPersonId,
       date: date ?? this.date,
       hoursFact: hoursFact ?? this.hoursFact,
-      isNoShowGoodReason: isNoShowGoodReason ?? this.isNoShowGoodReason,
+      isNoShow: isNoShow ?? this.isNoShow,
     );
   }
 
@@ -1986,8 +1986,8 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
     if (hoursFact.present) {
       map['hoursFact'] = Variable<double>(hoursFact.value);
     }
-    if (isNoShowGoodReason.present) {
-      map['isNoShowGoodReason'] = Variable<bool>(isNoShowGoodReason.value);
+    if (isNoShow.present) {
+      map['isNoShow'] = Variable<bool>(isNoShow.value);
     }
     return map;
   }
@@ -1999,7 +1999,7 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
           ..write('groupPersonId: $groupPersonId, ')
           ..write('date: $date, ')
           ..write('hoursFact: $hoursFact, ')
-          ..write('isNoShowGoodReason: $isNoShowGoodReason')
+          ..write('isNoShow: $isNoShow')
           ..write(')'))
         .toString();
   }
@@ -2773,7 +2773,7 @@ abstract class _$Db extends GeneratedDatabase {
         groupPersonId: row.read<int>('groupPersonId'),
         date: row.read<DateTime>('date'),
         hoursFact: row.read<double>('hoursFact'),
-        isNoShowGoodReason: row.read<bool>('isNoShowGoodReason'),
+        isNoShow: row.read<bool>('isNoShow'),
       );
     });
   }
@@ -3069,7 +3069,7 @@ class OrgAttendancesResult {
   final int groupPersonId;
   final DateTime date;
   final double hoursFact;
-  final bool isNoShowGoodReason;
+  final bool isNoShow;
   OrgAttendancesResult({
     required this.groupId,
     this.meals,
@@ -3077,7 +3077,7 @@ class OrgAttendancesResult {
     required this.groupPersonId,
     required this.date,
     required this.hoursFact,
-    required this.isNoShowGoodReason,
+    required this.isNoShow,
   });
 }
 

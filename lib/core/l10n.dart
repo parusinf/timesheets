@@ -26,6 +26,7 @@ class L10n {
       'everyOtherWeek': 'чз/нед',
       'failedToGetInitialLink': 'Не удалось получить начальную ссылку',
       'failedToParseInitialLink': 'Не удалось разобрать начальную ссылку',
+      'fileAccessDenied': 'Разрешение на чтение файла не предоставлено',
       'fileEmptyTimesheetError': 'Начиная с 5-й строки файла должен быть табель посещаемости по одному ребёнку на строку',
       'fileFormatError': 'Ошибка в формате файла',
       'fileGroupError': 'В 3-й строке файла должен быть мнемокод группы, графика и код типа питания',
@@ -49,6 +50,7 @@ class L10n {
       'invalidHoursNorm': 'Некорректная норма часов',
       'invalidPhone': 'Формат телефона (###) ###-##-##',
       'isIllness': 'Отсутствие по болезни',
+      'isNoShow': 'Неявка по неуважительной причине',
       'isNoShowGoodReason': 'Неявка по уважительной причине',
       'linkNotStart': 'Ссылка не запускается',
       'meals': 'Питание',
@@ -61,6 +63,7 @@ class L10n {
       'noName': 'Нет наименования',
       'noPersonFamily': 'Нет фамилии',
       'noPersonName': 'Нет имени',
+      'noShow': 'НЯ',
       'noShowGoodReason': 'НУ',
       'noValue': 'Отсутствует значение',
       'org': 'Организация',
@@ -107,7 +110,6 @@ class L10n {
       'we': 'ср',
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
-      'workday': 'Перенос рабочего дня на',
     }
   };
   static get addGroup => _l10n[languageCode]!['addGroup'];
@@ -133,6 +135,7 @@ class L10n {
   static get everyOtherWeek => _l10n[languageCode]!['everyOtherWeek'];
   static get failedToGetInitialLink => _l10n[languageCode]!['failedToGetInitialLink'];
   static get failedToParseInitialLink => _l10n[languageCode]!['failedToParseInitialLink'];
+  static get fileAccessDenied => _l10n[languageCode]!['fileAccessDenied'];
   static get fileEmptyTimesheetError => _l10n[languageCode]!['fileEmptyTimesheetError'];
   static get fileFormatError => _l10n[languageCode]!['fileFormatError'];
   static get fileGroupError => _l10n[languageCode]!['fileGroupError'];
@@ -155,6 +158,7 @@ class L10n {
   static get invalidHoursNorm => _l10n[languageCode]!['invalidHoursNorm'];
   static get invalidPhone => _l10n[languageCode]!['invalidPhone'];
   static get isIllness => _l10n[languageCode]!['isIllness'];
+  static get isNoShow => _l10n[languageCode]!['isNoShow'];
   static get isNoShowGoodReason => _l10n[languageCode]!['isNoShowGoodReason'];
   static get linkNotStart => _l10n[languageCode]!['linkNotStart'];
   static get meals => _l10n[languageCode]!['meals'];
@@ -167,6 +171,7 @@ class L10n {
   static get noName => _l10n[languageCode]!['noName'];
   static get noPersonFamily => _l10n[languageCode]!['noPersonFamily'];
   static get noPersonName => _l10n[languageCode]!['noPersonName'];
+  static get noShow => _l10n[languageCode]!['noShow'];
   static get noShowGoodReason => _l10n[languageCode]!['noShowGoodReason'];
   static get noValue => _l10n[languageCode]!['noValue'];
   static get org => _l10n[languageCode]!['org'];
@@ -213,5 +218,4 @@ class L10n {
   static get we => _l10n[languageCode]!['we'];
   static get withoutInn => _l10n[languageCode]!['withoutInn'];
   static get withoutTime => _l10n[languageCode]!['withoutTime'];
-  static get workday => _l10n[languageCode]!['workday'];
 }
