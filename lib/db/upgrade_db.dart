@@ -66,4 +66,8 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
     await db.customStatement('ALTER TABLE attendances RENAME COLUMN isNoShowGoodReason TO isNoShow;');
     await db.customStatement("UPDATE settings SET name='${L10n.isNoShow}' WHERE name='${L10n.isNoShowGoodReason}';");
   }
+  if (from < 13) {
+    await m.addColumn(db.attendances, db.attendances.dayType);
+    await db.customStatement("UPDATE settings SET name='${L10n.dayType}' WHERE name='${L10n.isNoShow}';");
+  }
 }

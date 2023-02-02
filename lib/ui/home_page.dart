@@ -461,19 +461,19 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ),
         );
       // Включена настройка типа дня
-      } else if (bloc.useIsNoShow) {
-        // Есть посещаемость, её можно переключить на неявку по неуважительной причине
-        if (attendance.hoursFact > 0.0 && !attendance.isNoShow) {
+      } else if (bloc.useDayType) {
+        // Есть посещаемость, можно переключить на Б
+        if (attendance.hoursFact > 0.0 && !attendance.isNoShow && attendance.dayType == null) {
           rowCells.add(
             InkWell(
               onTap: () {
                 if (!bloc.doubleTapInTimesheet) {
-                  switchToNoShow(attendance!);
+                  switchToIllness(attendance!);
                 }
               },
               onDoubleTap: () {
                 if (bloc.doubleTapInTimesheet) {
-                  switchToNoShow(attendance!);
+                  switchToIllness(attendance!);
                 }
               },
               child: createCell(
@@ -485,8 +485,79 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
             ),
           );
+        // Есть Б, можно переключить на О
+        } else if (attendance.hoursFact == 0.0 && !attendance.isNoShow && attendance.dayType == L10n.illness) {
+          rowCells.add(
+            InkWell(
+              onTap: () {
+                if (!bloc.doubleTapInTimesheet) {
+                  switchToVacation(attendance!);
+                }
+              },
+              onDoubleTap: () {
+                if (bloc.doubleTapInTimesheet) {
+                  switchToVacation(attendance!);
+                }
+              },
+              child: createCell(
+                L10n.illness,
+                color: isBirthday(date, groupPerson.person.birthday)
+                    ? Colors.red
+                    : Colors.amber,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        // Есть О, можно переключить на У
+        } else if (attendance.hoursFact == 0.0 && !attendance.isNoShow && attendance.dayType == L10n.vacation) {
+          rowCells.add(
+            InkWell(
+              onTap: () {
+                if (!bloc.doubleTapInTimesheet) {
+                  switchToNoShowGoodReason(attendance!);
+                }
+              },
+              onDoubleTap: () {
+                if (bloc.doubleTapInTimesheet) {
+                  switchToNoShowGoodReason(attendance!);
+                }
+              },
+              child: createCell(
+                L10n.vacation,
+                color: isBirthday(date, groupPerson.person.birthday)
+                    ? Colors.red
+                    : Colors.blue,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        // Есть У, можно переключить на НЯ
+        } else if (attendance.hoursFact == 0.0 && !attendance.isNoShow && attendance.dayType == L10n.noShowGoodReason) {
+          // Норма часов на дату
+          final hoursNorm = getHoursNorm(bloc, date);
+          rowCells.add(
+            InkWell(
+              onTap: () {
+                if (!bloc.doubleTapInTimesheet) {
+                  switchToNoShow(attendance!, hoursNorm);
+                }
+              },
+              onDoubleTap: () {
+                if (bloc.doubleTapInTimesheet) {
+                  switchToNoShow(attendance!, hoursNorm);
+                }
+              },
+              child: createCell(
+                L10n.noShowGoodReason,
+                color: isBirthday(date, groupPerson.person.birthday)
+                    ? Colors.red
+                    : Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
         // Есть неявка по неуважительной причине, её можно удалить
-        } else {
+        } else if (attendance.hoursFact > 0.0 && attendance.isNoShow && attendance.dayType == L10n.noShow) {
           rowCells.add(
             InkWell(
               onTap: () {
@@ -502,8 +573,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               child: createCell(
                 L10n.noShow,
                 color: isBirthday(date, groupPerson.person.birthday)
-                    ? Colors.red
-                    : Colors.amber,
+                    ? Colors.purple
+                    : Colors.red,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -569,15 +640,67 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  /// Переключение на неявку по неуважительной причине НЯ с сохранением часов
-  switchToNoShow(Attendance attendance) async {
+  /// Переключение на неявку по болезни Б
+  switchToIllness(Attendance attendance) async {
     try {
       final newAttendance = Attendance(
         id: attendance.id,
         groupPersonId: attendance.groupPersonId,
         date: attendance.date,
-        hoursFact: attendance.hoursFact,
+        hoursFact: 0.0,
+        isNoShow: false,
+        dayType: L10n.illness,
+      );
+      await bloc.updateAttendance(newAttendance);
+    } catch (e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
+  }
+
+  /// Переключение на отпуск
+  switchToVacation(Attendance attendance) async {
+    try {
+      final newAttendance = Attendance(
+        id: attendance.id,
+        groupPersonId: attendance.groupPersonId,
+        date: attendance.date,
+        hoursFact: 0.0,
+        isNoShow: false,
+        dayType: L10n.vacation,
+      );
+      await bloc.updateAttendance(newAttendance);
+    } catch (e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
+  }
+
+  /// Переключение на неявку по уважительной причине У
+  switchToNoShowGoodReason(Attendance attendance) async {
+    try {
+      final newAttendance = Attendance(
+        id: attendance.id,
+        groupPersonId: attendance.groupPersonId,
+        date: attendance.date,
+        hoursFact: 0.0,
+        isNoShow: false,
+        dayType: L10n.noShowGoodReason,
+      );
+      await bloc.updateAttendance(newAttendance);
+    } catch (e) {
+      showMessage(_scaffoldKey, e.toString());
+    }
+  }
+
+  /// Переключение на неявку по неуважительной причине НЯ с часами
+  switchToNoShow(Attendance attendance, double hoursFact) async {
+    try {
+      final newAttendance = Attendance(
+        id: attendance.id,
+        groupPersonId: attendance.groupPersonId,
+        date: attendance.date,
+        hoursFact: hoursFact,
         isNoShow: true,
+        dayType: L10n.noShow,
       );
       await bloc.updateAttendance(newAttendance);
     } catch (e) {

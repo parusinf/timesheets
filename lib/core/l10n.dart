@@ -17,6 +17,7 @@ class L10n {
       'continueAction': 'Продолжить',
       'countryPhoneCode': '+7 ',
       'dataLoading': 'Загрузка данных',
+      'dayType': 'Тип дня',
       'days': 'Дней',
       'doubleTapInTimesheet': 'Двойное нажатие в табеле',
       'dupOrgInn': 'Организация с таким ИНН уже добавлена',
@@ -64,7 +65,7 @@ class L10n {
       'noPersonFamily': 'Нет фамилии',
       'noPersonName': 'Нет имени',
       'noShow': 'НЯ',
-      'noShowGoodReason': 'НУ',
+      'noShowGoodReason': 'У',
       'noValue': 'Отсутствует значение',
       'org': 'Организация',
       'orgs': 'Организации',
@@ -107,6 +108,7 @@ class L10n {
       'uniqueSchedule': 'Уже есть такой график',
       'unknown': 'Неизвестно',
       'useParusIntegration': 'Интеграция с Парусом',
+      'vacation': 'О',
       'we': 'ср',
       'withoutInn': 'Без ИНН',
       'withoutTime': 'без срока',
@@ -126,6 +128,7 @@ class L10n {
   static get continueAction => _l10n[languageCode]!['continueAction'];
   static get countryPhoneCode => _l10n[languageCode]!['countryPhoneCode'];
   static get dataLoading => _l10n[languageCode]!['dataLoading'];
+  static get dayType => _l10n[languageCode]!['dayType'];
   static get days => _l10n[languageCode]!['days'];
   static get doubleTapInTimesheet => _l10n[languageCode]!['doubleTapInTimesheet'];
   static get dupOrgInn => _l10n[languageCode]!['dupOrgInn'];
@@ -215,6 +218,7 @@ class L10n {
   static get uniqueSchedule => _l10n[languageCode]!['uniqueSchedule'];
   static get unknown => _l10n[languageCode]!['unknown'];
   static get useParusIntegration => _l10n[languageCode]!['useParusIntegration'];
+  static get vacation => _l10n[languageCode]!['vacation'];
   static get we => _l10n[languageCode]!['we'];
   static get withoutInn => _l10n[languageCode]!['withoutInn'];
   static get withoutTime => _l10n[languageCode]!['withoutTime'];

@@ -1751,9 +1751,16 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT FALSE',
       defaultValue: const CustomExpression('FALSE'));
+  static const VerificationMeta _dayTypeMeta =
+      const VerificationMeta('dayType');
+  late final GeneratedColumn<String> dayType = GeneratedColumn<String>(
+      'dayType', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns =>
-      [id, groupPersonId, date, hoursFact, isNoShow];
+      [id, groupPersonId, date, hoursFact, isNoShow, dayType];
   @override
   String get aliasedName => _alias ?? 'attendances';
   @override
@@ -1787,10 +1794,12 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
       context.missing(_hoursFactMeta);
     }
     if (data.containsKey('isNoShow')) {
-      context.handle(
-          _isNoShowMeta,
-          isNoShow.isAcceptableOrUnknown(
-              data['isNoShow']!, _isNoShowMeta));
+      context.handle(_isNoShowMeta,
+          isNoShow.isAcceptableOrUnknown(data['isNoShow']!, _isNoShowMeta));
+    }
+    if (data.containsKey('dayType')) {
+      context.handle(_dayTypeMeta,
+          dayType.isAcceptableOrUnknown(data['dayType']!, _dayTypeMeta));
     }
     return context;
   }
@@ -1809,8 +1818,10 @@ class Attendances extends Table with TableInfo<Attendances, Attendance> {
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
       hoursFact: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}hoursFact'])!,
-      isNoShow: attachedDatabase.typeMapping.read(
-          DriftSqlType.bool, data['${effectivePrefix}isNoShow'])!,
+      isNoShow: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}isNoShow'])!,
+      dayType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}dayType']),
     );
   }
 
@@ -1829,12 +1840,14 @@ class Attendance extends DataClass implements Insertable<Attendance> {
   final DateTime date;
   final double hoursFact;
   final bool isNoShow;
+  final String? dayType;
   const Attendance(
       {required this.id,
       required this.groupPersonId,
       required this.date,
       required this.hoursFact,
-      required this.isNoShow});
+      required this.isNoShow,
+      this.dayType});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1843,6 +1856,9 @@ class Attendance extends DataClass implements Insertable<Attendance> {
     map['date'] = Variable<DateTime>(date);
     map['hoursFact'] = Variable<double>(hoursFact);
     map['isNoShow'] = Variable<bool>(isNoShow);
+    if (!nullToAbsent || dayType != null) {
+      map['dayType'] = Variable<String>(dayType);
+    }
     return map;
   }
 
@@ -1853,6 +1869,9 @@ class Attendance extends DataClass implements Insertable<Attendance> {
       date: Value(date),
       hoursFact: Value(hoursFact),
       isNoShow: Value(isNoShow),
+      dayType: dayType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dayType),
     );
   }
 
@@ -1865,6 +1884,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
       date: serializer.fromJson<DateTime>(json['date']),
       hoursFact: serializer.fromJson<double>(json['hoursFact']),
       isNoShow: serializer.fromJson<bool>(json['isNoShow']),
+      dayType: serializer.fromJson<String?>(json['dayType']),
     );
   }
   @override
@@ -1876,6 +1896,7 @@ class Attendance extends DataClass implements Insertable<Attendance> {
       'date': serializer.toJson<DateTime>(date),
       'hoursFact': serializer.toJson<double>(hoursFact),
       'isNoShow': serializer.toJson<bool>(isNoShow),
+      'dayType': serializer.toJson<String?>(dayType),
     };
   }
 
@@ -1884,13 +1905,15 @@ class Attendance extends DataClass implements Insertable<Attendance> {
           int? groupPersonId,
           DateTime? date,
           double? hoursFact,
-          bool? isNoShow}) =>
+          bool? isNoShow,
+          Value<String?> dayType = const Value.absent()}) =>
       Attendance(
         id: id ?? this.id,
         groupPersonId: groupPersonId ?? this.groupPersonId,
         date: date ?? this.date,
         hoursFact: hoursFact ?? this.hoursFact,
         isNoShow: isNoShow ?? this.isNoShow,
+        dayType: dayType.present ? dayType.value : this.dayType,
       );
   @override
   String toString() {
@@ -1899,14 +1922,15 @@ class Attendance extends DataClass implements Insertable<Attendance> {
           ..write('groupPersonId: $groupPersonId, ')
           ..write('date: $date, ')
           ..write('hoursFact: $hoursFact, ')
-          ..write('isNoShow: $isNoShow')
+          ..write('isNoShow: $isNoShow, ')
+          ..write('dayType: $dayType')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, groupPersonId, date, hoursFact, isNoShow);
+      Object.hash(id, groupPersonId, date, hoursFact, isNoShow, dayType);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1915,7 +1939,8 @@ class Attendance extends DataClass implements Insertable<Attendance> {
           other.groupPersonId == this.groupPersonId &&
           other.date == this.date &&
           other.hoursFact == this.hoursFact &&
-          other.isNoShow == this.isNoShow);
+          other.isNoShow == this.isNoShow &&
+          other.dayType == this.dayType);
 }
 
 class AttendancesCompanion extends UpdateCompanion<Attendance> {
@@ -1924,12 +1949,14 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
   final Value<DateTime> date;
   final Value<double> hoursFact;
   final Value<bool> isNoShow;
+  final Value<String?> dayType;
   const AttendancesCompanion({
     this.id = const Value.absent(),
     this.groupPersonId = const Value.absent(),
     this.date = const Value.absent(),
     this.hoursFact = const Value.absent(),
     this.isNoShow = const Value.absent(),
+    this.dayType = const Value.absent(),
   });
   AttendancesCompanion.insert({
     this.id = const Value.absent(),
@@ -1937,6 +1964,7 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
     required DateTime date,
     required double hoursFact,
     this.isNoShow = const Value.absent(),
+    this.dayType = const Value.absent(),
   })  : groupPersonId = Value(groupPersonId),
         date = Value(date),
         hoursFact = Value(hoursFact);
@@ -1946,6 +1974,7 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
     Expression<DateTime>? date,
     Expression<double>? hoursFact,
     Expression<bool>? isNoShow,
+    Expression<String>? dayType,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1953,6 +1982,7 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
       if (date != null) 'date': date,
       if (hoursFact != null) 'hoursFact': hoursFact,
       if (isNoShow != null) 'isNoShow': isNoShow,
+      if (dayType != null) 'dayType': dayType,
     });
   }
 
@@ -1961,13 +1991,15 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
       Value<int>? groupPersonId,
       Value<DateTime>? date,
       Value<double>? hoursFact,
-      Value<bool>? isNoShow}) {
+      Value<bool>? isNoShow,
+      Value<String?>? dayType}) {
     return AttendancesCompanion(
       id: id ?? this.id,
       groupPersonId: groupPersonId ?? this.groupPersonId,
       date: date ?? this.date,
       hoursFact: hoursFact ?? this.hoursFact,
       isNoShow: isNoShow ?? this.isNoShow,
+      dayType: dayType ?? this.dayType,
     );
   }
 
@@ -1989,6 +2021,9 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
     if (isNoShow.present) {
       map['isNoShow'] = Variable<bool>(isNoShow.value);
     }
+    if (dayType.present) {
+      map['dayType'] = Variable<String>(dayType.value);
+    }
     return map;
   }
 
@@ -1999,7 +2034,8 @@ class AttendancesCompanion extends UpdateCompanion<Attendance> {
           ..write('groupPersonId: $groupPersonId, ')
           ..write('date: $date, ')
           ..write('hoursFact: $hoursFact, ')
-          ..write('isNoShow: $isNoShow')
+          ..write('isNoShow: $isNoShow, ')
+          ..write('dayType: $dayType')
           ..write(')'))
         .toString();
   }
@@ -2774,6 +2810,7 @@ abstract class _$Db extends GeneratedDatabase {
         date: row.read<DateTime>('date'),
         hoursFact: row.read<double>('hoursFact'),
         isNoShow: row.read<bool>('isNoShow'),
+        dayType: row.readNullable<String>('dayType'),
       );
     });
   }
@@ -3070,6 +3107,7 @@ class OrgAttendancesResult {
   final DateTime date;
   final double hoursFact;
   final bool isNoShow;
+  final String? dayType;
   OrgAttendancesResult({
     required this.groupId,
     this.meals,
@@ -3078,6 +3116,7 @@ class OrgAttendancesResult {
     required this.date,
     required this.hoursFact,
     required this.isNoShow,
+    this.dayType,
   });
 }
 

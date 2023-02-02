@@ -143,6 +143,7 @@ class AttendanceView extends Attendance {
     required DateTime date,
     required double hoursFact,
     required bool isNoShow,
+    String? dayType,
     required this.groupId,
     required this.meals,
   }) : super(
@@ -151,6 +152,7 @@ class AttendanceView extends Attendance {
     date: date,
     hoursFact: hoursFact,
     isNoShow: isNoShow,
+    dayType: dayType,
   );
 }
 
@@ -188,7 +190,7 @@ class Db extends _$Db {
 
   /// При модернизации модели нужно увеличить версию схемы и прописать миграцию
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   /// Обновление структуры базы данных
   @override
@@ -755,6 +757,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
     required DateTime date,
     required double hoursFact,
     required bool isNoShow,
+    String? dayType,
   }) async {
     final id = await into(db.attendances).insert(
       AttendancesCompanion(
@@ -762,6 +765,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
           date: Value(date),
           hoursFact: Value(hoursFact),
           isNoShow: Value(isNoShow),
+          dayType: Value(dayType),
       ),
       mode: InsertMode.insertOrReplace,
     );
@@ -771,6 +775,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
         date: date,
         hoursFact: hoursFact,
         isNoShow: isNoShow,
+        dayType: dayType,
     );
   }
 
@@ -797,6 +802,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
             date: row.date,
             hoursFact: row.hoursFact,
             isNoShow: row.isNoShow,
+            dayType: row.dayType,
         )).watch();
   }
 
@@ -813,6 +819,7 @@ class AttendancesDao extends DatabaseAccessor<Db> with _$AttendancesDaoMixin {
           date: row.date,
           hoursFact: row.hoursFact,
           isNoShow: row.isNoShow,
+          dayType: row.dayType,
           groupId: row.groupId,
           meals: row.meals!,
         )).watch();

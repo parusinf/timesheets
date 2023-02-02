@@ -222,15 +222,18 @@ Future receiveFromContent(Bloc bloc, String content) async {
       if (isNotEmpty(attendanceValue)) {
         double hoursFact = 0.0;
         bool isNoShow = false;
+        String? dayType;
 
         // Неявка по уважительной причине
-        if ([L10n.noShowGoodReason, L10n.illness].contains(attendanceValue)) {
+        if ([L10n.illness, L10n.vacation, L10n.noShowGoodReason].contains(attendanceValue)) {
           hoursFact = 0.0;
+          dayType = attendanceValue;
         // Неявка по неуважительной причине
         } else if (attendanceValue.contains(L10n.noShow)) {
           final hoursFactStr = attendanceValue.replaceAll(L10n.noShow, '');
           hoursFact = stringToDouble(hoursFactStr) ?? 0.0;
           isNoShow = true;
+          dayType = L10n.noShow;
         // Часы посещения
         } else {
           hoursFact = stringToDouble(attendanceValue) ?? 0.0;
@@ -238,16 +241,17 @@ Future receiveFromContent(Bloc bloc, String content) async {
 
         // Посещаемости нет - добавляем
         if (attendance == null) {
-          if (hoursFact > 0.0 || isNoShow) {
+          if (hoursFact > 0.0 || isNoShow || dayType != null) {
             attendance = await bloc.insertAttendance(
               groupPerson: groupPerson,
               date: date,
               hoursFact: hoursFact,
               isNoShow: isNoShow,
+              dayType: dayType,
             );
           }
         // Посещаемость есть, но отличается - исправляем
-        } else if (attendance.hoursFact != hoursFact || attendance.isNoShow != isNoShow) {
+        } else if (attendance.hoursFact != hoursFact || attendance.isNoShow != isNoShow || attendance.dayType != dayType) {
           await bloc.db.attendancesDao.update2(
             Attendance(
               id: attendance.id,
@@ -255,6 +259,7 @@ Future receiveFromContent(Bloc bloc, String content) async {
               date: date,
               hoursFact: hoursFact,
               isNoShow: isNoShow,
+              dayType: dayType,
             )
           );
         }

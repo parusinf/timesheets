@@ -399,12 +399,14 @@ class Bloc {
     required DateTime date,
     required double hoursFact,
     required bool isNoShow,
+    String? dayType,
   }) async =>
       await db.attendancesDao.insert2(
           groupPerson: groupPerson,
           date: date,
           hoursFact: hoursFact,
           isNoShow: isNoShow,
+          dayType: dayType,
       );
 
   /// Исправление посещаемости
@@ -426,7 +428,7 @@ class Bloc {
 
   get useParusIntegration => getSetting(L10n.useParusIntegration).boolValue;
 
-  get useIsNoShow => getSetting(L10n.isNoShow).boolValue;
+  get useDayType => getSetting(L10n.dayType).boolValue;
 
   /// Исправление настройки
   Future<bool> updateSetting(Setting setting) async =>
