@@ -65,7 +65,7 @@ class L10n {
       'noPersonFamily': 'Нет фамилии',
       'noPersonName': 'Нет имени',
       'noShow': 'НЯ',
-      'noShowGoodReason': 'У',
+      'noShowGoodReason': 'НУ',
       'noValue': 'Отсутствует значение',
       'org': 'Организация',
       'orgs': 'Организации',

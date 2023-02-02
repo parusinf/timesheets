@@ -508,7 +508,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
             ),
           );
-        // Есть О, можно переключить на У
+        // Есть О, можно переключить на НУ
         } else if (attendance.hoursFact == 0.0 && !attendance.isNoShow && attendance.dayType == L10n.vacation) {
           rowCells.add(
             InkWell(
@@ -531,7 +531,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
             ),
           );
-        // Есть У, можно переключить на НЯ
+        // Есть НУ, можно переключить на НЯ
         } else if (attendance.hoursFact == 0.0 && !attendance.isNoShow && attendance.dayType == L10n.noShowGoodReason) {
           // Норма часов на дату
           final hoursNorm = getHoursNorm(bloc, date);
@@ -674,7 +674,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  /// Переключение на неявку по уважительной причине У
+  /// Переключение на неявку по уважительной причине НУ
   switchToNoShowGoodReason(Attendance attendance) async {
     try {
       final newAttendance = Attendance(

@@ -100,7 +100,7 @@ CREATE TABLE attendances (
   hoursFact          REAL NOT NULL,
   -- Неявка по неуважительной причине
   isNoShow           BOOL NOT NULL DEFAULT FALSE,
-  -- Тип дня (Б, О, У, НЯ)
+  -- Тип дня (Б, О, НУ, НЯ)
   dayType            TEXT
 );
 CREATE UNIQUE INDEX attendances_index ON attendances (groupPersonId, date);
