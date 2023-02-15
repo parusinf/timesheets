@@ -534,7 +534,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         // Есть НУ, можно переключить на НЯ
         } else if (attendance.hoursFact == 0.0 && !attendance.isNoShow && attendance.dayType == L10n.noShowGoodReason) {
           // Норма часов на дату
-          final hoursNorm = getHoursNorm(bloc, date);
+          var hoursNorm = getHoursNorm(bloc, date);
+          if (hoursNorm == 0.0) {
+            hoursNorm = getFirstHoursNorm(bloc);
+          }
           rowCells.add(
             InkWell(
               onTap: () {
@@ -556,8 +559,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
               ),
             ),
           );
-        // Есть неявка по неуважительной причине, её можно удалить
-        } else if (attendance.hoursFact > 0.0 && attendance.isNoShow && attendance.dayType == L10n.noShow) {
+        // Есть неявка по неуважительной причине НЯ, её можно удалить
+        } else if (attendance.isNoShow && attendance.dayType == L10n.noShow) {
           rowCells.add(
             InkWell(
               onTap: () {
