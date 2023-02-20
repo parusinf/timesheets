@@ -252,7 +252,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     ];
     // Количество присутствующих персон на период
     final daysCount =
-        _groupAttendances?.where((e) => e.hoursFact > 0.0).toList().length;
+        _groupAttendances?.where((e) {
+          return e.hoursFact > 0.0 &&
+              (!bloc.resultsWithoutNoShow || e.dayType != L10n.noShow);
+        }).toList().length;
     // Дней посещения персоны за период
     rowCells.add(
       StreamBuilder<DateTime?>(
@@ -280,7 +283,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       final hoursNorm = getHoursNorm(bloc, date);
       // Количество присутствующих персон на дату
       final dateCount = _groupAttendances
-          ?.where((e) => e.date == date && e.hoursFact > 0.0)
+          ?.where((e) => e.date == date && e.hoursFact > 0.0 && (!bloc.resultsWithoutNoShow || e.dayType != L10n.noShow))
           .toList()
           .length;
       final dateCountStr = dateCount! > 0.0
@@ -410,7 +413,8 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final rowCells = <Widget>[];
     // Итог по персоне за период
     final daysCount =
-        personAttendances?.where((e) => e.hoursFact > 0.0).toList().length;
+        personAttendances?.where((e) => e.hoursFact > 0.0 &&
+            (!bloc.resultsWithoutNoShow || e.dayType != L10n.noShow)).toList().length;
     rowCells.add(createCell(daysCount.toString(),
         color: Colors.black54, fontSize: 16.0));
     // Цикл по дням текущего периода

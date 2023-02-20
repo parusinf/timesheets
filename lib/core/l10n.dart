@@ -79,6 +79,7 @@ class L10n {
       'phone': 'Телефон',
       'receiveFromParusError': 'Ошибка получения табеля посещаемости из Паруса',
       'receiveTimesheet': 'Получить табель',
+      'resultsWithoutNoShow': 'Итоги без НЯ',
       'sa': 'сб',
       'schedule': 'График',
       'scheduleCodeException': 'Ошибка разбора мнемокода графика',
@@ -189,6 +190,7 @@ class L10n {
   static get phone => _l10n[languageCode]!['phone'];
   static get receiveFromParusError => _l10n[languageCode]!['receiveFromParusError'];
   static get receiveTimesheet => _l10n[languageCode]!['receiveTimesheet'];
+  static get resultsWithoutNoShow => _l10n[languageCode]!['resultsWithoutNoShow'];
   static get sa => _l10n[languageCode]!['sa'];
   static get schedule => _l10n[languageCode]!['schedule'];
   static get scheduleCodeException => _l10n[languageCode]!['scheduleCodeException'];

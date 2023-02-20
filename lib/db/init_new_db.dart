@@ -12,6 +12,8 @@ Future initUserSettings(Db db) async {
       boolValue: true, isUserSetting: true);
   await db.settingsDao.insert2('activeYearDayOff', 0,
       textValue: null, isUserSetting: false);
+  await db.settingsDao.insert2(L10n.resultsWithoutNoShow, 1,
+      boolValue: true, isUserSetting: true);
 }
 
 /// Создание графика по умолчанию

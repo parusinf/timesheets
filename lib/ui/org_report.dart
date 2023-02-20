@@ -15,7 +15,7 @@ class OrgReport extends StatefulWidget {
 
 /// Состояние отчёта по организации
 class OrgReportState extends State<OrgReport> {
-  get _bloc => Provider.of<Bloc>(context, listen: false);
+  get bloc => Provider.of<Bloc>(context, listen: false);
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   List<ActiveGroup>? _activeGroups;
   List<GroupView>? _orgMeals;
@@ -31,7 +31,7 @@ class OrgReportState extends State<OrgReport> {
         key: _scaffoldKey,
         appBar: AppBar(
           title: StreamBuilder<Org?>(
-            stream: _bloc.activeOrg,
+            stream: bloc.activeOrg,
             builder: (context, snapshot) => snapshot.hasData
                 ? InkWell(
                     onTap: () async => await editOrg(context, snapshot.data!),
@@ -76,7 +76,7 @@ class OrgReportState extends State<OrgReport> {
             divider(height: padding3),
             _grouping == 0
                 ? StreamBuilder<List<ActiveGroup>>(
-                    stream: _bloc.activeGroups,
+                    stream: bloc.activeGroups,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         _activeGroups = snapshot.data;
@@ -85,14 +85,14 @@ class OrgReportState extends State<OrgReport> {
                         } else {
                           return Flexible(
                               child: StreamBuilder<List<AttendanceView>>(
-                                  stream: _bloc.orgAttendances,
+                                  stream: bloc.orgAttendances,
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData) {
                                       _orgAttendances = snapshot.data;
                                       return HorizontalDataTable(
                                         leftHandSideColumnWidth: fixedColumnWidth,
                                         rightHandSideColumnWidth: columnWidth *
-                                            (_bloc.activePeriod.value.day + 1),
+                                            (bloc.activePeriod.value.day + 1),
                                         isFixedHeader: true,
                                         headerWidgets: _createTitleRow(),
                                         leftSideItemBuilder: _createFixedColumn,
@@ -112,7 +112,7 @@ class OrgReportState extends State<OrgReport> {
                       }
                     })
                 : StreamBuilder<List<GroupView>>(
-                    stream: _bloc.meals,
+                    stream: bloc.meals,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         _orgMeals = snapshot.data;
@@ -121,14 +121,14 @@ class OrgReportState extends State<OrgReport> {
                         } else {
                           return Flexible(
                               child: StreamBuilder<List<AttendanceView>>(
-                                  stream: _bloc.orgAttendances,
+                                  stream: bloc.orgAttendances,
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData) {
                                       _orgAttendances = snapshot.data;
                                       return HorizontalDataTable(
                                         leftHandSideColumnWidth: fixedColumnWidth,
                                         rightHandSideColumnWidth: columnWidth *
-                                            (_bloc.activePeriod.value.day + 1),
+                                            (bloc.activePeriod.value.day + 1),
                                         isFixedHeader: true,
                                         headerWidgets: _createTitleRow(),
                                         leftSideItemBuilder: _createFixedColumn,
@@ -153,10 +153,10 @@ class OrgReportState extends State<OrgReport> {
 
   /// Создание строки заголовка таблицы
   List<Widget> _createTitleRow() {
-    final DateTime period = _bloc.activePeriod.valueOrNull;
+    final DateTime period = bloc.activePeriod.valueOrNull;
     final rowCells = <Widget>[
       StreamBuilder<DateTime?>(
-        stream: _bloc.activePeriod,
+        stream: bloc.activePeriod,
         builder: (context, snapshot) => InkWell(
             onTap: _selectPeriod,
             child: snapshot.hasData
@@ -173,11 +173,11 @@ class OrgReportState extends State<OrgReport> {
     ];
     // Количество присутствующих персон на период
     final daysCount =
-        _orgAttendances!.where((e) => e.hoursFact > 0.0).toList().length;
+        _orgAttendances!.where((e) => e.hoursFact > 0.0 && (!bloc.resultsWithoutNoShow || e.dayType != L10n.noShow)).toList().length;
     // Дней посещения персоны за период
     rowCells.add(
       StreamBuilder<DateTime?>(
-          stream: _bloc.activePeriod,
+          stream: bloc.activePeriod,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return _createFixedCell(
@@ -198,10 +198,10 @@ class OrgReportState extends State<OrgReport> {
     // Колонки по дням периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
-      final hoursNorm = getHoursNorm(_bloc, date);
+      final hoursNorm = getHoursNorm(bloc, date);
       // Количество присутствующих персон на дату
       final dateCount = _orgAttendances!
-          .where((e) => e.date == date && e.hoursFact > 0.0)
+          .where((e) => e.date == date && e.hoursFact > 0.0 && (!bloc.resultsWithoutNoShow || e.dayType != L10n.noShow))
           .toList()
           .length;
       final dateCountStr = dateCount > 0.0
@@ -212,7 +212,7 @@ class OrgReportState extends State<OrgReport> {
       // Добавление ячейки в строку
       rowCells.add(
         StreamBuilder<DateTime?>(
-            stream: _bloc.activePeriod,
+            stream: bloc.activePeriod,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return _createFixedCell(
@@ -222,7 +222,7 @@ class OrgReportState extends State<OrgReport> {
                   alignment: Alignment.center,
                   borderStyle: BorderStyle.solid,
                   titleColor:
-                      isDayOff(_bloc, date) ? Colors.red : Colors.black87,
+                      isDayOff(bloc, date) ? Colors.red : Colors.black87,
                   subtitleColor: Colors.black54,
                   wrap: false,
                 );
@@ -327,19 +327,20 @@ class OrgReportState extends State<OrgReport> {
             attendance.groupId == _activeGroups![index].groupView.id)
         : _orgAttendances!
             .where((attendance) => attendance.meals == _orgMeals![index].meals);
-    final period = _bloc.activePeriod.valueOrNull;
+    final period = bloc.activePeriod.valueOrNull;
     final rowCells = <Widget>[];
     // Итог по персоне за период
     final daysCount =
-        attendances.where((e) => e.hoursFact > 0.0).toList().length;
+        attendances.where((e) => e.hoursFact > 0.0 &&
+            (!bloc.resultsWithoutNoShow || e.dayType != L10n.noShow)).toList().length;
     rowCells.add(_createCell(daysCount.toString(),
         color: Colors.black54, fontSize: 16.0));
     // Цикл по дням текущего периода
     for (int day = 1; day <= period.day; day++) {
       final date = DateTime(period.year, period.month, day);
-      final hoursNorm = getHoursNorm(_bloc, date);
+      final hoursNorm = getHoursNorm(bloc, date);
       final hoursFact = attendances
-          .where((e) => e.date == date && e.hoursFact > 0.0)
+          .where((e) => e.date == date && e.hoursFact > 0.0 && (!bloc.resultsWithoutNoShow || e.dayType != L10n.noShow))
           .toList()
           .length;
       final dateCountStr = hoursFact > 0.0
@@ -363,10 +364,10 @@ class OrgReportState extends State<OrgReport> {
       context: context,
       firstDate: DateTime(DateTime.now().year - 1),
       lastDate: DateTime(DateTime.now().year + 1),
-      initialDate: _bloc.activePeriod.valueOrNull,
+      initialDate: bloc.activePeriod.valueOrNull,
     );
     if (period != null) {
-      _bloc.setActivePeriod(lastDayOfMonth(period));
+      bloc.setActivePeriod(lastDayOfMonth(period));
     }
   }
 }

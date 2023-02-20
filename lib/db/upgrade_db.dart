@@ -70,4 +70,8 @@ CREATE UNIQUE INDEX holidays_workday_index ON holidays (workday);
     await m.addColumn(db.attendances, db.attendances.dayType);
     await db.customStatement("UPDATE settings SET name='${L10n.dayType}' WHERE name='${L10n.isNoShow}';");
   }
+  if (from < 14) {
+    await db.settingsDao.insert2(L10n.resultsWithoutNoShow, 1,
+        boolValue: true, isUserSetting: true);
+  }
 }

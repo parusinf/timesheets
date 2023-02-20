@@ -430,6 +430,8 @@ class Bloc {
 
   get useDayType => getSetting(L10n.dayType).boolValue;
 
+  get resultsWithoutNoShow => getSetting(L10n.resultsWithoutNoShow).boolValue;
+
   /// Исправление настройки
   Future<bool> updateSetting(Setting setting) async =>
       await db.settingsDao.update2(setting);
