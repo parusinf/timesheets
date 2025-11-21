@@ -52,7 +52,12 @@
 ```
 ### 2.2 Установка
 
-#### 2.2.1 Android
+#### 2.2.1 Android через RuStore
+
+1. Скачайте и установите на телефоне RuStore, если он ещё не установлен https://rustore.ru/download
+2. Установите приложение **Табели посещаемости** https://apps.rustore.ru/app/ru.parusinf.timesheets
+
+#### 2.2.2 Android (заблокировано в Play Маркет)
 
 1. Откройте на смартфоне приложение **Play Маркет**.
 2. В строке поиска введите **Табели посещаемости**.
@@ -60,7 +65,7 @@
 
 Страница приложения в **Google Play** https://play.google.com/store/apps/details?id=ru.parusinf.timesheets
 
-#### 2.2.2 iOS
+#### 2.2.3 iOS (заблокировано в App Store)
 
 > Приложение для iOS временно недоступно. Apple заблокировала приложение в AppStore
 
@@ -70,25 +75,20 @@
 
 Страница приложения в **App Store** https://apps.apple.com/ru/app/id1548110226
 
-#### 2.2.3 Windows 10
+#### 2.2.4 Windows 10 (самоподписанный сертификат SSL)
 
 1. Скачайте и разархивируйте файл http://timesheets.parusinf.ru/windows/timesheets-windows.zip
 2. Установите **Распространяемый пакет Visual C++ для Visual Studio 2015-2022** http://timesheets.parusinf.ru/windows/VC_redist.x64.exe
 3. Запустите **timesheets/timesheets.exe** (если SmartScreen блокирует запуск, нажмите **Всё равно выполнить**)
 4. Закрепите ярлык на панели задач
 
-#### 2.2.4 Android через RuStore
-
-1. Скачайте и установите на телефоне RuStore, если он ещё не установлен https://rustore.ru/download
-2. Установите приложение **Табели посещаемости** https://apps.rustore.ru/app/ru.parusinf.timesheets
-
-#### 2.2.5 Android через apk
+#### 2.2.5 Android через apk (самоподписанный сертификат SSL)
 
 1. Скачайте и установите на телефоне apk-файл http://timesheets.parusinf.ru/android/timesheets.apk
 2. При сообщении **Заблокировано Play Защитой** нажмите кнопку **ВСЕ РАВНО УСТАНОВИТЬ**.
 3. При необходимости включите в настройках Android разрешение на установку из неизвестных источников.
 
-#### 2.2.6 Linux
+#### 2.2.6 Linux (самоподписанный сертификат SSL)
 
 1. Скачайте и разархивируйте файл http://timesheets.parusinf.ru/linux/timesheets.zip
 2. Запустите **timesheets/timesheets**
